@@ -19,6 +19,6 @@ public class HistoryCloth extends BaseEntity {
     private History history;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "clothes_id")
+    @JoinColumn(name = "cloth_id")
     private Cloth cloth;
 }
