@@ -19,11 +19,6 @@ public enum SuccessStatus implements BaseCode {
     private final String message;
 
     @Override
-    public ReasonDTO getReason() {
-        return ReasonDTO.builder().message(message).code(code).isSuccess(true).build();
-    }
-
-    @Override
     public ReasonDTO getReasonHttpStatus() {
         return ReasonDTO.builder()
                 .message(message)
