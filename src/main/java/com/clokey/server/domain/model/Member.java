@@ -37,6 +37,9 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = 30, unique=true) //사용자 지정 아이디
     private String userId;
 
+    @Column(length = 100) //사용자 지정 아이디
+    private String bio;
+
     @Enumerated(EnumType.STRING) //성별
     @Column(columnDefinition = "VARCHAR(10)")
     private Gender gender;
