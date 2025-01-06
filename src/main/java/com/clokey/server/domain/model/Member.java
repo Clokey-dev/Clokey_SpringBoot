@@ -1,5 +1,6 @@
 package com.clokey.server.domain.model;
 
+import com.clokey.server.domain.mapping.MemberAgree;
 import com.clokey.server.domain.model.enums.Gender;
 import com.clokey.server.domain.model.enums.MemberStatus;
 import com.clokey.server.domain.model.enums.SocialType;
@@ -44,7 +45,6 @@ public class Member extends BaseEntity {
     @Column(columnDefinition = "VARCHAR(10)")
     private Gender gender;
 
-    private LocalDate birthDate; //생년월일
 
     @Enumerated(EnumType.STRING) //가입종류
     private SocialType socialType;
@@ -59,6 +59,8 @@ public class Member extends BaseEntity {
 
     // 소셜 로그인이라서 비밀번호는 안했음
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<MemberAgree> memberAgreeList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Follow> followList = new ArrayList<>();
