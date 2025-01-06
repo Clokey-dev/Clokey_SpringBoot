@@ -1,7 +1,11 @@
 package com.clokey.server.domain.model;
 
+import com.clokey.server.domain.model.mapping.HistoryCloth;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.*;
+import com.clokey.server.domain.model.enums.Visibility;
 
 import java.time.LocalDate;
 
@@ -26,7 +30,7 @@ public class Cloth extends BaseEntity {
     private LocalDate regDate; // 등록 날짜
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10) // 공개 범위
+    @Column(nullable = false, length = 20) // 공개 범위
     private Visibility visibility;
 
     @Column(nullable = false) // 상한 온도
@@ -35,6 +39,11 @@ public class Cloth extends BaseEntity {
     @Column(nullable = false) // 하한 온도
     private int tempLowerBound;
 
+    @Min(0)
+    @Max(5)
+    @Column(nullable = false) // 옷 두계 0~5레벨
+    private int thicknessLevel;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
@@ -42,4 +51,8 @@ public class Cloth extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "history_cloth_id", nullable = false)
+    private HistoryCloth historyCloth;
 }
