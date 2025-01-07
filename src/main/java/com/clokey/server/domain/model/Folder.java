@@ -12,12 +12,12 @@ public class Folder extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 팔로우 ID
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(nullable = false, length = 30, unique=true)
+    @Column(nullable = false, length = 30)
     private String name;
 }
