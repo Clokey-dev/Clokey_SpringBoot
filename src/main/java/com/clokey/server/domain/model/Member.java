@@ -1,8 +1,12 @@
 package com.clokey.server.domain.model;
 
+import com.clokey.server.domain.model.mapping.MemberFollow;
+import com.clokey.server.domain.model.mapping.MemberAgree;
 import com.clokey.server.domain.model.enums.Gender;
 import com.clokey.server.domain.model.enums.MemberStatus;
 import com.clokey.server.domain.model.enums.SocialType;
+import com.clokey.server.domain.model.mapping.MemberLike;
+
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -44,8 +48,6 @@ public class Member extends BaseEntity {
     @Column(columnDefinition = "VARCHAR(10)")
     private Gender gender;
 
-    private LocalDate birthDate; //생년월일
-
     @Enumerated(EnumType.STRING) //가입종류
     private SocialType socialType;
 
@@ -59,16 +61,21 @@ public class Member extends BaseEntity {
 
     // 소셜 로그인이라서 비밀번호는 안했음
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<MemberAgree> memberAgreeList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Follow> followList = new ArrayList<>();
+    private List<MemberLike> memberLikeList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "following", cascade = CascadeType.ALL)
+    private List<MemberFollow> memberFollowList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Category> categoryList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Cloth> clothesList = new ArrayList<>();
+    private List<Cloth> clothList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Record> recordList = new ArrayList<>();
+    private List<History> historyList = new ArrayList<>();
 }
