@@ -61,6 +61,10 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = 20) // 공개 범위
     private Visibility visibility;
 
+    private String clothURL;
+
+    private String brand;
+
     // 소셜 로그인이라서 비밀번호는 안했음
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
