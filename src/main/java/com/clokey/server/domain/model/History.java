@@ -23,10 +23,6 @@ public class History extends BaseEntity {
 
     private LocalDate historyDate; //기록 일자
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20) // 공개 범위
-    private Visibility visibility;
-
     private String historyImageUrl; //기록사진url
 
     @OneToMany(mappedBy = "history", cascade = CascadeType.ALL)
