@@ -6,10 +6,12 @@ import com.clokey.server.domain.model.enums.Gender;
 import com.clokey.server.domain.model.enums.MemberStatus;
 import com.clokey.server.domain.model.enums.SocialType;
 import com.clokey.server.domain.model.mapping.MemberLike;
+
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +47,6 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING) //성별
     @Column(columnDefinition = "VARCHAR(10)")
     private Gender gender;
-
-    // private LocalDate birthDate; //생년월일
 
     @Enumerated(EnumType.STRING) //가입종류
     private SocialType socialType;
