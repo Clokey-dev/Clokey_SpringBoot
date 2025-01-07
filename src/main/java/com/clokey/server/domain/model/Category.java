@@ -21,9 +21,4 @@ public class Category extends BaseEntity {
     @JoinColumn(name = "parent_id") // 부모 카테고리
     private Category parent;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
-
-
 }
