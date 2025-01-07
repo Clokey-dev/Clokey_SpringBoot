@@ -1,5 +1,6 @@
 package com.clokey.server.domain.model;
 
+import com.clokey.server.domain.model.enums.Visibility;
 import com.clokey.server.domain.model.mapping.MemberFollow;
 import com.clokey.server.domain.model.mapping.MemberAgree;
 import com.clokey.server.domain.model.enums.Gender;
@@ -29,9 +30,6 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 30) //이름
-    private String name;
-
     @Column(nullable = false, unique = true) //이메일
     private String email;
 
@@ -41,7 +39,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = 30, unique=true) //사용자 지정 아이디
     private String userId;
 
-    @Column(length = 100) //사용자 지정 아이디
+    @Column(length = 100) //한줄 소개
     private String bio;
 
     @Enumerated(EnumType.STRING) //성별
@@ -58,6 +56,10 @@ public class Member extends BaseEntity {
     private MemberStatus status;
 
     private LocalDate inactiveDate; //비활성화 일자
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20) // 공개 범위
+    private Visibility visibility;
 
     // 소셜 로그인이라서 비밀번호는 안했음
 
