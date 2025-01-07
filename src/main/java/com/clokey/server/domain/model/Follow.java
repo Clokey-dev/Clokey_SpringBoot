@@ -13,7 +13,7 @@ public class Follow {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long followId; // 팔로우 ID
+    private Long id; // 팔로우 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "following_user_id", nullable = false) // 팔로잉 유저 ID
