@@ -37,7 +37,7 @@ public class Member extends BaseEntity {
     private String nickname;
 
     @Column(nullable = false, length = 30, unique=true) //사용자 지정 아이디
-    private String userId;
+    private String clokeyId;
 
     @Column(length = 100) //한줄 소개
     private String bio;
