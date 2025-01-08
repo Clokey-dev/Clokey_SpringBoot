@@ -3,6 +3,7 @@ package com.clokey.server.domain.model.mapping;
 import com.clokey.server.domain.model.BaseEntity;
 import com.clokey.server.domain.model.Category;
 import com.clokey.server.domain.model.Cloth;
+import com.clokey.server.domain.model.Folder;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,5 +24,5 @@ public class ClothFolder extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id",nullable = false)
-    private Category category;
+    private Folder folder;
 }
