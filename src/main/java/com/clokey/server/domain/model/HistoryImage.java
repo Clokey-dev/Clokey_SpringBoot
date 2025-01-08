@@ -14,8 +14,8 @@ public class HistoryImage extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String imageUrl; // 옷 이미지 URL
+    @Column(nullable = false , unique = true)
+    private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "history_id", nullable = false)

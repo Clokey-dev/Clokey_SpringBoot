@@ -21,14 +21,13 @@ public class History extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate historyDate; //기록 일자
+    @Column(nullable = false)
+    private LocalDate historyDate;
 
-    private String historyImageUrl; //기록사진url
-
-    @OneToMany(mappedBy = "history", cascade = CascadeType.ALL)
-    private List<MemberLike> memberLikeList = new ArrayList<>();
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int likes;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 }

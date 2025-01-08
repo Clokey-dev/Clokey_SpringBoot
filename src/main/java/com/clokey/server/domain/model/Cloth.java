@@ -31,12 +31,12 @@ public class Cloth extends BaseEntity {
     private Visibility visibility;
 
     @Min(-20)
-    @Max(30)
+    @Max(40)
     @Column(nullable = false)
     private int tempUpperBound;
 
     @Min(-20)
-    @Max(30)
+    @Max(40)
     @Column(nullable = false)
     private int tempLowerBound;
 
