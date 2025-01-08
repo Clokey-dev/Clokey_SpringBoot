@@ -16,7 +16,7 @@ public class Notification extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @Column(nullable = false, length = 20)
@@ -25,6 +25,6 @@ public class Notification extends BaseEntity {
     @Column(nullable = false, length = 50)
     private String content;
 
-    //default 읽지 않음 추가해야함. nullable = false 를 해야함.
+    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'NOT_READ'",nullable = false)
     private ReadStatus readStatus;
 }

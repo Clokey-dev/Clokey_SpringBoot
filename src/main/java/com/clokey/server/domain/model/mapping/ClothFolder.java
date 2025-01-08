@@ -18,10 +18,10 @@ public class ClothFolder extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cloth_id")
+    @JoinColumn(name = "cloth_id",nullable = false)
     private Cloth cloth;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id",nullable = false)
     private Category category;
 }
