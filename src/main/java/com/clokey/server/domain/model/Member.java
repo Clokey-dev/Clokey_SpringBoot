@@ -30,43 +30,39 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true) //이메일
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false, length = 30, unique=true) //닉네임
+    @Column(unique=true)
     private String nickname;
 
-    @Column(nullable = false, length = 30, unique=true) //사용자 지정 아이디
+    @Column(unique=true)
     private String clokeyId;
 
     @Column(length = 100) //한줄 소개
     private String bio;
 
-    @Enumerated(EnumType.STRING) //성별
-    @Column(columnDefinition = "VARCHAR(10)")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Gender gender;
 
     @Enumerated(EnumType.STRING) //가입종류
+    @Column(nullable = false)
     private SocialType socialType;
 
-    private String profileImageUrl; //프로필사진url
+    private String profileImageUrl;
 
     @Enumerated(EnumType.STRING) //활성화여부
-    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'")
+    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'" , nullable = false)
     private MemberStatus status;
 
-    private LocalDate inactiveDate; //비활성화 일자
+    private LocalDate inactiveDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20) // 공개 범위
+    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'PUBLIC'",nullable = false) // 공개 범위
     private Visibility visibility;
 
-    private String clothURL;
-
-    private String brand;
-
-    // 소셜 로그인이라서 비밀번호는 안했음
-
+    //필요한 양방향 매핑을 제외하고 삭제해주세요.
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberAgree> memberAgreeList = new ArrayList<>();
 
@@ -75,9 +71,6 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "following", cascade = CascadeType.ALL)
     private List<MemberFollow> memberFollowList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Category> categoryList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Cloth> clothList = new ArrayList<>();

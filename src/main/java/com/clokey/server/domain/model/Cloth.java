@@ -27,7 +27,7 @@ public class Cloth extends BaseEntity {
     private int wearNum;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private Visibility visibility;
 
     @Min(-20)
