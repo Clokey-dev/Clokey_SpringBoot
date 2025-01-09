@@ -53,7 +53,4 @@ public class Cloth extends BaseEntity {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "history_cloth_id", nullable = false)
-    private HistoryCloth historyCloth;
 }
