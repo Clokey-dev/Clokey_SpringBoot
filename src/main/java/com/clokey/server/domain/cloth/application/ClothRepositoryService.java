@@ -8,5 +8,5 @@ public interface ClothRepositoryService {
 
     boolean canEdit(Long clothId, Long memberId);
 
-    Visibility getVisibility(Long clothId);
+    boolean isPublic(Long clothId);
 }

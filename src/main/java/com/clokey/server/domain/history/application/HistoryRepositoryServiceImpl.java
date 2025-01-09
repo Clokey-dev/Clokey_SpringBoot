@@ -1,6 +1,7 @@
 package com.clokey.server.domain.history.application;
 
 import com.clokey.server.domain.history.dao.HistoryRepository;
+import com.clokey.server.domain.model.enums.Visibility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,4 +15,13 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService{
     public boolean historyExist(Long historyId) {
         return historyRepository.existsById(historyId);
     }
+
+    @Override
+    public boolean isPublic(Long historyId) {
+        Visibility visibility = historyRepository.findById(historyId)
+                .get()
+                .getVisibility();
+        return visibility.equals(Visibility.PUBLIC);
+    }
+
 }

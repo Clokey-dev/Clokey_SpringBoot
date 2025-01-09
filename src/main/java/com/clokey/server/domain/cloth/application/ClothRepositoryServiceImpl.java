@@ -28,9 +28,10 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
 
     //존재하지 않는 경우 exception 던져야함 get으로 임시 대체
     @Override
-    public Visibility getVisibility(Long clothId){
-        return clothRepository.findById(clothId)
+    public boolean isPublic(Long clothId){
+        Visibility visibility =  clothRepository.findById(clothId)
                 .get()
                 .getVisibility();
+        return visibility.equals(Visibility.PUBLIC);
     }
 }
