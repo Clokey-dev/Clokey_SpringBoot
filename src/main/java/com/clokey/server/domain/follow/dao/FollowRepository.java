@@ -1,7 +1,6 @@
 package com.clokey.server.domain.follow.dao;
 
-import com.clokey.server.domain.model.Cloth;
-import com.clokey.server.domain.model.Follow;
+import com.clokey.server.domain.model.mapping.Follow;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FollowRepository extends JpaRepository<Follow, Long> {

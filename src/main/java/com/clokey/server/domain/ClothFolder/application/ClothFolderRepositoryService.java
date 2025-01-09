@@ -1,4 +1,4 @@
-package com.clokey.server.domain.clothfolder.application;
+package com.clokey.server.domain.ClothFolder.application;
 
 public interface ClothFolderRepositoryService {
 

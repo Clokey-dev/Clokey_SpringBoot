@@ -1,4 +1,4 @@
-package com.clokey.server.domain.clothfolder.dao;
+package com.clokey.server.domain.ClothFolder.dao;
 
 import com.clokey.server.domain.model.mapping.ClothFolder;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,6 +1,6 @@
-package com.clokey.server.domain.clothfolder.application;
+package com.clokey.server.domain.ClothFolder.application;
 
-import com.clokey.server.domain.clothfolder.dao.ClothFolderRepository;
+import com.clokey.server.domain.ClothFolder.dao.ClothFolderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
