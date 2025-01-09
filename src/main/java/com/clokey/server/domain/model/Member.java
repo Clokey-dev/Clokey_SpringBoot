@@ -42,10 +42,6 @@ public class Member extends BaseEntity {
     @Column(length = 100) //한줄 소개
     private String bio;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Gender gender;
-
     @Enumerated(EnumType.STRING) //가입종류
     @Column(nullable = false)
     private SocialType socialType;
