@@ -23,11 +23,6 @@ public class BaseResponse<T> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T result;
 
-    public static <T> BaseResponse<T> onSuccess(T result) {
-        return new BaseResponse<>(
-                true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), result);
-    }
-
     public static <T> BaseResponse<T> onSucesss(BaseCode code, T result) {
         return new BaseResponse<>(
                 true,
