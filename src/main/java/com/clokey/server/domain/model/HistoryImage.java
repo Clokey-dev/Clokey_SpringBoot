@@ -1,7 +1,5 @@
-package com.clokey.server.domain.model.mapping;
+package com.clokey.server.domain.model;
 
-import com.clokey.server.domain.model.BaseEntity;
-import com.clokey.server.domain.model.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,15 +8,14 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class MemberLike extends BaseEntity {
+public class HistoryImage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @Column(nullable = false , unique = true)
+    private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "history_id", nullable = false)

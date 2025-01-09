@@ -18,10 +18,10 @@ public class HistoryCloth extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "history_id")
+    @JoinColumn(name = "history_id",nullable = false)
     private History history;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cloth_id")
+    @JoinColumn(name = "cloth_id", nullable = false)
     private Cloth cloth;
 }

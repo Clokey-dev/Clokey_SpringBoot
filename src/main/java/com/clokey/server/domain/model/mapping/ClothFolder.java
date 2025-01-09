@@ -1,6 +1,9 @@
 package com.clokey.server.domain.model.mapping;
 
-import com.clokey.server.domain.model.*;
+import com.clokey.server.domain.model.BaseEntity;
+import com.clokey.server.domain.model.Category;
+import com.clokey.server.domain.model.Cloth;
+import com.clokey.server.domain.model.Folder;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,17 +12,17 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class ClothCategory extends BaseEntity {
+public class ClothFolder extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cloth_id")
+    @JoinColumn(name = "cloth_id",nullable = false)
     private Cloth cloth;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @JoinColumn(name = "category_id",nullable = false)
+    private Folder folder;
 }

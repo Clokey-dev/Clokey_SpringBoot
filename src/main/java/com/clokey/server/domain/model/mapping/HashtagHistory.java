@@ -1,7 +1,9 @@
 package com.clokey.server.domain.model.mapping;
 
 import com.clokey.server.domain.model.BaseEntity;
-import com.clokey.server.domain.model.*;
+import com.clokey.server.domain.model.Cloth;
+import com.clokey.server.domain.model.Hashtag;
+import com.clokey.server.domain.model.History;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,17 +12,17 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class MemberLike extends BaseEntity {
+public class HashtagHistory extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @JoinColumn(name = "hashtag_id", nullable = false)
+    private Hashtag hashtag;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "history_id", nullable = false)
+    @JoinColumn(name = "history_id",nullable = false)
     private History history;
 }

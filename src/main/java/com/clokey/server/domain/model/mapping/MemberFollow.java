@@ -11,12 +11,11 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"following_user_id", "followed_user_id"}))
-
 public class MemberFollow extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long followId; // 팔로우 ID
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "following_user_id", nullable = false) // 팔로잉 유저 ID
@@ -25,10 +24,5 @@ public class MemberFollow extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "followed_user_id", nullable = false) // 팔로우당한 유저 ID
     private Member followed;
-
-    public MemberFollow(Member following, Member followed) {
-        this.following = following;
-        this.followed = followed;
-    }
 }
 

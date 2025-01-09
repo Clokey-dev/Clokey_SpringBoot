@@ -20,23 +20,24 @@ public class Cloth extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50) // 옷 이름
+    @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false)
-    private int wearNum; // 옷 착용 횟수
-
-    @Column(nullable = false)
-    private LocalDate regDate; // 등록 날짜
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int wearNum;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20) // 공개 범위
+    @Column(nullable = false)
     private Visibility visibility;
 
-    @Column(nullable = false) // 상한 온도
+    @Min(-20)
+    @Max(40)
+    @Column(nullable = false)
     private int tempUpperBound;
 
-    @Column(nullable = false) // 하한 온도
+    @Min(-20)
+    @Max(40)
+    @Column(nullable = false)
     private int tempLowerBound;
 
     @Min(0)
