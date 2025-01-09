@@ -3,7 +3,6 @@ package com.clokey.server.domain.model;
 import com.clokey.server.domain.model.enums.Visibility;
 import com.clokey.server.domain.model.mapping.MemberFollow;
 import com.clokey.server.domain.model.mapping.MemberAgree;
-import com.clokey.server.domain.model.enums.Gender;
 import com.clokey.server.domain.model.enums.MemberStatus;
 import com.clokey.server.domain.model.enums.SocialType;
 import com.clokey.server.domain.model.mapping.MemberLike;
