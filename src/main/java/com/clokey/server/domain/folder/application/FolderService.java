@@ -1,0 +1,8 @@
+package com.clokey.server.domain.folder.application;
+
+import com.clokey.server.domain.folder.dto.FolderRequest;
+import com.clokey.server.domain.model.Folder;
+
+public interface FolderService {
+    Folder createFolder(Long memberId, FolderRequest.FolderCreateRequest request);
+}
