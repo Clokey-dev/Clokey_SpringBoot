@@ -24,6 +24,25 @@ public class HistoryResponseDto {
         boolean isLiked;
         LocalDate date;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class monthViewResult{
+        Long userId;
+        List<historyResult> histories;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class historyResult{
+        Long historyId;
+        LocalDate date;
+        String imageUrl;
+    }
 }
 
 

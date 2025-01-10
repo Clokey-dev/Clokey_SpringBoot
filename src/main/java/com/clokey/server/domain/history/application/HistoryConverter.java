@@ -6,11 +6,12 @@ import com.clokey.server.domain.model.enums.Visibility;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class HistoryConverter {
 
-    public static HistoryResponseDto.dayViewResult toDayViewResult(History history,List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked){
+    public static HistoryResponseDto.dayViewResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked) {
         return HistoryResponseDto.dayViewResult.builder()
                 .userId(history.getMember().getId())
                 .contents(history.getContent())
@@ -22,4 +23,30 @@ public class HistoryConverter {
                 .date(history.getHistoryDate())
                 .build();
     }
+
+    public static HistoryResponseDto.monthViewResult toMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
+
+        List<HistoryResponseDto.historyResult> historyResults = new ArrayList<>();
+
+        for (int i = 0; i < histories.size(); i++) {
+            History history = histories.get(i);
+            String historyImageUrl = historyFirstImageUrls.get(i);
+
+            historyResults.add(toHistoryResult(history, historyImageUrl));
+        }
+
+        return HistoryResponseDto.monthViewResult.builder()
+                .userId(memberId)
+                .histories(historyResults)
+                .build();
+    }
+
+    private static HistoryResponseDto.historyResult toHistoryResult(History history, String historyImageUrl) {
+        return HistoryResponseDto.historyResult.builder()
+                .historyId(history.getId())
+                .date(history.getHistoryDate())
+                .imageUrl(historyImageUrl)
+                .build();
+    }
 }
+
