@@ -1,8 +1,6 @@
 package com.clokey.server.domain.model.mapping;
 
-import com.clokey.server.domain.model.BaseEntity;
 import com.clokey.server.domain.model.Member;
-import com.clokey.server.domain.model.Term;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,17 +9,20 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class MemberAgree extends BaseEntity {
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"following_user_id", "followed_user_id"}))
+public class Follow {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id",nullable = false)
-    private Member member;
+    @JoinColumn(name = "following_user_id", nullable = false)
+    private Member following;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "term_id",nullable = false)
-    private Term term;
+    @JoinColumn(name = "followed_user_id", nullable = false)
+    private Member followed;
+
 }
+

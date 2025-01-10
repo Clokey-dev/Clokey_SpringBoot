@@ -27,6 +27,13 @@ public class History extends BaseEntity {
     @Column(nullable = false, columnDefinition = "integer default 0")
     private int likes;
 
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'PUBLIC'",nullable = false) // 공개 범위
+    private Visibility visibility;
+
+    @Column(length = 200)
+    private String content;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;

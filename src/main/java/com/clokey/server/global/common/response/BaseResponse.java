@@ -1,6 +1,7 @@
 package com.clokey.server.global.common.response;
 
 import com.clokey.server.global.error.code.BaseCode;
+import com.clokey.server.global.error.code.BaseErrorCode;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -22,18 +23,22 @@ public class BaseResponse<T> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T result;
 
-    public static <T> BaseResponse<T> onSuccess(T result) {
-        return new BaseResponse<>(
-                true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), result);
-    }
-
-    public static <T> BaseResponse<T> of(BaseCode code, T result) {
+    public static <T> BaseResponse<T> onSucesss(BaseCode code, T result) {
         return new BaseResponse<>(
                 true,
                 code.getReasonHttpStatus().getCode(),
                 code.getReasonHttpStatus().getMessage(),
                 result);
     }
+
+    public static <T> BaseResponse<T> onFailure(BaseErrorCode code, T result) {
+        return new BaseResponse<>(
+                false,
+                code.getReasonHttpStatus().getCode(),
+                code.getReasonHttpStatus().getMessage(),
+                result);
+    }
+
 
     public static <T> BaseResponse<T> onFailure(String code, String message, T data) {
         return new BaseResponse<>(false, code, message, data);

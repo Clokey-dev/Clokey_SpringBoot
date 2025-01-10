@@ -1,5 +1,6 @@
 package com.clokey.server.domain.model;
 
+import com.clokey.server.domain.model.enums.NotificationType;
 import com.clokey.server.domain.model.enums.ReadStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,6 +25,9 @@ public class Notification extends BaseEntity {
 
     @Column(nullable = false, length = 50)
     private String content;
+
+    @Column(nullable = false)
+    private NotificationType notificationType;
 
     @Column(columnDefinition = "VARCHAR(15) DEFAULT 'NOT_READ'",nullable = false)
     private ReadStatus readStatus;

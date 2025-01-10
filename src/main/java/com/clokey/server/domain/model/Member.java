@@ -1,8 +1,7 @@
 package com.clokey.server.domain.model;
 
 import com.clokey.server.domain.model.enums.Visibility;
-import com.clokey.server.domain.model.mapping.MemberFollow;
-import com.clokey.server.domain.model.mapping.MemberAgree;
+import com.clokey.server.domain.model.mapping.MemberTerm;
 import com.clokey.server.domain.model.enums.MemberStatus;
 import com.clokey.server.domain.model.enums.SocialType;
 import com.clokey.server.domain.model.mapping.MemberLike;
@@ -32,7 +31,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(unique=true)
+    @Column(length = 30)
     private String nickname;
 
     @Column(unique=true)
@@ -59,13 +58,10 @@ public class Member extends BaseEntity {
 
     //필요한 양방향 매핑을 제외하고 삭제해주세요.
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<MemberAgree> memberAgreeList = new ArrayList<>();
+    private List<MemberTerm> memberTermList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberLike> memberLikeList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "following", cascade = CascadeType.ALL)
-    private List<MemberFollow> memberFollowList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Cloth> clothList = new ArrayList<>();
