@@ -39,6 +39,7 @@ public enum ErrorStatus implements BaseErrorCode {
     NO_SUCH_FOLDER(HttpStatus.BAD_REQUEST,"FOLDER_4001","존재하지 않는 폴더 ID입니다."),
     FOLDER_NAME_INVALID(HttpStatus.BAD_REQUEST,"FOLDER_4002","잘못된 폴더 이름입니다."),
     NO_SUCH_CLOTH_IN_FOLDER(HttpStatus.BAD_REQUEST,"FOLDER_4003","폴더에 존재하는 옷이 아닙니다."),
+    FAILED_TO_DELETE_FOLDER(HttpStatus.BAD_REQUEST,"FOLDER_4004","폴더 삭제에 실패했습니다."),
 
     //카테고리 에러
     NO_SUCH_CATEGORY(HttpStatus.BAD_REQUEST,"CATEGORY_4001","존재하지 않는 카테고리 ID입니다."),
