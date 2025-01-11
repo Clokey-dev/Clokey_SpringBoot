@@ -31,7 +31,8 @@ public class HistoryRestController {
     private final HashtagHistoryRepositoryService hashtagHistoryRepositoryService;
     private final MemberLikeRepositoryService memberLikeRepositoryService;
 
-    //임시로 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
+    //임시로 엔드 포인트 맨 뒤에 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
+    //이유는 isLiked를 확인해야 하기 때문입니다. ㅠ ㅠ
     @GetMapping("/daily/{history_id}/{member_id}")
     @Operation(summary = "특정 일의 기록을 확인할 수 있는 API",description = "path variable로 history_id를 넘겨주세요.")
     @ApiResponses({
@@ -44,7 +45,7 @@ public class HistoryRestController {
     public BaseResponse<HistoryResponseDto.dayViewResult> getDaily(@PathVariable Long history_id, @PathVariable Long member_id) {
 
         List<String> imageUrl = historyImageRepositoryService.getHistoryImageUrls(history_id);
-        List<String> hashtags = hashtagHistoryRepositoryService.getHistoryHashtagIds(history_id);
+        List<String> hashtags = hashtagHistoryRepositoryService.getHistoryHashtags(history_id);
         int likeCount = memberLikeRepositoryService.countLikesOfHistory(history_id);
         boolean isLiked = memberLikeRepositoryService.memberLikedHistory(member_id,history_id);
         History history = historyRepositoryService.getHistoryById(history_id);
