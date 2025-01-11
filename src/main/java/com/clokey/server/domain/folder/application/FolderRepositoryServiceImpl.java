@@ -20,4 +20,9 @@ public class FolderRepositoryServiceImpl implements FolderRepositoryService{
     public void saveFolder(Folder folder) {
         folderRepository.save(folder);
     }
+
+    @Override
+    public void deleteFolder(Long folderId) {
+        folderRepository.deleteById(folderId);
+    }
 }

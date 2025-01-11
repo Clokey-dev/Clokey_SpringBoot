@@ -6,4 +6,5 @@ public interface FolderRepositoryService {
 
     boolean folderExist(Long folderId);
     void saveFolder(Folder folder);
+    void deleteFolder(Long folderId);
 }
