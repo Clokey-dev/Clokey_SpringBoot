@@ -24,7 +24,7 @@ public class BaseResponse<T> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T result;
 
-    public static <T> BaseResponse<T> onSucesss(BaseCode code, T result) {
+    public static <T> BaseResponse<T> onSuccess(BaseCode code, T result) {
         return new BaseResponse<>(
                 true,
                 code.getReasonHttpStatus().getCode(),
@@ -35,7 +35,7 @@ public class BaseResponse<T> {
     public static <T> BaseResponse<T> onFailure(BaseErrorCode code, T result) {
         return new BaseResponse<>(
                 false,
-                ErrorStatus._BAD_REQUEST.getCode(),
+                code.getReasonHttpStatus().getCode(),
                 code.getReasonHttpStatus().getMessage(),
                 result);
     }
