@@ -17,10 +17,11 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @DynamicUpdate
 @DynamicInsert
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 public class Member extends BaseEntity {
 

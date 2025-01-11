@@ -32,7 +32,7 @@ public class SecurityConfig {
             "/actuator/prometheus",
             "/ws/**",
             "/topic/**",
-            "**/**"
+            "/**"
     };
 
     @Bean
