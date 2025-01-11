@@ -6,9 +6,10 @@ import com.clokey.server.domain.MemberLike.application.MemberLikeRepositoryServi
 import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
 import com.clokey.server.domain.history.dto.HistoryResponseDto;
+import com.clokey.server.domain.history.exception.annotation.HistoryExist;
+import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.model.History;
-import com.clokey.server.domain.model.enums.Visibility;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.code.status.SuccessStatus;
@@ -19,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +31,7 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/histories")
+@Validated
 public class HistoryRestController {
 
     private final HistoryImageRepositoryService historyImageRepositoryService;
@@ -36,6 +39,7 @@ public class HistoryRestController {
     private final HashtagHistoryRepositoryService hashtagHistoryRepositoryService;
     private final MemberLikeRepositoryService memberLikeRepositoryService;
     private final MemberRepositoryService memberRepositoryService;
+    private final HistoryAccessibleValidator historyAccessibleValidator;
 
     //임시로 엔드 포인트 맨 뒤에 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
     //이유는 isLiked를 확인해야 하기 때문입니다. ㅠ ㅠ
@@ -43,31 +47,15 @@ public class HistoryRestController {
     @Operation(summary = "특정 일의 기록을 확인할 수 있는 API",description = "path variable로 history_id를 넘겨주세요.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200",description = "OK, 성공적으로 조회되었습니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_4002", description = "존재하지 않는 기록ID 입니다.",content = @Content(schema = @Schema(implementation = ApiResponse.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_4006", description = "기록에 접근 권한이 없습니다.",content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @Parameters({
             @Parameter(name = "historyId", description = "기록의 id, path variable 입니다.")
     })
-    public BaseResponse<HistoryResponseDto.dayViewResult> getDaily(@PathVariable Long historyId, @PathVariable Long memberId) {
+    public BaseResponse<HistoryResponseDto.dayViewResult> getDaily(@PathVariable @Valid @HistoryExist Long historyId, @PathVariable Long memberId) {
 
-        //validation 임시 처리
+        historyAccessibleValidator.validateHistoryAccess(historyId,memberId);
+
         Optional<History> history = historyRepositoryService.getHistoryById(historyId);
-
-        //존재하지 않는 history
-        if (history.isEmpty()){
-            return BaseResponse.onFailure(ErrorStatus.NO_SUCH_HISTORY,null);
-        }
-
-        //내가 올린 history가 아니고 비공개인 경우
-        boolean isPrivate = history.get().getVisibility().equals(Visibility.PRIVATE);
-        boolean isNotMyHistory = !history.get().getMember().getId().equals(memberId);
-
-        if(isPrivate && isNotMyHistory) {
-            return BaseResponse.onFailure(ErrorStatus.NO_PERMISSION_TO_ACCESS_HISTORY,null);
-        }
-
-
         List<String> imageUrl = historyImageRepositoryService.getHistoryImageUrls(historyId);
         List<String> hashtags = hashtagHistoryRepositoryService.getHistoryHashtags(historyId);
         int likeCount = memberLikeRepositoryService.countLikesOfHistory(historyId);
