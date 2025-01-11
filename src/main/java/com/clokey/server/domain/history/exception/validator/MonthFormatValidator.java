@@ -27,7 +27,7 @@ public class MonthFormatValidator implements ConstraintValidator<MonthFormat, St
 
         if (!isValid) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(ErrorStatus.NO_SUCH_HISTORY.toString()).addConstraintViolation();
+            context.buildConstraintViolationWithTemplate(ErrorStatus.DATE_INVALID.toString()).addConstraintViolation();
         }
 
         return isValid;
