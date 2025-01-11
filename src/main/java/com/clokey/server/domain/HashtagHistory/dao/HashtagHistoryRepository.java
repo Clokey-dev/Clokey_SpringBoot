@@ -11,6 +11,6 @@ public interface HashtagHistoryRepository extends JpaRepository<HashtagHistory, 
 
     boolean existsByHistory_Id(Long historyId);
 
-    List<Hashtag> findByHistory_Id(Long historyId);
+    List<HashtagHistory> findByHistory_Id(Long historyId);
 
 }

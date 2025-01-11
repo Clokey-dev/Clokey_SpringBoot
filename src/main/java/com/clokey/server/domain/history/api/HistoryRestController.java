@@ -44,7 +44,7 @@ public class HistoryRestController {
     public BaseResponse<HistoryResponseDto.dayViewResult> getDaily(@PathVariable Long history_id, @PathVariable Long member_id) {
 
         List<String> imageUrl = historyImageRepositoryService.getHistoryImageUrls(history_id);
-        List<String> hashtags = hashtagHistoryRepositoryService.getHistoryHashtags(history_id);
+        List<String> hashtags = hashtagHistoryRepositoryService.getHistoryHashtagIds(history_id);
         int likeCount = memberLikeRepositoryService.countLikesOfHistory(history_id);
         boolean isLiked = memberLikeRepositoryService.memberLikedHistory(member_id,history_id);
         History history = historyRepositoryService.getHistoryById(history_id);
