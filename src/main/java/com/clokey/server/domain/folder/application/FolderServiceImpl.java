@@ -2,9 +2,11 @@ package com.clokey.server.domain.folder.application;
 
 import com.clokey.server.domain.folder.converter.FolderConverter;
 import com.clokey.server.domain.folder.dto.FolderRequest;
+import com.clokey.server.domain.folder.exception.FolderDeleteException;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.model.Folder;
 import com.clokey.server.domain.model.Member;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -27,4 +29,19 @@ public class FolderServiceImpl implements FolderService {
         folderRepositoryService.saveFolder(newFolder);
         return newFolder;
     }
+
+    @Override
+    public void deleteFolder(Long folderId) {
+        try {
+            folderRepositoryService.deleteFolder(folderId);
+        } catch (Exception ex) {
+            throw new FolderDeleteException(ErrorStatus.FAILED_TO_DELETE_FOLDER);
+        }
+    }
+
+    @Override
+    public boolean folderExist(Long folderId) {
+        return folderRepositoryService.folderExist(folderId);
+    }
+
 }
