@@ -29,7 +29,7 @@ public class FolderController {
     @Operation(summary = "폴더 삭제 API", description = "폴더 삭제하는 API입니다.")
     @DeleteMapping("/folders/{folderId}")
     public BaseResponse<String> deleteFolder(@PathVariable Long folderId) {
-        if(folderService.folderExist(folderId)){
+        if(!folderService.folderExist(folderId)){
             return BaseResponse.onFailure(ErrorStatus.NO_SUCH_FOLDER, null);
         }
         folderService.deleteFolder(folderId);
