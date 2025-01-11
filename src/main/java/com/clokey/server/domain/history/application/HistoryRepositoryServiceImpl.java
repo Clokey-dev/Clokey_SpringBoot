@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,8 +27,8 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
 
     //validation 처리할 때 해결.
     @Override
-    public History getHistoryById(Long historyId) {
-        return historyRepository.findById(historyId).get();
+    public Optional<History> getHistoryById(Long historyId) {
+        return historyRepository.findById(historyId);
     }
 
     @Override

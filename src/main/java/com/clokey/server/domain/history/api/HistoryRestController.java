@@ -7,7 +7,9 @@ import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
 import com.clokey.server.domain.history.dto.HistoryResponseDto;
 import com.clokey.server.domain.model.History;
+import com.clokey.server.domain.model.enums.Visibility;
 import com.clokey.server.global.common.response.BaseResponse;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,9 +19,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,7 +37,7 @@ public class HistoryRestController {
 
     //임시로 엔드 포인트 맨 뒤에 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
     //이유는 isLiked를 확인해야 하기 때문입니다. ㅠ ㅠ
-    @GetMapping("/daily/{history_id}/{member_id}")
+    @GetMapping("/daily/{historyId}/{memberId}")
     @Operation(summary = "특정 일의 기록을 확인할 수 있는 API",description = "path variable로 history_id를 넘겨주세요.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200",description = "OK, 성공적으로 조회되었습니다."),
@@ -42,15 +46,31 @@ public class HistoryRestController {
     @Parameters({
             @Parameter(name = "history_id", description = "기록의 id, path variable 입니다.")
     })
-    public BaseResponse<HistoryResponseDto.dayViewResult> getDaily(@PathVariable Long history_id, @PathVariable Long member_id) {
+    public BaseResponse<HistoryResponseDto.dayViewResult> getDaily(@PathVariable Long historyId, @PathVariable Long memberId) {
 
-        List<String> imageUrl = historyImageRepositoryService.getHistoryImageUrls(history_id);
-        List<String> hashtags = hashtagHistoryRepositoryService.getHistoryHashtags(history_id);
-        int likeCount = memberLikeRepositoryService.countLikesOfHistory(history_id);
-        boolean isLiked = memberLikeRepositoryService.memberLikedHistory(member_id,history_id);
-        History history = historyRepositoryService.getHistoryById(history_id);
+        //validation 임시 처리
+        Optional<History> history = historyRepositoryService.getHistoryById(historyId);
 
-        return BaseResponse.onSucesss(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toDayViewResult(history,imageUrl,hashtags,likeCount,isLiked));
+        //존재하지 않는 history
+        if (history.isEmpty()){
+            return BaseResponse.onFailure(ErrorStatus.NO_SUCH_HISTORY,null);
+        }
+
+        //내가 올린 history가 아니고 비공개인 경우
+        boolean isPrivate = history.get().getVisibility().equals(Visibility.PRIVATE);
+        boolean isNotMyHistory = !history.get().getMember().getId().equals(memberId);
+
+        if(isPrivate && isNotMyHistory) {
+            return BaseResponse.onFailure(ErrorStatus.NO_PERMISSION_TO_ACCESS_HISTORY,null);
+        }
+
+
+        List<String> imageUrl = historyImageRepositoryService.getHistoryImageUrls(historyId);
+        List<String> hashtags = hashtagHistoryRepositoryService.getHistoryHashtags(historyId);
+        int likeCount = memberLikeRepositoryService.countLikesOfHistory(historyId);
+        boolean isLiked = memberLikeRepositoryService.memberLikedHistory(memberId, historyId);
+
+        return BaseResponse.onSucesss(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toDayViewResult(history.get(),imageUrl,hashtags,likeCount,isLiked));
     }
 
     // 권한이 없는 경우를 추가해야함.

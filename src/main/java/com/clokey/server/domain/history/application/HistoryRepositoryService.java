@@ -3,12 +3,13 @@ package com.clokey.server.domain.history.application;
 import com.clokey.server.domain.model.History;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface HistoryRepositoryService {
 
     boolean historyExist(Long historyId);
 
-    History getHistoryById(Long historyId);
+    Optional<History> getHistoryById(Long historyId);
 
     boolean isPublic(Long historyId);
 
