@@ -6,6 +6,7 @@ import com.clokey.server.domain.folder.exception.FolderDeleteException;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.model.Folder;
 import com.clokey.server.domain.model.Member;
+import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
@@ -32,6 +33,9 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public void deleteFolder(Long folderId) {
+        if(!folderExist(folderId)){
+            throw new FolderDeleteException(ErrorStatus.NO_SUCH_FOLDER);
+        }
         try {
             folderRepositoryService.deleteFolder(folderId);
         } catch (Exception ex) {

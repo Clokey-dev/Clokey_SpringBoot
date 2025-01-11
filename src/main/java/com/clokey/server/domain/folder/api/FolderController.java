@@ -23,16 +23,13 @@ public class FolderController {
     public BaseResponse<FolderResponse.FolderIdDTO> createFolder(@RequestParam Long memberId,
                                                        @RequestBody FolderRequest.FolderCreateRequest request) {
         FolderResponse.FolderIdDTO response = FolderConverter.toFolderIdDTO(folderService.createFolder(memberId, request));
-        return BaseResponse.onSucesss(SuccessStatus.FOLDER_CREATED, response);
+        return BaseResponse.onSuccess(SuccessStatus.FOLDER_CREATED, response);
     }
 
     @Operation(summary = "폴더 삭제 API", description = "폴더 삭제하는 API입니다.")
     @DeleteMapping("/folders/{folderId}")
     public BaseResponse<String> deleteFolder(@PathVariable Long folderId) {
-        if(!folderService.folderExist(folderId)){
-            return BaseResponse.onFailure(ErrorStatus.NO_SUCH_FOLDER, null);
-        }
         folderService.deleteFolder(folderId);
-        return BaseResponse.onSucesss(SuccessStatus.FOLDER_DELETED, null);
+        return BaseResponse.onSuccess(SuccessStatus.FOLDER_DELETED, null);
     }
 }
