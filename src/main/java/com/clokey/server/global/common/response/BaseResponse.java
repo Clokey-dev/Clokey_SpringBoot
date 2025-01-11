@@ -2,6 +2,7 @@ package com.clokey.server.global.common.response;
 
 import com.clokey.server.global.error.code.BaseCode;
 import com.clokey.server.global.error.code.BaseErrorCode;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -34,7 +35,7 @@ public class BaseResponse<T> {
     public static <T> BaseResponse<T> onFailure(BaseErrorCode code, T result) {
         return new BaseResponse<>(
                 false,
-                code.getReasonHttpStatus().getCode(),
+                ErrorStatus._BAD_REQUEST.getCode(),
                 code.getReasonHttpStatus().getMessage(),
                 result);
     }
