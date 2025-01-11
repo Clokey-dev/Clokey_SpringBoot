@@ -44,6 +44,7 @@ public class HistoryRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200",description = "OK, 성공적으로 조회되었습니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_4002", description = "존재하지 않는 기록ID 입니다.",content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_4006", description = "기록에 접근 권한이 없습니다.",content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @Parameters({
             @Parameter(name = "historyId", description = "기록의 id, path variable 입니다.")
@@ -82,6 +83,7 @@ public class HistoryRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200",description = "성공적으로 조회되었습니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_4002", description = "존재하지 않는 기록ID 입니다.",content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_4001", description = "잘못된 날짜 형식입니다.",content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @Parameters({
             @Parameter(name = "memberId", description = "조회하고자 하는 memberId, 빈칸 입력시 현재 유저를 기준으로 합니다."),
@@ -99,6 +101,8 @@ public class HistoryRestController {
         if(!memberRepositoryService.memberExist(searchMemberId)) {
             return BaseResponse.onFailure(ErrorStatus.NO_SUCH_MEMBER,null);
         }
+
+        //month 형식의 validation 구현 예정. 우선 생략
 
 
         List<History> histories = historyRepositoryService.getMemberHistoryByYearMonth(searchMemberId, month);
