@@ -1,11 +1,9 @@
-package com.clokey.server.domain.history.application;
+package com.clokey.server.domain.history.converter;
 
 import com.clokey.server.domain.history.dto.HistoryResponseDto;
 import com.clokey.server.domain.model.History;
 import com.clokey.server.domain.model.enums.Visibility;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 

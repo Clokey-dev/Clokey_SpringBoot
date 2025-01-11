@@ -3,7 +3,7 @@ package com.clokey.server.domain.history.api;
 import com.clokey.server.domain.HashtagHistory.application.HashtagHistoryRepositoryService;
 import com.clokey.server.domain.HistoryImage.application.HistoryImageRepositoryService;
 import com.clokey.server.domain.MemberLike.application.MemberLikeRepositoryService;
-import com.clokey.server.domain.history.application.HistoryConverter;
+import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
 import com.clokey.server.domain.history.dto.HistoryResponseDto;
 import com.clokey.server.domain.model.History;
@@ -19,7 +19,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
