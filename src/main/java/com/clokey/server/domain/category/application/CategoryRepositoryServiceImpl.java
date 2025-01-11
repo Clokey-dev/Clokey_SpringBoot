@@ -18,6 +18,12 @@ public class CategoryRepositoryServiceImpl implements CategoryRepositoryService{
     private final CategoryConverter categoryConverter;
 
     @Override
+    public boolean categoryExist(Long categoryId) {
+
+        return categoryRepository.existsById(categoryId);
+    }
+
+    @Override
     public List<CategoryResponseDTO> getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
         return categories.stream()

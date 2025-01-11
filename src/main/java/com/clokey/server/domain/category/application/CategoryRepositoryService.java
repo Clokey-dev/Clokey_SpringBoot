@@ -6,4 +6,7 @@ import java.util.List;
 
 public interface CategoryRepositoryService {
 
-    List<CategoryResponseDTO> getAllCategories();}
+    boolean categoryExist(Long categoryId);
+
+    List<CategoryResponseDTO> getAllCategories();
+}
