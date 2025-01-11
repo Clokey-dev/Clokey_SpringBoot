@@ -7,8 +7,10 @@ import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
 import com.clokey.server.domain.history.dto.HistoryResponseDto;
 import com.clokey.server.domain.history.exception.annotation.HistoryExist;
+import com.clokey.server.domain.history.exception.annotation.MonthFormat;
 import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
+import com.clokey.server.domain.member.exception.annotation.MemberExist;
 import com.clokey.server.domain.model.History;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.ErrorStatus;
@@ -53,7 +55,8 @@ public class HistoryRestController {
     })
     public BaseResponse<HistoryResponseDto.dayViewResult> getDaily(@PathVariable @Valid @HistoryExist Long historyId, @PathVariable Long memberId) {
 
-        historyAccessibleValidator.validateHistoryAccess(historyId,memberId);
+        //멤버가 기록에 대해서 접근 권한이 있는지 확인합니다.
+        historyAccessibleValidator.validateHistoryAccessOfMember(historyId,memberId);
 
         Optional<History> history = historyRepositoryService.getHistoryById(historyId);
         List<String> imageUrl = historyImageRepositoryService.getHistoryImageUrls(historyId);
@@ -64,39 +67,34 @@ public class HistoryRestController {
         return BaseResponse.onSucesss(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toDayViewResult(history.get(),imageUrl,hashtags,likeCount,isLiked));
     }
 
-    // 권한이 없는 경우를 추가해야함. -> 월의 볼 수 있는 경우와 그렇지 않은 경우가 섞여있다면? 하... ㅠ
     //임시로 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
+    //결국 자신의 기록을 보는지 확인하기 위해 MemberId 쿼리 파라미터는 필수적으로 받아야합니다.
     @GetMapping("/monthly/{this_member_id}/")
     @Operation(summary = "특정 멤버의 특정 월의 기록을 확인할 수 있는 API",description = "query parameter로 member_id와 month를 입력해주세요(YYYY-MM) 형태.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200",description = "성공적으로 조회되었습니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_4002", description = "존재하지 않는 기록ID 입니다.",content = @Content(schema = @Schema(implementation = ApiResponse.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_4001", description = "잘못된 날짜 형식입니다.",content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @Parameters({
             @Parameter(name = "memberId", description = "조회하고자 하는 memberId, 빈칸 입력시 현재 유저를 기준으로 합니다."),
             @Parameter(name = "month", description = "조회하고자 하는 월입니다. YYYY-MM 형식으로 입력해주세요.")
     })
     public BaseResponse<HistoryResponseDto.monthViewResult> getMonthlyHistories(@PathVariable Long this_member_id,
-            @RequestParam(value = "memberId", required = false) Long memberId,
-            @RequestParam(value = "month") String month) {
+            @RequestParam(value = "memberId") @Valid @MemberExist Long memberId,
+            @RequestParam(value = "month") @Valid @MonthFormat String month) {
 
-        //memberId가 null 이라면 this_member_id 즉 지금 이용자의 Id를 기준으로 찾습니다.
-        Long searchMemberId = (memberId != null) ? memberId : this_member_id;
+        //멤버 자체에 대한 접근 권한 확인.
+        historyAccessibleValidator.validateMemberAccessOfMember(memberId,this_member_id);
 
-        //임시 validation
-        // 존재 하지 않는 멤버인 경우.
-        if(!memberRepositoryService.memberExist(searchMemberId)) {
-            return BaseResponse.onFailure(ErrorStatus.NO_SUCH_MEMBER,null);
-        }
-
-        //month 형식의 validation 구현 예정. 우선 생략
-
-
-        List<History> histories = historyRepositoryService.getMemberHistoryByYearMonth(searchMemberId, month);
+        List<History> histories = historyRepositoryService.getMemberHistoryByYearMonth(memberId, month);
         List<String> historyImageUrls = historyRepositoryService.getFirstImageUrlsOfHistory(histories);
 
-        return BaseResponse.onSucesss(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toMonthViewResult(searchMemberId,histories,historyImageUrls));
+        //나의 기록 열람은 공개 범위와 상관없이 모두 열람 가능합니다.
+        if(this_member_id.equals(memberId)) {
+            return BaseResponse.onSucesss(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toAllMonthViewResult(memberId,histories,historyImageUrls));
+        }
+
+        //다른 멤버 기록 열람시 PUBLIC 기록만을 모아줍니다.
+        return BaseResponse.onSucesss(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toPublicMonthViewResult(memberId,histories,historyImageUrls));
     }
 
 

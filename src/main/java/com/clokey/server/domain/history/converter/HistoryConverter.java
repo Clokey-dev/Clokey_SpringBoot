@@ -22,7 +22,32 @@ public class HistoryConverter {
                 .build();
     }
 
-    public static HistoryResponseDto.monthViewResult toMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
+    public static HistoryResponseDto.monthViewResult toPublicMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
+
+        List<HistoryResponseDto.historyResult> historyResults = new ArrayList<>();
+
+        for (int i = 0; i < histories.size(); i++) {
+            History history = histories.get(i);
+
+            String historyImageUrl;
+
+            //공개된 경우 사진 URL을 가져오고 아닌 경우 "비공개입니다"를 반환합니다.
+            if (history.getVisibility().equals(Visibility.PUBLIC)){
+                historyImageUrl = historyFirstImageUrls.get(i);
+            } else {
+                historyImageUrl = "비공개입니다";
+            }
+
+            historyResults.add(toHistoryResult(history, historyImageUrl));
+        }
+
+        return HistoryResponseDto.monthViewResult.builder()
+                .userId(memberId)
+                .histories(historyResults)
+                .build();
+    }
+
+    public static HistoryResponseDto.monthViewResult toAllMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
 
         List<HistoryResponseDto.historyResult> historyResults = new ArrayList<>();
 
