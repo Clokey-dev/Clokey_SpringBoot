@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class FolderRepositoryImpl implements FolderRepositoryService{
+public class FolderRepositoryServiceImpl implements FolderRepositoryService{
 
     private final FolderRepository folderRepository;
 
