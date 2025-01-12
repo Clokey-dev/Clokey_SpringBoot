@@ -1,19 +1,15 @@
 package com.clokey.server.domain.term.application;
 
-
-import com.clokey.server.domain.MemberTerm.dao.MemberTermRepository;
-import com.clokey.server.domain.member.dao.MemberRepository;
+import com.clokey.server.domain.MemberTerm.application.MemberTermRepositoryService;
+import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.model.Member;
 import com.clokey.server.domain.model.Term;
 import com.clokey.server.domain.model.mapping.MemberTerm;
-import com.clokey.server.domain.term.converter.TermConverter;
-import com.clokey.server.domain.term.dao.TermRepository;
 import com.clokey.server.domain.term.dto.TermRequestDTO;
 import com.clokey.server.domain.term.dto.TermResponseDTO;
 import com.clokey.server.domain.term.exception.TermException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.ErrorState;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,22 +20,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TermCommandServiceImpl implements TermCommandService {
 
-    private final MemberRepository memberRepository;
-    private final TermRepository termRepository;
-    private final MemberTermRepository memberTermRepository;
+    private final MemberRepositoryService memberRepositoryService;
+    private final TermRepositoryService termRepositoryService;
+    private final MemberTermRepositoryService memberTermRepositoryService;
 
     @Override
     @Transactional
     public TermResponseDTO joinTerm(Long userId, TermRequestDTO.JoinDto request) {
-        // 사용자 정보 확인
-        Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new TermException(ErrorStatus.NO_SUCH_MEMBER));
+        // 사용자 조회
+        Member member = memberRepositoryService.findMemberById(userId);
 
         // 약관 처리
         List<TermResponseDTO.TermDto> termResponses = new ArrayList<>();
         for (TermRequestDTO.JoinDto.TermDto termDto : request.getTerms()) {
-            Term term = termRepository.findById(termDto.getTermId())
-                    .orElseThrow(() -> new TermException(ErrorStatus.NO_SUCH_TERM));
+            // 약관 조회 (이미 존재 여부는 확인된 상태)
+            Term term = termRepositoryService.findById(termDto.getTermId());
 
             // 필수 약관 확인
             if (!term.getOptional() && !termDto.getAgreed()) {
@@ -52,7 +47,7 @@ public class TermCommandServiceImpl implements TermCommandService {
                     .term(term)
                     .build();
 
-            memberTermRepository.save(memberTerm);
+            memberTermRepositoryService.saveMemberTerm(memberTerm);
 
             // 응답 데이터에 추가
             termResponses.add(TermResponseDTO.TermDto.builder()
@@ -68,4 +63,3 @@ public class TermCommandServiceImpl implements TermCommandService {
                 .build();
     }
 }
-
