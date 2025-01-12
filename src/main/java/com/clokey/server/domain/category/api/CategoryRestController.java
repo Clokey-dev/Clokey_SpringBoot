@@ -1,5 +1,6 @@
 package com.clokey.server.domain.category.api;
 
+import com.clokey.server.domain.category.application.CategoryQueryService;
 import com.clokey.server.domain.category.application.CategoryRepositoryService;
 import com.clokey.server.domain.category.dto.CategoryResponseDTO;
 import com.clokey.server.global.common.response.BaseResponse;
@@ -16,9 +17,9 @@ import java.util.List;
 @RequestMapping("/categories")
 public class CategoryRestController {
 
-    private final CategoryRepositoryService categoryService;
+    private final CategoryQueryService categoryService;
 
-    public CategoryRestController(CategoryRepositoryService categoryService) {
+    public CategoryRestController(CategoryQueryService categoryService) {
         this.categoryService = categoryService;
     }
 
