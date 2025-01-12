@@ -1,7 +1,6 @@
 package com.clokey.server.domain.member.application;
 
 import com.clokey.server.domain.member.converter.ProfileConverter;
-import com.clokey.server.domain.member.dao.MemberRepository;
 import com.clokey.server.domain.member.dto.ProfileRequestDTO;
 import com.clokey.server.domain.member.dto.ProfileResponseDTO;
 import com.clokey.server.domain.member.exception.MemberException;
@@ -11,19 +10,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Service
 @RequiredArgsConstructor
 public class ProfileCommandServiceImpl implements ProfileCommandService {
 
-    private final MemberRepository memberRepository;
+    private final MemberRepositoryService memberRepositoryService;
 
     @Override
     @Transactional
     public ProfileResponseDTO.ProfileRPDTO updateProfile(Long userId, ProfileRequestDTO.ProfileRQDTO request) {
         // 사용자 확인
-        Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new MemberException(ErrorStatus.NO_SUCH_MEMBER));
+        Member member = memberRepositoryService.findMemberById(userId);
 
         if (request.getNickname() == null || request.getNickname().trim().isEmpty()) {
             throw new MemberException(ErrorStatus.ESSENTIAL_INPUT_REQUIRED);
@@ -40,7 +37,7 @@ public class ProfileCommandServiceImpl implements ProfileCommandService {
         member.setBio(request.getBio());
 
         // 저장
-        Member updatedMember = memberRepository.save(member);
+        Member updatedMember = memberRepositoryService.saveMember(member);
 
         // 응답 생성
         return ProfileConverter.toProfileRPDTO(updatedMember);
