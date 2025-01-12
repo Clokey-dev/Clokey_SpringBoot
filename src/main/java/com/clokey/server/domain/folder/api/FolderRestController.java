@@ -4,18 +4,15 @@ import com.clokey.server.domain.folder.application.FolderService;
 import com.clokey.server.domain.folder.converter.FolderConverter;
 import com.clokey.server.domain.folder.dto.FolderRequest;
 import com.clokey.server.domain.folder.dto.FolderResponse;
-import com.clokey.server.domain.folder.exception.FolderDeleteException;
 import com.clokey.server.global.common.response.BaseResponse;
-import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-public class FolderController {
+public class FolderRestController {
     private final FolderService folderService;
 
     @Operation(summary = "폴더 생성 API", description = "폴더 생성하는 API입니다.")
