@@ -25,7 +25,7 @@ public class ProfileRestController {
 
         ProfileResponseDTO.ProfileRPDTO response = profileCommandService.updateProfile(userId, request);
 
-        return BaseResponse.onSuccess(SuccessStatus.MEMBER_CREATED, response);
+        return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_SUCCESS, response);
     }
 }
 
