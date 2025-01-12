@@ -5,4 +5,6 @@ import com.clokey.server.domain.model.Folder;
 
 public interface FolderService {
     Folder createFolder(Long memberId, FolderRequest.FolderCreateRequest request);
+    void deleteFolder(Long folderId);
+    boolean folderExist(Long folderId);
 }

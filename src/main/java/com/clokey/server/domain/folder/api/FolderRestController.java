@@ -7,16 +7,12 @@ import com.clokey.server.domain.folder.dto.FolderResponse;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-public class FolderController {
+public class FolderRestController {
     private final FolderService folderService;
 
     @Operation(summary = "폴더 생성 API", description = "폴더 생성하는 API입니다.")
@@ -24,6 +20,13 @@ public class FolderController {
     public BaseResponse<FolderResponse.FolderIdDTO> createFolder(@RequestParam Long memberId,
                                                        @RequestBody FolderRequest.FolderCreateRequest request) {
         FolderResponse.FolderIdDTO response = FolderConverter.toFolderIdDTO(folderService.createFolder(memberId, request));
-        return BaseResponse.onSucesss(SuccessStatus.FOLDER_CREATED, response);
+        return BaseResponse.onSuccess(SuccessStatus.FOLDER_CREATED, response);
+    }
+
+    @Operation(summary = "폴더 삭제 API", description = "폴더 삭제하는 API입니다.")
+    @DeleteMapping("/folders/{folderId}")
+    public BaseResponse<String> deleteFolder(@PathVariable Long folderId) {
+        folderService.deleteFolder(folderId);
+        return BaseResponse.onSuccess(SuccessStatus.FOLDER_DELETED, null);
     }
 }
