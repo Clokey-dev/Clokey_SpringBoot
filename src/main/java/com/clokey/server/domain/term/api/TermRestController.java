@@ -31,7 +31,7 @@ public class TermRestController {
         TermResponseDTO response = termCommandService.joinTerm(userId, request);
 
         // 성공 응답 반환
-        return BaseResponse.onSuccess(SuccessStatus.MEMBER_CREATED, response);
+        return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_CREATED, response);
     }
 }
 
