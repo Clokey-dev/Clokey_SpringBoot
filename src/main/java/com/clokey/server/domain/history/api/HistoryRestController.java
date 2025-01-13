@@ -44,7 +44,6 @@ public class HistoryRestController {
     private final HistoryAccessibleValidator historyAccessibleValidator;
 
     //임시로 엔드 포인트 맨 뒤에 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
-    //이유는 isLiked를 확인해야 하기 때문입니다. ㅠ ㅠ
     @GetMapping("/daily/{historyId}/{memberId}")
     @Operation(summary = "특정 일의 기록을 확인할 수 있는 API",description = "path variable로 history_id를 넘겨주세요.")
     @ApiResponses({
@@ -64,7 +63,7 @@ public class HistoryRestController {
         int likeCount = memberLikeRepositoryService.countLikesOfHistory(historyId);
         boolean isLiked = memberLikeRepositoryService.memberLikedHistory(memberId, historyId);
 
-        return BaseResponse.onSucesss(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toDayViewResult(history.get(),imageUrl,hashtags,likeCount,isLiked));
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toDayViewResult(history.get(),imageUrl,hashtags,likeCount,isLiked));
     }
 
     //임시로 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
@@ -90,12 +89,14 @@ public class HistoryRestController {
 
         //나의 기록 열람은 공개 범위와 상관없이 모두 열람 가능합니다.
         if(this_member_id.equals(memberId)) {
-            return BaseResponse.onSucesss(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toAllMonthViewResult(memberId,histories,historyImageUrls));
+            return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toAllMonthViewResult(memberId,histories,historyImageUrls));
         }
 
         //다른 멤버 기록 열람시 PUBLIC 기록만을 모아줍니다.
-        return BaseResponse.onSucesss(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toPublicMonthViewResult(memberId,histories,historyImageUrls));
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toPublicMonthViewResult(memberId,histories,historyImageUrls));
     }
+
+
 
 
 

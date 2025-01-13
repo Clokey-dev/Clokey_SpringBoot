@@ -43,7 +43,16 @@ public class HistoryResponseDto {
         LocalDate date;
         String imageUrl;
     }
-}
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class likeResult{
+        Long historyId;
+        boolean isLiked;
+        int likeCount;
+    }
+}
 
 
