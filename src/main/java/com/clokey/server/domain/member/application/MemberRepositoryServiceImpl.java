@@ -22,7 +22,6 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService{
     public Optional<Member> getMember(Long memberId) {
         return memberRepository.findById(memberId);
     }
-
 }
 
 
