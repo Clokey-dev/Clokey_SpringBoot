@@ -1,12 +1,11 @@
 package com.clokey.server.domain.history.dto;
 
+import com.clokey.server.domain.history.exception.annotation.HistoryExist;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.util.List;
 
 public class HistoryRequestDto {
 
@@ -14,8 +13,12 @@ public class HistoryRequestDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class likeOrCancelLikeHistory{
+    public static class likeStatusChange {
+
+        @HistoryExist
         Long historyId;
+
+        @NotNull
         boolean isLiked;
     }
 }
