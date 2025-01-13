@@ -1,6 +1,8 @@
 package com.clokey.server.domain.history.dto;
 
 import com.clokey.server.domain.history.exception.annotation.HistoryExist;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +20,7 @@ public class HistoryRequestDto {
         @HistoryExist
         Long historyId;
 
-        @NotNull
+        @JsonProperty("liked")
         boolean isLiked;
     }
 }
