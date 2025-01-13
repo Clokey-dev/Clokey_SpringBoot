@@ -14,7 +14,7 @@ public class HistoryResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class dayViewResult{
+    public static class DayViewResult {
         Long userId;
         String contents;
         List<String> imageUrl;
@@ -29,20 +29,57 @@ public class HistoryResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class monthViewResult{
+    public static class MonthViewResult {
         Long userId;
-        List<historyResult> histories;
+        List<HistoryResult> histories;
     }
 
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class historyResult{
+    public static class HistoryResult {
         Long historyId;
         LocalDate date;
         String imageUrl;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class HistoryCommentResult {
+        List<CommentResult> comments;
+        int totalPage;
+        int totalElements;
+        boolean isFirst;
+        boolean isLast;
+    }
+
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CommentResult{
+        Long commentId;
+        Long MemberId;
+        String userImageUrl;
+        String content;
+        List<ReplyResult> replyResults;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ReplyResult{
+        Long commentId;
+        Long MemberId;
+        String userImageUrl;
+        String content;
+    }
+
 }
 
 

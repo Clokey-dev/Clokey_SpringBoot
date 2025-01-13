@@ -13,14 +13,10 @@ import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.exception.annotation.MemberExist;
 import com.clokey.server.domain.model.History;
 import com.clokey.server.global.common.response.BaseResponse;
-import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +49,7 @@ public class HistoryRestController {
     @Parameters({
             @Parameter(name = "historyId", description = "기록의 id, path variable 입니다.")
     })
-    public BaseResponse<HistoryResponseDto.dayViewResult> getDaily(@PathVariable @Valid @HistoryExist Long historyId, @PathVariable Long memberId) {
+    public BaseResponse<HistoryResponseDto.DayViewResult> getDaily(@PathVariable @Valid @HistoryExist Long historyId, @PathVariable Long memberId) {
 
         //멤버가 기록에 대해서 접근 권한이 있는지 확인합니다.
         historyAccessibleValidator.validateHistoryAccessOfMember(historyId,memberId);
@@ -64,7 +60,7 @@ public class HistoryRestController {
         int likeCount = memberLikeRepositoryService.countLikesOfHistory(historyId);
         boolean isLiked = memberLikeRepositoryService.memberLikedHistory(memberId, historyId);
 
-        return BaseResponse.onSucesss(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toDayViewResult(history.get(),imageUrl,hashtags,likeCount,isLiked));
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toDayViewResult(history.get(),imageUrl,hashtags,likeCount,isLiked));
     }
 
     //임시로 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
@@ -78,9 +74,9 @@ public class HistoryRestController {
             @Parameter(name = "memberId", description = "조회하고자 하는 memberId, 빈칸 입력시 현재 유저를 기준으로 합니다."),
             @Parameter(name = "month", description = "조회하고자 하는 월입니다. YYYY-MM 형식으로 입력해주세요.")
     })
-    public BaseResponse<HistoryResponseDto.monthViewResult> getMonthlyHistories(@PathVariable Long this_member_id,
-            @RequestParam(value = "memberId") @Valid @MemberExist Long memberId,
-            @RequestParam(value = "month") @Valid @MonthFormat String month) {
+    public BaseResponse<HistoryResponseDto.MonthViewResult> getMonthlyHistories(@PathVariable Long this_member_id,
+                                                                                @RequestParam(value = "memberId") @Valid @MemberExist Long memberId,
+                                                                                @RequestParam(value = "month") @Valid @MonthFormat String month) {
 
         //멤버 자체에 대한 접근 권한 확인.
         historyAccessibleValidator.validateMemberAccessOfMember(memberId,this_member_id);
@@ -90,11 +86,11 @@ public class HistoryRestController {
 
         //나의 기록 열람은 공개 범위와 상관없이 모두 열람 가능합니다.
         if(this_member_id.equals(memberId)) {
-            return BaseResponse.onSucesss(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toAllMonthViewResult(memberId,histories,historyImageUrls));
+            return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toAllMonthViewResult(memberId,histories,historyImageUrls));
         }
 
         //다른 멤버 기록 열람시 PUBLIC 기록만을 모아줍니다.
-        return BaseResponse.onSucesss(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toPublicMonthViewResult(memberId,histories,historyImageUrls));
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toPublicMonthViewResult(memberId,histories,historyImageUrls));
     }
 
 

@@ -9,8 +9,8 @@ import java.util.List;
 
 public class HistoryConverter {
 
-    public static HistoryResponseDto.dayViewResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked) {
-        return HistoryResponseDto.dayViewResult.builder()
+    public static HistoryResponseDto.DayViewResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked) {
+        return HistoryResponseDto.DayViewResult.builder()
                 .userId(history.getMember().getId())
                 .contents(history.getContent())
                 .imageUrl(imageUrl)
@@ -22,9 +22,9 @@ public class HistoryConverter {
                 .build();
     }
 
-    public static HistoryResponseDto.monthViewResult toPublicMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
+    public static HistoryResponseDto.MonthViewResult toPublicMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
 
-        List<HistoryResponseDto.historyResult> historyResults = new ArrayList<>();
+        List<HistoryResponseDto.HistoryResult> HistoryResults = new ArrayList<>();
 
         for (int i = 0; i < histories.size(); i++) {
             History history = histories.get(i);
@@ -38,34 +38,34 @@ public class HistoryConverter {
                 historyImageUrl = "비공개입니다";
             }
 
-            historyResults.add(toHistoryResult(history, historyImageUrl));
+            HistoryResults.add(toHistoryResult(history, historyImageUrl));
         }
 
-        return HistoryResponseDto.monthViewResult.builder()
+        return HistoryResponseDto.MonthViewResult.builder()
                 .userId(memberId)
-                .histories(historyResults)
+                .histories(HistoryResults)
                 .build();
     }
 
-    public static HistoryResponseDto.monthViewResult toAllMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
+    public static HistoryResponseDto.MonthViewResult toAllMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
 
-        List<HistoryResponseDto.historyResult> historyResults = new ArrayList<>();
+        List<HistoryResponseDto.HistoryResult> HistoryResults = new ArrayList<>();
 
         for (int i = 0; i < histories.size(); i++) {
             History history = histories.get(i);
             String historyImageUrl = historyFirstImageUrls.get(i);
 
-            historyResults.add(toHistoryResult(history, historyImageUrl));
+            HistoryResults.add(toHistoryResult(history, historyImageUrl));
         }
 
-        return HistoryResponseDto.monthViewResult.builder()
+        return HistoryResponseDto.MonthViewResult.builder()
                 .userId(memberId)
-                .histories(historyResults)
+                .histories(HistoryResults)
                 .build();
     }
 
-    private static HistoryResponseDto.historyResult toHistoryResult(History history, String historyImageUrl) {
-        return HistoryResponseDto.historyResult.builder()
+    private static HistoryResponseDto.HistoryResult toHistoryResult(History history, String historyImageUrl) {
+        return HistoryResponseDto.HistoryResult.builder()
                 .historyId(history.getId())
                 .date(history.getHistoryDate())
                 .imageUrl(historyImageUrl)
