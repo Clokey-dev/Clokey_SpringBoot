@@ -48,7 +48,7 @@ public enum ErrorStatus implements BaseErrorCode {
     DATE_INVALID(HttpStatus.BAD_REQUEST,"HISTORY_4001","잘못된 날짜 형식입니다."),
     NO_SUCH_HISTORY(HttpStatus.NOT_FOUND,"HISTORY_4002","존재하지 않는 기록 ID입니다."),
     HISTORY_VISIBILITY_INVALID(HttpStatus.BAD_REQUEST,"HISTORY_4003","잘못된 visibility 값을 입력했습니다."),
-    ISLIKED_INVALID(HttpStatus.BAD_REQUEST,"HISTORY_4004","잘못된 isLiked 값을 입력했습니다."),
+    IS_LIKED_INVALID(HttpStatus.BAD_REQUEST,"HISTORY_4004","잘못된 isLiked 값을 입력했습니다."),
     NO_SUCH_COMMENT(HttpStatus.NOT_FOUND,"HISTORY_4005","존재하지 않는 댓글 ID입니다."),
     NO_PERMISSION_TO_ACCESS_HISTORY(HttpStatus.BAD_REQUEST,"HISTORY_4006","기록에 접근 권한이 없습니다."),
 
