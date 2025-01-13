@@ -3,6 +3,9 @@ package com.clokey.server.domain.comment.application;
 import com.clokey.server.domain.comment.dao.CommentRepository;
 import com.clokey.server.domain.model.Comment;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +27,7 @@ public class CommentRepositoryServiceImpl implements CommentRepositoryService{
     }
 
     @Override
-    public List<Comment> getNoneReplyCommentsByHistoryId(Long historyId) {
-        return commentRepository.findByHistoryIdAndCommentIsNull(historyId);
+    public Page<Comment> getNoneReplyCommentsByHistoryId(Long historyId, Integer page) {
+        return commentRepository.findByHistoryIdAndCommentIsNull(historyId, PageRequest.of(page,10,Sort.by(Sort.Direction.ASC, "createdAt")));
     }
 }

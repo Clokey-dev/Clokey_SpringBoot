@@ -1,6 +1,7 @@
 package com.clokey.server.domain.comment.application;
 
 import com.clokey.server.domain.model.Comment;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -10,5 +11,5 @@ public interface CommentRepositoryService {
 
     List<Comment> getRepliesByCommentId(Long commentId);
 
-    List<Comment> getNoneReplyCommentsByHistoryId(Long historyId);
+    Page<Comment> getNoneReplyCommentsByHistoryId(Long historyId, Integer page);
 }
