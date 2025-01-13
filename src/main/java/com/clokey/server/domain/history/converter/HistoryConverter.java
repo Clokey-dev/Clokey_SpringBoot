@@ -94,7 +94,7 @@ public class HistoryConverter {
                     List<Comment> replyList = replies.get(i);
                     return HistoryResponseDto.CommentResult.builder()
                             .commentId(comment.getId())
-                            .MemberId(comment.getMember().getId())
+                            .memberId(comment.getMember().getId())
                             .userImageUrl(comment.getMember().getProfileImageUrl())
                             .content(comment.getContent())
                             .replyResults(toReplyResultList(replyList))

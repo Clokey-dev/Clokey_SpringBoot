@@ -1,5 +1,6 @@
 package com.clokey.server.domain.history.dto;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -61,9 +62,10 @@ public class HistoryResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonPropertyOrder({"commentId", "memberId", "userImageUrl", "content", "replyResults"})
     public static class CommentResult{
         Long commentId;
-        Long MemberId;
+        Long memberId;
         String userImageUrl;
         String content;
         List<ReplyResult> replyResults;

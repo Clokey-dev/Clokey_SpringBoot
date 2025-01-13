@@ -7,6 +7,7 @@ import com.clokey.server.domain.comment.application.CommentRepositoryService;
 import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
 import com.clokey.server.domain.history.dto.HistoryResponseDto;
+import com.clokey.server.domain.history.exception.annotation.CheckPage;
 import com.clokey.server.domain.history.exception.annotation.HistoryExist;
 import com.clokey.server.domain.history.exception.annotation.MonthFormat;
 import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
@@ -19,6 +20,8 @@ import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -95,19 +98,21 @@ public class HistoryRestController {
         //다른 멤버 기록 열람시 PUBLIC 기록만을 모아줍니다.
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toPublicMonthViewResult(memberId,histories,historyImageUrls));
     }
-    @GetMapping("/{history_id}/comments")
+    @GetMapping("/{historyId}/comments")
     @Operation(summary = "특정 기록의 댓글을 읽어올 수 있는 API",description = "쿼리 파라미터로 페이지를 넘겨주세요.")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200",description = "OK, 성공적으로 조회되었습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200",description = "OK, 성공적으로 조회되었습니다.")
     })
     @Parameters({
             @Parameter(name = "historyId", description = "기록의 id, path variable 입니다."),
             @Parameter(name = "page", description = "페이징 관련 query parameter")
 
     })
-    public BaseResponse<HistoryResponseDto.HistoryCommentResult> getComments(@PathVariable @Valid  Long historyId,
-                                                                   @RequestParam(value = "page") int page) {
-        Page<Comment> comments = commentRepositoryService.getNoneReplyCommentsByHistoryId(historyId,page);
+    public BaseResponse<HistoryResponseDto.HistoryCommentResult> getComments(@PathVariable @Valid @HistoryExist Long historyId,
+                                                                   @RequestParam(value = "page") @Valid @CheckPage int page) {
+
+        //페이지를 1에서 부터 받기 위해서 -1을 해서 입력합니다.
+        Page<Comment> comments = commentRepositoryService.getNoneReplyCommentsByHistoryId(historyId,page-1);
         List<List<Comment>> repliesForEachComment = commentRepositoryService.getReplyListOfCommentList(comments);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toHistoryCommentResult(comments,repliesForEachComment));
