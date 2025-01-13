@@ -3,6 +3,7 @@ package com.clokey.server.domain.history.api;
 import com.clokey.server.domain.HashtagHistory.application.HashtagHistoryRepositoryService;
 import com.clokey.server.domain.HistoryImage.application.HistoryImageRepositoryService;
 import com.clokey.server.domain.MemberLike.application.MemberLikeRepositoryService;
+import com.clokey.server.domain.comment.application.CommentRepositoryService;
 import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
 import com.clokey.server.domain.history.dto.HistoryResponseDto;
@@ -11,6 +12,7 @@ import com.clokey.server.domain.history.exception.annotation.MonthFormat;
 import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.exception.annotation.MemberExist;
+import com.clokey.server.domain.model.Comment;
 import com.clokey.server.domain.model.History;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
@@ -20,6 +22,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,8 +39,8 @@ public class HistoryRestController {
     private final HistoryRepositoryService historyRepositoryService;
     private final HashtagHistoryRepositoryService hashtagHistoryRepositoryService;
     private final MemberLikeRepositoryService memberLikeRepositoryService;
-    private final MemberRepositoryService memberRepositoryService;
     private final HistoryAccessibleValidator historyAccessibleValidator;
+    private final CommentRepositoryService commentRepositoryService;
 
     //임시로 엔드 포인트 맨 뒤에 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
     //이유는 isLiked를 확인해야 하기 때문입니다. ㅠ ㅠ
@@ -92,7 +95,22 @@ public class HistoryRestController {
         //다른 멤버 기록 열람시 PUBLIC 기록만을 모아줍니다.
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toPublicMonthViewResult(memberId,histories,historyImageUrls));
     }
+    @GetMapping("/{history_id}/comments")
+    @Operation(summary = "특정 기록의 댓글을 읽어올 수 있는 API",description = "쿼리 파라미터로 페이지를 넘겨주세요.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200",description = "OK, 성공적으로 조회되었습니다."),
+    })
+    @Parameters({
+            @Parameter(name = "historyId", description = "기록의 id, path variable 입니다."),
+            @Parameter(name = "page", description = "페이징 관련 query parameter")
 
+    })
+    public BaseResponse<HistoryResponseDto.HistoryCommentResult> getComments(@PathVariable @Valid  Long historyId,
+                                                                   @RequestParam(value = "page") int page) {
+        Page<Comment> comments = commentRepositoryService.getNoneReplyCommentsByHistoryId(historyId,page);
+        List<List<Comment>> repliesForEachComment = commentRepositoryService.getReplyListOfCommentList(comments);
 
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toHistoryCommentResult(comments,repliesForEachComment));
+    };
 
 }

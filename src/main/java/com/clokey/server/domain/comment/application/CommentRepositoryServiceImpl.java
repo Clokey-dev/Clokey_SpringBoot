@@ -22,8 +22,10 @@ public class CommentRepositoryServiceImpl implements CommentRepositoryService{
     }
 
     @Override
-    public List<Comment> getRepliesByCommentId(Long commentId) {
-        return commentRepository.findByCommentId(commentId);
+    public List<List<Comment>> getReplyListOfCommentList(Page<Comment> comments) {
+        return comments.stream()
+                .map(comment -> commentRepository.findByCommentId(comment.getId()))
+                .toList();
     }
 
     @Override

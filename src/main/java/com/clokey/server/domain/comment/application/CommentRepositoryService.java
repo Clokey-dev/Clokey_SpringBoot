@@ -9,7 +9,7 @@ public interface CommentRepositoryService {
 
     boolean commentExist(Long commentId);
 
-    List<Comment> getRepliesByCommentId(Long commentId);
+    List<List<Comment>> getReplyListOfCommentList(Page<Comment> comments);
 
     Page<Comment> getNoneReplyCommentsByHistoryId(Long historyId, Integer page);
 }

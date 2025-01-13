@@ -1,11 +1,14 @@
 package com.clokey.server.domain.history.converter;
 
 import com.clokey.server.domain.history.dto.HistoryResponseDto;
+import com.clokey.server.domain.model.Comment;
 import com.clokey.server.domain.model.History;
 import com.clokey.server.domain.model.enums.Visibility;
+import org.springframework.data.domain.Page;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class HistoryConverter {
 
@@ -71,5 +74,46 @@ public class HistoryConverter {
                 .imageUrl(historyImageUrl)
                 .build();
     }
+
+    public static HistoryResponseDto.HistoryCommentResult toHistoryCommentResult(Page<Comment> comments, List<List<Comment>> replies) {
+        return HistoryResponseDto.HistoryCommentResult.builder()
+                .comments(toCommentResultList(comments,replies))
+                .totalPage(comments.getTotalPages())
+                .totalElements(comments.getNumberOfElements())
+                .isFirst(comments.isFirst())
+                .isLast(comments.isLast())
+                .build();
+    };
+
+
+
+    private static List<HistoryResponseDto.CommentResult> toCommentResultList(Page<Comment> comments, List<List<Comment>> replies) {
+        return IntStream.range(0, comments.getContent().size())
+                .mapToObj(i -> {
+                    Comment comment = comments.getContent().get(i);
+                    List<Comment> replyList = replies.get(i);
+                    return HistoryResponseDto.CommentResult.builder()
+                            .commentId(comment.getId())
+                            .MemberId(comment.getMember().getId())
+                            .userImageUrl(comment.getMember().getProfileImageUrl())
+                            .content(comment.getContent())
+                            .replyResults(toReplyResultList(replyList))
+                            .build();
+                })
+                .toList();
+    }
+
+    private static List<HistoryResponseDto.ReplyResult> toReplyResultList(List<Comment> replies) {
+        return replies.stream()
+                .map(reply->HistoryResponseDto.ReplyResult.builder()
+                        .commentId(reply.getId())
+                        .MemberId(reply.getMember().getId())
+                        .userImageUrl(reply.getMember().getProfileImageUrl())
+                        .content(reply.getContent())
+                        .build())
+                .toList();
+    }
+
+
 }
 
