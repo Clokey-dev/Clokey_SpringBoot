@@ -38,23 +38,8 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	runtimeOnly 'com.mysql:mysql-connector-j'
-
 	//swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
-
-
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-
-	//Webflux
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
-	//thymeleaf
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-
-
 }
 
 tasks.named('test') {
