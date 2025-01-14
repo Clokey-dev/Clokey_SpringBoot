@@ -2,6 +2,7 @@ package com.clokey.server.global.common.response;
 
 import com.clokey.server.global.error.code.BaseCode;
 import com.clokey.server.global.error.code.BaseErrorCode;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

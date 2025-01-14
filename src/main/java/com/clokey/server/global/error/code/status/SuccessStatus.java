@@ -27,13 +27,15 @@ public enum SuccessStatus implements BaseCode {
     //폴더 성공
     FOLDER_SUCCESS(HttpStatus.OK, "FOLDER_200", "성공적으로 조회되었습니다."),
     FOLDER_CREATED(HttpStatus.CREATED, "FOLDER_201", "성공적으로 생성되었습니다."),
+    FOLDER_DELETED(HttpStatus.OK, "FOLDER_200", "성공적으로 삭제되었습니다."),
 
     //검색 성공
     SEARCH_SUCCESS(HttpStatus.OK, "SEARCH_200", "성공적으로 조회되었습니다."),
 
     //기록 성공
-    HISTORY_SUCCESS(HttpStatus.OK, "CLOTH_200", "성공적으로 조회되었습니다."),
-    HISTORY_CREATED(HttpStatus.CREATED, "CLOTH_201", "성공적으로 생성되었습니다."),
+    HISTORY_SUCCESS(HttpStatus.OK, "HISTORY_200", "성공적으로 조회되었습니다."),
+    HISTORY_CREATED(HttpStatus.CREATED, "HISTORY_201", "성공적으로 생성되었습니다."),
+    HISTORY_LIKE_STATUS_CHANGED(HttpStatus.OK,"HISTORY_200","좋아요 상태가 성공적으로 변경되었습니다."),
 
     //알림 성공
     NOTIFICATION_SUCCESS(HttpStatus.OK, "NOTIFICATION_200", "성공적으로 조회되었습니다."),
