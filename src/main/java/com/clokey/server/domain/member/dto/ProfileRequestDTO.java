@@ -11,7 +11,7 @@ public class ProfileRequestDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class ProfileRQDTO {
+    public static class ProfileRQ {
 
         private String nickname;
 

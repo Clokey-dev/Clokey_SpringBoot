@@ -15,7 +15,7 @@ public class ProfileResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ProfileRPDTO {
+    public static class ProfileRP {
 
         Long id;
         String bio;

@@ -6,5 +6,5 @@ import com.clokey.server.domain.member.dto.ProfileRequestDTO;
 
 
 public interface ProfileCommandService {
-    ProfileResponseDTO.ProfileRPDTO updateProfile(Long userId, ProfileRequestDTO.ProfileRQDTO request);
+    ProfileResponseDTO.ProfileRP updateProfile(Long userId, ProfileRequestDTO.ProfileRQ request);
 }

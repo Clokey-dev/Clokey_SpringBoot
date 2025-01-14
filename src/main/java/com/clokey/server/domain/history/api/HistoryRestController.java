@@ -64,7 +64,7 @@ public class HistoryRestController {
         int likeCount = memberLikeRepositoryService.countLikesOfHistory(historyId);
         boolean isLiked = memberLikeRepositoryService.memberLikedHistory(memberId, historyId);
 
-        return BaseResponse.onSucesss(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toDayViewResult(history.get(),imageUrl,hashtags,likeCount,isLiked));
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toDayViewResult(history.get(),imageUrl,hashtags,likeCount,isLiked));
     }
 
     //임시로 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
@@ -90,11 +90,11 @@ public class HistoryRestController {
 
         //나의 기록 열람은 공개 범위와 상관없이 모두 열람 가능합니다.
         if(this_member_id.equals(memberId)) {
-            return BaseResponse.onSucesss(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toAllMonthViewResult(memberId,histories,historyImageUrls));
+            return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toAllMonthViewResult(memberId,histories,historyImageUrls));
         }
 
         //다른 멤버 기록 열람시 PUBLIC 기록만을 모아줍니다.
-        return BaseResponse.onSucesss(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toPublicMonthViewResult(memberId,histories,historyImageUrls));
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toPublicMonthViewResult(memberId,histories,historyImageUrls));
     }
 
 
