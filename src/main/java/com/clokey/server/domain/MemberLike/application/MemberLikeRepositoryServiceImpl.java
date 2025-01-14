@@ -43,14 +43,4 @@ public class MemberLikeRepositoryServiceImpl implements MemberLikeRepositoryServ
         memberLikeRepository.save(memberLike);
     }
 
-    @Override
-    public void changeLike(Long memberId, Long historyId, boolean isLiked) {
-        if(isLiked) {
-            historyRepository.decrementLikes(historyId);
-            deleteLike(memberId,historyId);
-        } else {
-            historyRepository.incrementLikes(historyId);
-            saveLike(memberId,historyId);
-        }
-    }
 }

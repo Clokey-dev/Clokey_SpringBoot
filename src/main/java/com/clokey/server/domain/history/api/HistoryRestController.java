@@ -3,6 +3,7 @@ package com.clokey.server.domain.history.api;
 import com.clokey.server.domain.HashtagHistory.application.HashtagHistoryRepositoryService;
 import com.clokey.server.domain.HistoryImage.application.HistoryImageRepositoryService;
 import com.clokey.server.domain.MemberLike.application.MemberLikeRepositoryService;
+import com.clokey.server.domain.history.application.HistoryService;
 import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
 import com.clokey.server.domain.history.dto.HistoryRequestDto;
@@ -40,6 +41,7 @@ public class HistoryRestController {
     private final MemberLikeRepositoryService memberLikeRepositoryService;
     private final HistoryLikedValidator historyLikedValidator;
     private final HistoryAccessibleValidator historyAccessibleValidator;
+    private final HistoryService historyService;
 
     //임시로 엔드 포인트 맨 뒤에 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
     @GetMapping("/daily/{historyId}/{memberId}")
@@ -110,7 +112,7 @@ public class HistoryRestController {
         historyLikedValidator.validateIsLiked(thisMemberId, request.getHistoryId(), request.isLiked());
 
         //isLiked의 상태에 따라서 좋아요 -> 취소 , 좋아요가 없는 상태 -> 좋아요 로 바꿔주게 됩니다.
-        memberLikeRepositoryService.changeLike(thisMemberId, request.getHistoryId(), request.isLiked());
+        historyService.changeLike(thisMemberId, request.getHistoryId(), request.isLiked());
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_LIKE_STATUS_CHANGED, HistoryConverter.toLikeResult(
                 historyRepositoryService.getHistoryById(request.getHistoryId()).get(),

@@ -9,6 +9,4 @@ public interface MemberLikeRepositoryService {
     void deleteLike(Long memberId, Long historyId);
 
     void saveLike(Long memberId, Long historyId);
-
-    void changeLike(Long memberId, Long historyId, boolean isLiked);
 }
