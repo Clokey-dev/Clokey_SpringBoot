@@ -5,9 +5,11 @@ import com.clokey.server.global.error.code.ErrorReasonDTO;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
@@ -77,8 +79,12 @@ public class GlobalExceptionAdvice extends ResponseEntityExceptionHandler {
                 .forEach(
                         fieldError -> {
                             String fieldName = fieldError.getField();
-                            String errorMessage =
-                                    Optional.ofNullable(fieldError.getDefaultMessage()).orElse("");
+                            String errorMessage;
+                            try {
+                                errorMessage = Optional.ofNullable(ErrorStatus.valueOf(fieldError.getDefaultMessage()).getMessage()).orElse("");
+                            } catch (IllegalArgumentException ex) {
+                                errorMessage = Optional.ofNullable(fieldError.getDefaultMessage()).orElse("");
+                            }
                             errors.merge(
                                     fieldName,
                                     errorMessage,

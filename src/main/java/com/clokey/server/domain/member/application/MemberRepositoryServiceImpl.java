@@ -2,6 +2,7 @@ package com.clokey.server.domain.member.application;
 
 import com.clokey.server.domain.member.dao.MemberRepository;
 import com.clokey.server.domain.model.Member;
+import com.clokey.server.domain.term.exception.TermException;
 import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.persistence.EntityManager;

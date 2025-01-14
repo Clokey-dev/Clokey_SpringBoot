@@ -4,6 +4,7 @@ import com.clokey.server.domain.model.enums.MemberStatus;
 import com.clokey.server.domain.model.enums.Visibility;
 import com.clokey.server.domain.model.mapping.MemberLike;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ public class History extends BaseEntity {
     @Column(nullable = false)
     private LocalDate historyDate;
 
+    @Min(0)
     @Column(nullable = false, columnDefinition = "integer default 0")
     private int likes;
 

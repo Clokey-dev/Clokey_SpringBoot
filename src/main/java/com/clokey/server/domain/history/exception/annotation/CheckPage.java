@@ -1,18 +1,18 @@
 package com.clokey.server.domain.history.exception.annotation;
 
-import com.clokey.server.domain.history.exception.validator.HistoryExistValidator;
+import com.clokey.server.domain.history.exception.validator.CheckPageValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = HistoryExistValidator.class)
+@Constraint(validatedBy = CheckPageValidator.class)
 @Target( { ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HistoryExist {
+public @interface CheckPage {
 
-    String message() default "해당하는 기록이 존재하지 않습니다.";
+    String message() default "페이지가 1보다 작을 수 없습니다.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

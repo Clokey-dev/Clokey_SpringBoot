@@ -7,6 +7,8 @@ spring:
       "local": "local, jwt, oauth-local"
       "dev": "dev, jwt, oauth-dev"
     active: dev
+  thymeleaf:
+    enabled: true
 springdoc:
   swagger-ui:
     tags-sorter: alpha
@@ -47,6 +49,7 @@ spring:
     password: ${DB_PW}
     url: ${DB_URL}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   sql:
     init:
       mode: never
@@ -70,3 +73,11 @@ server:
       charset: UTF-8
       force: true
       enabled: true
+
+
+kakao:
+  client_id: ${REST_API_KEY}
+  redirect_uri: http://localhost:8080/callback
+
+
+
