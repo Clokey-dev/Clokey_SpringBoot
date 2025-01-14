@@ -70,11 +70,7 @@ public class HistoryRestController {
         int likeCount = memberLikeRepositoryService.countLikesOfHistory(historyId);
         boolean isLiked = memberLikeRepositoryService.memberLikedHistory(memberId, historyId);
 
-<<<<<<< HEAD
-        return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toDayViewResult(history.get(),imageUrl,hashtags,likeCount,isLiked));
-=======
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, HistoryConverter.toDayViewResult(history.get(), imageUrl, hashtags, likeCount, isLiked));
->>>>>>> a2c1e76831996bd375f285529885c0ccfb0d175e
     }
 
     //임시로 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
