@@ -48,7 +48,6 @@ public class HistoryRestController {
     private final HistoryLikedValidator historyLikedValidator;
     private final HistoryAccessibleValidator historyAccessibleValidator;
     private final HistoryService historyService;
-    private final HistoryAccessibleValidator historyAccessibleValidator;
     private final CommentRepositoryService commentRepositoryService;
 
     //임시로 엔드 포인트 맨 뒤에 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
@@ -72,7 +71,7 @@ public class HistoryRestController {
         boolean isLiked = memberLikeRepositoryService.memberLikedHistory(memberId, historyId);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, HistoryConverter.toDayViewResult(history.get(), imageUrl, hashtags, likeCount, isLiked));
-
+    }
 
     //임시로 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
     //결국 자신의 기록을 보는지 확인하기 위해 MemberId 쿼리 파라미터는 필수적으로 받아야합니다.
@@ -86,7 +85,7 @@ public class HistoryRestController {
             @Parameter(name = "month", description = "조회하고자 하는 월입니다. YYYY-MM 형식으로 입력해주세요.")
     })
 
-    public BaseResponse<HistoryResponseDto.monthViewResult> getMonthlyHistories(@PathVariable Long this_member_id,
+    public BaseResponse<HistoryResponseDto.MonthViewResult> getMonthlyHistories(@PathVariable Long this_member_id,
                                                                                 @RequestParam(value = "memberId") @Valid @MemberExist Long memberId,
                                                                                 @RequestParam(value = "month") @Valid @MonthFormat String month) {
 
@@ -106,10 +105,11 @@ public class HistoryRestController {
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, HistoryConverter.toPublicMonthViewResult(memberId, histories, historyImageUrls));
 
     }
+
     @GetMapping("/{historyId}/comments")
-    @Operation(summary = "특정 기록의 댓글을 읽어올 수 있는 API",description = "쿼리 파라미터로 페이지를 넘겨주세요.")
+    @Operation(summary = "특정 기록의 댓글을 읽어올 수 있는 API", description = "쿼리 파라미터로 페이지를 넘겨주세요.")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200",description = "OK, 성공적으로 조회되었습니다.")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "OK, 성공적으로 조회되었습니다.")
     })
     @Parameters({
             @Parameter(name = "historyId", description = "기록의 id, path variable 입니다."),
@@ -117,13 +117,15 @@ public class HistoryRestController {
 
     })
     public BaseResponse<HistoryResponseDto.HistoryCommentResult> getComments(@PathVariable @Valid @HistoryExist Long historyId,
-                                                                   @RequestParam(value = "page") @Valid @CheckPage int page) {
-       //페이지를 1에서 부터 받기 위해서 -1을 해서 입력합니다.
-        Page<Comment> comments = commentRepositoryService.getNoneReplyCommentsByHistoryId(historyId,page-1);
+                                                                             @RequestParam(value = "page") @Valid @CheckPage int page) {
+        //페이지를 1에서 부터 받기 위해서 -1을 해서 입력합니다.
+        Page<Comment> comments = commentRepositoryService.getNoneReplyCommentsByHistoryId(historyId, page - 1);
         List<List<Comment>> repliesForEachComment = commentRepositoryService.getReplyListOfCommentList(comments);
 
-        return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS,HistoryConverter.toHistoryCommentResult(comments,repliesForEachComment));
-    };
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, HistoryConverter.toHistoryCommentResult(comments, repliesForEachComment));
+    }
+
+    ;
 
     //사용자 토큰 받는 부분 추가해야함.
     @PostMapping("/like/{thisMemberId}")
@@ -134,7 +136,7 @@ public class HistoryRestController {
     @Parameters({
             @Parameter(name = "thisMemberId", description = "현재 유저의 ID 토큰 대체용입니다.")
     })
-    public BaseResponse<HistoryResponseDto.likeResult> like(@PathVariable Long thisMemberId,
+    public BaseResponse<HistoryResponseDto.LikeResult> like(@PathVariable Long thisMemberId,
                                                             @RequestBody @Valid HistoryRequestDto.likeStatusChange request) {
 
         //isLiked 정보가 정확한지 검증합니다.
@@ -148,7 +150,5 @@ public class HistoryRestController {
                 request.isLiked()
         ));
     }
-
-       
 
 }

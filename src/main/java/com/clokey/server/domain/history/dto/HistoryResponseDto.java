@@ -82,19 +82,19 @@ public class HistoryResponseDto {
         String userImageUrl;
         String content;
     }
-
-}
-
-
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class likeResult{
+    public static class LikeResult{
         Long historyId;
         boolean isLiked;
         int likeCount;
     }
+
 }
+
+
+
 
 
