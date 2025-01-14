@@ -16,7 +16,7 @@ public enum ErrorStatus implements BaseErrorCode {
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
 
     //페이징 에러
-    PAGE_INVALID(HttpStatus.NOT_FOUND,"PAGE_4041","존재하지 않는 페이지입니다."),
+    PAGE_UNDER_ONE(HttpStatus.NOT_FOUND,"PAGE_4001","페이지는 1이상이여야 합니다."),
 
     //멤버 에러
     NO_SUCH_TERM(HttpStatus.NOT_FOUND,"MEMBER_4041","존재하지 않는 약관ID입니다."),
@@ -46,10 +46,9 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //기록 에러
     DATE_INVALID(HttpStatus.BAD_REQUEST,"HISTORY_4001","잘못된 날짜 형식입니다."),
-
     NO_SUCH_HISTORY(HttpStatus.NOT_FOUND,"HISTORY_4002","존재하지 않는 기록 ID입니다."),
     HISTORY_VISIBILITY_INVALID(HttpStatus.BAD_REQUEST,"HISTORY_4003","잘못된 visibility 값을 입력했습니다."),
-    ISLIKED_INVALID(HttpStatus.BAD_REQUEST,"HISTORY_4004","잘못된 isLiked 값을 입력했습니다."),
+    IS_LIKED_INVALID(HttpStatus.BAD_REQUEST,"HISTORY_4004","잘못된 isLiked 값을 입력했습니다."),
     NO_SUCH_COMMENT(HttpStatus.NOT_FOUND,"HISTORY_4005","존재하지 않는 댓글 ID입니다."),
     NO_PERMISSION_TO_ACCESS_HISTORY(HttpStatus.BAD_REQUEST,"HISTORY_4006","기록에 접근 권한이 없습니다."),
 
@@ -63,8 +62,6 @@ public enum ErrorStatus implements BaseErrorCode {
     //추천 에러
     NO_TEMP_PARAMETER(HttpStatus.BAD_REQUEST,"RECOMMEND_4001","온도값은 필수입니다."),
 
-    // 공통 에러
-    PAGE_UNDER_ZERO(HttpStatus.BAD_REQUEST, "COMM4001", "페이지는 0이상이어야 합니다."),
     ;
 
 
