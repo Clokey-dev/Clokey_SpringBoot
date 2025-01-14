@@ -35,6 +35,7 @@ public enum SuccessStatus implements BaseCode {
     //기록 성공
     HISTORY_SUCCESS(HttpStatus.OK, "HISTORY_200", "성공적으로 조회되었습니다."),
     HISTORY_CREATED(HttpStatus.CREATED, "HISTORY_201", "성공적으로 생성되었습니다."),
+    HISTORY_LIKE_STATUS_CHANGED(HttpStatus.OK,"HISTORY_200","좋아요 상태가 성공적으로 변경되었습니다."),
 
     //알림 성공
     NOTIFICATION_SUCCESS(HttpStatus.OK, "NOTIFICATION_200", "성공적으로 조회되었습니다."),

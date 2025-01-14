@@ -45,6 +45,7 @@ public class HistoryResponseDto {
         String imageUrl;
     }
 
+
     @Builder
     @Getter
     @NoArgsConstructor
@@ -84,5 +85,16 @@ public class HistoryResponseDto {
 
 }
 
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class likeResult{
+        Long historyId;
+        boolean isLiked;
+        int likeCount;
+    }
+}
 
 

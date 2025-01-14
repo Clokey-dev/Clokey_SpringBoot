@@ -75,6 +75,15 @@ public class HistoryConverter {
                 .build();
     }
 
+
+    public static HistoryResponseDto.likeResult toLikeResult(History history, boolean isLiked){
+        return HistoryResponseDto.likeResult.builder()
+                .historyId(history.getId())
+                .isLiked(!isLiked)
+                .likeCount(history.getLikes())
+                .build();
+    }
+
     public static HistoryResponseDto.HistoryCommentResult toHistoryCommentResult(Page<Comment> comments, List<List<Comment>> replies) {
         return HistoryResponseDto.HistoryCommentResult.builder()
                 .comments(toCommentResultList(comments,replies))
@@ -113,6 +122,7 @@ public class HistoryConverter {
                         .build())
                 .toList();
     }
+
 
 
 }
