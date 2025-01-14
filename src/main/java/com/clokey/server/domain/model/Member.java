@@ -21,7 +21,7 @@ import java.util.List;
 @DynamicUpdate
 @DynamicInsert
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 public class Member extends BaseEntity {
 
