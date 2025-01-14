@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 
 public class ProfileConverter {
 
-    public static ProfileResponseDTO.ProfileRPDTO toProfileRPDTO(Member member) {
-        return ProfileResponseDTO.ProfileRPDTO.builder()
+    public static ProfileResponseDTO.ProfileRP toProfileRPDTO(Member member) {
+        return ProfileResponseDTO.ProfileRP.builder()
                 .id(member.getId())
                 .bio(member.getBio())
                 .email(member.getEmail())

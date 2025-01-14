@@ -18,7 +18,7 @@ public class ProfileCommandServiceImpl implements ProfileCommandService {
 
     @Override
     @Transactional
-    public ProfileResponseDTO.ProfileRPDTO updateProfile(Long userId, ProfileRequestDTO.ProfileRQDTO request) {
+    public ProfileResponseDTO.ProfileRP updateProfile(Long userId, ProfileRequestDTO.ProfileRQ request) {
         // 사용자 확인
         Member member = memberRepositoryService.findMemberById(userId);
 

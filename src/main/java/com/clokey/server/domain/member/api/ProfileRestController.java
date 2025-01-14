@@ -19,11 +19,11 @@ public class ProfileRestController {
 
     @Operation(summary = "프로필 수정 API", description = "사용자의 프로필 정보를 수정하는 API입니다.")
     @PatchMapping
-    public BaseResponse<ProfileResponseDTO.ProfileRPDTO> updateProfile(
+    public BaseResponse<ProfileResponseDTO.ProfileRP> updateProfile(
             @PathVariable("user_id") Long userId,
-            @RequestBody @Valid ProfileRequestDTO.ProfileRQDTO request) {
+            @RequestBody @Valid ProfileRequestDTO.ProfileRQ request) {
 
-        ProfileResponseDTO.ProfileRPDTO response = profileCommandService.updateProfile(userId, request);
+        ProfileResponseDTO.ProfileRP response = profileCommandService.updateProfile(userId, request);
 
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_SUCCESS, response);
     }

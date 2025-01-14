@@ -14,4 +14,5 @@ public interface MemberRepositoryService {
     Member saveMember(Member member);
     Optional<Member> getMember(Long memberId);
 
+    boolean idExist(String clokeyId);
 }
