@@ -6,7 +6,6 @@ import com.clokey.server.domain.model.Member;
 import java.util.Optional;
 
 public interface MemberRepositoryService {
-
     boolean memberExist(Long memberId);
 
 
