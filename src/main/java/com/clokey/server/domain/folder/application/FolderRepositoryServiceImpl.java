@@ -16,6 +16,7 @@ public class FolderRepositoryServiceImpl implements FolderRepositoryService{
         return folderRepository.existsById(folderId);
     }
 
+
     @Override
     public void saveFolder(Folder folder) {
         folderRepository.save(folder);
@@ -25,4 +26,5 @@ public class FolderRepositoryServiceImpl implements FolderRepositoryService{
     public void deleteFolder(Long folderId) {
         folderRepository.deleteById(folderId);
     }
+
 }

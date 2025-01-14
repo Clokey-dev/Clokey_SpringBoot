@@ -16,7 +16,7 @@ public enum ErrorStatus implements BaseErrorCode {
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
 
     //페이징 에러
-    PAGE_INVALID(HttpStatus.NOT_FOUND,"PAGE_4041","존재하지 않는 페이지입니다."),
+    PAGE_UNDER_ONE(HttpStatus.NOT_FOUND,"PAGE_4001","페이지는 1이상이여야 합니다."),
 
     //멤버 에러
     NO_SUCH_TERM(HttpStatus.NOT_FOUND,"MEMBER_4041","존재하지 않는 약관ID입니다."),
@@ -62,8 +62,6 @@ public enum ErrorStatus implements BaseErrorCode {
     //추천 에러
     NO_TEMP_PARAMETER(HttpStatus.BAD_REQUEST,"RECOMMEND_4001","온도값은 필수입니다."),
 
-    // 공통 에러
-    PAGE_UNDER_ZERO(HttpStatus.BAD_REQUEST, "COMM4001", "페이지는 0이상이어야 합니다."),
     ;
 
 

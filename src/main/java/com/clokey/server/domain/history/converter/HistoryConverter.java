@@ -1,16 +1,19 @@
 package com.clokey.server.domain.history.converter;
 
 import com.clokey.server.domain.history.dto.HistoryResponseDto;
+import com.clokey.server.domain.model.Comment;
 import com.clokey.server.domain.model.History;
 import com.clokey.server.domain.model.enums.Visibility;
+import org.springframework.data.domain.Page;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class HistoryConverter {
 
-    public static HistoryResponseDto.dayViewResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked) {
-        return HistoryResponseDto.dayViewResult.builder()
+    public static HistoryResponseDto.DayViewResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked) {
+        return HistoryResponseDto.DayViewResult.builder()
                 .userId(history.getMember().getId())
                 .contents(history.getContent())
                 .imageUrl(imageUrl)
@@ -22,9 +25,9 @@ public class HistoryConverter {
                 .build();
     }
 
-    public static HistoryResponseDto.monthViewResult toPublicMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
+    public static HistoryResponseDto.MonthViewResult toPublicMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
 
-        List<HistoryResponseDto.historyResult> historyResults = new ArrayList<>();
+        List<HistoryResponseDto.HistoryResult> HistoryResults = new ArrayList<>();
 
         for (int i = 0; i < histories.size(); i++) {
             History history = histories.get(i);
@@ -38,39 +41,40 @@ public class HistoryConverter {
                 historyImageUrl = "비공개입니다";
             }
 
-            historyResults.add(toHistoryResult(history, historyImageUrl));
+            HistoryResults.add(toHistoryResult(history, historyImageUrl));
         }
 
-        return HistoryResponseDto.monthViewResult.builder()
+        return HistoryResponseDto.MonthViewResult.builder()
                 .userId(memberId)
-                .histories(historyResults)
+                .histories(HistoryResults)
                 .build();
     }
 
-    public static HistoryResponseDto.monthViewResult toAllMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
+    public static HistoryResponseDto.MonthViewResult toAllMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
 
-        List<HistoryResponseDto.historyResult> historyResults = new ArrayList<>();
+        List<HistoryResponseDto.HistoryResult> HistoryResults = new ArrayList<>();
 
         for (int i = 0; i < histories.size(); i++) {
             History history = histories.get(i);
             String historyImageUrl = historyFirstImageUrls.get(i);
 
-            historyResults.add(toHistoryResult(history, historyImageUrl));
+            HistoryResults.add(toHistoryResult(history, historyImageUrl));
         }
 
-        return HistoryResponseDto.monthViewResult.builder()
+        return HistoryResponseDto.MonthViewResult.builder()
                 .userId(memberId)
-                .histories(historyResults)
+                .histories(HistoryResults)
                 .build();
     }
 
-    private static HistoryResponseDto.historyResult toHistoryResult(History history, String historyImageUrl) {
-        return HistoryResponseDto.historyResult.builder()
+    private static HistoryResponseDto.HistoryResult toHistoryResult(History history, String historyImageUrl) {
+        return HistoryResponseDto.HistoryResult.builder()
                 .historyId(history.getId())
                 .date(history.getHistoryDate())
                 .imageUrl(historyImageUrl)
                 .build();
     }
+
 
     public static HistoryResponseDto.likeResult toLikeResult(History history, boolean isLiked){
         return HistoryResponseDto.likeResult.builder()
@@ -79,5 +83,47 @@ public class HistoryConverter {
                 .likeCount(history.getLikes())
                 .build();
     }
+
+    public static HistoryResponseDto.HistoryCommentResult toHistoryCommentResult(Page<Comment> comments, List<List<Comment>> replies) {
+        return HistoryResponseDto.HistoryCommentResult.builder()
+                .comments(toCommentResultList(comments,replies))
+                .totalPage(comments.getTotalPages())
+                .totalElements(comments.getNumberOfElements())
+                .isFirst(comments.isFirst())
+                .isLast(comments.isLast())
+                .build();
+    };
+
+
+
+    private static List<HistoryResponseDto.CommentResult> toCommentResultList(Page<Comment> comments, List<List<Comment>> replies) {
+        return IntStream.range(0, comments.getContent().size())
+                .mapToObj(i -> {
+                    Comment comment = comments.getContent().get(i);
+                    List<Comment> replyList = replies.get(i);
+                    return HistoryResponseDto.CommentResult.builder()
+                            .commentId(comment.getId())
+                            .memberId(comment.getMember().getId())
+                            .userImageUrl(comment.getMember().getProfileImageUrl())
+                            .content(comment.getContent())
+                            .replyResults(toReplyResultList(replyList))
+                            .build();
+                })
+                .toList();
+    }
+
+    private static List<HistoryResponseDto.ReplyResult> toReplyResultList(List<Comment> replies) {
+        return replies.stream()
+                .map(reply->HistoryResponseDto.ReplyResult.builder()
+                        .commentId(reply.getId())
+                        .MemberId(reply.getMember().getId())
+                        .userImageUrl(reply.getMember().getProfileImageUrl())
+                        .content(reply.getContent())
+                        .build())
+                .toList();
+    }
+
+
+
 }
 
