@@ -52,7 +52,7 @@ public enum ErrorStatus implements BaseErrorCode {
     NO_SUCH_COMMENT(HttpStatus.NOT_FOUND,"HISTORY_4005","존재하지 않는 댓글 ID입니다."),
     NO_PERMISSION_TO_ACCESS_HISTORY(HttpStatus.BAD_REQUEST,"HISTORY_4006","기록에 접근 권한이 없습니다."),
     COMMENT_LENGTH_OUT_OF_RANGE(HttpStatus.BAD_REQUEST,"HISTORY_4007","댓글은 빈칸이 아닌 50자 이하여야 합니다."),
-    NESTED_COMMENT(HttpStatus.BAD_REQUEST,"HISTORY_4008","대댓글에 댓글을 남길 수 없습니다."),
+    NESTED_COMMENT(HttpStatus.BAD_REQUEST,"HISTORY_4008","대댓글에 답장을 남길 수 없습니다."),
     PARENT_COMMENT_HISTORY_ERROR(HttpStatus.BAD_REQUEST,"HISTORY_4009","부모 댓글의 기록과 작성하는 댓글의 기록이 일치하지 않습니다."),
 
     //알림 에러
