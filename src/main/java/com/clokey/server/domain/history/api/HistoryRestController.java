@@ -153,9 +153,6 @@ public class HistoryRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_201", description = "성공적으로 댓글이 생성되었습니다."),
     })
-    @Parameters({
-            @Parameter(name = "history_id", description = "댓글 대상 기록 id입니다.")
-    })
     public BaseResponse<HistoryResponseDto.CommentWriteResult> writeComments(@PathVariable @Valid @HistoryExist Long historyId,
                                                                              @PathVariable @Valid @MemberExist Long thisMemberId,
                                                                              @RequestBody @Valid HistoryRequestDto.CommentWrite request) {

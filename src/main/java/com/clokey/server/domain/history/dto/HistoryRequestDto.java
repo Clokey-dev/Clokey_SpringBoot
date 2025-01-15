@@ -2,8 +2,7 @@ package com.clokey.server.domain.history.dto;
 
 import com.clokey.server.domain.history.exception.annotation.ContentLength;
 import com.clokey.server.domain.history.exception.annotation.HistoryExist;
-import com.clokey.server.domain.history.exception.annotation.ExistCommentNullable;
-import com.clokey.server.domain.history.exception.annotation.NoNestedReplies;
+import com.clokey.server.domain.history.exception.annotation.ParentCommentConditions;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -32,9 +31,9 @@ public class HistoryRequestDto {
     @AllArgsConstructor
     public static class CommentWrite {
 
-        @NoNestedReplies
-        @ExistCommentNullable
-        Long CommentId;
+
+        @ParentCommentConditions
+        Long commentId;
 
         @ContentLength
         @NotBlank

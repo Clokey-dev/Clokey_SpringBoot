@@ -1,17 +1,18 @@
 package com.clokey.server.domain.history.exception.annotation;
 
+import com.clokey.server.domain.history.exception.validator.ParentCommentsConditionsValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = com.clokey.server.domain.history.exception.validator.ExistCommentNullableValidator.class)
+@Constraint(validatedBy = ParentCommentsConditionsValidator.class)
 @Target( { ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ExistCommentNullable {
+public @interface ParentCommentConditions {
 
-    String message() default "대댓글 대상 댓글은 입력하지 않거나 입력할 경우 반드시 존재해야합니다.";
+    String message() default "이미 대댓글인 댓글에 답장할 수 없습니다.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
