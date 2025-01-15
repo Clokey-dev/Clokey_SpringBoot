@@ -2,7 +2,6 @@ package com.clokey.server.domain.category.application;
 
 import com.clokey.server.domain.category.converter.CategoryConverter;
 import com.clokey.server.domain.category.dto.CategoryResponseDTO;
-import com.clokey.server.global.error.code.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,7 @@ public class CategoryQueryServiceImpl implements CategoryQueryService {
     }
 
     @Override
-    public List<CategoryResponseDTO> getAllCategories() {
+    public List<CategoryResponseDTO.CategoryRP> getAllCategories() {
         return categoryRepositoryService.getAllCategories()
                 .stream()
                 .map(categoryConverter::convertToDTO)

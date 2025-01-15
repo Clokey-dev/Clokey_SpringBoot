@@ -26,13 +26,13 @@ public class TermCommandServiceImpl implements TermCommandService {
 
     @Override
     @Transactional
-    public TermResponseDTO joinTerm(Long userId, TermRequestDTO.JoinDto request) {
+    public TermResponseDTO joinTerm(Long userId, TermRequestDTO.Join request) {
         // 사용자 조회
         Member member = memberRepositoryService.findMemberById(userId);
 
         // 약관 처리
-        List<TermResponseDTO.TermDto> termResponses = new ArrayList<>();
-        for (TermRequestDTO.JoinDto.TermDto termDto : request.getTerms()) {
+        List<TermResponseDTO.Term> termResponses = new ArrayList<>();
+        for (TermRequestDTO.Join.Term termDto : request.getTerms()) {
             // 약관 조회 (이미 존재 여부는 확인된 상태)
             Term term = termRepositoryService.findById(termDto.getTermId());
 
@@ -50,7 +50,7 @@ public class TermCommandServiceImpl implements TermCommandService {
             memberTermRepositoryService.saveMemberTerm(memberTerm);
 
             // 응답 데이터에 추가
-            termResponses.add(TermResponseDTO.TermDto.builder()
+            termResponses.add(TermResponseDTO.Term.builder()
                     .termId(term.getId())
                     .agreed(termDto.getAgreed())
                     .build());

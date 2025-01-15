@@ -8,5 +8,5 @@ public interface CategoryQueryService {
 
     boolean categoryExist(Long categoryId);
 
-    List<CategoryResponseDTO> getAllCategories();
+    List<CategoryResponseDTO.CategoryRP> getAllCategories();
 }

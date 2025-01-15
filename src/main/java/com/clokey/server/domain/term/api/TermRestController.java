@@ -25,7 +25,7 @@ public class TermRestController {
     @PostMapping
     public BaseResponse<TermResponseDTO> join(
             @PathVariable Long userId,
-            @RequestBody @Valid TermRequestDTO.JoinDto request) {
+            @RequestBody @Valid TermRequestDTO.Join request) {
 
         // MemberTerm 생성
         TermResponseDTO response = termCommandService.joinTerm(userId, request);
