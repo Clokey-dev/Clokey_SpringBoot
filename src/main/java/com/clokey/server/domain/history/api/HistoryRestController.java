@@ -12,6 +12,7 @@ import com.clokey.server.domain.history.dto.HistoryResponseDto;
 import com.clokey.server.domain.history.exception.annotation.CheckPage;
 import com.clokey.server.domain.history.exception.annotation.HistoryExist;
 import com.clokey.server.domain.history.exception.annotation.MonthFormat;
+import com.clokey.server.domain.history.exception.validator.CommentValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
 import com.clokey.server.domain.member.exception.annotation.MemberExist;
@@ -46,6 +47,7 @@ public class HistoryRestController {
     private final HistoryAccessibleValidator historyAccessibleValidator;
     private final HistoryService historyService;
     private final CommentRepositoryService commentRepositoryService;
+    private final CommentValidator commentValidator;
 
     //임시로 엔드 포인트 맨 뒤에 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
     @GetMapping("/daily/{historyId}/{memberId}")
@@ -156,12 +158,8 @@ public class HistoryRestController {
     public BaseResponse<HistoryResponseDto.CommentWriteResult> writeComments(@PathVariable @Valid @HistoryExist Long historyId,
                                                                              @PathVariable @Valid @MemberExist Long thisMemberId,
                                                                              @RequestBody @Valid HistoryRequestDto.CommentWrite request) {
-
+        commentValidator.validateParentCommentHistory(historyId, request.getCommentId());
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_CREATED, historyService.writeComment(historyId, request.getCommentId(), thisMemberId, request.getContent()));
 
     }
-
-
-
-
 }
