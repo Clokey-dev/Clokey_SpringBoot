@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,5 +32,10 @@ public class CommentRepositoryServiceImpl implements CommentRepositoryService{
     @Override
     public Page<Comment> getNoneReplyCommentsByHistoryId(Long historyId, Integer page) {
         return commentRepository.findByHistoryIdAndCommentIsNull(historyId, PageRequest.of(page,10,Sort.by(Sort.Direction.ASC, "createdAt")));
+    }
+
+    @Override
+    public Optional<Comment> findById(Long commentId) {
+        return commentRepository.findById(commentId);
     }
 }
