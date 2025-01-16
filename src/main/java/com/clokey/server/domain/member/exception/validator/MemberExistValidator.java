@@ -1,7 +1,5 @@
 package com.clokey.server.domain.member.exception.validator;
 
-import com.clokey.server.domain.history.application.HistoryRepositoryService;
-import com.clokey.server.domain.history.exception.annotation.HistoryExist;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.exception.annotation.MemberExist;
 import com.clokey.server.global.error.code.status.ErrorStatus;
