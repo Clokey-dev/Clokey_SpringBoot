@@ -1,7 +1,7 @@
 package com.clokey.server.domain.folder.application;
 
-import com.clokey.server.domain.folder.dao.FolderRepository;
-import com.clokey.server.domain.model.Folder;
+import com.clokey.server.domain.model.repository.FolderRepository;
+import com.clokey.server.domain.model.entity.Folder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;

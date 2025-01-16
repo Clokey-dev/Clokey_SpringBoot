@@ -1,7 +1,7 @@
 package com.clokey.server.domain.term.application;
 
-import com.clokey.server.domain.model.Term;
-import com.clokey.server.domain.term.dao.TermRepository;
+import com.clokey.server.domain.model.entity.Term;
+import com.clokey.server.domain.model.repository.TermRepository;
 import com.clokey.server.domain.term.exception.TermException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,8 @@
 package com.clokey.server.domain.cloth.application;
 
-import com.clokey.server.domain.cloth.dao.ClothRepository;
-import com.clokey.server.domain.model.Cloth;
-import com.clokey.server.domain.model.enums.Visibility;
+import com.clokey.server.domain.model.repository.ClothRepository;
+import com.clokey.server.domain.model.entity.Cloth;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
 package com.clokey.server.domain.HistoryImage.application;
 
-import com.clokey.server.domain.HistoryImage.dao.HistoryImageRepository;
-import com.clokey.server.domain.model.HistoryImage;
+import com.clokey.server.domain.model.repository.HistoryImageRepository;
+import com.clokey.server.domain.model.entity.HistoryImage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

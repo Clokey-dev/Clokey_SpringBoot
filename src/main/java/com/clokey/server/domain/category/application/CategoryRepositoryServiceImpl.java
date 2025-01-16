@@ -1,7 +1,7 @@
 package com.clokey.server.domain.category.application;
 
-import com.clokey.server.domain.category.dao.CategoryRepository;
-import com.clokey.server.domain.model.Category;
+import com.clokey.server.domain.model.repository.CategoryRepository;
+import com.clokey.server.domain.model.entity.Category;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

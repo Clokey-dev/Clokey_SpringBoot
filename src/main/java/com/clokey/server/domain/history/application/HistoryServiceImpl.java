@@ -1,14 +1,14 @@
 package com.clokey.server.domain.history.application;
 
 import com.clokey.server.domain.MemberLike.application.MemberLikeRepositoryService;
-import com.clokey.server.domain.comment.dao.CommentRepository;
+import com.clokey.server.domain.model.repository.CommentRepository;
 import com.clokey.server.domain.history.converter.HistoryConverter;
-import com.clokey.server.domain.history.dao.HistoryRepository;
+import com.clokey.server.domain.model.repository.HistoryRepository;
 import com.clokey.server.domain.history.dto.HistoryResponseDto;
-import com.clokey.server.domain.member.dao.MemberRepository;
-import com.clokey.server.domain.model.Comment;
-import com.clokey.server.domain.model.History;
-import com.clokey.server.domain.model.Member;
+import com.clokey.server.domain.model.repository.MemberRepository;
+import com.clokey.server.domain.model.entity.Comment;
+import com.clokey.server.domain.model.entity.History;
+import com.clokey.server.domain.model.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

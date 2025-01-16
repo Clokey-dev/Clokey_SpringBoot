@@ -1,6 +1,6 @@
 package com.clokey.server.domain.category.application;
 
-import com.clokey.server.domain.model.Category;
+import com.clokey.server.domain.model.entity.Category;
 
 import java.util.List;
 

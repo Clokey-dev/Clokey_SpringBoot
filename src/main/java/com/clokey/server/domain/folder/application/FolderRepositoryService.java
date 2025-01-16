@@ -1,6 +1,6 @@
 package com.clokey.server.domain.folder.application;
 
-import com.clokey.server.domain.model.Folder;
+import com.clokey.server.domain.model.entity.Folder;
 
 public interface FolderRepositoryService {
 

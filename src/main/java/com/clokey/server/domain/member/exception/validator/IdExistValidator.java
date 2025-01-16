@@ -1,7 +1,6 @@
 package com.clokey.server.domain.member.exception.validator;
 
 import com.clokey.server.domain.member.application.MemberRepositoryService;
-import com.clokey.server.domain.member.dao.MemberRepository;
 import com.clokey.server.domain.member.exception.annotation.IdExist;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.validation.ConstraintValidator;

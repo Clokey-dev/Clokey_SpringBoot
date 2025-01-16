@@ -1,16 +1,12 @@
 package com.clokey.server.domain.term.api;
 
-import com.clokey.server.domain.model.mapping.MemberTerm;
 import com.clokey.server.domain.term.application.TermCommandService;
-import com.clokey.server.domain.term.converter.TermConverter;
-import com.clokey.server.domain.term.dao.TermRepository;
 import com.clokey.server.domain.term.dto.TermRequestDTO;
 import com.clokey.server.domain.term.dto.TermResponseDTO;
 import com.clokey.server.domain.term.exception.annotation.EssentialTermAgree;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.models.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;

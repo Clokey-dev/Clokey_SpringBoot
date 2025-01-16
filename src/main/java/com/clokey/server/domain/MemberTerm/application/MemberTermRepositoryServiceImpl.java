@@ -1,8 +1,7 @@
 package com.clokey.server.domain.MemberTerm.application;
 
-import com.clokey.server.domain.MemberTerm.application.MemberTermRepositoryService;
-import com.clokey.server.domain.MemberTerm.dao.MemberTermRepository;
-import com.clokey.server.domain.model.mapping.MemberTerm;
+import com.clokey.server.domain.model.repository.MemberTermRepository;
+import com.clokey.server.domain.model.entity.mapping.MemberTerm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

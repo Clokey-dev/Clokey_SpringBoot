@@ -1,6 +1,6 @@
 package com.clokey.server.domain.comment.application;
 
-import com.clokey.server.domain.model.Comment;
+import com.clokey.server.domain.model.entity.Comment;
 import org.springframework.data.domain.Page;
 
 import javax.swing.text.html.Option;

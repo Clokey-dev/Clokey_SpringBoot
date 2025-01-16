@@ -1,9 +1,9 @@
 package com.clokey.server.domain.HashtagHistory.application;
 
-import com.clokey.server.domain.HashtagHistory.dao.HashtagHistoryRepository;
-import com.clokey.server.domain.hashtag.dao.HashtagRepository;
-import com.clokey.server.domain.model.Hashtag;
-import com.clokey.server.domain.model.mapping.HashtagHistory;
+import com.clokey.server.domain.model.repository.HashtagHistoryRepository;
+import com.clokey.server.domain.model.repository.HashtagRepository;
+import com.clokey.server.domain.model.entity.Hashtag;
+import com.clokey.server.domain.model.entity.mapping.HashtagHistory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

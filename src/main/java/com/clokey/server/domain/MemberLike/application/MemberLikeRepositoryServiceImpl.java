@@ -1,10 +1,10 @@
 package com.clokey.server.domain.MemberLike.application;
 
-import com.clokey.server.domain.MemberLike.dao.MemberLikeRepository;
+import com.clokey.server.domain.model.repository.MemberLikeRepository;
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
-import com.clokey.server.domain.history.dao.HistoryRepository;
+import com.clokey.server.domain.model.repository.HistoryRepository;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
-import com.clokey.server.domain.model.mapping.MemberLike;
+import com.clokey.server.domain.model.entity.mapping.MemberLike;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

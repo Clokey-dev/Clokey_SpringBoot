@@ -2,7 +2,7 @@ package com.clokey.server.domain.member.application;
 
 import com.clokey.server.domain.member.converter.GetUserConverter;
 import com.clokey.server.domain.member.dto.MemberResponseDTO;
-import com.clokey.server.domain.model.Member;
+import com.clokey.server.domain.model.entity.Member;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;

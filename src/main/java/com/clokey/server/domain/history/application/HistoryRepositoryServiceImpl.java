@@ -1,17 +1,16 @@
 package com.clokey.server.domain.history.application;
 
-import com.clokey.server.domain.HistoryImage.dao.HistoryImageRepository;
-import com.clokey.server.domain.history.dao.HistoryRepository;
-import com.clokey.server.domain.model.History;
-import com.clokey.server.domain.model.HistoryImage;
-import com.clokey.server.domain.model.enums.Visibility;
+import com.clokey.server.domain.model.repository.HistoryImageRepository;
+import com.clokey.server.domain.model.repository.HistoryRepository;
+import com.clokey.server.domain.model.entity.History;
+import com.clokey.server.domain.model.entity.HistoryImage;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,9 +32,7 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
 
     @Override
     public boolean isPublic(Long historyId) {
-        Visibility visibility = historyRepository.findById(historyId)
-                .get()
-                .getVisibility();
+        Visibility visibility = historyRepository.findById(historyId).get().getVisibility();
         return visibility.equals(Visibility.PUBLIC);
     }
 

@@ -1,7 +1,7 @@
 package com.clokey.server.domain.comment.application;
 
-import com.clokey.server.domain.comment.dao.CommentRepository;
-import com.clokey.server.domain.model.Comment;
+import com.clokey.server.domain.model.repository.CommentRepository;
+import com.clokey.server.domain.model.entity.Comment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

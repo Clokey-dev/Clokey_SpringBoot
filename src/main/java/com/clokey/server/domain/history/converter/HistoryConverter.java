@@ -1,9 +1,9 @@
 package com.clokey.server.domain.history.converter;
 
 import com.clokey.server.domain.history.dto.HistoryResponseDto;
-import com.clokey.server.domain.model.Comment;
-import com.clokey.server.domain.model.History;
-import com.clokey.server.domain.model.enums.Visibility;
+import com.clokey.server.domain.model.entity.Comment;
+import com.clokey.server.domain.model.entity.History;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 import org.springframework.data.domain.Page;
 
 import java.util.ArrayList;
