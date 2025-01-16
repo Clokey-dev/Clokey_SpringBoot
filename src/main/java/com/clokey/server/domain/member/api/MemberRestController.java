@@ -1,9 +1,7 @@
 package com.clokey.server.domain.member.api;
 
 import com.clokey.server.domain.member.application.GetUserQueryService;
-import com.clokey.server.domain.member.dto.GetUserResponseDTO;
-import com.clokey.server.domain.member.dto.ProfileRequestDTO;
-import com.clokey.server.domain.member.dto.ProfileResponseDTO;
+import com.clokey.server.domain.member.dto.MemberResponseDTO;
 import com.clokey.server.domain.member.application.ProfileCommandService;
 import com.clokey.server.domain.member.exception.annotation.IdExist;
 import com.clokey.server.domain.member.exception.annotation.IdValid;
@@ -11,6 +9,7 @@ import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,11 +24,11 @@ public class MemberRestController {
 
     @Operation(summary = "프로필 수정 API", description = "사용자의 프로필 정보를 수정하는 API입니다.")
     @PatchMapping("users/{user_id}/profile")
-    public BaseResponse<ProfileResponseDTO.ProfileRP> updateProfile(
+    public BaseResponse<MemberResponseDTO.ProfileRP> updateProfile(
             @PathVariable("user_id") Long userId,
-            @RequestBody @Valid ProfileRequestDTO.ProfileRQ request) {
+            @RequestBody @Valid MemberResponseDTO.ProfileRQ request) {
 
-        ProfileResponseDTO.ProfileRP response = profileCommandService.updateProfile(userId, request);
+        MemberResponseDTO.ProfileRP response = profileCommandService.updateProfile(userId, request);
 
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_SUCCESS, response);
     }
@@ -48,7 +47,7 @@ public class MemberRestController {
     public BaseResponse<Object> getUser(
             @IdValid @PathVariable("clokey_id") String clokeyId) {
 
-        GetUserResponseDTO.GetUserRP response = getUserQueryService.getUser(clokeyId);
+        MemberResponseDTO.GetUserRP response = getUserQueryService.getUser(clokeyId);
 
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_SUCCESS, response);
     }

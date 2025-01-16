@@ -23,6 +23,12 @@ public class IdValidValidator implements ConstraintValidator<IdValid, String> {
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
 
+        if(s == null) {
+            constraintValidatorContext.disableDefaultConstraintViolation();
+            constraintValidatorContext.buildConstraintViolationWithTemplate(ErrorStatus.ESSENTIAL_INPUT_REQUIRED.toString()).addConstraintViolation();
+            return false;
+        }
+
         boolean exists=memberRepositoryService.idExist(s);
 
         if(exists){
