@@ -22,13 +22,6 @@ public class ProfileCommandServiceImpl implements ProfileCommandService {
         // 사용자 확인
         Member member = memberRepositoryService.findMemberById(userId);
 
-        if (request.getNickname() == null || request.getNickname().trim().isEmpty()) {
-            throw new MemberException(ErrorStatus.ESSENTIAL_INPUT_REQUIRED);
-        }
-
-        if (request.getClokeyId() == null || request.getClokeyId().trim().isEmpty()) {
-            throw new MemberException(ErrorStatus.ESSENTIAL_INPUT_REQUIRED);
-        }
 
         // 정보 업데이트
         member.setNickname(request.getNickname());
