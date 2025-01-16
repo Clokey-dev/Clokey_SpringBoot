@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class CategoryConverter {
 
-    public CategoryResponseDTO convertToDTO(Category category) {
-        return new CategoryResponseDTO(category.getId(), category.getName());
+    public CategoryResponseDTO.CategoryRP convertToDTO(Category category) {
+        return new CategoryResponseDTO.CategoryRP(category.getId(), category.getName());
     }
 }
 

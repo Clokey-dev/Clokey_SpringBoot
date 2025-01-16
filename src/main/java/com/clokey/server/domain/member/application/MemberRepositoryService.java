@@ -15,4 +15,5 @@ public interface MemberRepositoryService {
     Optional<Member> getMember(Long memberId);
 
     boolean idExist(String clokeyId);
+    Member findMemberByClokeyId(String clokeyId);
 }

@@ -1,5 +1,6 @@
 package com.clokey.server.domain.term.dto;
 
+import com.clokey.server.domain.term.exception.annotation.EssentialTermAgree;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -13,15 +14,16 @@ public class TermRequestDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class JoinDto {
+    public static class Join {
 
-        private List<TermDto> terms;
+        @EssentialTermAgree
+        private List<Term> terms;
 
         @Getter
         @NoArgsConstructor
         @AllArgsConstructor
         @Builder
-        public static class TermDto {
+        public static class Term {
             private Long termId;
             private Boolean agreed;
         }

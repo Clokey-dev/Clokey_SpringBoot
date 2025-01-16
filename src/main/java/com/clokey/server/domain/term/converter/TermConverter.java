@@ -9,8 +9,8 @@ import com.clokey.server.domain.term.dto.TermResponseDTO;
 public class TermConverter {
 
     // Term -> TermResponseDTO.TermDto 변환
-    public static TermResponseDTO.TermDto toTermDto(Term term, Boolean agreed) {
-        return TermResponseDTO.TermDto.builder()
+    public static TermResponseDTO.Term toTermDto(Term term, Boolean agreed) {
+        return TermResponseDTO.Term.builder()
                 .termId(term.getId())
                 .agreed(agreed)
                 .build();

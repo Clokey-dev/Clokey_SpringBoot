@@ -1,10 +1,9 @@
 package com.clokey.server.domain.member.application;
 
 
-import com.clokey.server.domain.member.dto.ProfileResponseDTO;
-import com.clokey.server.domain.member.dto.ProfileRequestDTO;
+import com.clokey.server.domain.member.dto.MemberResponseDTO;
 
 
 public interface ProfileCommandService {
-    ProfileResponseDTO.ProfileRP updateProfile(Long userId, ProfileRequestDTO.ProfileRQ request);
+    MemberResponseDTO.ProfileRP updateProfile(Long userId, MemberResponseDTO.ProfileRQ request);
 }
