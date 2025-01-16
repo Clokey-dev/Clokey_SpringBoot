@@ -23,6 +23,6 @@ public class ClothFolder extends BaseEntity {
     private Cloth cloth;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id",nullable = false)
+    @JoinColumn(name = "folder_id",nullable = false)
     private Folder folder;
 }
