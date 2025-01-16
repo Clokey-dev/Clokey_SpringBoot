@@ -1,7 +1,6 @@
 package com.clokey.server.domain.category.api;
 
 import com.clokey.server.domain.category.application.CategoryQueryService;
-import com.clokey.server.domain.category.application.CategoryRepositoryService;
 import com.clokey.server.domain.category.dto.CategoryResponseDTO;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
