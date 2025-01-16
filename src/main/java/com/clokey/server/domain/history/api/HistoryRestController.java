@@ -12,9 +12,9 @@ import com.clokey.server.domain.history.dto.HistoryResponseDto;
 import com.clokey.server.domain.history.exception.annotation.CheckPage;
 import com.clokey.server.domain.history.exception.annotation.HistoryExist;
 import com.clokey.server.domain.history.exception.annotation.MonthFormat;
+import com.clokey.server.domain.history.exception.validator.CommentValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
-import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.exception.annotation.MemberExist;
 import com.clokey.server.domain.model.Comment;
 import com.clokey.server.domain.model.History;
@@ -23,8 +23,6 @@ import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +47,7 @@ public class HistoryRestController {
     private final HistoryAccessibleValidator historyAccessibleValidator;
     private final HistoryService historyService;
     private final CommentRepositoryService commentRepositoryService;
+    private final CommentValidator commentValidator;
 
     //임시로 엔드 포인트 맨 뒤에 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
     @GetMapping("/daily/{historyId}/{memberId}")
@@ -137,7 +136,7 @@ public class HistoryRestController {
             @Parameter(name = "thisMemberId", description = "현재 유저의 ID 토큰 대체용입니다.")
     })
     public BaseResponse<HistoryResponseDto.LikeResult> like(@PathVariable Long thisMemberId,
-                                                            @RequestBody @Valid HistoryRequestDto.likeStatusChange request) {
+                                                            @RequestBody @Valid HistoryRequestDto.LikeStatusChange request) {
 
         //isLiked 정보가 정확한지 검증합니다.
         historyLikedValidator.validateIsLiked(thisMemberId, request.getHistoryId(), request.isLiked());
@@ -151,4 +150,16 @@ public class HistoryRestController {
         ));
     }
 
+    @PostMapping("/histories/{historyId}/comments/{thisMemberId}")
+    @Operation(summary = "댓글을 남길 수 있는 API", description = "History_id를 path parameter로 넘겨주세요. Body에는 내용과 대댓글 대상 댓글 Id(Optional)을 받습니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_201", description = "성공적으로 댓글이 생성되었습니다."),
+    })
+    public BaseResponse<HistoryResponseDto.CommentWriteResult> writeComments(@PathVariable @Valid @HistoryExist Long historyId,
+                                                                             @PathVariable @Valid @MemberExist Long thisMemberId,
+                                                                             @RequestBody @Valid HistoryRequestDto.CommentWrite request) {
+        commentValidator.validateParentCommentHistory(historyId, request.getCommentId());
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_CREATED, historyService.writeComment(historyId, request.getCommentId(), thisMemberId, request.getContent()));
+
+    }
 }

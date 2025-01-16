@@ -1,7 +1,14 @@
 package com.clokey.server.domain.history.application;
 
 import com.clokey.server.domain.MemberLike.application.MemberLikeRepositoryService;
+import com.clokey.server.domain.comment.dao.CommentRepository;
+import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.dao.HistoryRepository;
+import com.clokey.server.domain.history.dto.HistoryResponseDto;
+import com.clokey.server.domain.member.dao.MemberRepository;
+import com.clokey.server.domain.model.Comment;
+import com.clokey.server.domain.model.History;
+import com.clokey.server.domain.model.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +18,8 @@ public class HistoryServiceImpl implements HistoryService{
 
     private final MemberLikeRepositoryService memberLikeRepositoryService;
     private final HistoryRepository historyRepository;
+    private final CommentRepository commentRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public void changeLike(Long memberId, Long historyId, boolean isLiked) {
@@ -22,4 +31,30 @@ public class HistoryServiceImpl implements HistoryService{
             memberLikeRepositoryService.saveLike(memberId,historyId);
         }
     }
+
+    @Override
+    public HistoryResponseDto.CommentWriteResult writeComment(Long historyId, Long parentCommentId, Long memberId, String content) {
+
+        History history = historyRepository.findById(historyId).get();
+
+        Member member = memberRepository.findById(memberId).get();
+
+        Comment parentComment = null;
+        if (parentCommentId != null) {
+            parentComment = commentRepository.findById(parentCommentId).get();
+        }
+
+        Comment comment = Comment.builder()
+                .content(content)
+                .comment(parentComment)
+                .history(history)
+                .member(member)
+                .build();
+
+        Comment savedComment = commentRepository.save(comment);
+
+        return HistoryConverter.toCommentWriteResult(savedComment);
+    }
+
+
 }
