@@ -1,18 +1,17 @@
 package com.clokey.server.domain.history.application;
 
-import com.clokey.server.domain.history.dto.HistoryRequestDto;
-import com.clokey.server.domain.history.dto.HistoryResponseDto;
+import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 
 public interface HistoryService {
 
-    HistoryResponseDto.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked);
+    HistoryResponseDTO.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked);
 
-    HistoryResponseDto.CommentWriteResult writeComment(Long historyId, Long parentCommentId, Long memberId, String content);
+    HistoryResponseDTO.CommentWriteResult writeComment(Long historyId, Long parentCommentId, Long memberId, String content);
 
-    HistoryResponseDto.DayViewResult getDaily(Long historyId, Long memberId);
+    HistoryResponseDTO.DayViewResult getDaily(Long historyId, Long memberId);
 
-    HistoryResponseDto.HistoryCommentResult getComments(Long historyId, int page);
+    HistoryResponseDTO.HistoryCommentResult getComments(Long historyId, int page);
 
-    HistoryResponseDto.MonthViewResult getMonthlyHistories(Long this_member_id, Long memberId, String month);
+    HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long this_member_id, Long memberId, String month);
 
 }

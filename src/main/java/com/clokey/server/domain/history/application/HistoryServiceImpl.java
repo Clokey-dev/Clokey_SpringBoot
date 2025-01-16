@@ -5,10 +5,8 @@ import com.clokey.server.domain.model.entity.mapping.HashtagHistory;
 import com.clokey.server.domain.model.entity.mapping.MemberLike;
 import com.clokey.server.domain.model.repository.*;
 import com.clokey.server.domain.history.converter.HistoryConverter;
-import com.clokey.server.domain.history.dto.HistoryResponseDto;
-import com.clokey.server.global.common.response.BaseResponse;
+import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import com.clokey.server.global.error.code.status.SuccessStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,7 +30,7 @@ public class HistoryServiceImpl implements HistoryService{
     private final HashtagHistoryRepository hashtagHistoryRepository;
 
     @Override
-    public HistoryResponseDto.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked) {
+    public HistoryResponseDTO.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked) {
         History history = historyRepository.findById(historyId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_HISTORY));
 
         if(isLiked) {
@@ -51,7 +49,7 @@ public class HistoryServiceImpl implements HistoryService{
     }
 
     @Override
-    public HistoryResponseDto.CommentWriteResult writeComment(Long historyId, Long parentCommentId, Long memberId, String content) {
+    public HistoryResponseDTO.CommentWriteResult writeComment(Long historyId, Long parentCommentId, Long memberId, String content) {
 
         History history = historyRepository.findById(historyId).get();
 
@@ -75,7 +73,7 @@ public class HistoryServiceImpl implements HistoryService{
     }
 
     @Override
-    public HistoryResponseDto.DayViewResult getDaily(Long historyId, Long memberId){
+    public HistoryResponseDTO.DayViewResult getDaily(Long historyId, Long memberId){
         Optional<History> history = historyRepository.findById(historyId);
         List<HistoryImage> historyImages = historyImageRepository.findByHistory_Id(historyId);
         List<String> imageUrl = historyImages.stream()
@@ -93,7 +91,7 @@ public class HistoryServiceImpl implements HistoryService{
     }
 
     @Override
-    public HistoryResponseDto.HistoryCommentResult getComments(Long historyId, int page) {
+    public HistoryResponseDTO.HistoryCommentResult getComments(Long historyId, int page) {
         Page<Comment> comments = commentRepository.findByHistoryIdAndCommentIsNull(historyId, PageRequest.of(page,10, Sort.by(Sort.Direction.ASC, "createdAt")));
         List<List<Comment>> repliesForEachComment = comments.stream()
                 .map(comment -> commentRepository.findByCommentId(comment.getId()))
@@ -102,7 +100,7 @@ public class HistoryServiceImpl implements HistoryService{
     }
 
     @Override
-    public HistoryResponseDto.MonthViewResult getMonthlyHistories(Long this_member_id, Long memberId, String month){
+    public HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long this_member_id, Long memberId, String month){
         List<History> histories = historyRepository.findHistoriesByMemberAndYearMonth(memberId, month);
         List<String> historyImageUrls = histories.stream()
                 .map(history -> historyImageRepository.findByHistory_Id(history.getId())

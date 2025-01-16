@@ -1,8 +1,8 @@
 package com.clokey.server.domain.history.api;
 
 import com.clokey.server.domain.history.application.HistoryService;
-import com.clokey.server.domain.history.dto.HistoryRequestDto;
-import com.clokey.server.domain.history.dto.HistoryResponseDto;
+import com.clokey.server.domain.history.dto.HistoryRequestDTO;
+import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.domain.history.exception.annotation.CheckPage;
 import com.clokey.server.domain.history.exception.annotation.HistoryExist;
 import com.clokey.server.domain.history.exception.annotation.MonthFormat;
@@ -41,11 +41,11 @@ public class HistoryRestController {
     @Parameters({
             @Parameter(name = "historyId", description = "기록의 id, path variable 입니다.")
     })
-    public BaseResponse<HistoryResponseDto.DayViewResult> getDaily(@PathVariable @Valid @HistoryExist Long historyId, @PathVariable Long memberId) {
+    public BaseResponse<HistoryResponseDTO.DayViewResult> getDaily(@PathVariable @Valid @HistoryExist Long historyId, @PathVariable Long memberId) {
 
         historyAccessibleValidator.validateHistoryAccessOfMember(historyId, memberId);
 
-        HistoryResponseDto.DayViewResult result = historyService.getDaily(historyId, memberId);
+        HistoryResponseDTO.DayViewResult result = historyService.getDaily(historyId, memberId);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, result);
     }
@@ -62,14 +62,14 @@ public class HistoryRestController {
             @Parameter(name = "month", description = "조회하고자 하는 월입니다. YYYY-MM 형식으로 입력해주세요.")
     })
 
-    public BaseResponse<HistoryResponseDto.MonthViewResult> getMonthlyHistories(@PathVariable Long this_member_id,
+    public BaseResponse<HistoryResponseDTO.MonthViewResult> getMonthlyHistories(@PathVariable Long this_member_id,
                                                                                 @RequestParam(value = "memberId") @Valid @MemberExist Long memberId,
                                                                                 @RequestParam(value = "month") @Valid @MonthFormat String month) {
 
         //멤버 자체에 대한 접근 권한 확인.
         historyAccessibleValidator.validateMemberAccessOfMember(memberId, this_member_id);
 
-        HistoryResponseDto.MonthViewResult result = historyService.getMonthlyHistories(this_member_id, memberId, month);
+        HistoryResponseDTO.MonthViewResult result = historyService.getMonthlyHistories(this_member_id, memberId, month);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, result);
 
@@ -85,10 +85,10 @@ public class HistoryRestController {
             @Parameter(name = "page", description = "페이징 관련 query parameter")
 
     })
-    public BaseResponse<HistoryResponseDto.HistoryCommentResult> getComments(@PathVariable @Valid @HistoryExist Long historyId,
+    public BaseResponse<HistoryResponseDTO.HistoryCommentResult> getComments(@PathVariable @Valid @HistoryExist Long historyId,
                                                                              @RequestParam(value = "page") @Valid @CheckPage int page) {
         //페이지를 1에서 부터 받기 위해서 -1을 해서 입력합니다.
-        HistoryResponseDto.HistoryCommentResult result = historyService.getComments(historyId, page-1);
+        HistoryResponseDTO.HistoryCommentResult result = historyService.getComments(historyId, page-1);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, result);
     }
@@ -104,14 +104,14 @@ public class HistoryRestController {
     @Parameters({
             @Parameter(name = "thisMemberId", description = "현재 유저의 ID 토큰 대체용입니다.")
     })
-    public BaseResponse<HistoryResponseDto.LikeResult> like(@PathVariable Long thisMemberId,
-                                                            @RequestBody @Valid HistoryRequestDto.LikeStatusChange request) {
+    public BaseResponse<HistoryResponseDTO.LikeResult> like(@PathVariable Long thisMemberId,
+                                                            @RequestBody @Valid HistoryRequestDTO.LikeStatusChange request) {
 
         //isLiked 정보가 정확한지 검증합니다.
         historyLikedValidator.validateIsLiked(thisMemberId, request.getHistoryId(), request.isLiked());
 
         //isLiked의 상태에 따라서 좋아요 -> 취소 , 좋아요가 없는 상태 -> 좋아요 로 바꿔주게 됩니다.
-        HistoryResponseDto.LikeResult result = historyService.changeLike(thisMemberId, request.getHistoryId(), request.isLiked());
+        HistoryResponseDTO.LikeResult result = historyService.changeLike(thisMemberId, request.getHistoryId(), request.isLiked());
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_LIKE_STATUS_CHANGED, result);
     }
@@ -121,9 +121,9 @@ public class HistoryRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_201", description = "성공적으로 댓글이 생성되었습니다."),
     })
-    public BaseResponse<HistoryResponseDto.CommentWriteResult> writeComments(@PathVariable @Valid @HistoryExist Long historyId,
+    public BaseResponse<HistoryResponseDTO.CommentWriteResult> writeComments(@PathVariable @Valid @HistoryExist Long historyId,
                                                                              @PathVariable @Valid @MemberExist Long thisMemberId,
-                                                                             @RequestBody @Valid HistoryRequestDto.CommentWrite request) {
+                                                                             @RequestBody @Valid HistoryRequestDTO.CommentWrite request) {
         commentValidator.validateParentCommentHistory(historyId, request.getCommentId());
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_CREATED, historyService.writeComment(historyId, request.getCommentId(), thisMemberId, request.getContent()));
 

@@ -1,6 +1,6 @@
 package com.clokey.server.domain.history.converter;
 
-import com.clokey.server.domain.history.dto.HistoryResponseDto;
+import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.domain.model.entity.Comment;
 import com.clokey.server.domain.model.entity.History;
 import com.clokey.server.domain.model.entity.enums.Visibility;
@@ -12,8 +12,8 @@ import java.util.stream.IntStream;
 
 public class HistoryConverter {
 
-    public static HistoryResponseDto.DayViewResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked) {
-        return HistoryResponseDto.DayViewResult.builder()
+    public static HistoryResponseDTO.DayViewResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked) {
+        return HistoryResponseDTO.DayViewResult.builder()
                 .userId(history.getMember().getId())
                 .contents(history.getContent())
                 .imageUrl(imageUrl)
@@ -25,9 +25,9 @@ public class HistoryConverter {
                 .build();
     }
 
-    public static HistoryResponseDto.MonthViewResult toPublicMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
+    public static HistoryResponseDTO.MonthViewResult toPublicMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
 
-        List<HistoryResponseDto.HistoryResult> HistoryResults = new ArrayList<>();
+        List<HistoryResponseDTO.HistoryResult> HistoryResults = new ArrayList<>();
 
         for (int i = 0; i < histories.size(); i++) {
             History history = histories.get(i);
@@ -44,15 +44,15 @@ public class HistoryConverter {
             HistoryResults.add(toHistoryResult(history, historyImageUrl));
         }
 
-        return HistoryResponseDto.MonthViewResult.builder()
+        return HistoryResponseDTO.MonthViewResult.builder()
                 .userId(memberId)
                 .histories(HistoryResults)
                 .build();
     }
 
-    public static HistoryResponseDto.MonthViewResult toAllMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
+    public static HistoryResponseDTO.MonthViewResult toAllMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
 
-        List<HistoryResponseDto.HistoryResult> HistoryResults = new ArrayList<>();
+        List<HistoryResponseDTO.HistoryResult> HistoryResults = new ArrayList<>();
 
         for (int i = 0; i < histories.size(); i++) {
             History history = histories.get(i);
@@ -61,14 +61,14 @@ public class HistoryConverter {
             HistoryResults.add(toHistoryResult(history, historyImageUrl));
         }
 
-        return HistoryResponseDto.MonthViewResult.builder()
+        return HistoryResponseDTO.MonthViewResult.builder()
                 .userId(memberId)
                 .histories(HistoryResults)
                 .build();
     }
 
-    private static HistoryResponseDto.HistoryResult toHistoryResult(History history, String historyImageUrl) {
-        return HistoryResponseDto.HistoryResult.builder()
+    private static HistoryResponseDTO.HistoryResult toHistoryResult(History history, String historyImageUrl) {
+        return HistoryResponseDTO.HistoryResult.builder()
                 .historyId(history.getId())
                 .date(history.getHistoryDate())
                 .imageUrl(historyImageUrl)
@@ -76,16 +76,16 @@ public class HistoryConverter {
     }
 
 
-    public static HistoryResponseDto.LikeResult toLikeResult(History history, boolean isLiked){
-        return HistoryResponseDto.LikeResult.builder()
+    public static HistoryResponseDTO.LikeResult toLikeResult(History history, boolean isLiked){
+        return HistoryResponseDTO.LikeResult.builder()
                 .historyId(history.getId())
                 .isLiked(!isLiked)
                 .likeCount(history.getLikes())
                 .build();
     }
 
-    public static HistoryResponseDto.HistoryCommentResult toHistoryCommentResult(Page<Comment> comments, List<List<Comment>> replies) {
-        return HistoryResponseDto.HistoryCommentResult.builder()
+    public static HistoryResponseDTO.HistoryCommentResult toHistoryCommentResult(Page<Comment> comments, List<List<Comment>> replies) {
+        return HistoryResponseDTO.HistoryCommentResult.builder()
                 .comments(toCommentResultList(comments,replies))
                 .totalPage(comments.getTotalPages())
                 .totalElements(comments.getNumberOfElements())
@@ -96,12 +96,12 @@ public class HistoryConverter {
 
 
 
-    private static List<HistoryResponseDto.CommentResult> toCommentResultList(Page<Comment> comments, List<List<Comment>> replies) {
+    private static List<HistoryResponseDTO.CommentResult> toCommentResultList(Page<Comment> comments, List<List<Comment>> replies) {
         return IntStream.range(0, comments.getContent().size())
                 .mapToObj(i -> {
                     Comment comment = comments.getContent().get(i);
                     List<Comment> replyList = replies.get(i);
-                    return HistoryResponseDto.CommentResult.builder()
+                    return HistoryResponseDTO.CommentResult.builder()
                             .commentId(comment.getId())
                             .memberId(comment.getMember().getId())
                             .userImageUrl(comment.getMember().getProfileImageUrl())
@@ -112,9 +112,9 @@ public class HistoryConverter {
                 .toList();
     }
 
-    private static List<HistoryResponseDto.ReplyResult> toReplyResultList(List<Comment> replies) {
+    private static List<HistoryResponseDTO.ReplyResult> toReplyResultList(List<Comment> replies) {
         return replies.stream()
-                .map(reply->HistoryResponseDto.ReplyResult.builder()
+                .map(reply-> HistoryResponseDTO.ReplyResult.builder()
                         .commentId(reply.getId())
                         .MemberId(reply.getMember().getId())
                         .userImageUrl(reply.getMember().getProfileImageUrl())
@@ -123,8 +123,8 @@ public class HistoryConverter {
                 .toList();
     }
 
-    public static HistoryResponseDto.CommentWriteResult toCommentWriteResult(Comment comment){
-        return HistoryResponseDto.CommentWriteResult.builder()
+    public static HistoryResponseDTO.CommentWriteResult toCommentWriteResult(Comment comment){
+        return HistoryResponseDTO.CommentWriteResult.builder()
                 .commentId(comment.getId())
                 .build();
     }
