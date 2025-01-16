@@ -6,8 +6,11 @@ import com.clokey.server.domain.folder.exception.FolderDeleteException;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.model.entity.Folder;
 import com.clokey.server.domain.model.entity.Member;
+import com.clokey.server.domain.model.repository.FolderRepository;
+import com.clokey.server.domain.model.repository.MemberRepository;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.ErrorStatus;
+import com.clokey.server.global.error.exception.DatabaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -18,16 +21,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FolderServiceImpl implements FolderService {
 
-    private final FolderRepositoryService folderRepositoryService;
-    private final MemberRepositoryService memberRepositoryService;
+    private final FolderRepository folderRepository;
+    private final MemberRepository memberRepository;
 
 
     @Override
     @Transactional
     public Folder createFolder(Long memberId, FolderRequest.FolderCreateRequest request) {
-        Member member = memberRepositoryService.getMember(memberId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
         Folder newFolder = FolderConverter.toFolder(request, member);
-        folderRepositoryService.saveFolder(newFolder);
+        folderRepository.save(newFolder);
         return newFolder;
     }
 
@@ -37,7 +40,7 @@ public class FolderServiceImpl implements FolderService {
             throw new FolderDeleteException(ErrorStatus.NO_SUCH_FOLDER);
         }
         try {
-            folderRepositoryService.deleteFolder(folderId);
+            folderRepository.deleteById(folderId);
         } catch (Exception ex) {
             throw new FolderDeleteException(ErrorStatus.FAILED_TO_DELETE_FOLDER);
         }
@@ -45,7 +48,7 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public boolean folderExist(Long folderId) {
-        return folderRepositoryService.folderExist(folderId);
+        return folderRepository.existsById(folderId);
     }
 
 }
