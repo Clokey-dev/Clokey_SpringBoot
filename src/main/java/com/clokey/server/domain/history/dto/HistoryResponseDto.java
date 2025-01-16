@@ -92,6 +92,14 @@ public class HistoryResponseDto {
         int likeCount;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CommentWriteResult{
+        Long commentId;
+    }
+
 }
 
 

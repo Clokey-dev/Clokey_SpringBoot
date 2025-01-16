@@ -1,9 +1,10 @@
 package com.clokey.server.domain.history.dto;
 
+import com.clokey.server.domain.history.exception.annotation.ContentLength;
 import com.clokey.server.domain.history.exception.annotation.HistoryExist;
+import com.clokey.server.domain.history.exception.annotation.ParentCommentConditions;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +16,7 @@ public class HistoryRequestDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class likeStatusChange {
+    public static class LikeStatusChange {
 
         @HistoryExist
         Long historyId;
@@ -23,4 +24,21 @@ public class HistoryRequestDto {
         @JsonProperty("liked")
         boolean isLiked;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CommentWrite {
+
+
+        @ParentCommentConditions
+        Long commentId;
+
+        @ContentLength
+        @NotBlank
+        String content;
+    }
+
+
 }

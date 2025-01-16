@@ -123,6 +123,12 @@ public class HistoryConverter {
                 .toList();
     }
 
+    public static HistoryResponseDto.CommentWriteResult toCommentWriteResult(Comment comment){
+        return HistoryResponseDto.CommentWriteResult.builder()
+                .commentId(comment.getId())
+                .build();
+    }
+
 
 
 }
