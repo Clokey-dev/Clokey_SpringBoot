@@ -33,8 +33,6 @@ public class FollowCommandServiceImpl implements FollowCommandService {
         Long myUserId = memberRepositoryService.findMemberByClokeyId(request.getMyClokeyId()).getId();
         Long yourUserId = memberRepositoryService.findMemberByClokeyId(request.getYourClokeyId()).getId();
 
-        validateFollowRequest(request);
-
         // 팔로우 관계가 존재하는지 확인
         boolean isFollow = followRepository.existsByFollowing_IdAndFollowed_Id(myUserId, yourUserId);
 
@@ -56,10 +54,5 @@ public class FollowCommandServiceImpl implements FollowCommandService {
             followRepository.save(follow);
         }
     }
-
-    private void validateFollowRequest(MemberDTO.FollowRQ request) {
-        if (request.getMyClokeyId().equals(request.getYourClokeyId())) {
-            throw new IllegalArgumentException("myClokeyId와 yourClokeyId는 동일할 수 없습니다.");
-        }
-    }
+    
 }

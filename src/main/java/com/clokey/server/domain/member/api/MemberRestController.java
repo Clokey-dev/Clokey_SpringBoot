@@ -6,6 +6,7 @@ import com.clokey.server.domain.member.dto.MemberDTO;
 import com.clokey.server.domain.member.application.ProfileCommandService;
 import com.clokey.server.domain.member.exception.annotation.IdExist;
 import com.clokey.server.domain.member.exception.annotation.IdValid;
+import com.clokey.server.domain.member.exception.annotation.NotFollowMyself;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -69,7 +70,7 @@ public class MemberRestController {
     @Operation(summary = "팔로우 API", description = "다른 사용자를 팔로우/언팔로우하는 API입니다. 호출시마다 기존 상태와 반대로 변경됩니다.")
     @PostMapping("users/follow")
     public BaseResponse<Object> follow(
-            @RequestBody @Valid MemberDTO.FollowRQ request) {
+        @NotFollowMyself @RequestBody @Valid MemberDTO.FollowRQ request) {
 
         followCommandService.follow(request);
 
