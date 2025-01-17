@@ -1,6 +1,6 @@
 package com.clokey.server.domain.member.converter;
 
-import com.clokey.server.domain.member.dto.MemberResponseDTO;
+import com.clokey.server.domain.member.dto.MemberDTO;
 import com.clokey.server.domain.model.Member;
 
 import java.time.LocalDateTime;
@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 public class ProfileConverter {
 
-    public static MemberResponseDTO.ProfileRP toProfileRPDTO(Member member) {
-        return MemberResponseDTO.ProfileRP.builder()
+    public static MemberDTO.ProfileRP toProfileRPDTO(Member member) {
+        return MemberDTO.ProfileRP.builder()
                 .id(member.getId())
                 .bio(member.getBio())
                 .email(member.getEmail())

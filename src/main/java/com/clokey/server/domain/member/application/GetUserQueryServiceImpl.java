@@ -1,7 +1,7 @@
 package com.clokey.server.domain.member.application;
 
 import com.clokey.server.domain.member.converter.GetUserConverter;
-import com.clokey.server.domain.member.dto.MemberResponseDTO;
+import com.clokey.server.domain.member.dto.MemberDTO;
 import com.clokey.server.domain.model.Member;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -22,7 +22,7 @@ public class GetUserQueryServiceImpl implements GetUserQueryService {
 
     @Override
     @Transactional
-    public MemberResponseDTO.GetUserRP getUser(String clokeyId) {
+    public MemberDTO.GetUserRP getUser(String clokeyId) {
         Member member = memberRepositoryService.findMemberByClokeyId(clokeyId);
 
         Long recordCount = countHistoryByMember(member);
