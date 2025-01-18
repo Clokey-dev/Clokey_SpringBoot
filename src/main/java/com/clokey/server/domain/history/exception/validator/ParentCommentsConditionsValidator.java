@@ -1,9 +1,10 @@
 package com.clokey.server.domain.history.exception.validator;
 
-import com.clokey.server.domain.comment.application.CommentRepositoryService;
 import com.clokey.server.domain.history.exception.annotation.ParentCommentConditions;
-import com.clokey.server.domain.model.Comment;
+import com.clokey.server.domain.model.entity.Comment;
+import com.clokey.server.domain.model.repository.CommentRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
+import com.clokey.server.global.error.exception.DatabaseException;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ParentCommentsConditionsValidator implements ConstraintValidator<ParentCommentConditions, Long> {
 
-    private final CommentRepositoryService commentRepositoryService;
+    private final CommentRepository commentRepository;
 
     @Override
     public void initialize(ParentCommentConditions constraintAnnotation) {
@@ -29,7 +30,7 @@ public class ParentCommentsConditionsValidator implements ConstraintValidator<Pa
         }
 
         //null이 아닌 경우 존재를 확인함.
-        if (!commentRepositoryService.commentExist(commentId)) {
+        if (!commentRepository.existsById(commentId)) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(ErrorStatus.NO_SUCH_COMMENT.toString()).addConstraintViolation();
 
@@ -37,7 +38,7 @@ public class ParentCommentsConditionsValidator implements ConstraintValidator<Pa
         }
 
         //존재하는 경우 댓글 대댓글 깊이 검사
-        Comment parentComment = commentRepositoryService.findById(commentId).get().getComment();
+        Comment parentComment = commentRepository.findById(commentId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_COMMENT)).getComment();
 
         if (parentComment != null) {
             context.disableDefaultConstraintViolation();

@@ -1,10 +1,11 @@
 package com.clokey.server.domain.term.application;
 
-import com.clokey.server.domain.MemberTerm.application.MemberTermRepositoryService;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
-import com.clokey.server.domain.model.Member;
-import com.clokey.server.domain.model.Term;
-import com.clokey.server.domain.model.mapping.MemberTerm;
+import com.clokey.server.domain.model.entity.Member;
+import com.clokey.server.domain.model.entity.Term;
+import com.clokey.server.domain.model.entity.mapping.MemberTerm;
+import com.clokey.server.domain.model.repository.MemberTermRepository;
+import com.clokey.server.domain.model.repository.TermRepository;
 import com.clokey.server.domain.term.dto.TermRequestDTO;
 import com.clokey.server.domain.term.dto.TermResponseDTO;
 import com.clokey.server.domain.term.exception.TermException;
@@ -21,8 +22,8 @@ import java.util.List;
 public class TermCommandServiceImpl implements TermCommandService {
 
     private final MemberRepositoryService memberRepositoryService;
-    private final TermRepositoryService termRepositoryService;
-    private final MemberTermRepositoryService memberTermRepositoryService;
+    private final TermRepository termRepository;
+    private final MemberTermRepository memberTermRepository;
 
     @Override
     @Transactional
@@ -34,7 +35,7 @@ public class TermCommandServiceImpl implements TermCommandService {
         List<TermResponseDTO.Term> termResponses = new ArrayList<>();
         for (TermRequestDTO.Join.Term termDto : request.getTerms()) {
             // 약관 조회 (이미 존재 여부는 확인된 상태)
-            Term term = termRepositoryService.findById(termDto.getTermId());
+            Term term = termRepository.findById(termDto.getTermId()).orElseThrow(() -> new TermException(ErrorStatus.NO_SUCH_TERM));
 
             // 필수 약관 확인
             if (!term.getOptional() && !termDto.getAgreed()) {
@@ -47,7 +48,7 @@ public class TermCommandServiceImpl implements TermCommandService {
                     .term(term)
                     .build();
 
-            memberTermRepositoryService.saveMemberTerm(memberTerm);
+            memberTermRepository.save(memberTerm);
 
             // 응답 데이터에 추가
             termResponses.add(TermResponseDTO.Term.builder()
