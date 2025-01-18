@@ -22,7 +22,7 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
     - name: Grant execute permission for gradlew
-      run: chmod +x ./clokey/gradlew
+      run: chmod +x ./gradlew
       
     - name: Build with Gradle Wrapper
       working-directory: ./clokey  # Gradle 빌드 파일이 있는 디렉토리로 이동
