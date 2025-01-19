@@ -36,7 +36,8 @@ jobs:
         host: ${{ secrets.EC2_HOST }}       
         username: ${{ secrets.EC2_USERNAME }} 
         key: ${{ secrets.EC2_SSH_KEY }}      
-        port: 22                              
+        port: 22
+
         script: |
           whoami
           ls -al
@@ -50,7 +51,7 @@ jobs:
     - name: Copy jar file to remote
       uses: appleboy/scp-action@v0.1.3
       with:
-        username: ubuntu
+        username: ${{ secrets.EC2_USERNAME }}
         host: ${{ secrets.EC2_HOST }}
         key: ${{ secrets.EC2_SSH_KEY }}
         source: "./build/libs/*.jar"
@@ -60,7 +61,7 @@ jobs:
     - name: Execute deploy script
       uses: appleboy/ssh-action@master
       with:
-        username: ubuntu
+        username: ${{ secrets.EC2_USERNAME }}
         host: ${{ secrets.EC2_HOST }}
         key: ${{ secrets.EC2_SSH_KEY }}
         script_stop: true
