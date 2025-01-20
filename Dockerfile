@@ -1,5 +1,9 @@
-# Use a base image with JDK installed
 FROM openjdk:17-jdk-slim
+
+# Set environment variables
+ENV DB_USERNAME=${DB_USERNAME}
+ENV DB_PASSWORD=${DB_PASSWORD}
+ENV DB_URL=${DB_URL}
 
 # Set the working directory
 WORKDIR /app
