@@ -1,0 +1,103 @@
+name: Blue/Green CD for Backend
+
+on:
+  push:
+    paths: ["clokey/**"]
+    branches: ["main"]
+
+env:
+  DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  GITHUB_SHA: ${{ github.sha }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate .env file and SSL files
+        run: |
+          cd clokey
+          echo "${{ secrets.ENV_FILE }}" > .env
+          echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> .env
+          echo "GITHUB_SHA=${{ github.sha }}" >> .env
+
+      - name: Add Remote Host Key to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" >> ~/.ssh/known_hosts
+
+      - name: Copy some files needed for Deployment to Remote Server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "clokey/.env,clokey/*.sh,clokey/compose*deploy.yml,clokey/*nginx*"
+          target: "~/app/"
+          overwrite: true
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Setup docker-compose
+        uses: KengoTODA/actions-setup-docker-compose@v1.2.1
+        with:
+          version: "2.24.5"
+
+      - name: Create a Builder Instance
+        run: |
+          docker buildx create --name buildx
+          docker buildx use buildx
+
+      - name: Build & Push Docker Images (Blue & Green)
+        run: |
+          cp package.json clokey/package.json
+          cp package-lock.json clokey/package-lock.json
+          cp -r packages clokey/packages
+          cd clokey
+          docker-compose -f compose.blue-build.yml build --builder buildx --build-arg BUILDKIT_INLINE_CACHE=1
+          docker-compose -f compose.green-build.yml build --builder buildx --build-arg BUILDKIT_INLINE_CACHE=1
+          docker-compose -f compose.blue-build.yml push
+          docker-compose -f compose.green-build.yml push
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Run a New Version of the application on Remote Server
+        uses: appleboy/ssh-action@master
+        env:
+          GITHUB_WORKFLOW: ${{ github.workflow }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          envs: GITHUB_WORKFLOW,GITHUB_REF,GITHUB_ACTOR,DISCORD_WEBHOOK_URL
+          script: |
+            cd ~/app/backend
+            chmod +x deploy.sh
+            DEPLOYMENT_RESULT='Success'
+            ./deploy.sh || DEPLOYMENT_RESULT='Fail'
+            # 디스코드로 알림 보내기
+            curl -X POST \
+              -H "Content-Type: application/json" \
+              -d '{"content": "Deployment Result: '$DEPLOYMENT_RESULT'. Reference: '${{ github.ref }}. Actor: '${{ github.actor }}. Workflow: '${{ github.workflow }}."}' \
+              $DISCORD_WEBHOOK_URL
