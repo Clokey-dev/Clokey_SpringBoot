@@ -39,6 +39,34 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: SSH to EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            whoami
+            ls -al
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: cicdsample
+          path: ./build/libs/*.jar
+
+      - name: Copy jar file to remote
+        uses: appleboy/scp-action@v0.1.3
+        with:
+          username: ubuntu
+          host: ${{ secrets.EC2_HOST }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "./build/libs/*.jar"
+          target: "/home/ubuntu/cicd"
+          debug: true
+
+
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
@@ -107,32 +135,6 @@ jobs:
             sleep 10
             docker-compose -f docker-compose.yml down app_$OLD
 
-      - name: SSH to EC2
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: 22
-          script: |
-            whoami
-            ls -al
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: cicdsample
-          path: ./build/libs/*.jar
-
-      - name: Copy jar file to remote
-        uses: appleboy/scp-action@v0.1.3
-        with:
-          username: ubuntu
-          host: ${{ secrets.EC2_HOST }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          source: "./build/libs/*.jar"
-          target: "/home/ubuntu/cicd"
-          debug: true
 
       - name: Execute deploy script
         uses: appleboy/ssh-action@master
