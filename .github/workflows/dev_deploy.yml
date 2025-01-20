@@ -94,7 +94,7 @@ jobs:
           script: |
             # 환경 변수들을 export로 전달
             export DB_USERNAME=${{ env.DB_USERNAME }}
-            export DB_PASSWORD= test
+            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             export DB_URL=${{ env.DB_URL }}
             export REST_API_KEY=${{ env.REST_API_KEY }}
             
