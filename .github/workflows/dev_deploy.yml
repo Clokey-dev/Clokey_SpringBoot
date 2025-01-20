@@ -39,9 +39,9 @@ jobs:
 
       - name: Push Docker Image
         run: |
-          docker tag youngjun0511/clokey-docker:${{ env.TAG }} youngjun0511/clokey-docker:${{ env.TAG }}
           echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
           docker push youngjun0511/clokey-docker:${{ env.TAG }}  # 환경 변수 TAG 사용
+      
 
       - name: Copy docker-compose file to remote
         uses: appleboy/scp-action@v0.1.3
