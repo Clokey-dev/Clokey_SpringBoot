@@ -14,7 +14,7 @@ jobs:
 
     env:
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_PASSWORD: ${{ secrets.DB_PW }}
       DB_URL: ${{ secrets.DB_URL }}
       REST_API_KEY: ${{ secrets.REST_API_KEY }}
       TAG: develop-latest  # TAG 설정
@@ -29,7 +29,7 @@ jobs:
       - name: Check DB and API Key Environment Variables
         run: |
           echo "DB_USERNAME is ${{ env.DB_USERNAME }}"
-          echo "DB_PASSWORD is ${{ env.DB_PASSWORD }}"
+          echo "DB_PASSWORD is ${{ env.DB_PW }}"
           echo "DB_URL is ${{ env.DB_URL }}"
           echo "REST_API_KEY is ${{ env.REST_API_KEY }}"
 
@@ -75,7 +75,7 @@ jobs:
           script: |
             # 환경 변수들을 export로 전달
             export DB_USERNAME=${{ env.DB_USERNAME }}
-            export DB_PASSWORD=${{ env.DB_PASSWORD }}
+            export DB_PASSWORD=${{ env.DB_PW }}
             export DB_URL=${{ env.DB_URL }}
             export REST_API_KEY=${{ env.REST_API_KEY }}
             
