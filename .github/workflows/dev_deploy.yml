@@ -92,25 +92,23 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # 환경 변수들을 export로 전달
-            export DB_USERNAME=${{ env.DB_USERNAME }}
+            # GitHub Actions 환경 변수들을 export로 전달
+            export DB_USERNAME=${{ secrets.DB_USERNAME }}
             export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            export DB_URL=${{ env.DB_URL }}
-            export REST_API_KEY=${{ env.REST_API_KEY }}
-            
+            export DB_URL=${{ secrets.DB_URL }}
+            export REST_API_KEY=${{ secrets.REST_API_KEY }}
+            export TAG=${{ env.TAG }}
+
             # 환경 변수 확인
             echo "DB_USERNAME is $DB_USERNAME"
             echo "DB_PASSWORD is $DB_PASSWORD"
             echo "DB_URL is $DB_URL"
             echo "REST_API_KEY is $REST_API_KEY"
-            
-            cd /home/ubuntu/cicd
-            
-            # TAG 확인
-            export TAG=${{ env.TAG }}
             echo "Current TAG: $TAG"  # 확인용 로그
-            
-            # 현재 활성화된 색상 확인
+
+            cd /home/ubuntu/cicd
+
+            # 활성화된 색상 확인
             if docker-compose -f docker-compose.yml ps | grep app_blue; then
               TARGET=green
               OLD=blue
@@ -118,7 +116,7 @@ jobs:
               TARGET=blue
               OLD=green
             fi
-            
+
             # 대상 그룹 업데이트
             docker-compose -f docker-compose.yml up -d app_$TARGET
 
