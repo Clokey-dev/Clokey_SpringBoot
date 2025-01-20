@@ -39,6 +39,15 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle Wrapper
+        run: |
+          ./gradlew --stop && ./gradlew clean --refresh-dependencies
+          ./gradlew clean build
+          ls -l build/libs
+
       - name: SSH to EC2
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -67,14 +76,7 @@ jobs:
           debug: true
 
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
 
-      - name: Build with Gradle Wrapper
-        run: |
-          ./gradlew --stop && ./gradlew clean --refresh-dependencies
-          ./gradlew clean build
-          ls -l build/libs
 
       - name: Build Docker Image
         run: |
