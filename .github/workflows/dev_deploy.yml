@@ -12,6 +12,12 @@ jobs:
     permissions:
       contents: read
 
+    env:
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PW: ${{ secrets.DB_PW }}
+      DB_URL: ${{ secrets.DB_URL }}
+      REST_API_KEY: ${{ secrets.REST_API_KEY }}
+
     steps:
       - uses: actions/checkout@v4
 
