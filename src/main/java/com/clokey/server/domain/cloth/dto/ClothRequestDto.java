@@ -1,15 +1,12 @@
 package com.clokey.server.domain.cloth.dto;
 
-import com.clokey.server.domain.model.enums.Season;
-import com.clokey.server.domain.model.enums.ThicknessLevel;
-import com.clokey.server.domain.model.enums.Visibility;
+import com.clokey.server.domain.model.entity.enums.Season;
+import com.clokey.server.domain.model.entity.enums.ThicknessLevel;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.util.List;
 
 public class ClothRequestDto {
 

@@ -1,7 +1,6 @@
 package com.clokey.server.domain.member.exception.validator;
 
 import com.clokey.server.domain.member.application.MemberRepositoryService;
-import com.clokey.server.domain.member.dao.MemberRepository;
 import com.clokey.server.domain.member.exception.annotation.IdExist;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.validation.ConstraintValidator;
@@ -24,7 +23,9 @@ public class IdExistValidator implements ConstraintValidator<IdExist, String> {
     public boolean isValid(String value, ConstraintValidatorContext context) {
         // 값이 null 또는 비어있는 경우 유효성 검사 통과
         if (value == null || value.trim().isEmpty()) {
-            return true;
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(ErrorStatus.ESSENTIAL_INPUT_REQUIRED.toString()).addConstraintViolation();
+            return false;
         }
 
         // 아이디가 이미 존재하는지 확인

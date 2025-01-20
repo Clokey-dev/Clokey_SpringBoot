@@ -1,8 +1,7 @@
 package com.clokey.server.domain.member.application;
 
-import com.clokey.server.domain.member.dao.MemberRepository;
-import com.clokey.server.domain.model.Member;
-import com.clokey.server.domain.term.exception.TermException;
+import com.clokey.server.domain.model.repository.MemberRepository;
+import com.clokey.server.domain.model.entity.Member;
 import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.persistence.EntityManager;
@@ -51,4 +50,16 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
         query.setParameter("clokeyId", clokeyId);
         return query.getSingleResult();
     }
+
+    @Override
+    public Member findMemberByClokeyId(String clokeyId) {
+        String jpql = "SELECT m FROM Member m WHERE m.clokeyId = :clokeyId";
+        TypedQuery<Member> query = entityManager.createQuery(jpql, Member.class);
+        query.setParameter("clokeyId", clokeyId);
+
+        return query.getResultStream()
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("클로키 아이디에 해당하는 사용자가 없습니다."));
+    }
+
 }

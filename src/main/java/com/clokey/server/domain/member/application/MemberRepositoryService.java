@@ -1,6 +1,6 @@
 package com.clokey.server.domain.member.application;
 
-import com.clokey.server.domain.model.Member;
+import com.clokey.server.domain.model.entity.Member;
 
 
 import java.util.Optional;
@@ -15,4 +15,5 @@ public interface MemberRepositoryService {
     Optional<Member> getMember(Long memberId);
 
     boolean idExist(String clokeyId);
+    Member findMemberByClokeyId(String clokeyId);
 }

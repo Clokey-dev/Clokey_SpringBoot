@@ -1,6 +1,6 @@
 package com.clokey.server.domain.cloth.application;
 
-import com.clokey.server.domain.model.Cloth;
+import com.clokey.server.domain.model.entity.Cloth;
 
 import java.util.Optional;
 

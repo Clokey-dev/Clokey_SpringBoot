@@ -1,8 +1,8 @@
 package com.clokey.server.domain.cloth.converter;
 
 import com.clokey.server.domain.cloth.dto.ClothResponseDto;
-import com.clokey.server.domain.model.Cloth;
-import com.clokey.server.domain.model.ClothImage;
+import com.clokey.server.domain.model.entity.Cloth;
+import com.clokey.server.domain.model.entity.ClothImage;
 
 import java.util.List;
 

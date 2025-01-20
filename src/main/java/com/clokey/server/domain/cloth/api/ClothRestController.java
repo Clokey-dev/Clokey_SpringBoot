@@ -2,22 +2,19 @@ package com.clokey.server.domain.cloth.api;
 
 import com.clokey.server.domain.cloth.application.ClothService;
 import com.clokey.server.domain.cloth.converter.ClothConverter;
-import com.clokey.server.domain.cloth.dao.ClothRepository;
+import com.clokey.server.domain.model.repository.ClothRepository;
 import com.clokey.server.domain.cloth.dto.ClothResponseDto;
 import com.clokey.server.domain.cloth.exception.annotation.ClothExist;
 import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
-import com.clokey.server.domain.model.Cloth;
+import com.clokey.server.domain.model.entity.Cloth;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
-import com.sun.net.httpserver.Authenticator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

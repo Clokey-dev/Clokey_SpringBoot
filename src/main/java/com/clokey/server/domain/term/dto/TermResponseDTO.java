@@ -14,13 +14,13 @@ import java.util.List;
 public class TermResponseDTO {
 
     private Long userId;
-    private List<TermDto> terms;
+    private List<Term> terms;
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class TermDto {
+    public static class Term {
         private Long termId;
         private Boolean agreed;
     }
