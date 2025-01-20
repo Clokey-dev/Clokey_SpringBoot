@@ -18,6 +18,10 @@ jobs:
       - name: Set TAG as develop-latest
         run: echo "TAG=develop-latest" >> $GITHUB_ENV  # TAG를 환경 변수로 설정
 
+      - name: Check TAG value
+        run: echo "TAG is ${{ env.TAG }}"
+
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
