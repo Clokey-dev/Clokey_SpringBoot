@@ -22,13 +22,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Debug Environment Variables
+      - name: Check TAG value
+        run: echo "TAG is ${{ env.TAG }}"
+
+      - name: Debug DB_PASSWORD
+        run: echo "DB_PASSWORD is ${{ secrets.DB_PASSWORD }}"
+
+
+      # DB 및 API Key 관련 환경 변수 확인
+      - name: Check DB and API Key Environment Variables
         run: |
-          echo "DB_USERNAME: ${{ secrets.DB_USERNAME }}"
-          echo "DB_PASSWORD: ${{ secrets.DB_PASSWORD }}"
-          echo "DB_URL: ${{ secrets.DB_URL }}"
-          echo "REST_API_KEY: ${{ secrets.REST_API_KEY }}"
-          echo "TAG: ${{ env.TAG }}"
+          echo "DB_USERNAME is ${{ env.DB_USERNAME }}"
+          echo "DB_PASSWORD is ${{ env.DB_PASSWORD }}"
+          echo "DB_URL is ${{ env.DB_URL }}"
+          echo "REST_API_KEY is ${{ env.REST_API_KEY }}"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -45,45 +52,107 @@ jobs:
           ./gradlew clean build
           ls -l build/libs
 
+      - name: SSH to EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            whoami
+            ls -al
+
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: cicdsample
           path: ./build/libs/*.jar
 
-      - name: Create .env file for EC2
-        run: |
-          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" > .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-          echo "DB_URL=${{ secrets.DB_URL }}" >> .env
-          echo "REST_API_KEY=${{ secrets.REST_API_KEY }}" >> .env
-          cat .env  # 확인용 출력 (배포 후 삭제 필요)
-
-      - name: Copy .env and jar file to remote
+      - name: Copy jar file to remote
         uses: appleboy/scp-action@v0.1.3
         with:
           username: ubuntu
           host: ${{ secrets.EC2_HOST }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: |
-            ./build/libs/*.jar
-            .env
+          source: "./build/libs/*.jar"
           target: "/home/ubuntu/cicd"
+          debug: true
 
-      - name: SSH to EC2 and Deploy
-        uses: appleboy/ssh-action@v0.1.10
+
+
+
+      - name: Build Docker Image
+        run: |
+          docker build -t yongjun0511/clokey-docker:${{ env.TAG }} .  # 환경 변수 TAG 사용
+
+      - name: Push Docker Image
+        run: |
+          echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+          docker push yongjun0511/clokey-docker:${{ env.TAG }}  # 환경 변수 TAG 사용
+
+      - name: Copy docker-compose file to remote
+        uses: appleboy/scp-action@v0.1.3
         with:
           username: ubuntu
           host: ${{ secrets.EC2_HOST }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          port: 22
+          source: "./docker-compose.yml"
+          target: "/home/ubuntu/cicd/"
+
+      - name: Deploy Blue-Green
+        uses: appleboy/ssh-action@master
+        with:
+          username: ubuntu
+          host: ${{ secrets.EC2_HOST }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # 환경 변수 확인
-            echo "DB_USERNAME: $(cat /home/ubuntu/cicd/.env | grep DB_USERNAME | cut -d '=' -f2)"
-            echo "DB_PASSWORD: $(cat /home/ubuntu/cicd/.env | grep DB_PASSWORD | cut -d '=' -f2)"
-            echo "DB_URL: $(cat /home/ubuntu/cicd/.env | grep DB_URL | cut -d '=' -f2)"
-            echo "REST_API_KEY: $(cat /home/ubuntu/cicd/.env | grep REST_API_KEY | cut -d '=' -f2)"
+            # 환경 변수들을 export로 전달
+            export DB_USERNAME=${{ env.DB_USERNAME }}
+            export DB_PASSWORD=${{ env.DB_PASSWORD }}
+            export DB_URL=${{ env.DB_URL }}
+            export REST_API_KEY=${{ env.REST_API_KEY }}
             
-            # Docker Compose 실행
+            # 환경 변수 확인
+            echo "DB_USERNAME is $DB_USERNAME"
+            echo "DB_PASSWORD is $DB_PASSWORD"
+            echo "DB_URL is $DB_URL"
+            echo "REST_API_KEY is $REST_API_KEY"
+            
             cd /home/ubuntu/cicd
-            docker-compose --env-file .env up -d
+            
+            # TAG 확인
+            export TAG=${{ env.TAG }}
+            echo "Current TAG: $TAG"  # 확인용 로그
+            
+            # 현재 활성화된 색상 확인
+            if docker-compose -f docker-compose.yml ps | grep app_blue; then
+              TARGET=green
+              OLD=blue
+            else
+              TARGET=blue
+              OLD=green
+            fi
+            
+            # 대상 그룹 업데이트
+            docker-compose -f docker-compose.yml up -d app_$TARGET
+
+            # 새 그룹이 실행된 후 구 그룹 중지
+            sleep 10
+            docker-compose -f docker-compose.yml down app_$OLD
+
+
+      - name: Execute deploy script
+        uses: appleboy/ssh-action@master
+        with:
+          username: ubuntu
+          host: ${{ secrets.EC2_HOST }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
+          script: |
+            if [ ! -f /home/ubuntu/cicd/deploy.sh ]; then
+              echo "Error: deploy.sh not found on remote server!"
+              exit 1
+            fi
+            chmod +x /home/ubuntu/cicd/deploy.sh
+            sh /home/ubuntu/cicd/deploy.sh
