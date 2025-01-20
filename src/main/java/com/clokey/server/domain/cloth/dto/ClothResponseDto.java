@@ -63,7 +63,7 @@ public class ClothResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CategoryClothResult {
+    public static class CategoryClothReadResult {
         private List<ClothPreview> clothes;
         private int listSize;
         private int totalPage;
