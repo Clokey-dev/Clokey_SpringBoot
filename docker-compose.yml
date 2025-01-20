@@ -5,9 +5,12 @@ services:
     image: yongjun0511/clokey-docker:${TAG}
     container_name: app_blue
     ports:
-      - "8080:8080" # 블루 컨테이너의 포트
+      - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=blue
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_URL=${DB_URL}
     networks:
       - app_network
 
@@ -15,9 +18,12 @@ services:
     image: yongjun0511/clokey-docker:${TAG}
     container_name: app_green
     ports:
-      - "8081:8081" # 그린 컨테이너의 포트
+      - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=green
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_URL=${DB_URL}
     networks:
       - app_network
 
