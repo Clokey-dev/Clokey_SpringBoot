@@ -39,6 +39,18 @@ spring:
         hbm2ddl:
           auto: update
         default_batch_fetch_size: 1000
+
+logging:
+  level:
+    root: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # SQL 바인딩 값 출력
+    org.hibernate.loader.ast.QueryLoader: DEBUG            # 쿼리 로딩 관련 디버깅
+    org.hibernate.persister.entity: DEBUG                  # 엔티티 관련 쿼리 디버깅
+    org.springframework.jdbc.core: DEBUG                  # JDBC 관련 디버깅
+    org.springframework.transaction: DEBUG                 # 트랜잭션 디버깅
+    org.springframework.web: DEBUG                       # HTTP 요청/응답 관련 디버깅
+
 ---
 # Dev Profile
 spring:
@@ -64,15 +76,22 @@ spring:
         default_batch_fetch_size: 1000
 
 logging:
-  level.org:
-    hibernate.SQL: DEBUG
-    type.descriptor.sql.BasicBinder: TRACE
+  level:
+    root: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.loader.ast.QueryLoader: DEBUG
+    org.hibernate.persister.entity: DEBUG
+    org.springframework.jdbc.core: DEBUG
+    org.springframework.transaction: DEBUG
+    org.springframework.web: DEBUG
 server:
   servlet:
     encoding:
       charset: UTF-8
       force: true
       enabled: true
+
 ---
 # Green Profile
 spring:
@@ -96,6 +115,17 @@ spring:
         hbm2ddl:
           auto: update
         default_batch_fetch_size: 1000
+
+logging:
+  level:
+    root: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.loader.ast.QueryLoader: DEBUG
+    org.hibernate.persister.entity: DEBUG
+    org.springframework.jdbc.core: DEBUG
+    org.springframework.transaction: DEBUG
+    org.springframework.web: DEBUG
 
 ---
 # Blue Profile
@@ -121,10 +151,15 @@ spring:
           auto: update
         default_batch_fetch_size: 1000
 
-
-kakao:
-  client_id: ${REST_API_KEY}
-  redirect_uri: http://localhost:8080/callback
-
+logging:
+  level:
+    root: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.loader.ast.QueryLoader: DEBUG
+    org.hibernate.persister.entity: DEBUG
+    org.springframework.jdbc.core: DEBUG
+    org.springframework.transaction: DEBUG
+    org.springframework.web: DEBUG
 
 
