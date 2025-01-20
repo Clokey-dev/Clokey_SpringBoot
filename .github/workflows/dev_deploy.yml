@@ -35,12 +35,12 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t youngjun0511/clokey-docker:${{ env.TAG }} .  # 환경 변수 TAG 사용
+          docker build -t yongjun0511/clokey-docker:${{ env.TAG }} .  # 환경 변수 TAG 사용
 
       - name: Push Docker Image
         run: |
           echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-          docker push youngjun0511/clokey-docker:${{ env.TAG }}  # 환경 변수 TAG 사용
+          docker push yongjun0511/clokey-docker:${{ env.TAG }}  # 환경 변수 TAG 사용
       
 
       - name: Copy docker-compose file to remote
