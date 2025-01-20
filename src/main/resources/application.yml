@@ -22,7 +22,7 @@ spring:
       on-profile: local
   datasource:
     username: ${DB_USERNAME}
-    password: ${DB_PW}
+    password: ${DB_PASSWORD}
     url: ${DB_URL}
     driver-class-name: com.mysql.cj.jdbc.Driver
   sql:
@@ -46,7 +46,7 @@ spring:
       on-profile: dev
   datasource:
     username: ${DB_USERNAME}
-    password: ${DB_PW}
+    password: ${DB_PASSWORD}
     url: ${DB_URL}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
