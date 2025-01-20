@@ -25,6 +25,10 @@ jobs:
       - name: Check TAG value
         run: echo "TAG is ${{ env.TAG }}"
 
+      - name: Debug DB_PASSWORD
+        run: echo "DB_PASSWORD is ${{ secrets.DB_PASSWORD }}"
+
+
       # DB 및 API Key 관련 환경 변수 확인
       - name: Check DB and API Key Environment Variables
         run: |
