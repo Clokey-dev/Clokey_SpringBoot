@@ -75,15 +75,24 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            # 환경 변수들을 export로 전달
+            export DB_USERNAME=${{ secrets.DB_USERNAME }}
+            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            export DB_URL=${{ secrets.DB_URL }}
+            export REST_API_KEY=${{ secrets.REST_API_KEY }}
+            
+            # 환경 변수 확인
+            echo "DB_USERNAME is $DB_USERNAME"
+            echo "DB_PASSWORD is $DB_PASSWORD"
+            echo "DB_URL is $DB_URL"
+            
             cd /home/ubuntu/cicd
-
-            # 환경 변수 TAG를 export로 전달
-            export TAG=${{ env.TAG }}
-
+            
             # TAG 확인
+            export TAG=${{ env.TAG }}
             echo "Current TAG: $TAG"  # 확인용 로그
-
-            # Determine current active color
+            
+            # 현재 활성화된 색상 확인
             if docker-compose -f docker-compose.yml ps | grep app_blue; then
               TARGET=green
               OLD=blue
@@ -91,13 +100,13 @@ jobs:
               TARGET=blue
               OLD=green
             fi
-
-            # Update target group
+            
+            # 대상 그룹 업데이트
             docker-compose -f docker-compose.yml up -d app_$TARGET
-
-            # Stop the old group after ensuring new group is running
+            
+            # 새 그룹이 실행된 후 구 그룹 중지
             sleep 10
-            docker-compose -f docker-compose.yml down app_$OLD 
+            docker-compose -f docker-compose.yml down app_$OLD
 
       - name: SSH to EC2
         uses: appleboy/ssh-action@v0.1.10
