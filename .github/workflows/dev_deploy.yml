@@ -64,7 +64,10 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /home/ubuntu/cicd
-            
+
+            # 환경 변수 TAG를 export로 전달
+            export TAG=${{ env.TAG }}
+
             # Determine current active color
             if docker-compose -f docker-compose.yml ps | grep app_blue; then
               TARGET=green
@@ -73,10 +76,10 @@ jobs:
               TARGET=blue
               OLD=green
             fi
-            
+
             # Update target group
             docker-compose -f docker-compose.yml up -d app_$TARGET
-            
+
             # Stop the old group after ensuring new group is running
             sleep 10
             docker-compose -f docker-compose.yml down app_$OLD
