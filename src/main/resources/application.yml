@@ -1,4 +1,3 @@
-## Default profile
 spring:
   application:
     name: clokey
@@ -6,6 +5,8 @@ spring:
     group:
       "local": "local, jwt, oauth-local"
       "dev": "dev, jwt, oauth-dev"
+      "green": "green, jwt, oauth-green"
+      "blue": "blue, jwt, oauth-blue"
     active: dev
   thymeleaf:
     enabled: true
@@ -49,7 +50,6 @@ spring:
     password: ${DB_PASSWORD}
     url: ${DB_URL}
     driver-class-name: com.mysql.cj.jdbc.Driver
-
   sql:
     init:
       mode: never
@@ -73,6 +73,53 @@ server:
       charset: UTF-8
       force: true
       enabled: true
+---
+# Green Profile
+spring:
+  config:
+    activate:
+      on-profile: green
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: never
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+        hbm2ddl:
+          auto: update
+        default_batch_fetch_size: 1000
+
+---
+# Blue Profile
+spring:
+  config:
+    activate:
+      on-profile: blue
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: never
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+        hbm2ddl:
+          auto: update
+        default_batch_fetch_size: 1000
 
 
 kakao:
