@@ -22,21 +22,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check TAG value
-        run: echo "TAG is ${{ env.TAG }}"
-
-      - name: Debug DB_PASSWORD
-        run: echo "DB_PASSWORD is ${{ secrets.DB_PASSWORD }}"
-
-
-      # DB 및 API Key 관련 환경 변수 확인
-      - name: Check DB and API Key Environment Variables
-        run: |
-          echo "DB_USERNAME is ${{ env.DB_USERNAME }}"
-          echo "DB_PASSWORD is ${{ env.DB_PASSWORD }}"
-          echo "DB_URL is ${{ env.DB_URL }}"
-          echo "REST_API_KEY is ${{ env.REST_API_KEY }}"
-
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -109,7 +94,7 @@ jobs:
           script: |
             # 환경 변수들을 export로 전달
             export DB_USERNAME=${{ env.DB_USERNAME }}
-            export DB_PASSWORD=${{ env.DB_PASSWORD }}
+            export DB_PASSWORD= test
             export DB_URL=${{ env.DB_URL }}
             export REST_API_KEY=${{ env.REST_API_KEY }}
             
