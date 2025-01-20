@@ -25,7 +25,7 @@ jobs:
       - name: Check TAG value
         run: echo "TAG is ${{ env.TAG }}"
 
-      # DB 및 API KEY 관련 환경 변수 확인
+      # DB 및 API Key 관련 환경 변수 확인
       - name: Check DB and API Key Environment Variables
         run: |
           echo "DB_USERNAME is ${{ env.DB_USERNAME }}"
@@ -102,7 +102,7 @@ jobs:
             
             # 대상 그룹 업데이트
             docker-compose -f docker-compose.yml up -d app_$TARGET
-            
+
             # 새 그룹이 실행된 후 구 그룹 중지
             sleep 10
             docker-compose -f docker-compose.yml down app_$OLD
