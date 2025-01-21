@@ -1,19 +1,26 @@
 package com.clokey.server.domain.model.entity;
 
-import com.clokey.server.domain.model.entity.mapping.HistoryCloth;
+import com.clokey.server.domain.model.entity.enums.Season;
+import com.clokey.server.domain.model.entity.enums.ThicknessLevel;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.*;
 import com.clokey.server.domain.model.entity.enums.Visibility;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class) // Auditing 활성화
 public class Cloth extends BaseEntity {
 
     @Id
@@ -26,9 +33,13 @@ public class Cloth extends BaseEntity {
     @Column(nullable = false, columnDefinition = "integer default 0")
     private int wearNum;
 
+    @CreatedDate // 등록 날짜를 자동으로 기록
+    @Column(nullable = false, updatable = false)
+    private LocalDate regDate;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Visibility visibility;
+    private Season season;
 
     @Min(-20)
     @Max(40)
@@ -40,10 +51,19 @@ public class Cloth extends BaseEntity {
     @Column(nullable = false)
     private int tempLowerBound;
 
-    @Min(0)
-    @Max(5)
-    @Column(nullable = false) // 옷 두계 0~5레벨
-    private int thicknessLevel;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
+    private ThicknessLevel thicknessLevel;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Visibility visibility;
+
+    @Column(nullable = true)
+    private String clothUrl;
+
+    @Column(nullable = true)
+    private String brand;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
@@ -53,4 +73,6 @@ public class Cloth extends BaseEntity {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    @OneToMany(mappedBy = "cloth", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ClothImage> images = new ArrayList<>();
 }
