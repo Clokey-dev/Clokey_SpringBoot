@@ -125,6 +125,8 @@ jobs:
             echo "Current TAG: $TAG"
 
             cd /home/ubuntu/cicd
+            
+            sorce .env
 
             # 활성화된 색상 확인
             if docker-compose -f docker-compose.yml ps | grep app_blue; then
