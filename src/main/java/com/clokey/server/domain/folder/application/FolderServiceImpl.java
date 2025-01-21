@@ -2,7 +2,7 @@ package com.clokey.server.domain.folder.application;
 
 import com.clokey.server.domain.folder.converter.FolderConverter;
 import com.clokey.server.domain.folder.dto.FolderRequestDTO;
-import com.clokey.server.domain.folder.exception.FolderDeleteException;
+import com.clokey.server.domain.folder.exception.FolderException;
 import com.clokey.server.domain.model.entity.Folder;
 import com.clokey.server.domain.model.entity.Member;
 import com.clokey.server.domain.model.repository.FolderRepository;
@@ -37,7 +37,7 @@ public class FolderServiceImpl implements FolderService {
         try {
             folderRepository.deleteById(folderId);
         } catch (Exception ex) {
-            throw new FolderDeleteException(ErrorStatus.FAILED_TO_DELETE_FOLDER);
+            throw new FolderException(ErrorStatus.FAILED_TO_DELETE_FOLDER);
         }
     }
 
