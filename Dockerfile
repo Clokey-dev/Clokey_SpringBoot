@@ -1,14 +1,5 @@
 FROM openjdk:17-jdk-slim
 
-ARG DB_USERNAME
-ARG DB_PASSWORD
-ARG DB_URL
-
-# Set environment variables
-ENV DB_USERNAME=${DB_USERNAME}
-ENV DB_PASSWORD=${DB_PASSWORD}
-ENV DB_URL=${DB_URL}
-
 # Set the working directory
 WORKDIR /app
 
