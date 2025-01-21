@@ -102,9 +102,9 @@ jobs:
           script: |
             # GitHub Actions 환경 변수들을 export로 전달
             export DB_PASSWORD=${{ env.DB_PASSWORD }}
-            export DB_USERNAME=${{ secrets.DB_USERNAME }}
-            export DB_URL=${{ secrets.DB_URL }}
-            export REST_API_KEY=${{ secrets.REST_API_KEY }}
+            export DB_USERNAME=${{ env.DB_USERNAME }}
+            export DB_URL=${{ env.DB_URL }}
+            export REST_API_KEY=${{ env.REST_API_KEY }}
             export TAG=${{ env.TAG }}
 
             # 환경 변수 확인
