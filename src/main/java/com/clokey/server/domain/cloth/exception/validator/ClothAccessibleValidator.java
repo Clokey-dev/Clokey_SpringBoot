@@ -19,7 +19,7 @@ public class ClothAccessibleValidator {
     private final MemberRepositoryService memberRepositoryService;
 
     public void validateClothAccessOfMember(Long clothId, Long memberId) {
-        Optional<Cloth> cloth = clothService.getClothById(clothId);
+        Optional<Cloth> cloth = clothService.readClothById(clothId);
 
         //접근 권한 확인 - 나의 옷이 아니고 비공개일 경우 접근 불가.
         boolean isPrivate = cloth.get().getVisibility().equals(Visibility.PRIVATE);
@@ -27,6 +27,17 @@ public class ClothAccessibleValidator {
 
         if (isPrivate && isNotMyCloth) {
             throw new GeneralException(ErrorStatus.NO_PERMISSION_TO_ACCESS_CLOTH);
+        }
+    }
+
+    public void validateClothEditOfMember(Long clothId, Long memberId) {
+        Optional<Cloth> cloth = clothService.readClothById(clothId);
+
+        //수정 권한 확인 - 나의 옷이 아닌 경우에 수정 불가.
+        boolean isNotMyCloth = !cloth.get().getMember().getId().equals(memberId);
+
+        if (isNotMyCloth) {
+            throw new GeneralException(ErrorStatus.NO_PERMISSION_TO_EDIT_CLOTH);
         }
     }
 
