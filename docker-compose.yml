@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app_blue:
     image: yongjun0511/clokey-docker:${TAG}
@@ -8,8 +6,6 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=blue
-    env_file:
-      - /home/ubuntu/cicd/.env  # .env 파일 경로 설정
     networks:
       - app_network
 
@@ -20,11 +16,10 @@ services:
       - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=green
-    env_file:
-      - /home/ubuntu/cicd/.env  # .env 파일 경로 설정
     networks:
       - app_network
 
 networks:
   app_network:
     driver: bridge
+
