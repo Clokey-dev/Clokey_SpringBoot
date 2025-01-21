@@ -108,19 +108,20 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # GitHub Actions 환경 변수들을 export로 전달
-            export DB_PASSWORD=${{ env.DB_PASSWORD }}
-            export DB_USERNAME=${{ env.DB_USERNAME }}
-            export DB_URL=${{ env.DB_URL }}
-            export REST_API_KEY=${{ env.REST_API_KEY }}
-            export TAG=${{ env.TAG }}
+            # .env 파일 로드
+            if [ -f /home/ubuntu/cicd/.env ]; then
+              source /home/ubuntu/cicd/.env
+            else
+              echo "Error: .env file not found!"
+              exit 1
+            fi
 
-            # 환경 변수 확인
+            # 환경 변수 확인 (선택적)
             echo "DB_USERNAME is $DB_USERNAME"
             echo "DB_PASSWORD is $DB_PASSWORD"
             echo "DB_URL is $DB_URL"
             echo "REST_API_KEY is $REST_API_KEY"
-            echo "Current TAG: $TAG"  # 확인용 로그
+            echo "Current TAG: $TAG"
 
             cd /home/ubuntu/cicd
 
@@ -139,6 +140,7 @@ jobs:
             # 새 그룹이 실행된 후 구 그룹 중지
             sleep 10
             docker-compose -f docker-compose.yml down app_$OLD
+
 
 
       - name: Execute deploy script
