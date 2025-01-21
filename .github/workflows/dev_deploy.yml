@@ -135,12 +135,13 @@ jobs:
               OLD=green
             fi
 
-            # 대상 그룹 업데이트
-            docker-compose -f docker-compose.yml up -d app_$TARGET
+            # 환경 변수와 함께 Docker Compose 실행
+            docker-compose --env-file /home/ubuntu/cicd/.env -f docker-compose.yml up -d app_$TARGET
 
             # 새 그룹이 실행된 후 구 그룹 중지
             sleep 10
             docker-compose -f docker-compose.yml down app_$OLD
+
 
 
 
