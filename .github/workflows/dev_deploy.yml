@@ -149,17 +149,4 @@ jobs:
             docker-compose -f docker-compose.yml down app_$OLD
             fi
 
-      - name: Execute deploy script
-        uses: appleboy/ssh-action@master
-        with:
-          username: ubuntu
-          host: ${{ secrets.EC2_HOST }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script_stop: true
-          script: |
-            if [ ! -f /home/ubuntu/cicd/deploy.sh ]; then
-              echo "Error: deploy.sh not found on remote server!"
-              exit 1
-            fi
-            chmod +x /home/ubuntu/cicd/deploy.sh
-            sh /home/ubuntu/cicd/deploy.sh
+      
