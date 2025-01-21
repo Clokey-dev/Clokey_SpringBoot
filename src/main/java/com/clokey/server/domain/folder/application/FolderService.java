@@ -1,10 +1,10 @@
 package com.clokey.server.domain.folder.application;
 
-import com.clokey.server.domain.folder.dto.FolderRequest;
+import com.clokey.server.domain.folder.dto.FolderRequestDTO;
 import com.clokey.server.domain.model.entity.Folder;
 
 public interface FolderService {
-    Folder createFolder(Long memberId, FolderRequest.FolderCreateRequest request);
+    Folder createFolder(Long memberId, FolderRequestDTO.FolderCreateRequest request);
     void deleteFolder(Long folderId);
-    boolean folderExist(Long folderId);
+    void editFolderName(Long folderId, String newName);
 }
