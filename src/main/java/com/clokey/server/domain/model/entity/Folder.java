@@ -20,4 +20,8 @@ public class Folder extends BaseEntity{
 
     @Column(nullable = false, length = 30)
     private String name;
+
+    public void rename(String newName) {
+        this.name = newName;
+    }
 }
