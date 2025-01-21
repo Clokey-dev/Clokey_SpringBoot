@@ -27,6 +27,7 @@ public class Notification extends BaseEntity {
     private String content;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
 
     @Column(columnDefinition = "VARCHAR(15) DEFAULT 'NOT_READ'",nullable = false)

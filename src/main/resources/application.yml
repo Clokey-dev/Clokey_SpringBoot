@@ -10,6 +10,10 @@ spring:
     active: dev
   thymeleaf:
     enabled: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
 springdoc:
   swagger-ui:
     tags-sorter: alpha
@@ -40,6 +44,7 @@ spring:
           auto: update
         default_batch_fetch_size: 1000
 
+
 logging:
   level:
     root: DEBUG
@@ -50,6 +55,12 @@ logging:
     org.springframework.jdbc.core: DEBUG                  # JDBC 관련 디버깅
     org.springframework.transaction: DEBUG                 # 트랜잭션 디버깅
     org.springframework.web: DEBUG                       # HTTP 요청/응답 관련 디버깅
+
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
 
 ---
 # Dev Profile
@@ -74,7 +85,10 @@ spring:
         hbm2ddl:
           auto: update
         default_batch_fetch_size: 1000
-
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
 logging:
   level:
     root: DEBUG
@@ -162,4 +176,12 @@ logging:
     org.springframework.transaction: DEBUG
     org.springframework.web: DEBUG
 
-
+cloud:
+  aws:
+    s3:
+      bucket: ${BUCKET_NAME}
+    stack.auto: false
+    region.static: ap-northeast-2
+    credentials:
+      accessKey: ${BUCKET_ACCESS}
+      secretKey: ${BUCKET_SECRET}
