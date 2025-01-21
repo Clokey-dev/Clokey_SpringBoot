@@ -11,6 +11,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_USERNAME=${DB_USERNAME}
       - DB_URL=${DB_URL}
+      - TAG=${TAG}
     networks:
       - app_network
 
@@ -24,6 +25,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_USERNAME=${DB_USERNAME}
       - DB_URL=${DB_URL}
+      - TAG=${TAG}
     networks:
       - app_network
 
