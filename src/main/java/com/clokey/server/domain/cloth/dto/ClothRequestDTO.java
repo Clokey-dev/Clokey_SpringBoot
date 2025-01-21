@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class ClothRequestDto {
+public class ClothRequestDTO {
 
     @Builder
     @Getter
