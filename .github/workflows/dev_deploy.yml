@@ -88,6 +88,7 @@ jobs:
       - name: Generate .env file
         run: |
           echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" > .env
+          echo "TAG=${{ env.TAG }}" > .env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "DB_URL=${{ secrets.DB_URL }}" >> .env
           echo "REST_API_KEY=${{ secrets.REST_API_KEY }}" >> .env
