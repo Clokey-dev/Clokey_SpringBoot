@@ -17,8 +17,9 @@ public enum SuccessStatus implements BaseCode {
     MEMBER_CREATED(HttpStatus.CREATED, "MEMBER_201", "성공적으로 생성되었습니다."),
 
     //옷 성공
-    CLOTH_SUCCESS(HttpStatus.OK, "CLOTH_200", "성공적으로 조회되었습니다."),
-    CLOTH_CREATED(HttpStatus.CREATED, "CLOTH_201", "성공적으로 생성되었습니다."),
+    CLOTH_SUCCESS(HttpStatus.OK, "CLOTH_200", "옷이 성공적으로 조회되었습니다."),
+    CLOTH_CREATED(HttpStatus.CREATED, "CLOTH_201", "옷이 성공적으로 생성되었습니다."),
+    CLOTH_DELETED(HttpStatus.OK, "CLOTH_200", "옷이 성공적으로 삭제되었습니다."),
 
     //카테고리 성공
     CATEGORY_SUCCESS(HttpStatus.OK, "CATEGORY_200", "성공적으로 조회되었습니다."),
