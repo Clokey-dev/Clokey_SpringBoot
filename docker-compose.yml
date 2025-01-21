@@ -8,6 +8,9 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=blue
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_URL=${DB_URL}
     networks:
       - app_network
 
@@ -18,10 +21,12 @@ services:
       - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=green
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_URL=${DB_URL}
     networks:
       - app_network
 
 networks:
   app_network:
     driver: bridge
-

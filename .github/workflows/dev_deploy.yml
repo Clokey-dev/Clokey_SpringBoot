@@ -110,12 +110,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             # .env 파일 로드
-            if [ -f /home/ubuntu/cicd/.env ]; then
-              source /home/ubuntu/cicd/.env
-            else
-              echo "Error: .env file not found!"
-              exit 1
-            fi
 
             # 환경 변수 확인 (선택적)
             echo "DB_USERNAME is $DB_USERNAME"
