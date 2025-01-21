@@ -91,6 +91,7 @@ jobs:
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "DB_URL=${{ secrets.DB_URL }}" >> .env
           echo "REST_API_KEY=${{ secrets.REST_API_KEY }}" >> .env
+
       - name: Copy .env file to remote
         uses: appleboy/scp-action@v0.1.3
         with:
