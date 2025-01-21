@@ -121,25 +121,33 @@ jobs:
             cd /home/ubuntu/cicd
             
             source .env
-
-            # 활성화된 색상 확인
-            if docker-compose -f docker-compose.yml ps | grep app_blue; then
-              TARGET=green
-              OLD=blue
+            
+            # 활성화된 서비스 확인
+            if docker-compose --env-file /home/ubuntu/cicd/.env -f docker-compose.yml ps | grep -q "app_blue.*Up"; then
+            TARGET=green
+            OLD=blue
+            elif docker-compose --env-file /home/ubuntu/cicd/.env -f docker-compose.yml ps | grep -q "app_green.*Up"; then
+            TARGET=blue
+            OLD=green
             else
-              TARGET=blue
-              OLD=green
+            # 아무 서비스도 실행되지 않은 경우 (최초 실행)
+            TARGET=blue  # 또는 green, 기본값 설정
+            OLD=none
             fi
+          
+            echo "TARGET: $TARGET"
+            echo "OLD: $OLD"
+  
+  
 
             # 환경 변수와 함께 Docker Compose 실행
             docker-compose --env-file /home/ubuntu/cicd/.env -f docker-compose.yml up -d app_$TARGET
-
-            # 새 그룹이 실행된 후 구 그룹 중지
+  
+            # 첫 실행이 아니라면 구 그룹을 내립니다.
+            if [ "$OLD" != "none" ]; then
             sleep 10
             docker-compose -f docker-compose.yml down app_$OLD
-
-
-
+            fi
 
       - name: Execute deploy script
         uses: appleboy/ssh-action@master
