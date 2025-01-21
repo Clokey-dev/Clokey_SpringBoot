@@ -64,6 +64,12 @@ public enum ErrorStatus implements BaseErrorCode {
     //추천 에러
     NO_TEMP_PARAMETER(HttpStatus.BAD_REQUEST,"RECOMMEND_4001","온도값은 필수입니다."),
 
+    // S3 관련
+    S3_OBJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "S3_001", "S3 오브젝트를 찾을 수 없습니다."),
+    S3_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "S3_002", "S3 업로드 실패"),
+    S3_EMPTY_FILE_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "S3_003", "파일이 존재하지 않습니다."),
+    S3_DELETE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "S3_004", "S3 삭제 실패"),
+
     ;
 
 
