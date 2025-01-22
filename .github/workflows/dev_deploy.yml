@@ -30,12 +30,8 @@ jobs:
       - name: make application-secret.yml
         run: |
           touch ./src/main/resources/application-secret.yml
-          echo "datasource:" > ./src/main/resources/application-secret.yml
-          echo "  url: \"${{ secrets.DB_URL }}\"" >> ./src/main/resources/application-secret.yml
-          echo "  username: \"${{ secrets.DB_USERNAME }}\"" >> ./src/main/resources/application-secret.yml
-          echo "  password: \"${{ secrets.DB_PASSWORD }}\"" >> ./src/main/resources/application-secret.yml
+          echo "${{ secrets.APPLICATION_SECRET }}" > ./src/main/resources/application-secret.yml
         shell: bash
-
 
       - name: Build with Gradle Wrapper
         run: |
