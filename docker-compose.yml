@@ -8,10 +8,15 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=blue
+      - SPRING_DATASOURCE_URL=${DB_URL}
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
     env_file:
-      - .env  # .env 파일을 통해 환경 변수 로드
+      - .env
     networks:
       - app_network
+    depends_on:
+      - mysql  # MySQL 서비스가 시작된 후 app_blue 시작
 
   app_green:
     image: yongjun0511/clokey-docker:${TAG}
@@ -20,8 +25,24 @@ services:
       - "8081:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=green
+      - SPRING_DATASOURCE_URL=${DB_URL}
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
     env_file:
-      - .env  # .env 파일을 통해 환경 변수 로드
+      - .env
+    networks:
+      - app_network
+    depends_on:
+      - mysql  # MySQL 서비스가 시작된 후 app_green 시작
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      MYSQL_DATABASE=clokeydb
+    ports:
+      - "3306:3306"  # MySQL 포트
     networks:
       - app_network
 

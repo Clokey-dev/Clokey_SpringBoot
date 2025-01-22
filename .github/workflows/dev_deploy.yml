@@ -70,10 +70,10 @@ jobs:
             source .env
             
             # 활성화된 서비스 확인
-            if docker-compose --env-file /home/ubuntu/cicd/.env -f docker-compose.yml ps | grep -q "app_blue.*Up"; then
+            if docker-compose -f docker-compose.yml ps | grep -q "app_blue.*Up"; then
             TARGET=green
             OLD=blue
-            elif docker-compose --env-file /home/ubuntu/cicd/.env -f docker-compose.yml ps | grep -q "app_green.*Up"; then
+            elif docker-compose -f docker-compose.yml ps | grep -q "app_green.*Up"; then
             TARGET=blue
             OLD=green
             else
@@ -88,7 +88,7 @@ jobs:
             
             
             # 환경 변수와 함께 Docker Compose 실행
-            docker-compose --env-file /home/ubuntu/cicd/.env -f docker-compose.yml up -d app_$TARGET
+            docker-compose -f docker-compose.yml up -d app_$TARGET
             
             # 첫 실행이 아니라면 구 그룹을 내립니다.
             if [ "$OLD" != "none" ]; then
