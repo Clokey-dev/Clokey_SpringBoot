@@ -24,20 +24,12 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: make properties.env
+      - name: make application-secret.yml
         run: |
-          mkdir -p ./src/main/resources/properties  # 디렉토리 생성
-          touch ./src/main/resources/properties/env.properties  # 파일 생성
-          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> ./src/main/resources/properties/env.properties
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./src/main/resources/properties/env.properties
-          echo "DB_URL=${{ secrets.DB_URL }}" >> ./src/main/resources/properties/env.properties
-          echo "TAG=${{ secrets.TAG }}" >> ./src/main/resources/properties/env.properties
-          echo "BUCKET_ACCESS=${{ secrets.BUKCET_ACCESS }}" >> ./src/main/resources/properties/env.properties
-          echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> ./src/main/resources/properties/env.properties
-          echo "BUCKET_REGION=${{ secrets.BUCKET_REGION }}" >> ./src/main/resources/properties/env.properties
-          echo "BUCKET_SECRET=${{ secrets.BUCKET_SECRET }}" >> ./src/main/resources/properties/env.properties
-
+          touch ./src/main/resources/application-secret.yml
+          echo "${{ secrets.APPLICATION_SECRET }}" > ./src/main/resources/application-secret.yml
         shell: bash
+
 
 
       - name: Build with Gradle Wrapper
