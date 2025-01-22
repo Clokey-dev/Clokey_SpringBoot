@@ -26,6 +26,8 @@ jobs:
 
       - name: make properties.env
         run: |
+          mkdir -p ./src/main/resources/properties  # 디렉토리 생성
+          touch ./src/main/resources/properties/env.properties  # 파일 생성
           echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> ./src/main/resources/properties/env.properties
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./src/main/resources/properties/env.properties
           echo "DB_URL=${{ secrets.DB_URL }}" >> ./src/main/resources/properties/env.properties
