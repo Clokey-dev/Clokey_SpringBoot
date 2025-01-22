@@ -51,7 +51,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t yongjun0511/clokey-docker:${{ secrets.TAG }}
+          docker build -t yongjun0511/clokey-docker:${{ secrets.TAG }} .
 
       - name: Push Docker Image
         run: |
