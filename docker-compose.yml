@@ -39,8 +39,8 @@ services:
     image: mysql:8
     container_name: mysql
     environment:
-      MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-      MYSQL_DATABASE=clokeydb
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=clokeydb
     ports:
       - "3306:3306"  # MySQL 포트
     networks:
