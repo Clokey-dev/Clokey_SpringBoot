@@ -50,3 +50,7 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.processResources {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE // 또는 DuplicatesStrategy.INCLUDE
+}
