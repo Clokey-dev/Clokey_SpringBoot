@@ -41,7 +41,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t yongjun0511/clokey-docker:develop-latest
+          docker build -t yongjun0511/clokey-docker:develop-latest .
 
       - name: Push Docker Image
         run: |
