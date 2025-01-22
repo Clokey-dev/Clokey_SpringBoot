@@ -40,15 +40,23 @@ jobs:
           ./gradlew clean build
           ls -l build/libs
 
-      # 버전 정보를 갱신해주세요
+      #필요한 env 파일을 여기에 추가해주세요. -> 로그인 같은 거 하면 더 필요해지니까.
+      - name: Generate .env file
+        run: |
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" > .env
+          echo "TAG=v1.0.0" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_URL=${{ secrets.DB_URL }}" >> .env
+          echo "REST_API_KEY=${{ secrets.REST_API_KEY }}" >> .env
+
       - name: Build Docker Image
         run: |
-          docker build -t yongjun0511/clokey-docker:v1.0.0 
+          docker build -t yongjun0511/clokey-docker:${{ env.TAG }}
 
       - name: Push Docker Image
         run: |
           echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-          docker push yongjun0511/clokey-docker:v1.0.0
+          docker push yongjun0511/clokey-docker:${{ env.TAG }}
 
       # Docker-Compose를 업로드 하기 때문에 수정 사항이 반영 됌.
       - name: Copy docker-compose file to remote
@@ -60,14 +68,8 @@ jobs:
           source: "./docker-compose.yml"
           target: "/home/ubuntu/cicd/"
 
-      #필요한 env 파일을 여기에 추가해주세요. -> 로그인 같은 거 하면 더 필요해지니까.
-      - name: Generate .env file
-        run: |
-          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" > .env
-          echo "TAG=${{ env.TAG }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-          echo "DB_URL=${{ secrets.DB_URL }}" >> .env
-          echo "REST_API_KEY=${{ secrets.REST_API_KEY }}" >> .env
+
+
       #env파일 전송
       - name: Copy .env file to remote
         uses: appleboy/scp-action@v0.1.3
