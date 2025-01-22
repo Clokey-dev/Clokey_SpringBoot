@@ -26,16 +26,14 @@ jobs:
 
       - name: make properties.env
         run: |
-          mkdir -p ./src/main/resources/properties  # 디렉토리 생성
-          touch ./src/main/resources/properties/properties.env  # 파일 생성
-          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> ./src/main/resources/properties/properties.env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./src/main/resources/properties/properties.env
-          echo "DB_URL=${{ secrets.DB_URL }}" >> ./src/main/resources/properties/properties.env
-          echo "TAG=${{ secrets.TAG }}" >> ./src/main/resources/properties/properties.env
-          echo "BUCKET_ACCESS=${{ secrets.BUKCET_ACCESS }}" >> ./src/main/resources/properties/properties.env
-          echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> ./src/main/resources/properties/properties.env
-          echo "BUCKET_REGION=${{ secrets.BUCKET_REGION }}" >> ./src/main/resources/properties/properties.env
-          echo "BUCKET_SECRET=${{ secrets.BUCKET_SECRET }}" >> ./src/main/resources/properties/properties.env
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> ./src/main/resources/properties/env.properties
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./src/main/resources/properties/env.properties
+          echo "DB_URL=${{ secrets.DB_URL }}" >> ./src/main/resources/properties/env.properties
+          echo "TAG=${{ secrets.TAG }}" >> ./src/main/resources/properties/env.properties
+          echo "BUCKET_ACCESS=${{ secrets.BUKCET_ACCESS }}" >> ./src/main/resources/properties/env.properties
+          echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> ./src/main/resources/properties/env.properties
+          echo "BUCKET_REGION=${{ secrets.BUCKET_REGION }}" >> ./src/main/resources/properties/env.properties
+          echo "BUCKET_SECRET=${{ secrets.BUCKET_SECRET }}" >> ./src/main/resources/properties/env.properties
 
         shell: bash
 
