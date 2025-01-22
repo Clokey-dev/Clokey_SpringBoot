@@ -58,15 +58,6 @@ jobs:
           source: "./docker-compose.yml"
           target: "/home/ubuntu/cicd/"
 
-      - name: Copy .env file to remote
-        uses: appleboy/scp-action@v0.1.3
-        with:
-          username: ubuntu
-          host: ${{ secrets.EC2_HOST }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          source: "./.env"
-          target: "/home/ubuntu/cicd/"
-
       - name: Deploy Blue-Green
         uses: appleboy/ssh-action@master
         with:
