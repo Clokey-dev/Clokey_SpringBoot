@@ -31,7 +31,7 @@ jobs:
         run: |
           touch ./src/main/resources/application-secret.yml
           echo "${{ secrets.APPLICATION_SECRET }}" > ./src/main/resources/application-secret.yml
-          shell: bash
+        shell: bash
 
       - name: Build with Gradle Wrapper
         run: |
