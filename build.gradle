@@ -50,9 +50,3 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
-
-tasks.processResources {
-	from("src/main/resources") {
-		include "properties/env.properties"
-	}
-}
