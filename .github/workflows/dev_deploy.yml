@@ -29,8 +29,8 @@ jobs:
 
       - name: make application-secret.yml
         run: |
-            touch ./src/main/resources/application-secret.yml
-            echo "${{ secrets.APPLICATION_SECRET }}" > ./src/main/resources/application-secret.yml
+          touch ./src/main/resources/application-secret.yml
+          echo "${{ secrets.APPLICATION_SECRET }}" > ./src/main/resources/application-secret.yml
           shell: bash
 
       - name: Build with Gradle Wrapper
