@@ -56,7 +56,7 @@ jobs:
       - name: Push Docker Image
         run: |
           echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-          docker push yongjun0511/clokey-docker:${{ env.TAG }}
+          docker push yongjun0511/clokey-docker:${{ env.TAG }} .
 
       # Docker-Compose를 업로드 하기 때문에 수정 사항이 반영 됌.
       - name: Copy docker-compose file to remote
