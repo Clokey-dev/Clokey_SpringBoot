@@ -92,7 +92,7 @@ jobs:
             echo "OLD: $OLD"
 
             # Docker 이미지 pull (필요한 경우 추가)
-            docker pull yongjun0511/clokey-docker:${{ secret.TAG }}
+            docker pull yongjun0511/clokey-docker:${{ secrets.TAG }}
 
             # 환경 변수와 함께 Docker Compose 실행
             docker-compose -f docker-compose.yml up -d app_$TARGET
