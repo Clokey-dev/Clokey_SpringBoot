@@ -52,7 +52,5 @@ tasks.named('test') {
 }
 
 tasks.processResources {
-	from("src/main/resources") {
-		include "properties/env.properties"
-	}
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE // 또는 DuplicatesStrategy.INCLUDE
 }
