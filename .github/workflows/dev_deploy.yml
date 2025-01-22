@@ -48,7 +48,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t yongjun0511/clokey-docker:${{ env.TAG }} .  # 환경 변수 TAG 사용
+          docker build -t yongjun0511/clokey-docker:${{ secrets.TAG }} .  # 환경 변수 TAG 사용
 
       - name: Push Docker Image
         run: |
