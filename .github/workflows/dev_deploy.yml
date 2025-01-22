@@ -13,22 +13,10 @@ jobs:
       contents: read
 
     env:
-      DB_USERNAME: ${{ secrets.DB_USERNAME }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_URL: ${{ secrets.DB_URL }}
-      REST_API_KEY: ${{ secrets.REST_API_KEY }}
       TAG: develop-latest  # TAG 설정
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Generate .env file
-        run: |
-          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" > .env
-          echo "TAG=${{ env.TAG }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-          echo "DB_URL=${{ secrets.DB_URL }}" >> .env
-          echo "REST_API_KEY=${{ secrets.REST_API_KEY }}" >> .env
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -38,6 +26,12 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
+
+      - name: make application-secret.yml
+        run: |
+            touch ./src/main/resources/application-secret.yml
+            echo "${{ secrets.APPLICATION_SECRET }}" > ./src/main/resources/application-secret.yml
+          shell: bash
 
       - name: Build with Gradle Wrapper
         run: |
