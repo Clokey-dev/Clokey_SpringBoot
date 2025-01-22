@@ -30,8 +30,6 @@ jobs:
           echo "${{ secrets.APPLICATION_SECRET }}" > ./src/main/resources/application-secret.yml
         shell: bash
 
-
-
       - name: Build with Gradle Wrapper
         run: |
           ./gradlew --stop && ./gradlew clean --refresh-dependencies
@@ -63,38 +61,6 @@ jobs:
           username: ubuntu
           host: ${{ secrets.EC2_HOST }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd /home/ubuntu/cicd
-
-            source .env
-
-            # 활성화된 서비스 확인
-            if docker-compose -f docker-compose.yml ps | grep -q "app_blue.*Up"; then
-              TARGET=green
-              OLD=blue
-            elif docker-compose -f docker-compose.yml ps | grep -q "app_green.*Up"; then
-              TARGET=blue
-              OLD=green
-            else
-              # 아무 서비스도 실행되지 않은 경우 (최초 실행)
-              TARGET=blue  # 또는 green, 기본값 설정
-              OLD=none
-            fi
-
-            echo "TARGET: $TARGET"
-            echo "OLD: $OLD"
-
-            # Docker 이미지 pull (필요한 경우 추가)
-            docker pull yongjun0511/clokey-docker:develop-latest
-
-            # 환경 변수와 함께 Docker Compose 실행
-            docker-compose -f docker-compose.yml up -d app_$TARGET
-
-            # 첫 실행이 아니라면 구 그룹을 내립니다.
-            if [ "$OLD" != "none" ]; then
-              sleep 10
-              docker-compose -f docker-compose.yml down app_$OLD
-            fi
-      
-          
-      
+          command: |
+            bash /home/ubuntu/cicd/deploy.sh
+            
