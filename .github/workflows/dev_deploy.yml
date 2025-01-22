@@ -44,14 +44,14 @@ jobs:
       - name: Generate .env file
         run: |
           echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" > .env
-          echo "TAG=v1.0.0" >> .env
+          echo "TAG=${{ secrets.TAG }}" >> .env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "DB_URL=${{ secrets.DB_URL }}" >> .env
           echo "REST_API_KEY=${{ secrets.REST_API_KEY }}" >> .env
 
       - name: Build Docker Image
         run: |
-          docker build -t yongjun0511/clokey-docker:${{ env.TAG }}
+          docker build -t yongjun0511/clokey-docker:${{ secrets.TAG }}
 
       - name: Push Docker Image
         run: |
