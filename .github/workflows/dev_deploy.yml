@@ -36,10 +36,6 @@ jobs:
           echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> ./src/main/resources/properties/env.properties
           echo "BUCKET_REGION=${{ secrets.BUCKET_REGION }}" >> ./src/main/resources/properties/env.properties
           echo "BUCKET_SECRET=${{ secrets.BUCKET_SECRET }}" >> ./src/main/resources/properties/env.properties
-          
-          # 파일 일부를 출력하여 확인 (시크릿 값은 절대로 출력하지 않음)
-          echo "Checking env.properties content (excluding secrets):"
-          head -n 5 ./src/main/resources/properties/env.properties
 
         shell: bash
 
