@@ -7,9 +7,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=blue
-    volumes:
-      - ./src/main/resources/application-secret.yml:/app/config/application-secret.yml  # application-secret.yml 파일 마운트
+      - SPRING_PROFILES_ACTIVE=blue  # 애플리케이션에서 'blue' 프로필로 설정
     networks:
       - app_network
 
@@ -19,9 +17,7 @@ services:
     ports:
       - "8081:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=green
-    volumes:
-      - ./src/main/resources/application-secret.yml:/app/config/application-secret.yml  # 동일하게 마운트
+      - SPRING_PROFILES_ACTIVE=green  # 애플리케이션에서 'green' 프로필로 설정
     networks:
       - app_network
 
