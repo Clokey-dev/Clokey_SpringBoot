@@ -64,3 +64,4 @@ jobs:
           command: |
             bash /home/ubuntu/cicd/deploy.sh
             
+
