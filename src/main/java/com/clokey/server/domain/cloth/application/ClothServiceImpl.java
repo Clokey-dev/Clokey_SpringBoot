@@ -1,10 +1,12 @@
 package com.clokey.server.domain.cloth.application;
 
+import com.clokey.server.domain.cloth.converter.ClothConverter;
+import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
+import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
 import com.clokey.server.domain.model.repository.ClothFolderRepository;
 import com.clokey.server.domain.model.repository.ClothImageRepository;
 import com.clokey.server.domain.model.repository.ClothRepository;
 import com.clokey.server.domain.model.entity.Cloth;
-import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.domain.model.repository.HistoryClothRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,21 +22,8 @@ public class ClothServiceImpl implements ClothService {
     private final ClothImageRepository clothImageRepository;
     private final ClothFolderRepository clothFolderRepository;
     private final HistoryClothRepository historyClothRepository;
+    private final ClothAccessibleValidator clothAccessibleValidator;
     //private final S3Uploader s3Uploader; // S3 업로드를 위한 의존성
-
-    @Override
-    public boolean clothExist(Long clothId) {
-        System.out.println(clothId);
-        return clothRepository.existsById(clothId);
-    }
-
-    @Override
-    public boolean isPublic(Long clothId) {
-        Visibility visibility = clothRepository.findById(clothId)
-                .get()
-                .getVisibility();
-        return visibility.equals(Visibility.PUBLIC);
-    }
 
 //    public ClothResponseDto.ClothCreateResult createCloth(ClothRequestDto.ClothCreateRequest request, MultipartFile imageFile) {
 //
@@ -52,8 +41,16 @@ public class ClothServiceImpl implements ClothService {
 //        return ClothConverter.toResponse(cloth);
 //    }
 
-    public Optional<Cloth> readClothById(Long clothId) {
-        return clothRepository.findById(clothId);
+    // ClothID로 상세 조회 후 DTO로 변환해서 반환
+    public ClothResponseDTO.ClothReadResult readClothDetailsById(Long clothId, Long memberId) {
+
+        // Cloth 레포지토리 조회
+        Optional<Cloth> cloth = clothRepository.findById(clothId);
+
+        clothAccessibleValidator.validateMemberAccessOfMember(cloth.get().getMemberId(), memberId);
+
+        // Cloth를 DTO로 변환하여 반환
+        return ClothConverter.toClothReadResult(cloth.get());
     }
 
     @Transactional

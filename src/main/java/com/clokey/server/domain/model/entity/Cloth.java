@@ -33,13 +33,14 @@ public class Cloth extends BaseEntity {
     @Column(nullable = false, columnDefinition = "integer default 0")
     private int wearNum;
 
-    @CreatedDate // 등록 날짜를 자동으로 기록
-    @Column(nullable = false, updatable = false)
-    private LocalDate regDate;
-
+    @ElementCollection(fetch = FetchType.LAZY) // 다중 값을 위한 설정
+    @CollectionTable(
+            name = "cloth_seasons", // 매핑될 계절 테이블 이름
+            joinColumns = @JoinColumn(name = "cloth_id") // 부모 테이블과의 조인 컬럼
+    )
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Season season;
+    @Column(name = "season", nullable = false) // 해당 season을 cloth_seasons 테이블에만 저장
+    private List<Season> seasons = new ArrayList<>();
 
     @Min(-20)
     @Max(40)
@@ -75,4 +76,8 @@ public class Cloth extends BaseEntity {
 
     @OneToMany(mappedBy = "cloth", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClothImage> images = new ArrayList<>();
+
+    public Long getMemberId() {
+        return this.member != null ? this.member.getId() : null;
+    }
 }

@@ -5,10 +5,10 @@ import com.clokey.server.domain.model.entity.enums.ThicknessLevel;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
-public class ClothResponseDto {
+public class ClothResponseDTO {
 
     @Builder
     @Getter
@@ -26,8 +26,9 @@ public class ClothResponseDto {
         Long id;
         String name;
         int wearNum;
-        LocalDate regDate;
-        Season season;
+        Date regDate;
+        String dayOfWeek;
+        List<Season> seasons;
         int tempUpperBound;
         int tempLowerBound;
         ThicknessLevel thicknessLevel;
