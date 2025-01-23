@@ -62,6 +62,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           key: ${{ secrets.EC2_SSH_KEY }}
           command: |
-            bash /home/ubuntu/cicd/deploy.sh
+            sudo chmod +x /home/ubuntu/cicd/deploy.sh
+            sudo /home/ubuntu/cicd/deploy.sh
             
 
