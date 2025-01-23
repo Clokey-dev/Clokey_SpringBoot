@@ -33,7 +33,7 @@ public class S3ImageServiceImpl implements S3ImageService {
 
     private final AmazonS3 amazonS3;
 
-    @Value("${BUCKET_NAME}")
+    @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
     @Override

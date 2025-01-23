@@ -1,102 +1,18 @@
-## Default profile
-spring:
-  application:
-    name: clokey
-  profiles:
-    group:
-      "local": "local, jwt, oauth-local"
-      "dev": "dev, jwt, oauth-dev"
-    active: dev
-  thymeleaf:
-    enabled: true
-  servlet:
-    multipart:
-      max-file-size: 100MB
-      max-request-size: 100MB
-springdoc:
-  swagger-ui:
-    tags-sorter: alpha
-    operations-sorter: alpha
-  use-fqn: true
----
-# Local Profile
 spring:
   config:
-    activate:
-      on-profile: local
-  datasource:
-    username: ${DB_USERNAME}
-    password: ${DB_PW}
-    url: ${DB_URL}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  sql:
-    init:
-      mode: never
+    import: application-secret.yml
   jpa:
+    hibernate:
+      ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        jdbc:
+          time_zone: Asia/Seoul
         show_sql: true
-        format_sql: true
-        use_sql_comments: true
-        hbm2ddl:
-          auto: update
-        default_batch_fetch_size: 1000
-  servlet:
-    multipart:
-      max-file-size: 100MB
-      max-request-size: 100MB
----
-# Dev Profile
-spring:
-  config:
-    activate:
-      on-profile: dev
-  datasource:
-    username: ${DB_USERNAME}
-    password: ${DB_PW}
-    url: ${DB_URL}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+        highlight_sql : true
 
-  sql:
-    init:
-      mode: never
-  jpa:
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
-        use_sql_comments: true
-        hbm2ddl:
-          auto: update
-        default_batch_fetch_size: 1000
-  servlet:
-    multipart:
-      max-file-size: 100MB
-      max-request-size: 100MB
 logging:
-  level.org:
-    hibernate.SQL: DEBUG
-    type.descriptor.sql.BasicBinder: TRACE
-server:
-  servlet:
-    encoding:
-      charset: UTF-8
-      force: true
-      enabled: true
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.web.client.DefaultRestClient: OFF
 
-
-kakao:
-  client_id: ${REST_API_KEY}
-  redirect_uri: http://localhost:8080/callback
-
-
-cloud:
-  aws:
-    s3:
-      bucket: ${BUCKET_NAME}
-    stack.auto: false
-    region.static: ap-northeast-2
-    credentials:
-      accessKey: ${BUCKET_ACCESS}
-      secretKey: ${BUCKET_SECRET}
