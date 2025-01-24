@@ -39,4 +39,11 @@ public class FolderRestController {
         folderService.editFolderName(request.getFolderId(), request.getNewName());
         return BaseResponse.onSuccess(SuccessStatus.FOLDER_EDIT_SUCCESS, null);
     }
+
+    @Operation(summary = "폴더에 옷 추가 API", description = "폴더에 옷 추가하는 API입니다.")
+    @PatchMapping("folders/{folderId}/clothes")
+    public BaseResponse<String> addClothesToFolder(@RequestBody FolderRequestDTO.AddClothesToFolderRequest request) {
+        folderService.addClothesToFolder(request);
+        return BaseResponse.onSuccess(SuccessStatus.FOLDER_ADD_CLOTHES_SUCCESS, null);
+    }
 }
