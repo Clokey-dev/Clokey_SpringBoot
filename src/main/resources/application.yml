@@ -9,10 +9,12 @@ spring:
         jdbc:
           time_zone: Asia/Seoul
         show_sql: true
+
         highlight_sql : true
 
 logging:
   level:
     org.springframework.web: DEBUG
     org.springframework.web.client.DefaultRestClient: OFF
+
 

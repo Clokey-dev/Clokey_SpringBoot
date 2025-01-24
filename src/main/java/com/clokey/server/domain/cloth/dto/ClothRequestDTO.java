@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 public class ClothRequestDTO {
 
     @Builder
@@ -16,7 +18,7 @@ public class ClothRequestDTO {
     @AllArgsConstructor
     public static class ClothCreateRequest{
         String name;
-        Season season;
+        List<Season> seasons;
         int tempUpperBound;
         int tempLowerBound;
         ThicknessLevel thicknessLevel;

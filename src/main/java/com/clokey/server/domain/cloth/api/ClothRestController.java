@@ -1,6 +1,7 @@
 package com.clokey.server.domain.cloth.api;
 
 import com.clokey.server.domain.cloth.application.ClothService;
+import com.clokey.server.domain.cloth.dto.ClothRequestDTO;
 import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
 import com.clokey.server.domain.cloth.exception.annotation.ClothExist;
 import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
@@ -12,8 +13,10 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,8 +36,10 @@ public class ClothRestController {
     @Parameters({
             @Parameter(name = "clothId", description = "옷의 id, path variable 입니다.")
     })
-    public BaseResponse<ClothResponseDTO.ClothReadResult> getClothDetails(@PathVariable @Valid @ClothExist Long clothId, @RequestParam Long memberId) {
-
+    public BaseResponse<ClothResponseDTO.ClothReadResult> getClothDetails(
+            @PathVariable @Valid @ClothExist Long clothId,
+            @RequestParam Long memberId
+    ) {
         // 멤버가 옷에 대해서 접근 권한이 있는지 확인합니다. -> 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 조회하는 현 유저를 나타냄
         clothAccessibleValidator.validateClothAccessOfMember(clothId, memberId);
 
@@ -42,6 +47,24 @@ public class ClothRestController {
         ClothResponseDTO.ClothReadResult result = clothService.readClothDetailsById(clothId, memberId);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
+    }
+
+    @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "새로운 옷을 생성하는 API", description = "request body에 ClothCreateRequestDTO 형식의 데이터를 전달해주세요.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CLOTH_201", description = "CREATED, 성공적으로 생성되었습니다."),
+    })
+    public BaseResponse<ClothResponseDTO.ClothCreateResult> postCloth(
+            @RequestPart("clothCreateRequest") @Valid ClothRequestDTO.ClothCreateRequest clothCreateRequest,
+            @RequestPart("imageFile") MultipartFile imageFile,
+            @RequestParam Long memberId
+    ) {
+        // 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 생성하는 현 유저를 나타냄
+
+        // ClothService를 통해 데이터를 생성하고, 결과 반환
+        ClothResponseDTO.ClothCreateResult result =clothService.createCloth(clothCreateRequest, imageFile);
+
+        return BaseResponse.onSuccess(SuccessStatus.CLOTH_CREATED, result);
     }
 
     // 옷 삭제 API, 사용자 토큰 받는 부분 추가 및 변경해야함
@@ -53,11 +76,14 @@ public class ClothRestController {
     @Parameters({
             @Parameter(name = "clothId", description = "옷의 id, path variable 입니다.")
     })
-    public BaseResponse<ClothResponseDTO.ClothReadResult> deleteCloth(@PathVariable @Valid @ClothExist Long clothId, @RequestParam Long memberId) {
-
+    public BaseResponse<Void> deleteCloth(
+            @PathVariable @Valid @ClothExist Long clothId,
+            @RequestParam Long memberId
+    ) {
         // 멤버가 옷에 대해서 수정 권한이 있는지 확인합니다. -> 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 삭제하는 현 유저를 나타냄
         clothAccessibleValidator.validateClothEditOfMember(clothId, memberId);
 
+        // ClothService를 통해 데이터를 삭제
         clothService.deleteClothById(clothId);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_DELETED, null);
