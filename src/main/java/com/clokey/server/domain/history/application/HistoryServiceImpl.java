@@ -11,8 +11,6 @@ import com.clokey.server.domain.history.domain.entity.MemberLike;
 import com.clokey.server.domain.member.domain.repository.MemberRepository;
 import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
-import com.clokey.server.global.error.code.status.ErrorStatus;
-import com.clokey.server.global.error.exception.DatabaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,13 +19,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class HistoryServiceImpl implements HistoryService{
 
-    private final HistoryRepository historyRepository;
+    private final HistoryRepositoryService historyRepositoryService;
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final MemberLikeRepository memberLikeRepository;
@@ -36,13 +33,14 @@ public class HistoryServiceImpl implements HistoryService{
 
     @Override
     public HistoryResponseDTO.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked) {
-        History history = historyRepository.findById(historyId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_HISTORY));
+
+        History history = historyRepositoryService.findById(historyId);
 
         if(isLiked) {
-            historyRepository.decrementLikes(historyId);
+            historyRepositoryService.decrementLikes(historyId);
             memberLikeRepository.deleteByMember_IdAndHistory_Id(memberId,historyId);
         } else {
-            historyRepository.incrementLikes(historyId);
+            historyRepositoryService.incrementLikes(historyId);
             MemberLike memberLike = MemberLike.builder()
                     .history(history)
                     .member(memberRepository.findById(memberId).get())
@@ -56,7 +54,7 @@ public class HistoryServiceImpl implements HistoryService{
     @Override
     public HistoryResponseDTO.CommentWriteResult writeComment(Long historyId, Long parentCommentId, Long memberId, String content) {
 
-        History history = historyRepository.findById(historyId).get();
+        History history = historyRepositoryService.findById(historyId);
 
         Member member = memberRepository.findById(memberId).get();
 
@@ -79,7 +77,7 @@ public class HistoryServiceImpl implements HistoryService{
 
     @Override
     public HistoryResponseDTO.DayViewResult getDaily(Long historyId, Long memberId){
-        Optional<History> history = historyRepository.findById(historyId);
+        History history = historyRepositoryService.findById(historyId);
         List<HistoryImage> historyImages = historyImageRepository.findByHistory_Id(historyId);
         List<String> imageUrl = historyImages.stream()
                 .map(HistoryImage::getImageUrl)
@@ -92,7 +90,7 @@ public class HistoryServiceImpl implements HistoryService{
         int likeCount = memberLikeRepository.countByHistory_Id(historyId);
         boolean isLiked = memberLikeRepository.existsByMember_IdAndHistory_Id(memberId,historyId);
 
-        return HistoryConverter.toDayViewResult(history.get(), imageUrl, hashtags, likeCount, isLiked);
+        return HistoryConverter.toDayViewResult(history, imageUrl, hashtags, likeCount, isLiked);
     }
 
     @Override
@@ -106,7 +104,7 @@ public class HistoryServiceImpl implements HistoryService{
 
     @Override
     public HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long this_member_id, Long memberId, String month){
-        List<History> histories = historyRepository.findHistoriesByMemberAndYearMonth(memberId, month);
+        List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(memberId, month);
         List<String> historyImageUrls = histories.stream()
                 .map(history -> historyImageRepository.findByHistory_Id(history.getId())
                         .stream()
