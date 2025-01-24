@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  app_blue:
+    image: yongjun0511/clokey-docker:develop-latest
+    container_name: app_blue
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=blue  # 애플리케이션에서 'blue' 프로필로 설정
+    networks:
+      - app_network
+
+  app_green:
+    image: yongjun0511/clokey-docker:develop-latest
+    container_name: app_green
+    ports:
+      - "8081:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=green  # 애플리케이션에서 'green' 프로필로 설정
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge

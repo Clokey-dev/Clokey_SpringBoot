@@ -8,15 +8,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.context.annotation.PropertySource;
+
 @Configuration
 public class S3Config {
-    @Value("${BUCKET_ACCESS}")
+    @Value("${cloud.aws.credentials.access-key}")
     private String accessKey;
 
-    @Value("${BUCKET_SECRET}")
+    @Value("${cloud.aws.credentials.secret-key}")
     private String secretKey;
 
-    @Value("${BUCKET_REGION}")
+    @Value("${cloud.aws.region.static}")
     private String region;
 
     @Bean
