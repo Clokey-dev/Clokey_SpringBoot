@@ -13,17 +13,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CategoryQueryServiceImpl implements CategoryQueryService {
 
-    private final CategoryRepository categoryRepository;
+    private final CategoryRepositoryService categoryRepositoryService;
     private final CategoryConverter categoryConverter;
 
     @Override
     public boolean categoryExist(Long categoryId) {
-        return categoryRepository.existsById(categoryId);
+        return categoryRepositoryService.existsById(categoryId);
     }
 
     @Override
     public List<CategoryResponseDTO.CategoryRP> getAllCategories() {
-        return categoryRepository.findAll()
+        return categoryRepositoryService.findAll()
                 .stream()
                 .map(categoryConverter::convertToDTO)
                 .collect(Collectors.toList());
