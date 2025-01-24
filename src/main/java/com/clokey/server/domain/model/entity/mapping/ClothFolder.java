@@ -25,4 +25,9 @@ public class ClothFolder extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "folder_id",nullable = false)
     private Folder folder;
+
+    public ClothFolder(Cloth cloth, Folder folder) {
+        this.cloth = cloth;
+        this.folder = folder;
+    }
 }
