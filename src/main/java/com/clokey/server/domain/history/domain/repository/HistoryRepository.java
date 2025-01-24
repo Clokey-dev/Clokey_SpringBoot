@@ -11,4 +11,12 @@ import java.util.List;
 
 public interface HistoryRepository extends JpaRepository<History, Long> {
 
+    @Query("SELECT h FROM History h WHERE h.member.id = :memberId AND FUNCTION('DATE_FORMAT', h.historyDate, '%Y-%m') = :yearMonth")
+    List<History> findHistoriesByMemberAndYearMonth(Long memberId, String yearMonth);
+
+    @Query("UPDATE History h SET h.likes = h.likes + 1 WHERE h.id = :historyId")
+    void incrementLikes(Long historyId);
+
+    @Query("UPDATE History h SET h.likes = h.likes - 1 WHERE h.id = :historyId")
+    void decrementLikes(Long historyId);
 }

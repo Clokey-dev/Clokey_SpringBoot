@@ -20,17 +20,19 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
 
     private final HistoryRepository historyRepository;
 
-    @Query("SELECT h FROM History h WHERE h.member.id = :memberId AND FUNCTION('DATE_FORMAT', h.historyDate, '%Y-%m') = :yearMonth")
-    List<History> findHistoriesByMemberAndYearMonth(Long memberId, String yearMonth);
+    public List<History> findHistoriesByMemberAndYearMonth(Long memberId, String yearMonth){
+        return historyRepository.findHistoriesByMemberAndYearMonth(memberId,yearMonth);
+    }
 
     @Modifying
-    @Query("UPDATE History h SET h.likes = h.likes + 1 WHERE h.id = :historyId")
-    void incrementLikes(Long historyId);
+    public void incrementLikes(Long historyId){
+        historyRepository.incrementLikes(historyId);
+    }
 
-    // Likes 감소
     @Modifying
-    @Query("UPDATE History h SET h.likes = h.likes - 1 WHERE h.id = :historyId")
-    void decrementLikes(Long historyId);
+    public void decrementLikes(Long historyId){
+        historyRepository.decrementLikes(historyId);
+    }
 
     @Override
     public History findById(Long historyId) {

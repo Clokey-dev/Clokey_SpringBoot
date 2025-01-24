@@ -4,6 +4,7 @@ import com.clokey.server.domain.member.domain.repository.MemberRepository;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
+import com.clokey.server.global.error.exception.DatabaseException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -35,7 +36,7 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     @Override
     public Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(ErrorStatus.NO_SUCH_MEMBER));
+                .orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
     }
 
     @Override

@@ -5,10 +5,10 @@ import com.clokey.server.domain.history.domain.entity.Hashtag;
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.history.domain.entity.HistoryImage;
 import com.clokey.server.domain.history.domain.repository.*;
+import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.history.domain.entity.HashtagHistory;
 import com.clokey.server.domain.history.domain.entity.MemberLike;
-import com.clokey.server.domain.member.domain.repository.MemberRepository;
 import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +25,11 @@ import java.util.List;
 public class HistoryServiceImpl implements HistoryService{
 
     private final HistoryRepositoryService historyRepositoryService;
-    private final CommentRepository commentRepository;
-    private final MemberRepository memberRepository;
-    private final MemberLikeRepository memberLikeRepository;
-    private final HistoryImageRepository historyImageRepository;
-    private final HashtagHistoryRepository hashtagHistoryRepository;
+    private final CommentRepositoryService commentRepositoryService;
+    private final MemberRepositoryService memberRepositoryService;
+    private final MemberLikeRepositoryService memberLikeRepositoryService;
+    private final HistoryImageRepositoryService historyImageRepositoryService;
+    private final HashtagHistoryRepositoryService hashtagHistoryRepositoryService;
 
     @Override
     public HistoryResponseDTO.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked) {
@@ -38,14 +38,14 @@ public class HistoryServiceImpl implements HistoryService{
 
         if(isLiked) {
             historyRepositoryService.decrementLikes(historyId);
-            memberLikeRepository.deleteByMember_IdAndHistory_Id(memberId,historyId);
+            memberLikeRepositoryService.deleteByMember_IdAndHistory_Id(memberId,historyId);
         } else {
             historyRepositoryService.incrementLikes(historyId);
             MemberLike memberLike = MemberLike.builder()
                     .history(history)
-                    .member(memberRepository.findById(memberId).get())
+                    .member(memberRepositoryService.findMemberById(memberId))
                     .build();
-            memberLikeRepository.save(memberLike);
+            memberLikeRepositoryService.save(memberLike);
         }
 
         return HistoryConverter.toLikeResult(history, isLiked);
@@ -56,11 +56,11 @@ public class HistoryServiceImpl implements HistoryService{
 
         History history = historyRepositoryService.findById(historyId);
 
-        Member member = memberRepository.findById(memberId).get();
+        Member member = memberRepositoryService.findMemberById(memberId);
 
         Comment parentComment = null;
         if (parentCommentId != null) {
-            parentComment = commentRepository.findById(parentCommentId).get();
+            parentComment = commentRepositoryService.findById(parentCommentId);
         }
 
         Comment comment = Comment.builder()
@@ -70,7 +70,7 @@ public class HistoryServiceImpl implements HistoryService{
                 .member(member)
                 .build();
 
-        Comment savedComment = commentRepository.save(comment);
+        Comment savedComment = commentRepositoryService.save(comment);
 
         return HistoryConverter.toCommentWriteResult(savedComment);
     }
@@ -78,26 +78,26 @@ public class HistoryServiceImpl implements HistoryService{
     @Override
     public HistoryResponseDTO.DayViewResult getDaily(Long historyId, Long memberId){
         History history = historyRepositoryService.findById(historyId);
-        List<HistoryImage> historyImages = historyImageRepository.findByHistory_Id(historyId);
+        List<HistoryImage> historyImages = historyImageRepositoryService.findByHistory_Id(historyId);
         List<String> imageUrl = historyImages.stream()
                 .map(HistoryImage::getImageUrl)
                 .toList();
-        List<HashtagHistory> hashtagHistories = hashtagHistoryRepository.findByHistory_Id(historyId);
+        List<HashtagHistory> hashtagHistories = hashtagHistoryRepositoryService.findByHistory_Id(historyId);
         List<String> hashtags = hashtagHistories.stream()
                 .map(HashtagHistory::getHashtag)
                 .map(Hashtag::getName)
                 .toList();
-        int likeCount = memberLikeRepository.countByHistory_Id(historyId);
-        boolean isLiked = memberLikeRepository.existsByMember_IdAndHistory_Id(memberId,historyId);
+        int likeCount = memberLikeRepositoryService.countByHistory_Id(historyId);
+        boolean isLiked = memberLikeRepositoryService.existsByMember_IdAndHistory_Id(memberId,historyId);
 
         return HistoryConverter.toDayViewResult(history, imageUrl, hashtags, likeCount, isLiked);
     }
 
     @Override
     public HistoryResponseDTO.HistoryCommentResult getComments(Long historyId, int page) {
-        Page<Comment> comments = commentRepository.findByHistoryIdAndCommentIsNull(historyId, PageRequest.of(page,10, Sort.by(Sort.Direction.ASC, "createdAt")));
+        Page<Comment> comments = commentRepositoryService.findByHistoryIdAndCommentIsNull(historyId, PageRequest.of(page,10, Sort.by(Sort.Direction.ASC, "createdAt")));
         List<List<Comment>> repliesForEachComment = comments.stream()
-                .map(comment -> commentRepository.findByCommentId(comment.getId()))
+                .map(comment -> commentRepositoryService.findByCommentId(comment.getId()))
                 .toList();
         return  HistoryConverter.toHistoryCommentResult(comments, repliesForEachComment);
     }
@@ -106,7 +106,7 @@ public class HistoryServiceImpl implements HistoryService{
     public HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long this_member_id, Long memberId, String month){
         List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(memberId, month);
         List<String> historyImageUrls = histories.stream()
-                .map(history -> historyImageRepository.findByHistory_Id(history.getId())
+                .map(history -> historyImageRepositoryService.findByHistory_Id(history.getId())
                         .stream()
                         .sorted(Comparator.comparing(HistoryImage::getCreatedAt)) // createdAt 기준으로 정렬
                         .findFirst() // 첫 번째 이미지 가져오기
