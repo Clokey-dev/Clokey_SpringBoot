@@ -2,8 +2,8 @@ package com.clokey.server.domain.folder.converter;
 
 import com.clokey.server.domain.folder.dto.FolderRequestDTO;
 import com.clokey.server.domain.folder.dto.FolderResponseDTO;
-import com.clokey.server.domain.model.entity.Folder;
-import com.clokey.server.domain.model.entity.Member;
+import com.clokey.server.domain.folder.domain.entity.Folder;
+import com.clokey.server.domain.member.domain.entity.Member;
 
 
 public class FolderConverter {

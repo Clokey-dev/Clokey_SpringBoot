@@ -1,15 +1,14 @@
 package com.clokey.server.domain.history.exception.validator;
 
-import com.clokey.server.domain.model.entity.History;
+import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.model.entity.enums.Visibility;
-import com.clokey.server.domain.model.repository.HistoryRepository;
-import com.clokey.server.domain.model.repository.MemberRepository;
+import com.clokey.server.domain.history.domain.repository.HistoryRepository;
+import com.clokey.server.domain.member.domain.repository.MemberRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Parameter;
 import java.util.Optional;
 
 @Component

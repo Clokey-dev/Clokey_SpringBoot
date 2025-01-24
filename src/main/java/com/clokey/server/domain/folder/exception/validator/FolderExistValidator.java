@@ -1,7 +1,7 @@
 package com.clokey.server.domain.folder.exception.validator;
 
 import com.clokey.server.domain.folder.exception.annotation.FolderExist;
-import com.clokey.server.domain.model.repository.FolderRepository;
+import com.clokey.server.domain.folder.domain.repository.FolderRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

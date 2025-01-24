@@ -2,7 +2,7 @@ package com.clokey.server.domain.category.application;
 
 import com.clokey.server.domain.category.converter.CategoryConverter;
 import com.clokey.server.domain.category.dto.CategoryResponseDTO;
-import com.clokey.server.domain.model.repository.CategoryRepository;
+import com.clokey.server.domain.category.domain.repostiory.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

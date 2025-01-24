@@ -1,9 +1,14 @@
 package com.clokey.server.domain.history.application;
 
-import com.clokey.server.domain.model.entity.*;
-import com.clokey.server.domain.model.entity.mapping.HashtagHistory;
-import com.clokey.server.domain.model.entity.mapping.MemberLike;
-import com.clokey.server.domain.model.repository.*;
+import com.clokey.server.domain.history.domain.entity.Comment;
+import com.clokey.server.domain.history.domain.entity.Hashtag;
+import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.history.domain.entity.HistoryImage;
+import com.clokey.server.domain.history.domain.repository.*;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.history.domain.entity.HashtagHistory;
+import com.clokey.server.domain.history.domain.entity.MemberLike;
+import com.clokey.server.domain.member.domain.repository.MemberRepository;
 import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.global.error.code.status.ErrorStatus;

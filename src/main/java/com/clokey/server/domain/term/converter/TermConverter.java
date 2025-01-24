@@ -1,6 +1,6 @@
 package com.clokey.server.domain.term.converter;
 
-import com.clokey.server.domain.model.entity.Term;
+import com.clokey.server.domain.term.domain.entity.Term;
 import com.clokey.server.domain.term.dto.TermResponseDTO;
 
 public class TermConverter {

@@ -1,9 +1,7 @@
 package com.clokey.server.domain.cloth.exception.validator;
 
-import com.clokey.server.domain.cloth.application.ClothService;
 import com.clokey.server.domain.cloth.exception.annotation.ClothExist;
-import com.clokey.server.domain.model.entity.Cloth;
-import com.clokey.server.domain.model.repository.ClothRepository;
+import com.clokey.server.domain.cloth.domain.repository.ClothRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

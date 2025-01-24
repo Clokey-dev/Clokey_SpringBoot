@@ -1,8 +1,8 @@
 package com.clokey.server.domain.history.exception.validator;
 
 import com.clokey.server.domain.history.exception.annotation.ParentCommentConditions;
-import com.clokey.server.domain.model.entity.Comment;
-import com.clokey.server.domain.model.repository.CommentRepository;
+import com.clokey.server.domain.history.domain.entity.Comment;
+import com.clokey.server.domain.history.domain.repository.CommentRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
 import jakarta.validation.ConstraintValidator;

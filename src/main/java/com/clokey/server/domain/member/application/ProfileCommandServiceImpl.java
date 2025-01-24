@@ -2,7 +2,7 @@ package com.clokey.server.domain.member.application;
 
 import com.clokey.server.domain.member.converter.ProfileConverter;
 import com.clokey.server.domain.member.dto.MemberResponseDTO;
-import com.clokey.server.domain.model.entity.Member;
+import com.clokey.server.domain.member.domain.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

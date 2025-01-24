@@ -1,11 +1,10 @@
 package com.clokey.server.domain.cloth.exception.validator;
 
-import com.clokey.server.domain.cloth.application.ClothService;
 import com.clokey.server.domain.cloth.exception.ClothException;
-import com.clokey.server.domain.model.entity.Cloth;
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.model.entity.enums.Visibility;
-import com.clokey.server.domain.model.repository.ClothRepository;
-import com.clokey.server.domain.model.repository.MemberRepository;
+import com.clokey.server.domain.cloth.domain.repository.ClothRepository;
+import com.clokey.server.domain.member.domain.repository.MemberRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
 import lombok.RequiredArgsConstructor;

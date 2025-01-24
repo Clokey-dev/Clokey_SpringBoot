@@ -1,6 +1,6 @@
 package com.clokey.server.domain.history.exception.validator;
 
-import com.clokey.server.domain.model.repository.MemberLikeRepository;
+import com.clokey.server.domain.history.domain.repository.MemberLikeRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
