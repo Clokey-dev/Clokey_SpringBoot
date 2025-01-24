@@ -13,4 +13,6 @@ public interface HistoryRepositoryService {
     void decrementLikes(Long historyId);
 
     History findById(Long historyId);
+
+    boolean existsById(Long historyId);
 }

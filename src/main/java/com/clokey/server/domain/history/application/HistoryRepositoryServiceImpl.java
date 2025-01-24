@@ -38,4 +38,9 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
     public History findById(Long historyId) {
         return historyRepository.findById(historyId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_HISTORY));
     }
+
+    @Override
+    public boolean existsById(Long historyId) {
+        return historyRepository.existsById(historyId);
+    }
 }

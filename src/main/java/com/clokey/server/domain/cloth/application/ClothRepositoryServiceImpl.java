@@ -35,4 +35,9 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
     public Cloth save(Cloth cloth) {
         return clothRepository.save(cloth);
     }
+
+    @Override
+    public boolean existsById(Long clothId) {
+        return clothRepository.existsById(clothId);
+    }
 }

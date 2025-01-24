@@ -40,4 +40,9 @@ public class CommentRepositoryServiceImpl implements CommentRepositoryService{
         return commentRepository.save(comment);
     }
 
+    @Override
+    public boolean existsById(Long commentId) {
+        return commentRepository.existsById(commentId);
+    }
+
 }

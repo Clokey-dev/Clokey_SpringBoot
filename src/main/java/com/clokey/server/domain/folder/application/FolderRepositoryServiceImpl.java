@@ -30,4 +30,9 @@ public class FolderRepositoryServiceImpl implements FolderRepositoryService{
     public Folder findById(Long folderId) {
         return folderRepository.findById(folderId).orElseThrow(()-> new DatabaseException(ErrorStatus.NO_SUCH_FOLDER));
     }
+
+    @Override
+    public boolean existsById(Long folderId) {
+        return folderRepository.existsById(folderId);
+    }
 }

@@ -1,7 +1,9 @@
 package com.clokey.server.domain.cloth.exception.validator;
 
+import com.clokey.server.domain.cloth.application.ClothRepositoryService;
 import com.clokey.server.domain.cloth.exception.ClothException;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.domain.cloth.domain.repository.ClothRepository;
 import com.clokey.server.domain.member.domain.repository.MemberRepository;
@@ -14,12 +16,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ClothAccessibleValidator {
 
-    private final MemberRepository memberRepository;
-    private final ClothRepository clothRepository;
+    private final MemberRepositoryService memberRepositoryService;
+    private final ClothRepositoryService clothRepositoryService;
 
     public void validateClothAccessOfMember(Long clothId, Long memberId) {
-        Cloth cloth = clothRepository.findById(clothId)
-                .orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_CLOTH));
+        Cloth cloth = clothRepositoryService.findById(clothId);
 
         //접근 권한 확인 - 나의 옷이 아니고 비공개일 경우 접근 불가.
         boolean isPublic = cloth.getVisibility().equals(Visibility.PUBLIC);
@@ -31,8 +32,7 @@ public class ClothAccessibleValidator {
     }
 
     public void validateClothEditOfMember(Long clothId, Long memberId) {
-        Cloth cloth = clothRepository.findById(clothId)
-                .orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_CLOTH));
+        Cloth cloth = clothRepositoryService.findById(clothId);
 
         //수정 권한 확인 - 나의 옷이 아닌 경우에 수정 불가.
         boolean isNotMyCloth = !cloth.getMemberId().equals(memberId);
@@ -46,7 +46,7 @@ public class ClothAccessibleValidator {
 
         //접근 권한 확인 - 내 자신을 확인하는 것도 아니고 비공개인 경우.
         boolean selfQuery = memberToBeQueried.equals(memberRequestingQuery);
-        boolean isPrivate = memberRepository.getReferenceById(memberToBeQueried)
+        boolean isPrivate = memberRepositoryService.getReferencedById(memberToBeQueried)
                 .getVisibility()
                 .equals(Visibility.PRIVATE);
 

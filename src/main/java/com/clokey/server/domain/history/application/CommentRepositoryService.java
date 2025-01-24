@@ -15,4 +15,6 @@ public interface CommentRepositoryService {
     Comment findById(Long commentId);
 
     Comment save(Comment comment);
+
+    boolean existsById(Long commentId);
 }

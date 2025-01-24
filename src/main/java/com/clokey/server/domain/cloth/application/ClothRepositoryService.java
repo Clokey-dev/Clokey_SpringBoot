@@ -9,4 +9,6 @@ public interface ClothRepositoryService {
     void deleteById(Long id);
 
     Cloth save(Cloth cloth);
+
+    boolean existsById(Long clothId);
 }

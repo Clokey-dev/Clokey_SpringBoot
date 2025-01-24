@@ -16,4 +16,6 @@ public interface MemberRepositoryService {
 
     boolean idExist(String clokeyId);
     Member findMemberByClokeyId(String clokeyId);
+
+    Member getReferencedById(Long memberId);
 }

@@ -10,4 +10,6 @@ public interface FolderRepositoryService {
 
     Folder findById(Long folderId);
 
+    boolean existsById(Long folderId);
+
 }

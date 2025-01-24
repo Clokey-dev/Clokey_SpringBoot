@@ -63,4 +63,9 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
                 .orElseThrow(() -> new IllegalArgumentException("클로키 아이디에 해당하는 사용자가 없습니다."));
     }
 
+    @Override
+    public Member getReferencedById(Long memberId) {
+        return memberRepository.getReferenceById(memberId);
+    }
+
 }
