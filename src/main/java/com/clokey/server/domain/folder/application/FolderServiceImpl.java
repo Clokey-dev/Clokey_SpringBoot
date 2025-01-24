@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FolderServiceImpl implements FolderService {
 
-    private final FolderRepository folderRepository;
+    private final FolderRepositoryService folderRepositoryService;
     private final MemberRepository memberRepository;
 
 
@@ -27,7 +27,7 @@ public class FolderServiceImpl implements FolderService {
     public Folder createFolder(Long memberId, FolderRequestDTO.FolderCreateRequest request) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
         Folder newFolder = FolderConverter.toFolder(request, member);
-        folderRepository.save(newFolder);
+        folderRepositoryService.save(newFolder);
         return newFolder;
     }
 
@@ -35,7 +35,7 @@ public class FolderServiceImpl implements FolderService {
     @Transactional
     public void deleteFolder(Long folderId) {
         try {
-            folderRepository.deleteById(folderId);
+            folderRepositoryService.deleteById(folderId);
         } catch (Exception ex) {
             throw new FolderException(ErrorStatus.FAILED_TO_DELETE_FOLDER);
         }
@@ -44,8 +44,8 @@ public class FolderServiceImpl implements FolderService {
     @Override
     @Transactional
     public void editFolderName(Long folderId, String newName) {
-        Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_FOLDER));
+        Folder folder = folderRepositoryService.findById(folderId);
         folder.rename(newName);
-        folderRepository.save(folder);
+        folderRepositoryService.save(folder);
     }
 }
