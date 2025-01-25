@@ -25,6 +25,11 @@ public class HistoryImageQuantityLimitValidator implements ConstraintValidator<H
 
     @Override
     public boolean isValid(List<MultipartFile> images, ConstraintValidatorContext context) {
+
+        if(images == null || images.isEmpty()){
+            return true;
+        }
+
         boolean isValid = images.size()<=10;
 
         if (!isValid) {
