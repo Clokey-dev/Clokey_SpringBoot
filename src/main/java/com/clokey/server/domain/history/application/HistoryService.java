@@ -1,6 +1,8 @@
 package com.clokey.server.domain.history.application;
 
+import com.clokey.server.domain.history.dto.HistoryRequestDTO;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface HistoryService {
 
@@ -13,5 +15,7 @@ public interface HistoryService {
     HistoryResponseDTO.HistoryCommentResult getComments(Long historyId, int page);
 
     HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long this_member_id, Long memberId, String month);
+
+    HistoryResponseDTO.HistoryCreateResult createHistory(HistoryRequestDTO.HistoryCreate historyCreateRequest, Long memberId,MultipartFile image);
 
 }

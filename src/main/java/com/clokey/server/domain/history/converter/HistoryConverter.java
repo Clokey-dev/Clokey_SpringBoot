@@ -146,6 +146,12 @@ public class HistoryConverter {
                 .build();
     }
 
+    public static HistoryResponseDTO.HistoryCreateResult historyCreateResult(History history){
+        return HistoryResponseDTO.HistoryCreateResult.builder()
+                .historyId(history.getId())
+                .build();
+    }
+
 
 
 }

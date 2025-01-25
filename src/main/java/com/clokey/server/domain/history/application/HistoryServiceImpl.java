@@ -1,21 +1,27 @@
 package com.clokey.server.domain.history.application;
 
+import com.clokey.server.domain.cloth.converter.ClothConverter;
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.cloth.domain.entity.ClothImage;
 import com.clokey.server.domain.history.domain.entity.Comment;
 import com.clokey.server.domain.history.domain.entity.Hashtag;
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.history.domain.entity.HistoryImage;
 import com.clokey.server.domain.history.domain.repository.*;
+import com.clokey.server.domain.history.dto.HistoryRequestDTO;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.history.domain.entity.HashtagHistory;
 import com.clokey.server.domain.history.domain.entity.MemberLike;
 import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
+import com.clokey.server.global.infra.s3.S3ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Comparator;
 import java.util.List;
@@ -30,6 +36,7 @@ public class HistoryServiceImpl implements HistoryService{
     private final MemberLikeRepositoryService memberLikeRepositoryService;
     private final HistoryImageRepositoryService historyImageRepositoryService;
     private final HashtagHistoryRepositoryService hashtagHistoryRepositoryService;
+    private final S3ImageService s3ImageService;
 
     @Override
     public HistoryResponseDTO.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked) {
@@ -123,6 +130,28 @@ public class HistoryServiceImpl implements HistoryService{
         //다른 멤버 기록 열람시 PUBLIC 기록만을 모아줍니다.
         return HistoryConverter.toPublicMonthViewResult(memberId, histories, historyImageUrls);
 
+    }
+
+    @Override
+    public HistoryResponseDTO.HistoryCreateResult createHistory(HistoryRequestDTO.HistoryCreate historyCreateRequest,Long memberId, MultipartFile imageFile) {
+
+        // History 엔티티 생성 후 요청 정보 반환해서 저장
+        History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));
+
+        // 이미지 업로드 후 URL 반환
+        String imageUrl = (imageFile != null) ? s3ImageService.upload(imageFile) : null;
+
+        // HistoryImage 엔티티 생성 & URL 저장
+        HistoryImage historyImage = HistoryImage.builder()
+                .imageUrl(imageUrl)
+                .history(history)
+                .build();
+
+        // HistoryImage 저장
+        historyImageRepositoryService.save(historyImage);
+
+        // Cloth를 응답형식로 변환하여 반환
+        return HistoryConverter.historyCreateResult(history);
     }
 
 }
