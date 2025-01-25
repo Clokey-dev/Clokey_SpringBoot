@@ -1,11 +1,13 @@
 package com.clokey.server.domain.cloth.domain.entity;
 
+import com.clokey.server.domain.cloth.exception.ClothException;
 import com.clokey.server.domain.model.entity.BaseEntity;
 import com.clokey.server.domain.category.domain.entity.Category;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.Season;
 import com.clokey.server.domain.model.entity.enums.ThicknessLevel;
 
+import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -80,5 +82,15 @@ public class Cloth extends BaseEntity {
 
     public Long getMemberId() {
         return this.member != null ? this.member.getId() : null;
+    }
+
+    public void increaseWearNum() {
+        this.wearNum ++;
+    }
+
+    public void decreaseWearNum() {
+        if(wearNum == 0){
+            throw new ClothException(ErrorStatus.CLOTH_WEAR_NUM_BELOW_ZERO);
+        }
     }
 }

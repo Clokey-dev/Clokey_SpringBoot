@@ -34,6 +34,7 @@ public enum ErrorStatus implements BaseErrorCode {
     CLOTH_TEMP_OUT_OF_RANGE(HttpStatus.BAD_REQUEST,"CLOTH_4005","옷의 상한 또는 하한 온도가 범위를 벗어났습니다"),
     CLOTH_TEMP_ORDER_INVALID(HttpStatus.BAD_REQUEST,"CLOTH_4006","옷의 하한 온도가 상한 온도보다 높습니다."),
     CLOTH_THICKNESS_OUT_OF_RANGE(HttpStatus.BAD_REQUEST,"CLOTH_4005","옷의 두께가 범위를 벗어났습니다."),
+    CLOTH_WEAR_NUM_BELOW_ZERO(HttpStatus.BAD_REQUEST,"CLOTH_4006","옷의 착용 횟수를 0아래로 내릴 수 없습니다"),
 
     //폴더 에러
     NO_SUCH_FOLDER(HttpStatus.NOT_FOUND,"FOLDER_4041","존재하지 않는 폴더 ID입니다."),
