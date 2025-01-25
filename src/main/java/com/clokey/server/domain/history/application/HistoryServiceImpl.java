@@ -19,6 +19,7 @@ import com.clokey.server.domain.history.domain.entity.MemberLike;
 import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.global.infra.s3.S3ImageService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -140,7 +141,8 @@ public class HistoryServiceImpl implements HistoryService{
     }
 
     @Override
-    public HistoryResponseDTO.HistoryCreateResult createHistory(HistoryRequestDTO.HistoryCreate historyCreateRequest,Long memberId, MultipartFile imageFile) {
+    @Transactional
+    public HistoryResponseDTO.HistoryCreateResult createHistory(HistoryRequestDTO.HistoryCreate historyCreateRequest,Long memberId, List<MultipartFile> imageFiles) {
 
         //이미 해당 날짜에 기록이 존재하는지 검증합니다.
         historyAlreadyExistValidator.validate(memberId,historyCreateRequest.getDate());
@@ -152,14 +154,29 @@ public class HistoryServiceImpl implements HistoryService{
         // History 엔티티 생성 후 요청 정보 반환해서 저장
         History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));
 
-        // 이미지 업로드 후 URL 반환
-        String imageUrl = (imageFile != null) ? s3ImageService.upload(imageFile) : null;
+        // 이미지는 첨부했다면 업로드를 진행합니다.
+        if (imageFiles != null && !imageFiles.isEmpty()){
 
-        // HistoryImage 엔티티 생성 & URL 저장
-        HistoryImage historyImage = HistoryImage.builder()
-                .imageUrl(imageUrl)
-                .history(history)
-                .build();
+            //이미지 저장 후 URL List 생성
+            List<String> imageUrls = imageFiles.stream()
+                    .map(s3ImageService::upload)
+                    .toList();
+
+            // HistoryImage 엔티티 List 생성 & URL 저장
+            List<HistoryImage>  historyImages = imageUrls.stream()
+                    .map(imageUrl-> HistoryImage.builder()
+                            .imageUrl(imageUrl)
+                            .history(history)
+                            .build())
+                    .toList();
+
+            // HistoryImage들 저장
+            historyImages.forEach(historyImageRepositoryService::save);
+        }
+
+
+
+
 
         //모든 옷의 착용횟수를 1올려줍니다.
         historyCreateRequest.getClothes()
@@ -189,8 +206,7 @@ public class HistoryServiceImpl implements HistoryService{
                     }
                 });
 
-        // HistoryImage 저장
-        historyImageRepositoryService.save(historyImage);
+
 
         // Cloth를 응답형식로 변환하여 반환
         return HistoryConverter.historyCreateResult(history);

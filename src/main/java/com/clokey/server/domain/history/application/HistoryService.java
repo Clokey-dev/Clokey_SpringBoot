@@ -4,6 +4,8 @@ import com.clokey.server.domain.history.dto.HistoryRequestDTO;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface HistoryService {
 
     HistoryResponseDTO.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked);
@@ -16,6 +18,6 @@ public interface HistoryService {
 
     HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long this_member_id, Long memberId, String month);
 
-    HistoryResponseDTO.HistoryCreateResult createHistory(HistoryRequestDTO.HistoryCreate historyCreateRequest, Long memberId,MultipartFile image);
+    HistoryResponseDTO.HistoryCreateResult createHistory(HistoryRequestDTO.HistoryCreate historyCreateRequest, Long memberId, List<MultipartFile> images);
 
 }
