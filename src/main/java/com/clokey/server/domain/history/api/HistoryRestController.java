@@ -1,5 +1,7 @@
 package com.clokey.server.domain.history.api;
 
+import com.clokey.server.domain.cloth.dto.ClothRequestDTO;
+import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
 import com.clokey.server.domain.history.application.HistoryService;
 import com.clokey.server.domain.history.dto.HistoryRequestDTO;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
@@ -18,8 +20,10 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -88,7 +92,7 @@ public class HistoryRestController {
     public BaseResponse<HistoryResponseDTO.HistoryCommentResult> getComments(@PathVariable @Valid @HistoryExist Long historyId,
                                                                              @RequestParam(value = "page") @Valid @CheckPage int page) {
         //페이지를 1에서 부터 받기 위해서 -1을 해서 입력합니다.
-        HistoryResponseDTO.HistoryCommentResult result = historyService.getComments(historyId, page-1);
+        HistoryResponseDTO.HistoryCommentResult result = historyService.getComments(historyId, page - 1);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, result);
     }
@@ -127,5 +131,22 @@ public class HistoryRestController {
         commentValidator.validateParentCommentHistory(historyId, request.getCommentId());
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_CREATED, historyService.writeComment(historyId, request.getCommentId(), thisMemberId, request.getContent()));
 
+    }
+
+    //임시로 토큰을 request param으로 받는중.
+    @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "새로운 기록을 생성하는 API", description = "request body에 HistoryCreateRequestDTO 형식의 데이터를 전달해주세요.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_201", description = "CREATED, 성공적으로 생성되었습니다."),
+    })
+    public BaseResponse<HistoryResponseDTO.HistoryCreateResult> postHistory(
+            @RequestPart("historyCreateResult") @Valid HistoryRequestDTO.HistoryCreate historyCreateRequest,
+            @RequestPart("imageFile") MultipartFile imageFile,
+            @RequestParam Long memberId
+    ) {
+
+        HistoryResponseDTO.HistoryCreateResult result = historyService.createHistory(historyCreateRequest, memberId, imageFile);
+
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_CREATED, result);
     }
 }
