@@ -1,8 +1,6 @@
 package com.clokey.server.domain.history.dto;
 
-import com.clokey.server.domain.history.exception.annotation.CommentContentLength;
-import com.clokey.server.domain.history.exception.annotation.HistoryExist;
-import com.clokey.server.domain.history.exception.annotation.ParentCommentConditions;
+import com.clokey.server.domain.history.exception.annotation.*;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
@@ -21,8 +19,10 @@ public class HistoryRequestDTO {
     @AllArgsConstructor
     public static class HistoryCreate {
 
+        @HistoryContentLength
         String content;
 
+        @UniqueClothes
         List<Long> clothes;
 
         List<String> hashtags;
