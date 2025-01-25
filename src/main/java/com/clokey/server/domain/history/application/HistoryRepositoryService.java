@@ -16,5 +16,5 @@ public interface HistoryRepositoryService {
 
     boolean existsById(Long historyId);
 
-    void save(History history);
+    History save(History history);
 }

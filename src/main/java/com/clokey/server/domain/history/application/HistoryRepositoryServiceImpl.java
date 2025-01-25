@@ -45,7 +45,7 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
     }
 
     @Override
-    public void save(History history) {
-        historyRepository.save(history);
+    public History save(History history) {
+        return historyRepository.save(history);
     }
 }
