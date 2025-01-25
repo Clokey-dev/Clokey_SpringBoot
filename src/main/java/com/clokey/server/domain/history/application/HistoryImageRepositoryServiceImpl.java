@@ -25,4 +25,9 @@ public class HistoryImageRepositoryServiceImpl implements HistoryImageRepository
     public List<HistoryImage> findByHistory_Id(Long historyId) {
         return findByHistory_Id(historyId);
     }
+
+    @Override
+    public HistoryImage save(HistoryImage historyImage) {
+        return historyImageRepository.save(historyImage);
+    }
 }
