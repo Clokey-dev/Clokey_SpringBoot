@@ -4,6 +4,7 @@ import com.clokey.server.domain.cloth.application.ClothRepositoryService;
 import com.clokey.server.domain.cloth.converter.ClothConverter;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.cloth.domain.entity.ClothImage;
+import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
 import com.clokey.server.domain.history.domain.entity.Comment;
 import com.clokey.server.domain.history.domain.entity.Hashtag;
 import com.clokey.server.domain.history.domain.entity.History;
@@ -42,6 +43,7 @@ public class HistoryServiceImpl implements HistoryService{
     private final S3ImageService s3ImageService;
     private final ClothRepositoryService clothRepositoryService;
     private final HashtagRepositoryService hashtagRepositoryService;
+    private final ClothAccessibleValidator clothAccessibleValidator;
 
     @Override
     public HistoryResponseDTO.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked) {
@@ -140,7 +142,12 @@ public class HistoryServiceImpl implements HistoryService{
     @Override
     public HistoryResponseDTO.HistoryCreateResult createHistory(HistoryRequestDTO.HistoryCreate historyCreateRequest,Long memberId, MultipartFile imageFile) {
 
+        //이미 해당 날짜에 기록이 존재하는지 검증합니다.
         historyAlreadyExistValidator.validate(memberId,historyCreateRequest.getDate());
+
+        //모든 옷이 나의 옷이 맞는지 검증합니다.
+        historyCreateRequest.getClothes()
+                .forEach(clothId-> clothAccessibleValidator.validateClothOfMember(clothId,memberId));
 
         // History 엔티티 생성 후 요청 정보 반환해서 저장
         History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));
