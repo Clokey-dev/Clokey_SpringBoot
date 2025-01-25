@@ -145,7 +145,7 @@ public class HistoryRestController {
     })
     public BaseResponse<HistoryResponseDTO.HistoryCreateResult> postHistory(
             @RequestPart("historyCreateResult") @Valid HistoryRequestDTO.HistoryCreate historyCreateRequest,
-            @RequestPart(value = "imageFile", required = false) @HistoryImageQuantityLimit List<MultipartFile> imageFiles,
+            @RequestPart(value = "imageFile", required = false) @Valid @HistoryImageQuantityLimit List<MultipartFile> imageFiles,
             @RequestParam Long memberId
     ) {
 
