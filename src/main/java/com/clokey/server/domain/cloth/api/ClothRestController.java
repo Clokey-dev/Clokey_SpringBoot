@@ -81,7 +81,7 @@ public class ClothRestController {
             @RequestParam Long memberId
     ) {
         // 멤버가 옷에 대해서 수정 권한이 있는지 확인합니다. -> 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 삭제하는 현 유저를 나타냄
-        clothAccessibleValidator.validateClothEditOfMember(clothId, memberId);
+        clothAccessibleValidator.validateClothOfMember(clothId, memberId);
 
         // ClothService를 통해 데이터를 삭제
         clothService.deleteClothById(clothId);
