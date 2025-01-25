@@ -142,7 +142,7 @@ public class HistoryRestController {
     })
     public BaseResponse<HistoryResponseDTO.HistoryCreateResult> postHistory(
             @RequestPart("historyCreateResult") @Valid HistoryRequestDTO.HistoryCreate historyCreateRequest,
-            @RequestPart("imageFile") MultipartFile imageFile,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
             @RequestParam Long memberId
     ) {
 
