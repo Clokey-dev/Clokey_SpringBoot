@@ -1,5 +1,6 @@
 package com.clokey.server.domain.history.application;
 
+import com.clokey.server.domain.cloth.application.ClothRepositoryService;
 import com.clokey.server.domain.cloth.converter.ClothConverter;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.cloth.domain.entity.ClothImage;
@@ -39,6 +40,7 @@ public class HistoryServiceImpl implements HistoryService{
     private final HistoryImageRepositoryService historyImageRepositoryService;
     private final HashtagHistoryRepositoryService hashtagHistoryRepositoryService;
     private final S3ImageService s3ImageService;
+    private final ClothRepositoryService clothRepositoryService;
 
     @Override
     public HistoryResponseDTO.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked) {
@@ -150,6 +152,10 @@ public class HistoryServiceImpl implements HistoryService{
                 .imageUrl(imageUrl)
                 .history(history)
                 .build();
+
+        //모든 옷의 착용횟수를 1올려줍니다.
+        historyCreateRequest.getClothes()
+                .forEach(clothId-> clothRepositoryService.findById(clothId).increaseWearNum());
 
         // HistoryImage 저장
         historyImageRepositoryService.save(historyImage);
