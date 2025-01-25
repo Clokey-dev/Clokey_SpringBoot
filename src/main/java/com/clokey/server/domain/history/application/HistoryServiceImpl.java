@@ -9,6 +9,7 @@ import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.history.domain.entity.HistoryImage;
 import com.clokey.server.domain.history.domain.repository.*;
 import com.clokey.server.domain.history.dto.HistoryRequestDTO;
+import com.clokey.server.domain.history.exception.validator.HistoryAlreadyExistValidator;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.history.domain.entity.HashtagHistory;
@@ -30,6 +31,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HistoryServiceImpl implements HistoryService{
 
+    private final HistoryAlreadyExistValidator historyAlreadyExistValidator;
     private final HistoryRepositoryService historyRepositoryService;
     private final CommentRepositoryService commentRepositoryService;
     private final MemberRepositoryService memberRepositoryService;
@@ -134,6 +136,8 @@ public class HistoryServiceImpl implements HistoryService{
 
     @Override
     public HistoryResponseDTO.HistoryCreateResult createHistory(HistoryRequestDTO.HistoryCreate historyCreateRequest,Long memberId, MultipartFile imageFile) {
+
+        historyAlreadyExistValidator.validate(memberId,historyCreateRequest.getDate());
 
         // History 엔티티 생성 후 요청 정보 반환해서 저장
         History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));

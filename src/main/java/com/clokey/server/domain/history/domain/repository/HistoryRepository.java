@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface HistoryRepository extends JpaRepository<History, Long> {
@@ -19,4 +20,6 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
 
     @Query("UPDATE History h SET h.likes = h.likes - 1 WHERE h.id = :historyId")
     void decrementLikes(Long historyId);
+
+    boolean existsByHistoryDateAndMember_Id(LocalDate historyDate, Long memberId);
 }

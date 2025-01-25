@@ -10,6 +10,7 @@ import com.clokey.server.domain.history.exception.annotation.HistoryExist;
 import com.clokey.server.domain.history.exception.annotation.MonthFormat;
 import com.clokey.server.domain.history.exception.validator.CommentValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
+import com.clokey.server.domain.history.exception.validator.HistoryAlreadyExistValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
 import com.clokey.server.domain.member.exception.annotation.MemberExist;
 import com.clokey.server.global.common.response.BaseResponse;
