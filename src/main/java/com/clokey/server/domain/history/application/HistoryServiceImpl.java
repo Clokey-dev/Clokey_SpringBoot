@@ -1,21 +1,12 @@
 package com.clokey.server.domain.history.application;
 
 import com.clokey.server.domain.cloth.application.ClothRepositoryService;
-import com.clokey.server.domain.cloth.converter.ClothConverter;
-import com.clokey.server.domain.cloth.domain.entity.Cloth;
-import com.clokey.server.domain.cloth.domain.entity.ClothImage;
 import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
-import com.clokey.server.domain.history.domain.entity.Comment;
-import com.clokey.server.domain.history.domain.entity.Hashtag;
-import com.clokey.server.domain.history.domain.entity.History;
-import com.clokey.server.domain.history.domain.entity.HistoryImage;
-import com.clokey.server.domain.history.domain.repository.*;
+import com.clokey.server.domain.history.domain.entity.*;
 import com.clokey.server.domain.history.dto.HistoryRequestDTO;
 import com.clokey.server.domain.history.exception.validator.HistoryAlreadyExistValidator;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.history.domain.entity.HashtagHistory;
-import com.clokey.server.domain.history.domain.entity.MemberLike;
 import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.global.infra.s3.S3ImageService;
@@ -45,6 +36,7 @@ public class HistoryServiceImpl implements HistoryService{
     private final ClothRepositoryService clothRepositoryService;
     private final HashtagRepositoryService hashtagRepositoryService;
     private final ClothAccessibleValidator clothAccessibleValidator;
+    private final HistoryClothRepositoryService historyClothRepositoryService;
 
     @Override
     public HistoryResponseDTO.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked) {
@@ -178,9 +170,18 @@ public class HistoryServiceImpl implements HistoryService{
 
 
 
-        //모든 옷의 착용횟수를 1올려줍니다.
+        //모든 옷의 착용횟수를 1올리고 기록-옷 테이블에 추가해줍니다.
         historyCreateRequest.getClothes()
-                .forEach(clothId-> clothRepositoryService.findById(clothId).increaseWearNum());
+                .forEach(clothId-> {
+                    clothRepositoryService.findById(clothId).increaseWearNum();
+                    historyClothRepositoryService.save(HistoryCloth.builder()
+                                    .cloth(clothRepositoryService.findById(clothId))
+                                    .history(history)
+                                    .build());
+                });
+
+
+
 
         historyCreateRequest.getHashtags()
                 .forEach(hashtagNames -> {
