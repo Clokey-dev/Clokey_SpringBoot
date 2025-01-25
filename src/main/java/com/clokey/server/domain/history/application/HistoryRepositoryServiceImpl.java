@@ -43,4 +43,9 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
     public boolean existsById(Long historyId) {
         return historyRepository.existsById(historyId);
     }
+
+    @Override
+    public void save(History history) {
+        historyRepository.save(history);
+    }
 }

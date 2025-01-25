@@ -15,4 +15,6 @@ public interface HistoryRepositoryService {
     History findById(Long historyId);
 
     boolean existsById(Long historyId);
+
+    void save(History history);
 }
