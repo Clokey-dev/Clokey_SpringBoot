@@ -54,6 +54,7 @@ public enum ErrorStatus implements BaseErrorCode {
     COMMENT_LENGTH_OUT_OF_RANGE(HttpStatus.BAD_REQUEST,"HISTORY_4007","댓글은 빈칸이 아닌 50자 이하여야 합니다."),
     NESTED_COMMENT(HttpStatus.BAD_REQUEST,"HISTORY_4008","대댓글에 답장을 남길 수 없습니다."),
     PARENT_COMMENT_HISTORY_ERROR(HttpStatus.BAD_REQUEST,"HISTORY_4009","부모 댓글의 기록과 작성하는 댓글의 기록이 일치하지 않습니다."),
+    HISTORY_CONTENT_OUT_OF_RANGE(HttpStatus.BAD_REQUEST,"HISTORY_4010","기록의 내용은 200자 이하여야 합니다."),
 
     //알림 에러
     NOTIFICATION_TYPE_INVALID(HttpStatus.BAD_REQUEST,"NOTIFICATION_4001","잘못된 알림 Type 입니다."),

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ContentLengthValidator implements ConstraintValidator<CommentContentLength, String> {
+public class CommentContentLengthValidator implements ConstraintValidator<CommentContentLength, String> {
 
     @Override
     public void initialize(CommentContentLength constraintAnnotation) {
