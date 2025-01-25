@@ -7,6 +7,7 @@ import com.clokey.server.domain.history.dto.HistoryRequestDTO;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.domain.history.exception.annotation.CheckPage;
 import com.clokey.server.domain.history.exception.annotation.HistoryExist;
+import com.clokey.server.domain.history.exception.annotation.HistoryImageQuantityLimit;
 import com.clokey.server.domain.history.exception.annotation.MonthFormat;
 import com.clokey.server.domain.history.exception.validator.CommentValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
@@ -25,6 +26,8 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -142,11 +145,11 @@ public class HistoryRestController {
     })
     public BaseResponse<HistoryResponseDTO.HistoryCreateResult> postHistory(
             @RequestPart("historyCreateResult") @Valid HistoryRequestDTO.HistoryCreate historyCreateRequest,
-            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
+            @RequestPart(value = "imageFile", required = false) @HistoryImageQuantityLimit List<MultipartFile> imageFiles,
             @RequestParam Long memberId
     ) {
 
-        HistoryResponseDTO.HistoryCreateResult result = historyService.createHistory(historyCreateRequest, memberId, imageFile);
+        HistoryResponseDTO.HistoryCreateResult result = historyService.createHistory(historyCreateRequest, memberId, imageFiles);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_CREATED, result);
     }
