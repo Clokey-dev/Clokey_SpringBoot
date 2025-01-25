@@ -59,6 +59,9 @@ public enum ErrorStatus implements BaseErrorCode {
     DUPLICATE_CLOTHES_FOR_HISTORY(HttpStatus.BAD_REQUEST,"HISTORY_4011","기록에 중복된 옷을 등록할 수 없습니다"),
     HISTORY_ALREADY_EXIST_FOR_DATE(HttpStatus.BAD_REQUEST,"HISTORY_4012","이미 기록이 존재하는 날짜입니다."),
 
+    //해시태그 에러
+    NO_SUCH_HASHTAG_NAME(HttpStatus.BAD_REQUEST,"HASHTAG_4001","해당 이름의 해시태그가 존재하지 않습니다"),
+
     //알림 에러
     NOTIFICATION_TYPE_INVALID(HttpStatus.BAD_REQUEST,"NOTIFICATION_4001","잘못된 알림 Type 입니다."),
 
