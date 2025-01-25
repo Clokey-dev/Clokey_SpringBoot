@@ -1,7 +1,7 @@
 package com.clokey.server.domain.member.converter;
 
 import com.clokey.server.domain.member.dto.MemberResponseDTO;
-import com.clokey.server.domain.model.entity.Member;
+import com.clokey.server.domain.member.domain.entity.Member;
 
 import java.time.LocalDateTime;
 

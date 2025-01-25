@@ -1,8 +1,9 @@
 package com.clokey.server.domain.history.exception.validator;
 
+import com.clokey.server.domain.history.application.CommentRepositoryService;
 import com.clokey.server.domain.history.exception.annotation.ParentCommentConditions;
-import com.clokey.server.domain.model.entity.Comment;
-import com.clokey.server.domain.model.repository.CommentRepository;
+import com.clokey.server.domain.history.domain.entity.Comment;
+import com.clokey.server.domain.history.domain.repository.CommentRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
 import jakarta.validation.ConstraintValidator;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ParentCommentsConditionsValidator implements ConstraintValidator<ParentCommentConditions, Long> {
 
-    private final CommentRepository commentRepository;
+    private final CommentRepositoryService commentRepositoryService;
 
     @Override
     public void initialize(ParentCommentConditions constraintAnnotation) {
@@ -30,7 +31,7 @@ public class ParentCommentsConditionsValidator implements ConstraintValidator<Pa
         }
 
         //null이 아닌 경우 존재를 확인함.
-        if (!commentRepository.existsById(commentId)) {
+        if (!commentRepositoryService.existsById(commentId)) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(ErrorStatus.NO_SUCH_COMMENT.toString()).addConstraintViolation();
 
@@ -38,7 +39,7 @@ public class ParentCommentsConditionsValidator implements ConstraintValidator<Pa
         }
 
         //존재하는 경우 댓글 대댓글 깊이 검사
-        Comment parentComment = commentRepository.findById(commentId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_COMMENT)).getComment();
+        Comment parentComment = commentRepositoryService.findById(commentId).getComment();
 
         if (parentComment != null) {
             context.disableDefaultConstraintViolation();

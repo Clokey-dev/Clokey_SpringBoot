@@ -1,7 +1,8 @@
 package com.clokey.server.domain.history.exception.validator;
 
+import com.clokey.server.domain.history.application.HistoryRepositoryService;
 import com.clokey.server.domain.history.exception.annotation.HistoryExist;
-import com.clokey.server.domain.model.repository.HistoryRepository;
+import com.clokey.server.domain.history.domain.repository.HistoryRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class HistoryExistValidator implements ConstraintValidator<HistoryExist, Long> {
 
-    private final HistoryRepository historyRepository;
+    private final HistoryRepositoryService historyRepositoryService;
 
     @Override
     public void initialize(HistoryExist constraintAnnotation) {
@@ -21,7 +22,7 @@ public class HistoryExistValidator implements ConstraintValidator<HistoryExist, 
 
     @Override
     public boolean isValid(Long historyId, ConstraintValidatorContext context) {
-        boolean isValid = historyRepository.existsById(historyId);
+        boolean isValid = historyRepositoryService.existsById(historyId);
 
         if (!isValid) {
             context.disableDefaultConstraintViolation();

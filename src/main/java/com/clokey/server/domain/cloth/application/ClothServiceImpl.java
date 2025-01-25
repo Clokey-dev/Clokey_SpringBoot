@@ -4,12 +4,13 @@ import com.clokey.server.domain.cloth.converter.ClothConverter;
 import com.clokey.server.domain.cloth.dto.ClothRequestDTO;
 import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
 import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
-import com.clokey.server.domain.model.entity.ClothImage;
-import com.clokey.server.domain.model.repository.ClothFolderRepository;
-import com.clokey.server.domain.model.repository.ClothImageRepository;
-import com.clokey.server.domain.model.repository.ClothRepository;
-import com.clokey.server.domain.model.entity.Cloth;
-import com.clokey.server.domain.model.repository.HistoryClothRepository;
+import com.clokey.server.domain.cloth.domain.entity.ClothImage;
+import com.clokey.server.domain.folder.application.ClothFolderRepositoryService;
+import com.clokey.server.domain.folder.domain.repository.ClothFolderRepository;
+import com.clokey.server.domain.cloth.domain.repository.ClothImageRepository;
+import com.clokey.server.domain.cloth.domain.repository.ClothRepository;
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.history.domain.repository.HistoryClothRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,9 +23,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ClothServiceImpl implements ClothService {
 
-    private final ClothRepository clothRepository;
-    private final ClothImageRepository clothImageRepository;
-    private final ClothFolderRepository clothFolderRepository;
+    private final ClothRepositoryService clothRepositoryService;
+    private final ClothImageRepositoryService clothImageRepositoryService;
+    private final ClothFolderRepositoryService clothFolderRepositoryService;
     private final HistoryClothRepository historyClothRepository;
     private final ClothAccessibleValidator clothAccessibleValidator;
     private final S3ImageService s3ImageService;
@@ -33,13 +34,13 @@ public class ClothServiceImpl implements ClothService {
     public ClothResponseDTO.ClothReadResult readClothDetailsById(Long clothId, Long memberId) {
 
         // Cloth 레포지토리 조회
-        Optional<Cloth> cloth = clothRepository.findById(clothId);
+        Cloth cloth = clothRepositoryService.findById(clothId);
 
         // 다른 유저의 옷이고, 비공개인 유저인지 확인하는 validator
-        clothAccessibleValidator.validateMemberAccessOfMember(cloth.get().getMemberId(), memberId);
+        clothAccessibleValidator.validateMemberAccessOfMember(cloth.getMemberId(), memberId);
 
         // Cloth를 응답형식로 변환하여 반환
-        return ClothConverter.toClothReadResult(cloth.get());
+        return ClothConverter.toClothReadResult(cloth);
     }
 
     // 카테고리ID와 멤버ID로 PreView 조회 후 DTO로 변환해서 반환
@@ -50,7 +51,7 @@ public class ClothServiceImpl implements ClothService {
     public ClothResponseDTO.ClothCreateResult createCloth(ClothRequestDTO.ClothCreateRequest request, MultipartFile imageFile) {
 
         // Cloth 엔티티 생성 후 요청 정보 반환해서 저장
-        Cloth cloth = clothRepository.save(ClothConverter.toCloth(request));
+        Cloth cloth = clothRepositoryService.save(ClothConverter.toCloth(request));
 
         // 이미지 업로드 후 URL 반환
         String imageUrl = (imageFile != null) ? s3ImageService.upload(imageFile) : null;
@@ -62,7 +63,7 @@ public class ClothServiceImpl implements ClothService {
                 .build();
 
         // ClothImage 저장
-        clothImageRepository.save(clothImage);
+        clothImageRepositoryService.save(clothImage);
 
         // Cloth를 응답형식로 변환하여 반환
         return ClothConverter.toClothCreateResult(cloth);
@@ -95,8 +96,8 @@ public class ClothServiceImpl implements ClothService {
     public void deleteClothById(Long clothId){
         //Cloth 연관 엔티티 우선 삭제
         historyClothRepository.deleteAllByClothId(clothId);
-        clothFolderRepository.deleteAllByClothId(clothId);
-        clothImageRepository.deleteAllByClothId(clothId);
-        clothRepository.deleteById(clothId);
+        clothFolderRepositoryService.deleteAllByClothId(clothId);
+        clothImageRepositoryService.deleteAllByClothId(clothId);
+        clothRepositoryService.deleteById(clothId);
     }
 }
