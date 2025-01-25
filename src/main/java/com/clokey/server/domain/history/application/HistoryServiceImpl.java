@@ -41,6 +41,7 @@ public class HistoryServiceImpl implements HistoryService{
     private final HashtagHistoryRepositoryService hashtagHistoryRepositoryService;
     private final S3ImageService s3ImageService;
     private final ClothRepositoryService clothRepositoryService;
+    private final HashtagRepositoryService hashtagRepositoryService;
 
     @Override
     public HistoryResponseDTO.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked) {
@@ -156,6 +157,30 @@ public class HistoryServiceImpl implements HistoryService{
         //모든 옷의 착용횟수를 1올려줍니다.
         historyCreateRequest.getClothes()
                 .forEach(clothId-> clothRepositoryService.findById(clothId).increaseWearNum());
+
+        historyCreateRequest.getHashtags()
+                .forEach(hashtagNames -> {
+                    //존재하는 해시태그라면 매핑 테이블에 추가
+                    //아니라면 새로운 해시태그를 만들고 매핑 테이블에 추가
+                    if(hashtagRepositoryService.existByName(hashtagNames)){
+                        hashtagHistoryRepositoryService.save(HashtagHistory.builder()
+                                        .history(history)
+                                        .hashtag(hashtagRepositoryService.findByName(hashtagNames))
+                                        .build()
+                        );
+                    } else {
+                        Hashtag newHashtag = Hashtag.builder()
+                                .name(hashtagNames)
+                                .build();
+                        hashtagRepositoryService.save(newHashtag);
+
+                        hashtagHistoryRepositoryService.save(HashtagHistory.builder()
+                                        .history(history)
+                                        .hashtag(newHashtag)
+                                        .build()
+                        );
+                    }
+                });
 
         // HistoryImage 저장
         historyImageRepositoryService.save(historyImage);
