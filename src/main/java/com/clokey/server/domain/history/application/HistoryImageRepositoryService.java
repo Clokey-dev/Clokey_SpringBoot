@@ -10,4 +10,6 @@ public interface HistoryImageRepositoryService {
 
     List<HistoryImage> findByHistory_Id(Long historyId);
 
+    HistoryImage save(HistoryImage historyImage);
+
 }

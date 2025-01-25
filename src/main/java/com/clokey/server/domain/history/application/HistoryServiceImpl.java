@@ -1,21 +1,22 @@
 package com.clokey.server.domain.history.application;
 
-import com.clokey.server.domain.history.domain.entity.Comment;
-import com.clokey.server.domain.history.domain.entity.Hashtag;
-import com.clokey.server.domain.history.domain.entity.History;
-import com.clokey.server.domain.history.domain.entity.HistoryImage;
-import com.clokey.server.domain.history.domain.repository.*;
+import com.clokey.server.domain.cloth.application.ClothRepositoryService;
+import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
+import com.clokey.server.domain.history.domain.entity.*;
+import com.clokey.server.domain.history.dto.HistoryRequestDTO;
+import com.clokey.server.domain.history.exception.validator.HistoryAlreadyExistValidator;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.history.domain.entity.HashtagHistory;
-import com.clokey.server.domain.history.domain.entity.MemberLike;
 import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
+import com.clokey.server.global.infra.s3.S3ImageService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Comparator;
 import java.util.List;
@@ -24,12 +25,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HistoryServiceImpl implements HistoryService{
 
+    private final HistoryAlreadyExistValidator historyAlreadyExistValidator;
     private final HistoryRepositoryService historyRepositoryService;
     private final CommentRepositoryService commentRepositoryService;
     private final MemberRepositoryService memberRepositoryService;
     private final MemberLikeRepositoryService memberLikeRepositoryService;
     private final HistoryImageRepositoryService historyImageRepositoryService;
     private final HashtagHistoryRepositoryService hashtagHistoryRepositoryService;
+    private final S3ImageService s3ImageService;
+    private final ClothRepositoryService clothRepositoryService;
+    private final HashtagRepositoryService hashtagRepositoryService;
+    private final ClothAccessibleValidator clothAccessibleValidator;
+    private final HistoryClothRepositoryService historyClothRepositoryService;
 
     @Override
     public HistoryResponseDTO.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked) {
@@ -123,6 +130,87 @@ public class HistoryServiceImpl implements HistoryService{
         //다른 멤버 기록 열람시 PUBLIC 기록만을 모아줍니다.
         return HistoryConverter.toPublicMonthViewResult(memberId, histories, historyImageUrls);
 
+    }
+
+    @Override
+    @Transactional
+    public HistoryResponseDTO.HistoryCreateResult createHistory(HistoryRequestDTO.HistoryCreate historyCreateRequest,Long memberId, List<MultipartFile> imageFiles) {
+
+        //이미 해당 날짜에 기록이 존재하는지 검증합니다.
+        historyAlreadyExistValidator.validate(memberId,historyCreateRequest.getDate());
+
+        //모든 옷이 나의 옷이 맞는지 검증합니다.
+        historyCreateRequest.getClothes()
+                .forEach(clothId-> clothAccessibleValidator.validateClothOfMember(clothId,memberId));
+
+        // History 엔티티 생성 후 요청 정보 반환해서 저장
+        History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));
+
+        // 이미지는 첨부했다면 업로드를 진행합니다.
+        if (imageFiles != null && !imageFiles.isEmpty()){
+
+            //이미지 저장 후 URL List 생성
+            List<String> imageUrls = imageFiles.stream()
+                    .map(s3ImageService::upload)
+                    .toList();
+
+            // HistoryImage 엔티티 List 생성 & URL 저장
+            List<HistoryImage>  historyImages = imageUrls.stream()
+                    .map(imageUrl-> HistoryImage.builder()
+                            .imageUrl(imageUrl)
+                            .history(history)
+                            .build())
+                    .toList();
+
+            // HistoryImage들 저장
+            historyImages.forEach(historyImageRepositoryService::save);
+        }
+
+
+
+
+
+        //모든 옷의 착용횟수를 1올리고 기록-옷 테이블에 추가해줍니다.
+        historyCreateRequest.getClothes()
+                .forEach(clothId-> {
+                    clothRepositoryService.findById(clothId).increaseWearNum();
+                    historyClothRepositoryService.save(HistoryCloth.builder()
+                                    .cloth(clothRepositoryService.findById(clothId))
+                                    .history(history)
+                                    .build());
+                });
+
+
+
+
+        historyCreateRequest.getHashtags()
+                .forEach(hashtagNames -> {
+                    //존재하는 해시태그라면 매핑 테이블에 추가
+                    //아니라면 새로운 해시태그를 만들고 매핑 테이블에 추가
+                    if(hashtagRepositoryService.existByName(hashtagNames)){
+                        hashtagHistoryRepositoryService.save(HashtagHistory.builder()
+                                        .history(history)
+                                        .hashtag(hashtagRepositoryService.findByName(hashtagNames))
+                                        .build()
+                        );
+                    } else {
+                        Hashtag newHashtag = Hashtag.builder()
+                                .name(hashtagNames)
+                                .build();
+                        hashtagRepositoryService.save(newHashtag);
+
+                        hashtagHistoryRepositoryService.save(HashtagHistory.builder()
+                                        .history(history)
+                                        .hashtag(newHashtag)
+                                        .build()
+                        );
+                    }
+                });
+
+
+
+        // Cloth를 응답형식로 변환하여 반환
+        return HistoryConverter.historyCreateResult(history);
     }
 
 }

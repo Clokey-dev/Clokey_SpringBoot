@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -42,5 +43,15 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
     @Override
     public boolean existsById(Long historyId) {
         return historyRepository.existsById(historyId);
+    }
+
+    @Override
+    public History save(History history) {
+        return historyRepository.save(history);
+    }
+
+    @Override
+    public boolean checkHistoryExistOfDate(LocalDate date, Long memberId) {
+        return historyRepository.existsByHistoryDateAndMember_Id(date,memberId);
     }
 }
