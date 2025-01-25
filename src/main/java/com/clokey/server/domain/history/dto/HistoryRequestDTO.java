@@ -1,6 +1,6 @@
 package com.clokey.server.domain.history.dto;
 
-import com.clokey.server.domain.history.exception.annotation.ContentLength;
+import com.clokey.server.domain.history.exception.annotation.CommentContentLength;
 import com.clokey.server.domain.history.exception.annotation.HistoryExist;
 import com.clokey.server.domain.history.exception.annotation.ParentCommentConditions;
 import com.clokey.server.domain.model.entity.enums.Visibility;
@@ -56,7 +56,7 @@ public class HistoryRequestDTO {
         @ParentCommentConditions
         Long commentId;
 
-        @ContentLength
+        @CommentContentLength
         @NotBlank
         String content;
     }

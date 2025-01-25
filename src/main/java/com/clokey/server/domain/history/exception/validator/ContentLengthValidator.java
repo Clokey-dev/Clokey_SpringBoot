@@ -1,7 +1,6 @@
 package com.clokey.server.domain.history.exception.validator;
 
-import com.clokey.server.domain.history.exception.annotation.CheckPage;
-import com.clokey.server.domain.history.exception.annotation.ContentLength;
+import com.clokey.server.domain.history.exception.annotation.CommentContentLength;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -10,10 +9,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ContentLengthValidator implements ConstraintValidator<ContentLength, String> {
+public class ContentLengthValidator implements ConstraintValidator<CommentContentLength, String> {
 
     @Override
-    public void initialize(ContentLength constraintAnnotation) {
+    public void initialize(CommentContentLength constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 
