@@ -92,5 +92,6 @@ public class Cloth extends BaseEntity {
         if(wearNum == 0){
             throw new ClothException(ErrorStatus.CLOTH_WEAR_NUM_BELOW_ZERO);
         }
+        this.wearNum--;
     }
 }
