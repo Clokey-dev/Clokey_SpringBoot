@@ -9,4 +9,6 @@ public interface HashtagHistoryRepositoryService {
     boolean existsByHistory_Id(Long historyId);
 
     List<HashtagHistory> findByHistory_Id(Long historyId);
+
+    void save(HashtagHistory hashtagHistory);
 }

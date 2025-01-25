@@ -24,4 +24,9 @@ public class HashtagRepositoryServiceImpl implements HashtagRepositoryService{
     public Hashtag findByName(String name) {
         return hashtagRepository.findByName(name).orElseThrow(()-> new HashtagException(ErrorStatus.NO_SUCH_HASHTAG_NAME));
     }
+
+    @Override
+    public void save(Hashtag hashtag) {
+        hashtagRepository.save(hashtag);
+    }
 }

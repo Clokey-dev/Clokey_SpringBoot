@@ -25,4 +25,9 @@ public class HashtagHistoryRepositoryServiceImpl implements HashtagHistoryReposi
     public List<HashtagHistory> findByHistory_Id(Long historyId) {
         return hashtagHistoryRepository.findByHistory_Id(historyId);
     }
+
+    @Override
+    public void save(HashtagHistory hashtagHistory) {
+        hashtagHistoryRepository.save(hashtagHistory);
+    }
 }

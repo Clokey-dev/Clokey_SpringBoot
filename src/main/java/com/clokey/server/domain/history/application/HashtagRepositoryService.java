@@ -7,4 +7,6 @@ public interface HashtagRepositoryService {
     boolean existByName(String name);
 
     Hashtag findByName(String name);
+
+    void save(Hashtag hashtag);
 }
