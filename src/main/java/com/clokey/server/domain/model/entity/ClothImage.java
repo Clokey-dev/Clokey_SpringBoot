@@ -17,7 +17,7 @@ public class ClothImage extends BaseEntity {
     @Column(nullable = false)
     private String imageUrl; // 옷 이미지 URL
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cloth_id", nullable = false)
     private Cloth cloth;
 }
