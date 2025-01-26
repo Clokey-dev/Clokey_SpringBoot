@@ -34,6 +34,10 @@ public class HistoryRequestDTO {
         String date;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class HistoryUpdate {
 
         @HistoryContentLength

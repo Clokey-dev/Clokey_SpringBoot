@@ -1,6 +1,7 @@
 package com.clokey.server.domain.history.application;
 
 import com.clokey.server.domain.cloth.application.ClothRepositoryService;
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
 import com.clokey.server.domain.history.domain.entity.*;
 import com.clokey.server.domain.history.dto.HistoryRequestDTO;
@@ -140,44 +141,21 @@ public class HistoryServiceImpl implements HistoryService{
         historyAlreadyExistValidator.validate(memberId,historyCreateRequest.getDate());
 
         //모든 옷이 나의 옷이 맞는지 검증합니다.
-        historyCreateRequest.getClothes()
-                .forEach(clothId-> clothAccessibleValidator.validateClothOfMember(clothId,memberId));
+        clothAccessibleValidator.validateClothOfMember(historyCreateRequest.getClothes(),memberId);
 
         // History 엔티티 생성 후 요청 정보 반환해서 저장
         History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));
 
         // 이미지는 첨부했다면 업로드를 진행합니다.
         if (imageFiles != null && !imageFiles.isEmpty()){
-
-            //이미지 저장 후 URL List 생성
-            List<String> imageUrls = imageFiles.stream()
-                    .map(s3ImageService::upload)
-                    .toList();
-
-            // HistoryImage 엔티티 List 생성 & URL 저장
-            List<HistoryImage>  historyImages = imageUrls.stream()
-                    .map(imageUrl-> HistoryImage.builder()
-                            .imageUrl(imageUrl)
-                            .history(history)
-                            .build())
-                    .toList();
-
-            // HistoryImage들 저장
-            historyImages.forEach(historyImageRepositoryService::save);
+           historyImageRepositoryService.save(imageFiles,history);
         }
-
-
-
 
 
         //모든 옷의 착용횟수를 1올리고 기록-옷 테이블에 추가해줍니다.
         historyCreateRequest.getClothes()
                 .forEach(clothId-> {
-                    clothRepositoryService.findById(clothId).increaseWearNum();
-                    historyClothRepositoryService.save(HistoryCloth.builder()
-                                    .cloth(clothRepositoryService.findById(clothId))
-                                    .history(history)
-                                    .build());
+                    historyClothRepositoryService.save(history,clothRepositoryService.findById(clothId));
                 });
 
 
@@ -207,10 +185,40 @@ public class HistoryServiceImpl implements HistoryService{
                     }
                 });
 
-
-
-        // Cloth를 응답형식로 변환하여 반환
         return HistoryConverter.historyCreateResult(history);
     }
+
+    @Override
+    public void updateHistory(HistoryRequestDTO.HistoryUpdate historyUpdate, Long memberId, Long historyId, List<MultipartFile> images) {
+
+        historyImageRepositoryService.deleteAllByHistory_Id(historyId);
+        historyImageRepositoryService.save(images,historyRepositoryService.findById(historyId));
+
+        updateHistoryClothes(
+                historyUpdate.getClothes(),
+                historyClothRepositoryService.findClothIdsByHistoryId(historyId),
+                historyRepositoryService.findById(historyId));
+
+
+    }
+
+    private void updateHistoryClothes(List<Long> updatedClothes, List<Long> savedClothes, History history) {
+
+        //updateClothes에만 존재하는 것은 추가 대상
+        List<Cloth> clothesToAdd = updatedClothes.stream()
+                .filter(clothId -> !savedClothes.contains(clothId))
+                .map(clothRepositoryService::findById)
+                .toList();
+
+        //반대는 삭제 대상
+        List<Cloth> clothesToDelete = savedClothes.stream()
+                .filter(clothId -> !updatedClothes.contains(clothId))
+                .map(clothRepositoryService::findById)
+                .toList();
+
+        clothesToAdd.forEach(cloth->historyClothRepositoryService.save(history,cloth));
+        clothesToDelete.forEach(cloth->historyClothRepositoryService.delete(history,cloth));
+    }
+
 
 }
