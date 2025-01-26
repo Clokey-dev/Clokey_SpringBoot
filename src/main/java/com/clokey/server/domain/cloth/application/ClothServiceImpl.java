@@ -30,7 +30,7 @@ public class ClothServiceImpl implements ClothService {
     private final S3ImageService s3ImageService;
 
     // 옷ID로 Details 조회 후 DTO로 변환해서 반환
-    public ClothResponseDTO.ClothReadResult readClothDetailsById(Long clothId, Long memberId) {
+    public ClothResponseDTO.ClothPopupViewResult readClothPopupInfoById(Long clothId, Long memberId) {
 
         // Cloth 레포지토리 조회
         Optional<Cloth> cloth = clothRepository.findById(clothId);
@@ -39,7 +39,31 @@ public class ClothServiceImpl implements ClothService {
         clothAccessibleValidator.validateMemberAccessOfMember(cloth.get().getMemberId(), memberId);
 
         // Cloth를 응답형식로 변환하여 반환
-        return ClothConverter.toClothReadResult(cloth.get());
+        return ClothConverter.toClothPopupViewResult(cloth.get());
+    }
+
+    public ClothResponseDTO.ClothEditViewResult readClothEditInfoById(Long clothId, Long memberId){
+
+        // Cloth 레포지토리 조회
+        Optional<Cloth> cloth = clothRepository.findById(clothId);
+
+        // 다른 유저의 옷이고, 비공개인 유저인지 확인하는 validator
+        clothAccessibleValidator.validateMemberAccessOfMember(cloth.get().getMemberId(), memberId);
+
+        // Cloth를 응답형식로 변환하여 반환
+        return ClothConverter.toClothEditViewResult(cloth.get());
+    }
+
+    public ClothResponseDTO.ClothDetailViewResult readClothDetailInfoById(Long clothId, Long memberId){
+
+        // Cloth 레포지토리 조회
+        Optional<Cloth> cloth = clothRepository.findById(clothId);
+
+        // 다른 유저의 옷이고, 비공개인 유저인지 확인하는 validator
+        clothAccessibleValidator.validateMemberAccessOfMember(cloth.get().getMemberId(), memberId);
+
+        // Cloth를 응답형식로 변환하여 반환
+        return ClothConverter.toClothDetailViewResult(cloth.get());
     }
 
     // 카테고리ID와 멤버ID로 PreView 조회 후 DTO로 변환해서 반환

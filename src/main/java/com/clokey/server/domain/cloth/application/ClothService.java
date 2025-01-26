@@ -4,11 +4,13 @@ import com.clokey.server.domain.cloth.dto.ClothRequestDTO;
 import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 public interface ClothService {
 
-    ClothResponseDTO.ClothReadResult readClothDetailsById(Long clothId, Long memberId);
+    ClothResponseDTO.ClothPopupViewResult readClothPopupInfoById(Long clothId, Long memberId);
+
+    ClothResponseDTO.ClothEditViewResult readClothEditInfoById(Long clothId, Long memberId);
+
+    ClothResponseDTO.ClothDetailViewResult readClothDetailInfoById(Long clothId, Long memberId);
 
     //ClothResponseDTO.CategoryClothReadResult readClothPreViewByCategoryId(Long categoryId, Long memberId);
 
