@@ -12,4 +12,5 @@ public interface HistoryImageRepositoryService {
 
     HistoryImage save(HistoryImage historyImage);
 
+    void deleteAllByHistory_Id(Long historyId);
 }
