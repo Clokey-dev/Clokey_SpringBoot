@@ -94,7 +94,6 @@ public class ClothServiceImpl implements ClothService {
         return ClothConverter.toClothCreateOrUpdateResult(cloth);
     }
 
-    /*
 
     @Transactional
     public ClothResponseDTO.ClothCreateOrUpdateResult updateClothById(Long clothId,
