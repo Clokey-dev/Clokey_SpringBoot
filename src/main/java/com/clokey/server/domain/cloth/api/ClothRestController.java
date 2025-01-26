@@ -94,20 +94,21 @@ public class ClothRestController {
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
     }
 
+    // 옷 생성 API, 사용자 토큰 받는 부분 추가 및 변경해야함
     @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "새로운 옷을 생성하는 API", description = "request body에 ClothCreateRequestDTO 형식의 데이터를 전달해주세요.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CLOTH_201", description = "CREATED, 성공적으로 생성되었습니다."),
     })
-    public BaseResponse<ClothResponseDTO.ClothCreateResult> postCloth(
-            @RequestPart("clothCreateRequest") @Valid ClothRequestDTO.ClothCreateRequest clothCreateRequest,
+    public BaseResponse<ClothResponseDTO.ClothCreateOrUpdateResult> postCloth(
+            @RequestPart("clothCreateRequest") @Valid ClothRequestDTO.ClothCreateOrUpdateRequest clothCreateRequest,
             @RequestPart("imageFile") MultipartFile imageFile,
             @RequestParam @MemberExist Long memberId
     ) {
         // 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 생성하는 현 유저를 나타냄
 
         // ClothService를 통해 데이터를 생성하고, 결과 반환
-        ClothResponseDTO.ClothCreateResult result =clothService.createCloth(clothCreateRequest, imageFile);
+        ClothResponseDTO.ClothCreateOrUpdateResult result =clothService.createCloth(memberId, clothCreateRequest, imageFile);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_CREATED, result);
     }
