@@ -5,6 +5,7 @@ import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
 import com.clokey.server.domain.history.domain.entity.*;
 import com.clokey.server.domain.history.dto.HistoryRequestDTO;
+import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryAlreadyExistValidator;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
@@ -33,11 +34,11 @@ public class HistoryServiceImpl implements HistoryService{
     private final MemberLikeRepositoryService memberLikeRepositoryService;
     private final HistoryImageRepositoryService historyImageRepositoryService;
     private final HashtagHistoryRepositoryService hashtagHistoryRepositoryService;
-    private final S3ImageService s3ImageService;
     private final ClothRepositoryService clothRepositoryService;
     private final HashtagRepositoryService hashtagRepositoryService;
     private final ClothAccessibleValidator clothAccessibleValidator;
     private final HistoryClothRepositoryService historyClothRepositoryService;
+    private final HistoryAccessibleValidator historyAccessibleValidator;
 
     @Override
     public HistoryResponseDTO.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked) {
@@ -191,6 +192,12 @@ public class HistoryServiceImpl implements HistoryService{
     @Override
     @Transactional
     public void updateHistory(HistoryRequestDTO.HistoryUpdate historyUpdate, Long memberId, Long historyId, List<MultipartFile> images) {
+
+        //나의 기록이 맞는지 검증합니다.
+        historyAccessibleValidator.validateMyHistory(historyId,memberId);
+
+        //모든 옷이 나의 옷이 맞는지 검증합니다.
+        clothAccessibleValidator.validateClothOfMember(historyUpdate.getClothes(),memberId);
 
         historyImageRepositoryService.deleteAllByHistory_Id(historyId);
         historyImageRepositoryService.save(images,historyRepositoryService.findById(historyId));

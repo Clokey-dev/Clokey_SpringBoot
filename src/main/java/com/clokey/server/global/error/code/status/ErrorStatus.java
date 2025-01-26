@@ -59,6 +59,7 @@ public enum ErrorStatus implements BaseErrorCode {
     DUPLICATE_CLOTHES_FOR_HISTORY(HttpStatus.BAD_REQUEST,"HISTORY_4011","기록에 중복된 옷을 등록할 수 없습니다"),
     HISTORY_ALREADY_EXIST_FOR_DATE(HttpStatus.BAD_REQUEST,"HISTORY_4012","이미 기록이 존재하는 날짜입니다."),
     IMAGE_QUANTITY_OVER_HISTORY_IMAGE_LIMIT(HttpStatus.BAD_REQUEST,"HISTORY_4013","사진을 10개 넘게 업로드 할 수 없습니다."),
+    NOT_MY_HISTORY(HttpStatus.BAD_REQUEST,"HISTORY_4014","나의 기록이 아닙니다"),
 
     //해시태그 에러
     NO_SUCH_HASHTAG_NAME(HttpStatus.BAD_REQUEST,"HASHTAG_4001","해당 이름의 해시태그가 존재하지 않습니다"),
