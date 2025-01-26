@@ -166,7 +166,7 @@ public class HistoryRestController {
 
         historyService.updateHistory(historyUpdate, memberId, historyId, imageFiles);
 
-        return BaseResponse.onSuccess(SuccessStatus.HISTORY_CREATED,null);
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_UPDATED,null);
     }
 
 
