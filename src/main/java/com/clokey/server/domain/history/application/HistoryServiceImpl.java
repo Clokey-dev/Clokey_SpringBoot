@@ -189,6 +189,7 @@ public class HistoryServiceImpl implements HistoryService{
     }
 
     @Override
+    @Transactional
     public void updateHistory(HistoryRequestDTO.HistoryUpdate historyUpdate, Long memberId, Long historyId, List<MultipartFile> images) {
 
         historyImageRepositoryService.deleteAllByHistory_Id(historyId);
@@ -206,8 +207,8 @@ public class HistoryServiceImpl implements HistoryService{
                         .toList(),
                 historyRepositoryService.findById(historyId));
 
-
-
+        History historyToUpdate = historyRepositoryService.findById(historyId);
+        historyToUpdate.updateHistory(historyUpdate.getContent(),historyUpdate.getVisibility());
     }
 
     private void updateHistoryClothes(List<Long> updatedClothes, List<Long> savedClothes, History history) {

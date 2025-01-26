@@ -37,4 +37,13 @@ public class History extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    public void updateHistory(String content, Visibility visibility){
+        if (content != null){
+            this.content = content;
+        }
+        if (visibility != null){
+            this.visibility = visibility;
+        }
+    }
 }
