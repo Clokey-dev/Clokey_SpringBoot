@@ -200,7 +200,9 @@ public class HistoryServiceImpl implements HistoryService{
         clothAccessibleValidator.validateClothOfMember(historyUpdate.getClothes(),memberId);
 
         historyImageRepositoryService.deleteAllByHistory_Id(historyId);
-        historyImageRepositoryService.save(images,historyRepositoryService.findById(historyId));
+        if(images != null && !images.isEmpty()){
+            historyImageRepositoryService.save(images,historyRepositoryService.findById(historyId));
+        }
 
         updateHistoryClothes(
                 historyUpdate.getClothes(),
