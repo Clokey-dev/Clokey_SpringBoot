@@ -1,5 +1,6 @@
 package com.clokey.server.domain.model.entity;
 
+import com.clokey.server.domain.cloth.dto.ClothRequestDTO;
 import com.clokey.server.domain.model.entity.enums.Season;
 import com.clokey.server.domain.model.entity.enums.ThicknessLevel;
 
@@ -8,10 +9,8 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.*;
 import com.clokey.server.domain.model.entity.enums.Visibility;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +34,7 @@ public class Cloth extends BaseEntity {
 
     @ElementCollection(fetch = FetchType.LAZY) // 다중 값을 위한 설정
     @CollectionTable(
-            name = "cloth_seasons", // 매핑될 계절 테이블 이름
+            name = "cloth_season", // 매핑될 계절 테이블 이름
             joinColumns = @JoinColumn(name = "cloth_id") // 부모 테이블과의 조인 컬럼
     )
     @Enumerated(EnumType.STRING)
@@ -67,17 +66,42 @@ public class Cloth extends BaseEntity {
     private String brand;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @OneToMany(mappedBy = "cloth", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ClothImage> images = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
+    @OneToOne(mappedBy = "cloth", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ClothImage image;
 
     public Long getMemberId() {
         return this.member != null ? this.member.getId() : null;
+    }
+
+    /**
+     * Cloth 엔티티 업데이트 메서드
+     */
+    public void updateCloth(ClothRequestDTO.ClothCreateOrUpdateRequest request, String imageUrl) {
+        if (request.getName() != null) this.name = request.getName();
+        if (request.getSeasons() != null) this.seasons = request.getSeasons();
+        if (request.getTempUpperBound() != 0) this.tempUpperBound = request.getTempUpperBound();
+        if (request.getTempLowerBound() != 0) this.tempLowerBound = request.getTempLowerBound();
+        if (request.getThicknessLevel() != null) this.thicknessLevel = request.getThicknessLevel();
+        if (request.getVisibility() != null) this.visibility = request.getVisibility();
+        if (request.getClothUrl() != null) this.clothUrl = request.getClothUrl();
+        if (request.getBrand() != null) this.brand = request.getBrand();
+        if (request.getCategoryId() != null) {
+            this.category = Category.builder().id(request.getCategoryId()).build();
+        }
+
+        // 이미지 업데이트
+        if (imageUrl != null) {
+            this.image = ClothImage.builder()
+                    .imageUrl(imageUrl)
+                    .cloth(this)
+                    .build();
+        }
     }
 }
