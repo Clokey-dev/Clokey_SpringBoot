@@ -11,7 +11,6 @@ import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
-import com.clokey.server.global.infra.s3.S3ImageService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -199,7 +198,7 @@ public class HistoryServiceImpl implements HistoryService{
         //모든 옷이 나의 옷이 맞는지 검증합니다.
         clothAccessibleValidator.validateClothOfMember(historyUpdate.getClothes(),memberId);
 
-        historyImageRepositoryService.deleteAllByHistory_Id(historyId);
+        historyImageRepositoryService.deleteAllByHistoryId(historyId);
         if(images != null && !images.isEmpty()){
             historyImageRepositoryService.save(images,historyRepositoryService.findById(historyId));
         }
