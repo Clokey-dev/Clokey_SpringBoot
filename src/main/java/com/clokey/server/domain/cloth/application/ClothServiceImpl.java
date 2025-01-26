@@ -47,10 +47,12 @@ public class ClothServiceImpl implements ClothService {
 //    }
 
     @Transactional
-    public ClothResponseDTO.ClothCreateResult createCloth(ClothRequestDTO.ClothCreateRequest request, MultipartFile imageFile) {
+    public ClothResponseDTO.ClothCreateOrUpdateResult createCloth(Long memberId,
+                                                                  ClothRequestDTO.ClothCreateOrUpdateRequest request,
+                                                                  MultipartFile imageFile) {
 
         // Cloth 엔티티 생성 후 요청 정보 반환해서 저장
-        Cloth cloth = clothRepository.save(ClothConverter.toCloth(request));
+        Cloth cloth = clothRepository.save(ClothConverter.toCloth(memberId,request));
 
         // 이미지 업로드 후 URL 반환
         String imageUrl = (imageFile != null) ? s3ImageService.upload(imageFile) : null;
@@ -65,38 +67,36 @@ public class ClothServiceImpl implements ClothService {
         clothImageRepository.save(clothImage);
 
         // Cloth를 응답형식로 변환하여 반환
-        return ClothConverter.toClothCreateResult(cloth);
+        return ClothConverter.toClothCreateOrUpdateResult(cloth);
     }
 
     /*
 
     @Transactional
-    ClothResponseDTO.ClothUpdateResult updateClothById(ClothRequestDTO.ClothUpdateRequest request, MultipartFile imageFile){
-        // Cloth 엔티티 생성 후 요청 정보 반환해서 저장
-        Cloth cloth = clothRepository.save(ClothConverter.toCloth(request));
+    public ClothResponseDTO.ClothCreateOrUpdateResult updateClothById(Long clothId,
+                                                                      Long memberId,
+                                                                      ClothRequestDTO.ClothCreateOrUpdateRequest request,
+                                                                      MultipartFile imageFile){
 
-        // 이미지 업로드 후 URL 반환
+        // 기존 Cloth 조회
+        Optional<Cloth> existingCloth = clothRepository.findById(clothId);
+
+        // 이미지 업로드 처리
         String imageUrl = (imageFile != null) ? s3ImageService.upload(imageFile) : null;
 
-        // ClothImage 엔티티 생성 & URL 저장
-        ClothImage clothImage = ClothImage.builder()
-                .imageUrl(imageUrl)
-                .cloth(cloth)
-                .build();
+        // 엔티티의 업데이트 메서드 호출
+        existingCloth.get().updateCloth(request, imageUrl);
 
-        // ClothImage 저장
-        clothImageRepository.save(clothImage);
-
-        // Cloth를 응답형식로 변환하여 반환
-        return ClothConverter.toClothUpdateResult(cloth);
-    }*/
+        // Cloth를 응답 DTO로 변환하여 반환
+        return ClothConverter.toClothCreateOrUpdateResult(existingCloth.get());
+    }
 
     @Transactional
     public void deleteClothById(Long clothId){
         //Cloth 연관 엔티티 우선 삭제
         historyClothRepository.deleteAllByClothId(clothId);
         clothFolderRepository.deleteAllByClothId(clothId);
-        clothImageRepository.deleteAllByClothId(clothId);
+        clothImageRepository.deleteByClothId(clothId);
         clothRepository.deleteById(clothId);
     }
 }

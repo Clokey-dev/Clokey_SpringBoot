@@ -12,9 +12,9 @@ public interface ClothService {
 
     //ClothResponseDTO.CategoryClothReadResult readClothPreViewByCategoryId(Long categoryId, Long memberId);
 
-    ClothResponseDTO.ClothCreateResult createCloth(ClothRequestDTO.ClothCreateRequest request, MultipartFile imageFile);
+    ClothResponseDTO.ClothCreateOrUpdateResult createCloth(Long memberId, ClothRequestDTO.ClothCreateOrUpdateRequest request, MultipartFile imageFile);
 
-    //ClothResponseDTO.ClothUpdateResult updateClothById(ClothRequestDTO.ClothUpdateRequest request, MultipartFile imageFile);
+    ClothResponseDTO.ClothCreateOrUpdateResult updateClothById(Long clothId, Long memberId, ClothRequestDTO.ClothCreateOrUpdateRequest request, MultipartFile imageFile);
 
     void deleteClothById(Long clothId);
 }
