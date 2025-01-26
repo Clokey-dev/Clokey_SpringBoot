@@ -1,6 +1,8 @@
 package com.clokey.server.domain.history.application;
 
+import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.history.domain.entity.HistoryImage;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -10,7 +12,9 @@ public interface HistoryImageRepositoryService {
 
     List<HistoryImage> findByHistory_Id(Long historyId);
 
-    HistoryImage save(HistoryImage historyImage);
+    void save(MultipartFile historyImage, History history);
+
+    void save(List<MultipartFile> historyImages , History history);
 
     void deleteAllByHistory_Id(Long historyId);
 }

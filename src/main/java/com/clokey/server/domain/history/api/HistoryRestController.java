@@ -160,10 +160,11 @@ public class HistoryRestController {
     public BaseResponse<HistoryResponseDTO.HistoryCreateResult> updateHistory(
             @RequestPart("historyUpdateRequest") @Valid HistoryRequestDTO.HistoryUpdate historyUpdate,
             @RequestPart(value = "imageFile", required = false) @Valid @HistoryImageQuantityLimit List<MultipartFile> imageFiles,
-            @RequestParam Long memberId
+            @RequestParam Long memberId,
+            @PathVariable Long historyId
     ) {
 
-        historyService.updateHistory(historyUpdate, memberId, imageFiles);
+        historyService.updateHistory(historyUpdate, memberId, historyId, imageFiles);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_CREATED,null);
     }
