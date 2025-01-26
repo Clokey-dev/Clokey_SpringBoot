@@ -16,33 +16,15 @@ public class ClothRequestDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ClothCreateRequest{
-        String name;
-        List<Season> seasons;
-        int tempUpperBound;
-        int tempLowerBound;
-        ThicknessLevel thicknessLevel;
-        Visibility visibility;
-        String clothUrl;
-        String brand;
-        Long memberId;
-        Long categoryId;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ClothUpdateRequest{
-        String name;
-        Season season;
-        int tempUpperBound;
-        int tempLowerBound;
-        ThicknessLevel thicknessLevel;
-        Visibility visibility;
-        String clothUrl;
-        String brand;
-        Long memberId;
-        Long categoryId;
+    public static class ClothCreateOrUpdateRequest {
+        private String name;
+        private List<Season> seasons;
+        private int tempUpperBound;
+        private int tempLowerBound;
+        private ThicknessLevel thicknessLevel;
+        private Visibility visibility;
+        private String clothUrl;
+        private String brand;
+        private Long categoryId;
     }
 }
