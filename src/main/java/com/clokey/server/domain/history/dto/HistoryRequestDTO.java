@@ -34,6 +34,21 @@ public class HistoryRequestDTO {
         String date;
     }
 
+    public static class HistoryUpdate {
+
+        @HistoryContentLength
+        String content;
+
+        @UniqueClothes
+        List<Long> clothes;
+
+        @UniqueHashtags
+        List<String> hashtags;
+
+        Visibility visibility;
+
+    }
+
 
     @Builder
     @Getter
