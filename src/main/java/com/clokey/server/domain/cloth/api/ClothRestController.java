@@ -102,7 +102,7 @@ public class ClothRestController {
     public BaseResponse<ClothResponseDTO.ClothCreateResult> postCloth(
             @RequestPart("clothCreateRequest") @Valid ClothRequestDTO.ClothCreateRequest clothCreateRequest,
             @RequestPart("imageFile") MultipartFile imageFile,
-            @RequestParam Long memberId
+            @RequestParam @MemberExist Long memberId
     ) {
         // 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 생성하는 현 유저를 나타냄
 
