@@ -27,6 +27,50 @@ public class ClothRestController {
     private final ClothService clothService;
     private final ClothAccessibleValidator clothAccessibleValidator;
 
+    // 팝업용 옷 조회 API, 사용자 토큰 받는 부분 추가 및 변경해야함
+    @GetMapping("/{clothId}/popup-view")
+    @Operation(summary = "특정 옷을 팝업용으로 조회하는 API", description = "path variable로 cloth_id를 넘겨주세요.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CLOTH_200", description = "OK, 성공적으로 조회되었습니다."),
+    })
+    @Parameters({
+            @Parameter(name = "clothId", description = "옷의 id, path variable 입니다.")
+    })
+    public BaseResponse<ClothResponseDTO.ClothPopupViewResult> getClothPopupInfo(
+            @PathVariable @Valid @ClothExist Long clothId,
+            @RequestParam @MemberExist Long memberId
+    ) {
+        // 멤버가 옷에 대해서 접근 권한이 있는지 확인합니다. -> 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 조회하는 현 유저를 나타냄
+        clothAccessibleValidator.validateClothAccessOfMember(clothId, memberId);
+
+        // ClothService를 통해 데이터를 가져오고, 결과 반환
+        ClothResponseDTO.ClothPopupViewResult result = clothService.readClothPopupInfoById(clothId, memberId);
+
+        return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
+    }
+
+    // 수정용 옷 조회 API, 사용자 토큰 받는 부분 추가 및 변경해야함
+    @GetMapping("/{clothId}/edit-view")
+    @Operation(summary = "특정 옷을 수정용으로 조회하는 API", description = "path variable로 cloth_id를 넘겨주세요.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CLOTH_200", description = "OK, 성공적으로 조회되었습니다."),
+    })
+    @Parameters({
+            @Parameter(name = "clothId", description = "옷의 id, path variable 입니다.")
+    })
+    public BaseResponse<ClothResponseDTO.ClothEditViewResult> getClothEditInfo(
+            @PathVariable @Valid @ClothExist Long clothId,
+            @RequestParam @MemberExist Long memberId
+    ) {
+        // 멤버가 옷에 대해서 접근 권한이 있는지 확인합니다. -> 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 조회하는 현 유저를 나타냄
+        clothAccessibleValidator.validateClothAccessOfMember(clothId, memberId);
+
+        // ClothService를 통해 데이터를 가져오고, 결과 반환
+        ClothResponseDTO.ClothEditViewResult result = clothService.readClothEditInfoById(clothId, memberId);
+
+        return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
+    }
+
     // 옷 상세 조회 API, 사용자 토큰 받는 부분 추가 및 변경해야함
     @GetMapping("/{clothId}")
     @Operation(summary = "특정 옷을 상세 조회하는 API", description = "path variable로 cloth_id를 넘겨주세요.")
