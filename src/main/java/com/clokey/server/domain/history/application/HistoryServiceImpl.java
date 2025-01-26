@@ -199,6 +199,14 @@ public class HistoryServiceImpl implements HistoryService{
                 historyClothRepositoryService.findClothIdsByHistoryId(historyId),
                 historyRepositoryService.findById(historyId));
 
+        updateHistoryHashtags(
+                historyUpdate.getHashtags(),
+                hashtagHistoryRepositoryService.findByHistory_Id(historyId).stream()
+                        .map(hashtagHistory -> hashtagHistory.getHashtag().getName())
+                        .toList(),
+                historyRepositoryService.findById(historyId));
+
+
 
     }
 
@@ -218,6 +226,24 @@ public class HistoryServiceImpl implements HistoryService{
 
         clothesToAdd.forEach(cloth->historyClothRepositoryService.save(history,cloth));
         clothesToDelete.forEach(cloth->historyClothRepositoryService.delete(history,cloth));
+    }
+
+    private void updateHistoryHashtags(List<String> updatedHashtags, List<String> savedHashtags, History history){
+
+        //updateHashtag에만 존재하는 것은 추가 대상
+        List<Hashtag> hashtagToAdd = updatedHashtags.stream()
+                .filter(hashtagNames -> !savedHashtags.contains(hashtagNames))
+                .map(hashtagRepositoryService::findByName)
+                .toList();
+
+        //반대는 삭제 대상
+        List<Hashtag> hashtagToDelete = savedHashtags.stream()
+                .filter(hashtagNames -> !updatedHashtags.contains(hashtagNames))
+                .map(hashtagRepositoryService::findByName)
+                .toList();
+
+        hashtagToAdd.forEach(hashtag -> hashtagHistoryRepositoryService.addHashtagHistory(hashtag,history));
+        hashtagToDelete.forEach(hashtag -> hashtagHistoryRepositoryService.deleteHashtagHistory(hashtag,history));
     }
 
 
