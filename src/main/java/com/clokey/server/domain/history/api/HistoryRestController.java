@@ -1,7 +1,5 @@
 package com.clokey.server.domain.history.api;
 
-import com.clokey.server.domain.cloth.dto.ClothRequestDTO;
-import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
 import com.clokey.server.domain.history.application.HistoryService;
 import com.clokey.server.domain.history.dto.HistoryRequestDTO;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
@@ -11,7 +9,6 @@ import com.clokey.server.domain.history.exception.annotation.HistoryImageQuantit
 import com.clokey.server.domain.history.exception.annotation.MonthFormat;
 import com.clokey.server.domain.history.exception.validator.CommentValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
-import com.clokey.server.domain.history.exception.validator.HistoryAlreadyExistValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
 import com.clokey.server.domain.member.exception.annotation.MemberExist;
 import com.clokey.server.global.common.response.BaseResponse;
@@ -139,11 +136,11 @@ public class HistoryRestController {
 
     //임시로 토큰을 request param으로 받는중.
     @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "새로운 기록을 생성하는 API", description = "request body에 HistoryCreateRequestDTO 형식의 데이터를 전달해주세요.")
+    @Operation(summary = "새로운 기록을 생성하는 API", description = "request body에 HistoryRequestDTO.HistoryCreate 형식의 데이터를 전달해주세요.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_201", description = "CREATED, 성공적으로 생성되었습니다."),
     })
-    public BaseResponse<HistoryResponseDTO.HistoryCreateResult> postHistory(
+    public BaseResponse<HistoryResponseDTO.HistoryCreateResult> createHistory(
             @RequestPart("historyCreateResult") @Valid HistoryRequestDTO.HistoryCreate historyCreateRequest,
             @RequestPart(value = "imageFile", required = false) @Valid @HistoryImageQuantityLimit List<MultipartFile> imageFiles,
             @RequestParam Long memberId
@@ -153,4 +150,23 @@ public class HistoryRestController {
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_CREATED, result);
     }
+
+    //임시로 토큰을 request param으로 받는중.
+    @PatchMapping(value = "/histories/{historyId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "기록을 수정하는 API", description = "request body에 HistoryRequestDTO.HistoryUpdate 형식의 데이터를 전달해주세요.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_204", description = "성공적으로 수정되었습니다."),
+    })
+    public BaseResponse<HistoryResponseDTO.HistoryCreateResult> updateHistory(
+            @RequestPart("historyUpdateRequest") @Valid HistoryRequestDTO.HistoryUpdate historyUpdate,
+            @RequestPart(value = "imageFile", required = false) @Valid @HistoryImageQuantityLimit List<MultipartFile> imageFiles,
+            @RequestParam Long memberId
+    ) {
+
+        historyService.updateHistory(historyUpdate, memberId, imageFiles);
+
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_CREATED,null);
+    }
+
+
 }
