@@ -5,6 +5,7 @@ import com.clokey.server.domain.model.entity.enums.ThicknessLevel;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -14,39 +15,66 @@ public class ClothResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ClothCreateResult{
-        Long id;
+    public static class ClothCreateOrUpdateResult {
+        private Long id;
     }
 
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ClothReadResult{
-        Long id;
-        String name;
-        int wearNum;
-        Date regDate;
-        String dayOfWeek;
-        List<Season> seasons;
-        int tempUpperBound;
-        int tempLowerBound;
-        ThicknessLevel thicknessLevel;
-        Visibility visibility;
-        String clothUrl;
-        String brand;
-        List<String> images;
-        Long memberId;
-        Long categoryId;
+    public static class ClothPopupViewResult {
+        private Long id;
+        private Date regDate;
+        private String dayOfWeek;
+        private String imageUrl;
+        private String name;
+        private List<Season> seasons;
+        private int wearNum;
+        private Visibility visibility;
+        private String brand;
+        private String clothUrl;
+        private Long categoryId;
     }
 
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ClothUpdateResult{
-        Long id;
-        List<String> updateFields;
+    public static class ClothEditViewResult {
+        private Long id;
+        private String name;
+        private List<Season> seasons;
+        private int tempUpperBound;
+        private int tempLowerBound;
+        private ThicknessLevel thicknessLevel;
+        private Visibility visibility;
+        private String clothUrl;
+        private String brand;
+        private String imageUrl;
+        private Long categoryId;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ClothDetailViewResult {
+        private Long id;
+        private String name;
+        private int wearNum;
+        private List<Season> seasons;
+        private int tempUpperBound;
+        private int tempLowerBound;
+        private ThicknessLevel thicknessLevel;
+        private Visibility visibility;
+        private String clothUrl;
+        private String brand;
+        private String imageUrl;
+        private Long memberId;
+        private Long categoryId;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
     }
 
     @Builder
