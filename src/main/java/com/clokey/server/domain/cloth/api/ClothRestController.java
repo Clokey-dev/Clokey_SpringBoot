@@ -81,7 +81,7 @@ public class ClothRestController {
     @Parameters({
             @Parameter(name = "clothId", description = "옷의 id, path variable 입니다.")
     })
-    public BaseResponse<ClothResponseDTO.ClothReadResult> getClothDetails(
+    public BaseResponse<ClothResponseDTO.ClothDetailViewResult> getClothDetatilInfo(
             @PathVariable @Valid @ClothExist Long clothId,
             @RequestParam @MemberExist Long memberId
     ) {
@@ -89,7 +89,7 @@ public class ClothRestController {
         clothAccessibleValidator.validateClothAccessOfMember(clothId, memberId);
 
         // ClothService를 통해 데이터를 가져오고, 결과 반환
-        ClothResponseDTO.ClothReadResult result = clothService.readClothDetailsById(clothId, memberId);
+        ClothResponseDTO.ClothDetailViewResult result = clothService.readClothDetailInfoById(clothId, memberId);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
     }
