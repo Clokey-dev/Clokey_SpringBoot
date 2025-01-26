@@ -60,6 +60,10 @@ public class HistoryImageRepositoryServiceImpl implements HistoryImageRepository
         // 특정 historyId에 해당하는 모든 이미지를 조회
         List<HistoryImage> historyImages = historyImageRepository.findByHistory_Id(historyId);
 
+        if(historyImages.isEmpty()) {
+            return;
+        }
+
         // S3 및 데이터베이스에서 이미지 삭제
         historyImages.forEach(image -> {
             // S3에서 이미지 삭제
