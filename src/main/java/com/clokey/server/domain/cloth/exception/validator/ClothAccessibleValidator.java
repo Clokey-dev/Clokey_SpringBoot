@@ -9,6 +9,8 @@ import com.clokey.server.global.error.code.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class ClothAccessibleValidator {
@@ -37,6 +39,14 @@ public class ClothAccessibleValidator {
         if (isNotMyCloth) {
             throw new ClothException(ErrorStatus.NOT_MY_CLOTH);
         }
+    }
+
+    //다른 입력 인자로 오버로딩
+    public void validateClothOfMember(List<Long> clothIds, Long memberId) {
+
+        clothIds.forEach(clothId -> {
+            validateClothOfMember(clothId,memberId);
+        });
     }
 
     public void validateMemberAccessOfMember(Long memberToBeQueried, Long memberRequestingQuery) {
