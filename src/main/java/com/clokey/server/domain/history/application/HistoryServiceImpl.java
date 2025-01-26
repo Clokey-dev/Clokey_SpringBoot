@@ -152,7 +152,7 @@ public class HistoryServiceImpl implements HistoryService{
         }
 
 
-        //모든 옷의 착용횟수를 1올리고 기록-옷 테이블에 추가해줍니다.
+        //기록-옷 테이블에 추가해줍니다.
         historyCreateRequest.getClothes()
                 .forEach(clothId-> {
                     historyClothRepositoryService.save(history,clothRepositoryService.findById(clothId));
@@ -230,7 +230,18 @@ public class HistoryServiceImpl implements HistoryService{
 
     private void updateHistoryHashtags(List<String> updatedHashtags, List<String> savedHashtags, History history){
 
-        //updateHashtag에만 존재하는 것은 추가 대상
+        //존재하지 않는 해시태그는 만들어줍니다.
+        updatedHashtags.forEach(hashtagName->{
+            if(!hashtagRepositoryService.existByName(hashtagName)) {
+                Hashtag newHashtag = Hashtag.builder()
+                        .name(hashtagName)
+                        .build();
+                hashtagRepositoryService.save(newHashtag);
+            }
+        });
+
+
+        //updateHashtag에만 존재하는 것은 매핑 테이블에
         List<Hashtag> hashtagToAdd = updatedHashtags.stream()
                 .filter(hashtagNames -> !savedHashtags.contains(hashtagNames))
                 .map(hashtagRepositoryService::findByName)
