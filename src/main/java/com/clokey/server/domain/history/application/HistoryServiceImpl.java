@@ -222,7 +222,8 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     public void deleteComment(Long commentId, Long memberId) {
         validateMyComment(commentId,memberId);
-        commentRepositoryService.deleteWithChildren(commentId);
+        commentRepositoryService.deleteChildren(commentId);
+        commentRepositoryService.deleteById(commentId);
     }
 
     private void validateMyComment(Long commentId, Long memberId) {

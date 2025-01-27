@@ -18,5 +18,7 @@ public interface CommentRepositoryService {
 
     boolean existsById(Long commentId);
 
-    void deleteWithChildren(Long commentId);
+    void deleteChildren(Long commentId);
+
+    void deleteById(Long commentId);
 }
