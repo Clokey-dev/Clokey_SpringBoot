@@ -45,4 +45,9 @@ public class CommentRepositoryServiceImpl implements CommentRepositoryService{
         return commentRepository.existsById(commentId);
     }
 
+    @Override
+    public void deleteWithChildren(Long commentId) {
+        commentRepository.deleteWithChildren(commentId);
+    }
+
 }
