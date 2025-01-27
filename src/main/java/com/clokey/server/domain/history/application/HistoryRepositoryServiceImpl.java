@@ -54,4 +54,10 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
     public boolean checkHistoryExistOfDate(LocalDate date, Long memberId) {
         return historyRepository.existsByHistoryDateAndMember_Id(date,memberId);
     }
+
+    @Override
+    public History getHistoryOfDate(LocalDate date, Long memberId) {
+        return historyRepository.findByHistoryDateAndMember_Id(date,memberId)
+                .orElseThrow(()-> new DatabaseException(ErrorStatus.NO_HISTORY_FOR_DATE));
+    }
 }

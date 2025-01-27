@@ -61,6 +61,8 @@ public enum ErrorStatus implements BaseErrorCode {
     IMAGE_QUANTITY_OVER_HISTORY_IMAGE_LIMIT(HttpStatus.BAD_REQUEST,"HISTORY_4013","사진을 10개 넘게 업로드 할 수 없습니다."),
     NOT_MY_HISTORY(HttpStatus.BAD_REQUEST,"HISTORY_4014","사용자의 기록이 아닙니다"),
 
+    NO_HISTORY_FOR_DATE(HttpStatus.BAD_REQUEST,"HISTORY_4016","해당 날짜에 기록이 없습니다"),
+
     //해시태그 에러
     NO_SUCH_HASHTAG_NAME(HttpStatus.BAD_REQUEST,"HASHTAG_4001","해당 이름의 해시태그가 존재하지 않습니다"),
     DUPLICATE_HASHTAGS(HttpStatus.BAD_REQUEST,"HASHTAG_4002","중복된 해시태그를 기록에 등록할 수 없습니다"),

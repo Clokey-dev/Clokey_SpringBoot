@@ -20,4 +20,6 @@ public interface HistoryRepositoryService {
     History save(History history);
 
     boolean checkHistoryExistOfDate(LocalDate date, Long memberId);
+
+    History getHistoryOfDate(LocalDate date, Long memberId);
 }

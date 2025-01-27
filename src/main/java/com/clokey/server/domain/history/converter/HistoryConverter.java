@@ -146,9 +146,16 @@ public class HistoryConverter {
                 .build();
     }
 
-    public static HistoryResponseDTO.HistoryCreateResult historyCreateResult(History history){
+    public static HistoryResponseDTO.HistoryCreateResult toHistoryCreateResult(History history){
         return HistoryResponseDTO.HistoryCreateResult.builder()
                 .historyId(history.getId())
+                .build();
+    }
+
+    public static HistoryResponseDTO.LastYearHistoryResult toLastYearHistoryResult(Long historyId, List<String> historyImageUrls) {
+        return HistoryResponseDTO.LastYearHistoryResult.builder()
+                .historyId(historyId)
+                .imageUrls(historyImageUrls)
                 .build();
     }
 
