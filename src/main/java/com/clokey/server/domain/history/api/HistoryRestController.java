@@ -192,7 +192,7 @@ public class HistoryRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_204", description = "댓글이 성공적으로 수정되었습니다."),
     })
     public BaseResponse<Void> updateComment(
-            @RequestPart("UpdateCommentRequest") @Valid HistoryRequestDTO.UpdateComment updateCommentRequest,
+            @RequestBody @Valid HistoryRequestDTO.UpdateComment updateCommentRequest,
             @RequestParam Long memberId,
             @PathVariable Long commentId
     ) {
