@@ -2,6 +2,7 @@ package com.clokey.server.domain.history.exception.validator;
 
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
 import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.history.exception.HistoryException;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.domain.history.domain.repository.HistoryRepository;
@@ -28,7 +29,7 @@ public class HistoryAccessibleValidator {
         boolean isNotMyHistory = !history.getMember().getId().equals(memberId);
 
         if (isPrivate && isNotMyHistory) {
-            throw new GeneralException(ErrorStatus.NO_PERMISSION_TO_ACCESS_HISTORY);
+            throw new HistoryException(ErrorStatus.NO_PERMISSION_TO_ACCESS_HISTORY);
         }
     }
 
@@ -41,9 +42,21 @@ public class HistoryAccessibleValidator {
                 .equals(Visibility.PRIVATE);
 
         if(!selfQuery && isPrivate) {
-            throw new GeneralException(ErrorStatus.NO_PERMISSION_TO_ACCESS_HISTORY);
+            throw new HistoryException(ErrorStatus.NO_PERMISSION_TO_ACCESS_HISTORY);
         }
 
+    }
+
+    public void validateMyHistory(Long historyId, Long MemberId){
+
+        boolean isValid = historyRepositoryService.findById(historyId)
+                .getMember()
+                .getId()
+                .equals(MemberId);
+
+        if(!isValid) {
+            throw new HistoryException(ErrorStatus.NOT_MY_HISTORY);
+        }
     }
 
 }
