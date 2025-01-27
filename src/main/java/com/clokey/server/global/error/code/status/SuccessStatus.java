@@ -41,6 +41,7 @@ public enum SuccessStatus implements BaseCode {
     HISTORY_COMMENT_CREATED(HttpStatus.CREATED,"HISTORY_201","성공적으로 댓글이 생성되었습니다."),
     HISTORY_UPDATED(HttpStatus.NO_CONTENT,"HISTORY_204","성공적으로 수정되었습니다"),
     HISTORY_COMMENT_DELETED(HttpStatus.NO_CONTENT,"HISTORY_204","댓글이 성공적으로 삭제되었습니다"),
+    HISTORY_COMMENT_UPDATED(HttpStatus.NO_CONTENT,"HISTORY_204","댓글이 성공적으로 수정되었습니다"),
 
     //알림 성공
     NOTIFICATION_SUCCESS(HttpStatus.OK, "NOTIFICATION_200", "성공적으로 조회되었습니다."),

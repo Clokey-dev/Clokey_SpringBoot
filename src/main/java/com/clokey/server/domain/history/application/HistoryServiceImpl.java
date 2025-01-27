@@ -220,10 +220,19 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
+    @Transactional
     public void deleteComment(Long commentId, Long memberId) {
         validateMyComment(commentId,memberId);
         commentRepositoryService.deleteChildren(commentId);
         commentRepositoryService.deleteById(commentId);
+    }
+
+    @Override
+    @Transactional
+    public void updateComment(HistoryRequestDTO.UpdateComment updateCommentRequest,Long commentId, Long memberId) {
+        validateMyComment(commentId,memberId);
+        Comment commentToUpdate = commentRepositoryService.findById(commentId);
+        commentToUpdate.updateContent(updateCommentRequest.getContent());
     }
 
     private void validateMyComment(Long commentId, Long memberId) {

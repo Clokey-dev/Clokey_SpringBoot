@@ -141,7 +141,7 @@ public class HistoryRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_201", description = "CREATED, 성공적으로 생성되었습니다."),
     })
     public BaseResponse<HistoryResponseDTO.HistoryCreateResult> createHistory(
-            @RequestPart("historyCreateResult") @Valid HistoryRequestDTO.HistoryCreate historyCreateRequest,
+            @RequestPart("historyCreateRequest") @Valid HistoryRequestDTO.HistoryCreate historyCreateRequest,
             @RequestPart(value = "imageFile", required = false) @Valid @HistoryImageQuantityLimit List<MultipartFile> imageFiles,
             @RequestParam Long memberId
     ) {
@@ -171,7 +171,7 @@ public class HistoryRestController {
 
     //임시로 토큰을 request param으로 받는중.
     @DeleteMapping(value = "/comments/{commentId}")
-    @Operation(summary = "댓글을 삭제하는 API", description = "Path Parameter로 history Id와 Comment Id를 입력해주세요.")
+    @Operation(summary = "댓글을 삭제하는 API", description = "Path Parameter로 Comment Id를 입력해주세요.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_204", description = "댓글이 성공적으로 삭제되었습니다."),
     })
@@ -184,6 +184,24 @@ public class HistoryRestController {
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_DELETED,null);
     }
+
+    //임시로 토큰을 request param으로 받는중.
+    @PatchMapping(value = "/comments/{commentId}")
+    @Operation(summary = "댓글을 수정하는 API", description = "Path Parameter로 Comment Id를 입력해주세요, HistoryRequestDTO.UpdateComment에는 수정되는 내용을 담아주세요.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_204", description = "댓글이 성공적으로 수정되었습니다."),
+    })
+    public BaseResponse<Void> updateComment(
+            @RequestPart("UpdateCommentRequest") @Valid HistoryRequestDTO.UpdateComment updateCommentRequest,
+            @RequestParam Long memberId,
+            @PathVariable Long commentId
+    ) {
+
+        historyService.updateComment(updateCommentRequest,commentId,memberId);
+
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_UPDATED,null);
+    }
+
 
 
 
