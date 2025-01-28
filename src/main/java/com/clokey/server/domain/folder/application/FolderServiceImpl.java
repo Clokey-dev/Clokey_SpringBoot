@@ -5,6 +5,8 @@ import com.clokey.server.domain.folder.converter.FolderConverter;
 import com.clokey.server.domain.folder.dto.FolderRequestDTO;
 import com.clokey.server.domain.folder.exception.FolderException;
 import com.clokey.server.domain.folder.domain.entity.Folder;
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.folder.domain.entity.ClothFolder;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.folder.domain.repository.FolderRepository;
@@ -66,6 +68,6 @@ public class FolderServiceImpl implements FolderService {
                 .map(cloth -> new ClothFolder(cloth, folder))
                 .collect(Collectors.toList());
 
-        clothFolderRepository.saveAll(clothFolders);
+        clothFolderRepositoryService.saveAll(clothFolders);
     }
 }
