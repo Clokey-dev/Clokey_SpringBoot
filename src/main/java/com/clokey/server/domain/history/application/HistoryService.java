@@ -1,6 +1,10 @@
 package com.clokey.server.domain.history.application;
 
+import com.clokey.server.domain.history.dto.HistoryRequestDTO;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public interface HistoryService {
 
@@ -14,4 +18,13 @@ public interface HistoryService {
 
     HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long this_member_id, Long memberId, String month);
 
+    HistoryResponseDTO.HistoryCreateResult createHistory(HistoryRequestDTO.HistoryCreate historyCreateRequest, Long memberId, List<MultipartFile> images);
+
+    void updateHistory(HistoryRequestDTO.HistoryUpdate historyUpdate, Long memberId, Long historyId, List<MultipartFile> images);
+
+    HistoryResponseDTO.LastYearHistoryResult getLastYearHistory(Long memberId);
+
+    void deleteComment(Long commentId,Long memberId);
+
+    void updateComment(HistoryRequestDTO.UpdateComment updateCommentRequest,Long commentId,Long memberId);
 }

@@ -1,11 +1,15 @@
 package com.clokey.server.domain.history.converter;
 
+import com.clokey.server.domain.history.dto.HistoryRequestDTO;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
-import com.clokey.server.domain.model.entity.Comment;
-import com.clokey.server.domain.model.entity.History;
+import com.clokey.server.domain.history.domain.entity.Comment;
+import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -126,6 +130,32 @@ public class HistoryConverter {
     public static HistoryResponseDTO.CommentWriteResult toCommentWriteResult(Comment comment){
         return HistoryResponseDTO.CommentWriteResult.builder()
                 .commentId(comment.getId())
+                .build();
+    }
+
+    public static History toHistory(HistoryRequestDTO.HistoryCreate request, Member member) {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // 패턴 지정
+
+        return History.builder()
+                .historyDate(LocalDate.parse(request.getDate(),formatter))
+                .likes(0)
+                .visibility(request.getVisibility())
+                .content(request.getContent())
+                .member(member)
+                .build();
+    }
+
+    public static HistoryResponseDTO.HistoryCreateResult toHistoryCreateResult(History history){
+        return HistoryResponseDTO.HistoryCreateResult.builder()
+                .historyId(history.getId())
+                .build();
+    }
+
+    public static HistoryResponseDTO.LastYearHistoryResult toLastYearHistoryResult(Long historyId, List<String> historyImageUrls) {
+        return HistoryResponseDTO.LastYearHistoryResult.builder()
+                .historyId(historyId)
+                .imageUrls(historyImageUrls)
                 .build();
     }
 

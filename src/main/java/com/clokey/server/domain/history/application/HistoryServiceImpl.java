@@ -1,48 +1,62 @@
 package com.clokey.server.domain.history.application;
 
-import com.clokey.server.domain.model.entity.*;
-import com.clokey.server.domain.model.entity.mapping.HashtagHistory;
-import com.clokey.server.domain.model.entity.mapping.MemberLike;
-import com.clokey.server.domain.model.repository.*;
+import com.clokey.server.domain.cloth.application.ClothRepositoryService;
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
+import com.clokey.server.domain.history.domain.entity.*;
+import com.clokey.server.domain.history.dto.HistoryRequestDTO;
+import com.clokey.server.domain.history.exception.HistoryException;
+import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
+import com.clokey.server.domain.history.exception.validator.HistoryAlreadyExistValidator;
+import com.clokey.server.domain.member.application.MemberRepositoryService;
+import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import com.clokey.server.global.error.exception.DatabaseException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class HistoryServiceImpl implements HistoryService{
+public class HistoryServiceImpl implements HistoryService {
 
-    private final HistoryRepository historyRepository;
-    private final CommentRepository commentRepository;
-    private final MemberRepository memberRepository;
-    private final MemberLikeRepository memberLikeRepository;
-    private final HistoryImageRepository historyImageRepository;
-    private final HashtagHistoryRepository hashtagHistoryRepository;
+    private final HistoryAlreadyExistValidator historyAlreadyExistValidator;
+    private final HistoryRepositoryService historyRepositoryService;
+    private final CommentRepositoryService commentRepositoryService;
+    private final MemberRepositoryService memberRepositoryService;
+    private final MemberLikeRepositoryService memberLikeRepositoryService;
+    private final HistoryImageRepositoryService historyImageRepositoryService;
+    private final HashtagHistoryRepositoryService hashtagHistoryRepositoryService;
+    private final ClothRepositoryService clothRepositoryService;
+    private final HashtagRepositoryService hashtagRepositoryService;
+    private final ClothAccessibleValidator clothAccessibleValidator;
+    private final HistoryClothRepositoryService historyClothRepositoryService;
+    private final HistoryAccessibleValidator historyAccessibleValidator;
 
     @Override
     public HistoryResponseDTO.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked) {
-        History history = historyRepository.findById(historyId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_HISTORY));
 
-        if(isLiked) {
-            historyRepository.decrementLikes(historyId);
-            memberLikeRepository.deleteByMember_IdAndHistory_Id(memberId,historyId);
+        History history = historyRepositoryService.findById(historyId);
+
+        if (isLiked) {
+            historyRepositoryService.decrementLikes(historyId);
+            memberLikeRepositoryService.deleteByMember_IdAndHistory_Id(memberId, historyId);
         } else {
-            historyRepository.incrementLikes(historyId);
+            historyRepositoryService.incrementLikes(historyId);
             MemberLike memberLike = MemberLike.builder()
                     .history(history)
-                    .member(memberRepository.findById(memberId).get())
+                    .member(memberRepositoryService.findMemberById(memberId))
                     .build();
-            memberLikeRepository.save(memberLike);
+            memberLikeRepositoryService.save(memberLike);
         }
 
         return HistoryConverter.toLikeResult(history, isLiked);
@@ -51,13 +65,13 @@ public class HistoryServiceImpl implements HistoryService{
     @Override
     public HistoryResponseDTO.CommentWriteResult writeComment(Long historyId, Long parentCommentId, Long memberId, String content) {
 
-        History history = historyRepository.findById(historyId).get();
+        History history = historyRepositoryService.findById(historyId);
 
-        Member member = memberRepository.findById(memberId).get();
+        Member member = memberRepositoryService.findMemberById(memberId);
 
         Comment parentComment = null;
         if (parentCommentId != null) {
-            parentComment = commentRepository.findById(parentCommentId).get();
+            parentComment = commentRepositoryService.findById(parentCommentId);
         }
 
         Comment comment = Comment.builder()
@@ -67,43 +81,43 @@ public class HistoryServiceImpl implements HistoryService{
                 .member(member)
                 .build();
 
-        Comment savedComment = commentRepository.save(comment);
+        Comment savedComment = commentRepositoryService.save(comment);
 
         return HistoryConverter.toCommentWriteResult(savedComment);
     }
 
     @Override
-    public HistoryResponseDTO.DayViewResult getDaily(Long historyId, Long memberId){
-        Optional<History> history = historyRepository.findById(historyId);
-        List<HistoryImage> historyImages = historyImageRepository.findByHistory_Id(historyId);
+    public HistoryResponseDTO.DayViewResult getDaily(Long historyId, Long memberId) {
+        History history = historyRepositoryService.findById(historyId);
+        List<HistoryImage> historyImages = historyImageRepositoryService.findByHistory_Id(historyId);
         List<String> imageUrl = historyImages.stream()
                 .map(HistoryImage::getImageUrl)
                 .toList();
-        List<HashtagHistory> hashtagHistories = hashtagHistoryRepository.findByHistory_Id(historyId);
+        List<HashtagHistory> hashtagHistories = hashtagHistoryRepositoryService.findByHistory_Id(historyId);
         List<String> hashtags = hashtagHistories.stream()
                 .map(HashtagHistory::getHashtag)
                 .map(Hashtag::getName)
                 .toList();
-        int likeCount = memberLikeRepository.countByHistory_Id(historyId);
-        boolean isLiked = memberLikeRepository.existsByMember_IdAndHistory_Id(memberId,historyId);
+        int likeCount = memberLikeRepositoryService.countByHistory_Id(historyId);
+        boolean isLiked = memberLikeRepositoryService.existsByMember_IdAndHistory_Id(memberId, historyId);
 
-        return HistoryConverter.toDayViewResult(history.get(), imageUrl, hashtags, likeCount, isLiked);
+        return HistoryConverter.toDayViewResult(history, imageUrl, hashtags, likeCount, isLiked);
     }
 
     @Override
     public HistoryResponseDTO.HistoryCommentResult getComments(Long historyId, int page) {
-        Page<Comment> comments = commentRepository.findByHistoryIdAndCommentIsNull(historyId, PageRequest.of(page,10, Sort.by(Sort.Direction.ASC, "createdAt")));
+        Page<Comment> comments = commentRepositoryService.findByHistoryIdAndCommentIsNull(historyId, PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "createdAt")));
         List<List<Comment>> repliesForEachComment = comments.stream()
-                .map(comment -> commentRepository.findByCommentId(comment.getId()))
+                .map(comment -> commentRepositoryService.findByCommentId(comment.getId()))
                 .toList();
-        return  HistoryConverter.toHistoryCommentResult(comments, repliesForEachComment);
+        return HistoryConverter.toHistoryCommentResult(comments, repliesForEachComment);
     }
 
     @Override
-    public HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long this_member_id, Long memberId, String month){
-        List<History> histories = historyRepository.findHistoriesByMemberAndYearMonth(memberId, month);
+    public HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long this_member_id, Long memberId, String month) {
+        List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(memberId, month);
         List<String> historyImageUrls = histories.stream()
-                .map(history -> historyImageRepository.findByHistory_Id(history.getId())
+                .map(history -> historyImageRepositoryService.findByHistory_Id(history.getId())
                         .stream()
                         .sorted(Comparator.comparing(HistoryImage::getCreatedAt)) // createdAt 기준으로 정렬
                         .findFirst() // 첫 번째 이미지 가져오기
@@ -121,5 +135,179 @@ public class HistoryServiceImpl implements HistoryService{
         return HistoryConverter.toPublicMonthViewResult(memberId, histories, historyImageUrls);
 
     }
+
+    @Override
+    @Transactional
+    public HistoryResponseDTO.HistoryCreateResult createHistory(HistoryRequestDTO.HistoryCreate historyCreateRequest, Long memberId, List<MultipartFile> imageFiles) {
+
+        //이미 해당 날짜에 기록이 존재하는지 검증합니다.
+        historyAlreadyExistValidator.validate(memberId, historyCreateRequest.getDate());
+
+        //모든 옷이 나의 옷이 맞는지 검증합니다.
+        clothAccessibleValidator.validateClothOfMember(historyCreateRequest.getClothes(), memberId);
+
+        // History 엔티티 생성 후 요청 정보 반환해서 저장
+        History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));
+
+        // 이미지는 첨부했다면 업로드를 진행합니다.
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+            historyImageRepositoryService.save(imageFiles, history);
+        }
+
+
+        //기록-옷 테이블에 추가해줍니다.
+        historyCreateRequest.getClothes()
+                .forEach(clothId -> {
+                    historyClothRepositoryService.save(history, clothRepositoryService.findById(clothId));
+                });
+
+
+        historyCreateRequest.getHashtags()
+                .forEach(hashtagNames -> {
+                    //존재하는 해시태그라면 매핑 테이블에 추가
+                    //아니라면 새로운 해시태그를 만들고 매핑 테이블에 추가
+                    if (hashtagRepositoryService.existByName(hashtagNames)) {
+                        hashtagHistoryRepositoryService.save(HashtagHistory.builder()
+                                .history(history)
+                                .hashtag(hashtagRepositoryService.findByName(hashtagNames))
+                                .build()
+                        );
+                    } else {
+                        Hashtag newHashtag = Hashtag.builder()
+                                .name(hashtagNames)
+                                .build();
+                        hashtagRepositoryService.save(newHashtag);
+
+                        hashtagHistoryRepositoryService.save(HashtagHistory.builder()
+                                .history(history)
+                                .hashtag(newHashtag)
+                                .build()
+                        );
+                    }
+                });
+
+        return HistoryConverter.toHistoryCreateResult(history);
+    }
+
+    @Override
+    @Transactional
+    public void updateHistory(HistoryRequestDTO.HistoryUpdate historyUpdate, Long memberId, Long historyId, List<MultipartFile> images) {
+
+        //나의 기록이 맞는지 검증합니다.
+        historyAccessibleValidator.validateMyHistory(historyId, memberId);
+
+        //모든 옷이 나의 옷이 맞는지 검증합니다.
+        clothAccessibleValidator.validateClothOfMember(historyUpdate.getClothes(), memberId);
+
+        historyImageRepositoryService.deleteAllByHistoryId(historyId);
+        if (images != null && !images.isEmpty()) {
+            historyImageRepositoryService.save(images, historyRepositoryService.findById(historyId));
+        }
+
+        updateHistoryClothes(
+                historyUpdate.getClothes(),
+                historyClothRepositoryService.findClothIdsByHistoryId(historyId),
+                historyRepositoryService.findById(historyId));
+
+        updateHistoryHashtags(
+                historyUpdate.getHashtags(),
+                hashtagHistoryRepositoryService.findByHistory_Id(historyId).stream()
+                        .map(hashtagHistory -> hashtagHistory.getHashtag().getName())
+                        .toList(),
+                historyRepositoryService.findById(historyId));
+
+        History historyToUpdate = historyRepositoryService.findById(historyId);
+        historyToUpdate.updateHistory(historyUpdate.getContent(), historyUpdate.getVisibility());
+    }
+
+    @Override
+    @Transactional
+    public void deleteComment(Long commentId, Long memberId) {
+        validateMyComment(commentId,memberId);
+        commentRepositoryService.deleteChildren(commentId);
+        commentRepositoryService.deleteById(commentId);
+    }
+
+    @Override
+    @Transactional
+    public void updateComment(HistoryRequestDTO.UpdateComment updateCommentRequest,Long commentId, Long memberId) {
+        validateMyComment(commentId,memberId);
+        Comment commentToUpdate = commentRepositoryService.findById(commentId);
+        commentToUpdate.updateContent(updateCommentRequest.getContent());
+    }
+
+    private void validateMyComment(Long commentId, Long memberId) {
+        Comment comment = commentRepositoryService.findById(commentId);
+        if(!comment.getMember().getId().equals(memberId)){
+            throw new HistoryException(ErrorStatus.NOT_MY_COMMENT);
+        }
+    }
+
+    @Override
+    public HistoryResponseDTO.LastYearHistoryResult getLastYearHistory(Long memberId) {
+
+        LocalDate today = LocalDate.now();
+        LocalDate oneYearAgo = today.minusYears(1);
+
+        if(historyRepositoryService.checkHistoryExistOfDate(oneYearAgo,memberId)){
+            Long historyOneYearAgoId = historyRepositoryService.getHistoryOfDate(oneYearAgo,memberId).getId();
+            List<String> historyUrls = historyImageRepositoryService.findByHistory_Id(historyOneYearAgoId).stream()
+                    .map(HistoryImage::getImageUrl)
+                    .toList();
+            return HistoryConverter.toLastYearHistoryResult(historyOneYearAgoId,historyUrls);
+        }
+
+        return null;
+    }
+
+    private void updateHistoryClothes(List<Long> updatedClothes, List<Long> savedClothes, History history) {
+
+        //updateClothes에만 존재하는 것은 추가 대상
+        List<Cloth> clothesToAdd = updatedClothes.stream()
+                .filter(clothId -> !savedClothes.contains(clothId))
+                .map(clothRepositoryService::findById)
+                .toList();
+
+        //반대는 삭제 대상
+        List<Cloth> clothesToDelete = savedClothes.stream()
+                .filter(clothId -> !updatedClothes.contains(clothId))
+                .map(clothRepositoryService::findById)
+                .toList();
+
+        clothesToAdd.forEach(cloth -> historyClothRepositoryService.save(history, cloth));
+        clothesToDelete.forEach(cloth -> historyClothRepositoryService.delete(history, cloth));
+    }
+
+    private void updateHistoryHashtags(List<String> updatedHashtags, List<String> savedHashtags, History history) {
+
+        //존재하지 않는 해시태그는 만들어줍니다.
+        updatedHashtags.forEach(hashtagName -> {
+            if (!hashtagRepositoryService.existByName(hashtagName)) {
+                Hashtag newHashtag = Hashtag.builder()
+                        .name(hashtagName)
+                        .build();
+                hashtagRepositoryService.save(newHashtag);
+            }
+        });
+
+
+        //updateHashtag에만 존재하는 것은 매핑 테이블에
+        List<Hashtag> hashtagToAdd = updatedHashtags.stream()
+                .filter(hashtagNames -> !savedHashtags.contains(hashtagNames))
+                .map(hashtagRepositoryService::findByName)
+                .toList();
+
+        //반대는 삭제 대상
+        List<Hashtag> hashtagToDelete = savedHashtags.stream()
+                .filter(hashtagNames -> !updatedHashtags.contains(hashtagNames))
+                .map(hashtagRepositoryService::findByName)
+                .toList();
+
+        hashtagToAdd.forEach(hashtag -> hashtagHistoryRepositoryService.addHashtagHistory(hashtag, history));
+        hashtagToDelete.forEach(hashtag -> hashtagHistoryRepositoryService.deleteHashtagHistory(hashtag, history));
+    }
+
+
+
 
 }

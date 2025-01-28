@@ -1,7 +1,7 @@
 package com.clokey.server.domain.folder.application;
 
 import com.clokey.server.domain.folder.dto.FolderRequestDTO;
-import com.clokey.server.domain.model.entity.Folder;
+import com.clokey.server.domain.folder.domain.entity.Folder;
 
 import java.util.List;
 
