@@ -100,7 +100,7 @@ public class HistoryRestController {
     ;
 
     //사용자 토큰 받는 부분 추가해야함.
-    @PostMapping("/like/{thisMemberId}")
+    @PostMapping("/like")
     @Operation(summary = "특정 기록에 좋아요를 누를 수 있는 API", description = "history의 ID와 isLiked 정보를 body에 넣어서 넘겨주세요.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "좋아요 상태가 성공적으로 변경되었습니다."),
@@ -108,28 +108,28 @@ public class HistoryRestController {
     @Parameters({
             @Parameter(name = "thisMemberId", description = "현재 유저의 ID 토큰 대체용입니다.")
     })
-    public BaseResponse<HistoryResponseDTO.LikeResult> like(@PathVariable Long thisMemberId,
+    public BaseResponse<HistoryResponseDTO.LikeResult> like(@RequestParam Long myMemberId,
                                                             @RequestBody @Valid HistoryRequestDTO.LikeStatusChange request) {
 
         //isLiked 정보가 정확한지 검증합니다.
-        historyLikedValidator.validateIsLiked(thisMemberId, request.getHistoryId(), request.isLiked());
+        historyLikedValidator.validateIsLiked(myMemberId, request.getHistoryId(), request.isLiked());
 
         //isLiked의 상태에 따라서 좋아요 -> 취소 , 좋아요가 없는 상태 -> 좋아요 로 바꿔주게 됩니다.
-        HistoryResponseDTO.LikeResult result = historyService.changeLike(thisMemberId, request.getHistoryId(), request.isLiked());
+        HistoryResponseDTO.LikeResult result = historyService.changeLike(myMemberId, request.getHistoryId(), request.isLiked());
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_LIKE_STATUS_CHANGED, result);
     }
 
-    @PostMapping("/histories/{historyId}/comments/{thisMemberId}")
+    @PostMapping("/{historyId}/comments")
     @Operation(summary = "댓글을 남길 수 있는 API", description = "History_id를 path parameter로 넘겨주세요. Body에는 내용과 대댓글 대상 댓글 Id(Optional)을 받습니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_201", description = "성공적으로 댓글이 생성되었습니다."),
     })
     public BaseResponse<HistoryResponseDTO.CommentWriteResult> writeComments(@PathVariable @Valid @HistoryExist Long historyId,
-                                                                             @PathVariable @Valid @MemberExist Long thisMemberId,
+                                                                             @RequestParam @Valid @MemberExist Long myMemberId,
                                                                              @RequestBody @Valid HistoryRequestDTO.CommentWrite request) {
         commentValidator.validateParentCommentHistory(historyId, request.getCommentId());
-        return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_CREATED, historyService.writeComment(historyId, request.getCommentId(), thisMemberId, request.getContent()));
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_CREATED, historyService.writeComment(historyId, request.getCommentId(), myMemberId, request.getContent()));
 
     }
 
@@ -159,11 +159,11 @@ public class HistoryRestController {
     public BaseResponse<Void> updateHistory(
             @RequestPart("historyUpdateRequest") @Valid HistoryRequestDTO.HistoryUpdate historyUpdate,
             @RequestPart(value = "imageFile", required = false) @Valid @HistoryImageQuantityLimit List<MultipartFile> imageFiles,
-            @RequestParam Long memberId,
+            @RequestParam Long myMemberId,
             @PathVariable Long historyId
     ) {
 
-        historyService.updateHistory(historyUpdate, memberId, historyId, imageFiles);
+        historyService.updateHistory(historyUpdate, myMemberId, historyId, imageFiles);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_UPDATED,null);
     }
@@ -173,11 +173,11 @@ public class HistoryRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_202", description = "성공적으로 조회되었습니다."),
     })
-    public BaseResponse<HistoryResponseDTO.LastYearHistoryResult> viewLastYearHistory(
-            @RequestParam Long memberId
+    public BaseResponse<HistoryResponseDTO.LastYearHistoryResult> getLastYearHistory(
+            @RequestParam Long myMemberId
     ) {
 
-        HistoryResponseDTO.LastYearHistoryResult result = historyService.getLastYearHistory(memberId);
+        HistoryResponseDTO.LastYearHistoryResult result = historyService.getLastYearHistory(myMemberId);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS,result);
     }
@@ -206,11 +206,11 @@ public class HistoryRestController {
     })
     public BaseResponse<Void> updateComment(
             @RequestBody @Valid HistoryRequestDTO.UpdateComment updateCommentRequest,
-            @RequestParam Long memberId,
+            @RequestParam Long myMemberId,
             @PathVariable Long commentId
     ) {
 
-        historyService.updateComment(updateCommentRequest,commentId,memberId);
+        historyService.updateComment(updateCommentRequest,commentId,myMemberId);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_UPDATED,null);
     }
