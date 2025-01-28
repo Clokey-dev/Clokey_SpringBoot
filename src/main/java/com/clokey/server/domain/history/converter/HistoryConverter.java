@@ -21,6 +21,7 @@ public class HistoryConverter {
         return HistoryResponseDTO.DailyHistoryView.builder()
                 .userId(history.getMember().getId())
                 .contents(history.getContent())
+                .memberImageUrl(history.getMember().getProfileImageUrl())
                 .imageUrl(imageUrl)
                 .hashtags(hashtags)
                 .visibility(history.getVisibility().equals(Visibility.PUBLIC))

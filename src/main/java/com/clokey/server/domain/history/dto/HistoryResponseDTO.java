@@ -17,6 +17,9 @@ public class HistoryResponseDTO {
     @AllArgsConstructor
     public static class DailyHistoryView {
         Long userId;
+        String memberImageUrl;
+        String nickName;
+        String clokeyId;
         String contents;
         List<String> imageUrl;
         List<String> hashtags;
@@ -24,8 +27,6 @@ public class HistoryResponseDTO {
         int likeCount;
         boolean isLiked;
         LocalDate date;
-        String nickName;
-        String clokeyId;
         List<HistoryCloth> cloths;
     }
 
