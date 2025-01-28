@@ -11,6 +11,7 @@ import com.clokey.server.domain.history.exception.validator.CommentValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
 import com.clokey.server.domain.member.exception.annotation.MemberExist;
+import com.clokey.server.domain.member.exception.annotation.NullableMemberExist;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,7 +39,7 @@ public class HistoryRestController {
     private final CommentValidator commentValidator;
 
     //임시로 엔드 포인트 맨 뒤에 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
-    @GetMapping("/daily/{historyId}/{memberId}")
+    @GetMapping("/daily/{historyId}")
     @Operation(summary = "특정 일의 기록을 확인할 수 있는 API", description = "path variable로 history_id를 넘겨주세요.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "OK, 성공적으로 조회되었습니다."),
@@ -46,11 +47,12 @@ public class HistoryRestController {
     @Parameters({
             @Parameter(name = "historyId", description = "기록의 id, path variable 입니다.")
     })
-    public BaseResponse<HistoryResponseDTO.DayViewResult> getDaily(@PathVariable @Valid @HistoryExist Long historyId, @PathVariable Long memberId) {
+    public BaseResponse<HistoryResponseDTO.DayViewResult> getDailyHistory(@PathVariable @Valid @HistoryExist Long historyId,
+                                                                          @RequestParam Long myMemberId) {
 
-        historyAccessibleValidator.validateHistoryAccessOfMember(historyId, memberId);
+        historyAccessibleValidator.validateHistoryAccessOfMember(historyId, myMemberId);
 
-        HistoryResponseDTO.DayViewResult result = historyService.getDaily(historyId, memberId);
+        HistoryResponseDTO.DayViewResult result = historyService.getDaily(historyId, myMemberId);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, result);
     }
@@ -67,11 +69,11 @@ public class HistoryRestController {
             @Parameter(name = "month", description = "조회하고자 하는 월입니다. YYYY-MM 형식으로 입력해주세요.")
     })
 
-    public BaseResponse<HistoryResponseDTO.MonthViewResult> getMonthlyHistories(@RequestParam(value = "thisMemberId") Long thisMemberId,
-                                                                                @RequestParam(value = "memberId", required = false) @Valid @MemberExist Long memberId,
+    public BaseResponse<HistoryResponseDTO.MonthViewResult> getMonthlyHistories(@RequestParam(value = "myMemberId") Long myMemberId,
+                                                                                @RequestParam(value = "memberId", required = false) @Valid @NullableMemberExist Long memberId,
                                                                                 @RequestParam(value = "month") @Valid @MonthFormat String month) {
 
-        HistoryResponseDTO.MonthViewResult result = historyService.getMonthlyHistories(thisMemberId, memberId, month);
+        HistoryResponseDTO.MonthViewResult result = historyService.getMonthlyHistories(myMemberId, memberId, month);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, result);
 
