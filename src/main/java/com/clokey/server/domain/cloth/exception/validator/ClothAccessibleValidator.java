@@ -1,26 +1,25 @@
 package com.clokey.server.domain.cloth.exception.validator;
 
-import com.clokey.server.domain.cloth.application.ClothService;
+import com.clokey.server.domain.cloth.application.ClothRepositoryService;
 import com.clokey.server.domain.cloth.exception.ClothException;
-import com.clokey.server.domain.model.entity.Cloth;
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.model.entity.enums.Visibility;
-import com.clokey.server.domain.model.repository.ClothRepository;
-import com.clokey.server.domain.model.repository.MemberRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import com.clokey.server.global.error.exception.DatabaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class ClothAccessibleValidator {
 
-    private final MemberRepository memberRepository;
-    private final ClothRepository clothRepository;
+    private final MemberRepositoryService memberRepositoryService;
+    private final ClothRepositoryService clothRepositoryService;
 
     public void validateClothAccessOfMember(Long clothId, Long memberId) {
-        Cloth cloth = clothRepository.findById(clothId)
-                .orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_CLOTH));
+        Cloth cloth = clothRepositoryService.findById(clothId);
 
         //접근 권한 확인 - 나의 옷이 아니고 비공개일 경우 접근 불가.
         boolean isPublic = cloth.getVisibility().equals(Visibility.PUBLIC);
@@ -31,23 +30,30 @@ public class ClothAccessibleValidator {
         }
     }
 
-    public void validateClothEditOfMember(Long clothId, Long memberId) {
-        Cloth cloth = clothRepository.findById(clothId)
-                .orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_CLOTH));
+    public void validateClothOfMember(Long clothId, Long memberId) {
+        Cloth cloth = clothRepositoryService.findById(clothId);
 
-        //수정 권한 확인 - 나의 옷이 아닌 경우에 수정 불가.
+        //내 옷이 아닌지 확인
         boolean isNotMyCloth = !cloth.getMemberId().equals(memberId);
 
         if (isNotMyCloth) {
-            throw new ClothException(ErrorStatus.NO_PERMISSION_TO_EDIT_CLOTH);
+            throw new ClothException(ErrorStatus.NOT_MY_CLOTH);
         }
+    }
+
+    //다른 입력 인자로 오버로딩
+    public void validateClothOfMember(List<Long> clothIds, Long memberId) {
+
+        clothIds.forEach(clothId -> {
+            validateClothOfMember(clothId,memberId);
+        });
     }
 
     public void validateMemberAccessOfMember(Long memberToBeQueried, Long memberRequestingQuery) {
 
         //접근 권한 확인 - 내 자신을 확인하는 것도 아니고 비공개인 경우.
         boolean selfQuery = memberToBeQueried.equals(memberRequestingQuery);
-        boolean isPrivate = memberRepository.getReferenceById(memberToBeQueried)
+        boolean isPrivate = memberRepositoryService.getReferencedById(memberToBeQueried)
                 .getVisibility()
                 .equals(Visibility.PRIVATE);
 

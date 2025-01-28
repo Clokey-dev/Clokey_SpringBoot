@@ -1,6 +1,6 @@
 package com.clokey.server.domain.member.application;
 
-import com.clokey.server.domain.model.entity.Member;
+import com.clokey.server.domain.member.domain.entity.Member;
 
 
 import java.util.Optional;
@@ -16,4 +16,6 @@ public interface MemberRepositoryService {
 
     boolean idExist(String clokeyId);
     Member findMemberByClokeyId(String clokeyId);
+
+    Member getReferencedById(Long memberId);
 }

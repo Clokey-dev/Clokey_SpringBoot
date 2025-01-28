@@ -2,9 +2,9 @@ package com.clokey.server.domain.cloth.converter;
 
 import com.clokey.server.domain.cloth.dto.ClothRequestDTO;
 import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
-import com.clokey.server.domain.model.entity.Category;
-import com.clokey.server.domain.model.entity.Cloth;
-import com.clokey.server.domain.model.entity.Member;
+import com.clokey.server.domain.category.domain.entity.Category;
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.member.domain.entity.Member;
 
 import java.time.format.TextStyle;
 import java.util.Date;
@@ -12,8 +12,8 @@ import java.util.Locale;
 
 public class ClothConverter {
 
-    public static ClothResponseDTO.ClothCreateOrUpdateResult toClothCreateOrUpdateResult(Cloth cloth) {
-        return ClothResponseDTO.ClothCreateOrUpdateResult.builder()
+    public static ClothResponseDTO.ClothCreateResult toClothCreateResult(Cloth cloth) {
+        return ClothResponseDTO.ClothCreateResult.builder()
                 .id(cloth.getId())
                 .build();
     }

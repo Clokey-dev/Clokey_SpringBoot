@@ -15,7 +15,7 @@ public class ClothResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ClothCreateOrUpdateResult {
+    public static class ClothCreateResult {
         private Long id;
     }
 

@@ -1,11 +1,11 @@
 package com.clokey.server.domain.term.application;
 
 import com.clokey.server.domain.member.application.MemberRepositoryService;
-import com.clokey.server.domain.model.entity.Member;
-import com.clokey.server.domain.model.entity.Term;
-import com.clokey.server.domain.model.entity.mapping.MemberTerm;
-import com.clokey.server.domain.model.repository.MemberTermRepository;
-import com.clokey.server.domain.model.repository.TermRepository;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.term.domain.entity.Term;
+import com.clokey.server.domain.term.domain.entity.MemberTerm;
+import com.clokey.server.domain.term.domain.repository.MemberTermRepository;
+import com.clokey.server.domain.term.domain.repository.TermRepository;
 import com.clokey.server.domain.term.dto.TermRequestDTO;
 import com.clokey.server.domain.term.dto.TermResponseDTO;
 import com.clokey.server.domain.term.exception.TermException;

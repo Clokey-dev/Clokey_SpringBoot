@@ -100,7 +100,7 @@ public class ClothRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CLOTH_201", description = "CREATED, 성공적으로 생성되었습니다."),
     })
-    public BaseResponse<ClothResponseDTO.ClothCreateOrUpdateResult> postCloth(
+    public BaseResponse<ClothResponseDTO.ClothCreateResult> postCloth(
             @RequestPart("clothCreateRequest") @Valid ClothRequestDTO.ClothCreateOrUpdateRequest clothCreateRequest,
             @RequestPart("imageFile") MultipartFile imageFile,
             @RequestParam @MemberExist Long memberId
@@ -108,7 +108,7 @@ public class ClothRestController {
         // 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 생성하는 현 유저를 나타냄
 
         // ClothService를 통해 데이터를 생성하고, 결과 반환
-        ClothResponseDTO.ClothCreateOrUpdateResult result =clothService.createCloth(memberId, clothCreateRequest, imageFile);
+        ClothResponseDTO.ClothCreateResult result =clothService.createCloth(memberId, clothCreateRequest, imageFile);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_CREATED, result);
     }
@@ -117,31 +117,31 @@ public class ClothRestController {
     @PatchMapping(value = "/{clothId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "특정 옷을 수정하는 API", description = "request body에 ClothCreateOrUpdateRequestDTO 형식의 데이터를 전달해주세요.")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CLOTH_200", description = "OK, 성공적으로 수정되었습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CLOTH_204", description = "OK, 성공적으로 수정되었습니다."),
     })
     @Parameters({
             @Parameter(name = "clothId", description = "옷의 id, path variable 입니다.")
     })
-    public BaseResponse<ClothResponseDTO.ClothCreateOrUpdateResult> patchCloth(
+    public BaseResponse<ClothResponseDTO.ClothCreateResult> patchCloth(
             @RequestPart("clothUpdateRequest") @Valid ClothRequestDTO.ClothCreateOrUpdateRequest clothUpdateRequest,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
             @PathVariable @Valid @ClothExist Long clothId,
             @RequestParam @MemberExist Long memberId
     ) {
         // 멤버가 옷에 대해서 수정 권한이 있는지 확인합니다. -> 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 삭제하는 현 유저를 나타냄
-        clothAccessibleValidator.validateClothEditOfMember(clothId, memberId);
+        clothAccessibleValidator.validateClothOfMember(clothId, memberId);
 
-        // ClothService를 통해 데이터를 수정하고, 결과 반환
-        ClothResponseDTO.ClothCreateOrUpdateResult result =clothService.updateClothById(clothId, memberId, clothUpdateRequest, imageFile);
+        // ClothService를 통해 데이터를 수정
+        clothService.updateClothById(clothId, memberId, clothUpdateRequest, imageFile);
 
-        return BaseResponse.onSuccess(SuccessStatus.CLOTH_EDITED, result);
+        return BaseResponse.onSuccess(SuccessStatus.CLOTH_EDITED, null);
     }
 
     // 옷 삭제 API, 사용자 토큰 받는 부분 추가 및 변경해야함
     @DeleteMapping("/{clothId}")
     @Operation(summary = "특정 옷을 삭제하는 API", description = "path variable로 cloth_id를 넘겨주세요.")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CLOTH_200", description = "OK, 성공적으로 삭제되었습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CLOTH_204", description = "OK, 성공적으로 삭제되었습니다."),
     })
     @Parameters({
             @Parameter(name = "clothId", description = "옷의 id, path variable 입니다.")
@@ -151,7 +151,7 @@ public class ClothRestController {
             @RequestParam @MemberExist Long memberId
             ) {
         // 멤버가 옷에 대해서 수정 권한이 있는지 확인합니다. -> 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 삭제하는 현 유저를 나타냄
-        clothAccessibleValidator.validateClothEditOfMember(clothId, memberId);
+        clothAccessibleValidator.validateClothOfMember(clothId, memberId);
 
         // ClothService를 통해 데이터를 삭제
         clothService.deleteClothById(clothId);
