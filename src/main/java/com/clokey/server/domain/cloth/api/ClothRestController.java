@@ -1,9 +1,13 @@
 package com.clokey.server.domain.cloth.api;
 
+import com.clokey.server.domain.category.exception.annotation.CategoryExist;
 import com.clokey.server.domain.cloth.application.ClothService;
 import com.clokey.server.domain.cloth.dto.ClothRequestDTO;
 import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
+import com.clokey.server.domain.cloth.exception.annotation.ClothCreateOrUpdateFormat;
 import com.clokey.server.domain.cloth.exception.annotation.ClothExist;
+import com.clokey.server.domain.cloth.exception.annotation.ClothImageFormat;
+import com.clokey.server.domain.cloth.exception.annotation.ClothImagePresence;
 import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
 import com.clokey.server.domain.member.exception.annotation.MemberExist;
 import com.clokey.server.global.common.response.BaseResponse;
@@ -38,7 +42,7 @@ public class ClothRestController {
             @Parameter(name = "clothId", description = "옷의 id, path variable 입니다.")
     })
     public BaseResponse<ClothResponseDTO.ClothPopupViewResult> getClothPopupInfo(
-            @PathVariable @Valid @ClothExist Long clothId,
+            @PathVariable @ClothExist Long clothId,
             @RequestParam @MemberExist Long memberId
     ) {
         // 멤버가 옷에 대해서 접근 권한이 있는지 확인합니다. -> 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 조회하는 현 유저를 나타냄
@@ -60,7 +64,7 @@ public class ClothRestController {
             @Parameter(name = "clothId", description = "옷의 id, path variable 입니다.")
     })
     public BaseResponse<ClothResponseDTO.ClothEditViewResult> getClothEditInfo(
-            @PathVariable @Valid @ClothExist Long clothId,
+            @PathVariable @ClothExist Long clothId,
             @RequestParam @MemberExist Long memberId
     ) {
         // 멤버가 옷에 대해서 접근 권한이 있는지 확인합니다. -> 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 조회하는 현 유저를 나타냄
@@ -82,7 +86,7 @@ public class ClothRestController {
             @Parameter(name = "clothId", description = "옷의 id, path variable 입니다.")
     })
     public BaseResponse<ClothResponseDTO.ClothDetailViewResult> getClothDetatilInfo(
-            @PathVariable @Valid @ClothExist Long clothId,
+            @PathVariable @ClothExist Long clothId,
             @RequestParam @MemberExist Long memberId
     ) {
         // 멤버가 옷에 대해서 접근 권한이 있는지 확인합니다. -> 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 조회하는 현 유저를 나타냄
@@ -100,15 +104,19 @@ public class ClothRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CLOTH_201", description = "CREATED, 성공적으로 생성되었습니다."),
     })
+    @Parameters({
+            @Parameter(name = "categoryId", description = "카테고리의 id, query string 입니다.")
+    })
     public BaseResponse<ClothResponseDTO.ClothCreateResult> postCloth(
-            @RequestPart("clothCreateRequest") @Valid ClothRequestDTO.ClothCreateOrUpdateRequest clothCreateRequest,
-            @RequestPart("imageFile") MultipartFile imageFile,
+            @RequestPart("clothCreateRequest") @ClothCreateOrUpdateFormat ClothRequestDTO.ClothCreateOrUpdateRequest clothCreateRequest,
+            @RequestPart("imageFile") @ClothImagePresence @ClothImageFormat MultipartFile imageFile,
+            @RequestParam @CategoryExist Long categoryId,
             @RequestParam @MemberExist Long memberId
     ) {
         // 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 생성하는 현 유저를 나타냄
 
         // ClothService를 통해 데이터를 생성하고, 결과 반환
-        ClothResponseDTO.ClothCreateResult result =clothService.createCloth(memberId, clothCreateRequest, imageFile);
+        ClothResponseDTO.ClothCreateResult result =clothService.createCloth(categoryId, memberId, clothCreateRequest, imageFile);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_CREATED, result);
     }
@@ -120,19 +128,21 @@ public class ClothRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CLOTH_204", description = "OK, 성공적으로 수정되었습니다."),
     })
     @Parameters({
-            @Parameter(name = "clothId", description = "옷의 id, path variable 입니다.")
+            @Parameter(name = "clothId", description = "옷의 id, path variable 입니다."),
+            @Parameter(name = "categoryId", description = "카테고리의 id, query string 입니다.")
     })
     public BaseResponse<ClothResponseDTO.ClothCreateResult> patchCloth(
-            @RequestPart("clothUpdateRequest") @Valid ClothRequestDTO.ClothCreateOrUpdateRequest clothUpdateRequest,
-            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
-            @PathVariable @Valid @ClothExist Long clothId,
+            @RequestPart("clothUpdateRequest") @ClothCreateOrUpdateFormat ClothRequestDTO.ClothCreateOrUpdateRequest clothUpdateRequest,
+            @RequestPart(value = "imageFile", required = false) @ClothImageFormat MultipartFile imageFile,
+            @PathVariable @ClothExist Long clothId,
+            @RequestParam @CategoryExist Long categoryId,
             @RequestParam @MemberExist Long memberId
     ) {
         // 멤버가 옷에 대해서 수정 권한이 있는지 확인합니다. -> 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 삭제하는 현 유저를 나타냄
         clothAccessibleValidator.validateClothOfMember(clothId, memberId);
 
         // ClothService를 통해 데이터를 수정
-        clothService.updateClothById(clothId, memberId, clothUpdateRequest, imageFile);
+        clothService.updateClothById(clothId, categoryId, memberId, clothUpdateRequest, imageFile);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_EDITED, null);
     }
@@ -147,7 +157,7 @@ public class ClothRestController {
             @Parameter(name = "clothId", description = "옷의 id, path variable 입니다.")
     })
     public BaseResponse<Void> deleteCloth(
-            @PathVariable @Valid @ClothExist Long clothId,
+            @PathVariable @ClothExist Long clothId,
             @RequestParam @MemberExist Long memberId
             ) {
         // 멤버가 옷에 대해서 수정 권한이 있는지 확인합니다. -> 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 삭제하는 현 유저를 나타냄
