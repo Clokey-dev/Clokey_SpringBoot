@@ -1,6 +1,6 @@
-package com.clokey.server.domain.history.exception.annotation;
+package com.clokey.server.global.error.exception.annotation;
 
-import com.clokey.server.domain.history.exception.validator.CheckPageValidator;
+import com.clokey.server.global.error.exception.validator.CheckPageValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
