@@ -100,8 +100,9 @@ public class HistoryServiceImpl implements HistoryService {
                 .toList();
         int likeCount = memberLikeRepositoryService.countByHistory_Id(historyId);
         boolean isLiked = memberLikeRepositoryService.existsByMember_IdAndHistory_Id(memberId, historyId);
+        List<Cloth> cloths = historyClothRepositoryService.findAllClothByHistoryId(historyId);
 
-        return HistoryConverter.toDayViewResult(history, imageUrl, hashtags, likeCount, isLiked);
+        return HistoryConverter.toDayViewResult(history, imageUrl, hashtags, likeCount, isLiked,cloths);
     }
 
     @Override
