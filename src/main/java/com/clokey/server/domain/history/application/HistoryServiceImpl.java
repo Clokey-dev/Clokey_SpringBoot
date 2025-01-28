@@ -255,7 +255,11 @@ public class HistoryServiceImpl implements HistoryService {
         //좋아요 기록 삭제
         memberLikeRepositoryService.deleteAllByHistoryId(historyId);
 
+        //기록 사진 삭제
         historyImageRepositoryService.deleteAllByHistoryId(historyId);
+
+        //기록 삭제
+        historyRepositoryService.deleteById(historyId);
     }
 
     private void validateMyComment(Long commentId, Long memberId) {
