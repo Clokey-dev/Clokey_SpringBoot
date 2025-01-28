@@ -9,5 +9,5 @@ public interface ClothImageRepository extends JpaRepository<ClothImage, Long> {
 
     @Transactional
     @Modifying
-    int deleteAllByClothId(Long clothId);
+    int deleteByClothId(Long clothId);
 }

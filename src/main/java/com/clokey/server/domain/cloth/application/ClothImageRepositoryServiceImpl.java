@@ -13,14 +13,13 @@ public class ClothImageRepositoryServiceImpl implements ClothImageRepositoryServ
 
     private final ClothImageRepository clothImageRepository;
 
-
     @Override
     public void save(ClothImage clothImage) {
         clothImageRepository.save(clothImage);
     }
 
     @Override
-    public void deleteAllByClothId(Long clothId) {
-        clothImageRepository.deleteAllByClothId(clothId);
+    public void deleteByClothId(Long clothId) {
+        clothImageRepository.deleteByClothId(clothId);
     }
 }

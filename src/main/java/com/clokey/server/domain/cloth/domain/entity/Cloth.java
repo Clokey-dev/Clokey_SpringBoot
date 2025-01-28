@@ -7,6 +7,8 @@ import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.Season;
 import com.clokey.server.domain.model.entity.enums.ThicknessLevel;
 
+import com.clokey.server.domain.cloth.dto.ClothRequestDTO;
+
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -38,7 +40,7 @@ public class Cloth extends BaseEntity {
 
     @ElementCollection(fetch = FetchType.LAZY) // 다중 값을 위한 설정
     @CollectionTable(
-            name = "cloth_seasons", // 매핑될 계절 테이블 이름
+            name = "cloth_season", // 매핑될 계절 테이블 이름
             joinColumns = @JoinColumn(name = "cloth_id") // 부모 테이블과의 조인 컬럼
     )
     @Enumerated(EnumType.STRING)
@@ -70,15 +72,15 @@ public class Cloth extends BaseEntity {
     private String brand;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @OneToMany(mappedBy = "cloth", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ClothImage> images = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
+    @OneToOne(mappedBy = "cloth", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ClothImage image;
 
     public Long getMemberId() {
         return this.member != null ? this.member.getId() : null;
@@ -93,5 +95,48 @@ public class Cloth extends BaseEntity {
             throw new ClothException(ErrorStatus.CLOTH_WEAR_NUM_BELOW_ZERO);
         }
         this.wearNum--;
+    }
+
+    /**
+     * Cloth 엔티티 업데이트 메서드
+     */
+    public void updateCloth(String name,
+                            List<Season> seasons,
+                            int tempUpperBound,
+                            int tempLowerBound,
+                            ThicknessLevel thicknessLevel,
+                            Visibility visibility,
+                            String clothUrl,
+                            String brand,
+                            Long categoryId,
+                            String imageUrl) {
+        if (name != null) this.name = name;
+        if (seasons != null) {
+            this.seasons.clear(); // 기존 계절 리스트 초기화
+            this.seasons.addAll(seasons); // 새 값으로 업데이트
+        }
+        if (tempUpperBound != 0) this.tempUpperBound = tempUpperBound;
+        if (tempLowerBound != 0) this.tempLowerBound = tempLowerBound;
+        if (thicknessLevel != null) this.thicknessLevel = thicknessLevel;
+        if (visibility != null) this.visibility = visibility;
+        if (clothUrl != null) this.clothUrl = clothUrl;
+        if (brand != null) this.brand = brand;
+        if (categoryId != null) {
+            this.category = Category.builder().id(categoryId).build();
+        }
+
+        // 이미지 업데이트
+        if (imageUrl != null) {
+            if (this.image == null) {
+                // 새로운 이미지 생성
+                this.image = ClothImage.builder()
+                        .imageUrl(imageUrl)
+                        .cloth(this)
+                        .build();
+            } else {
+                // 기존 이미지 URL 업데이트
+                this.image.updateClothImageUrl(imageUrl);
+            }
+        }
     }
 }

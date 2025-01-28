@@ -6,5 +6,5 @@ public interface ClothImageRepositoryService {
 
     void save(ClothImage clothImage);
 
-    void deleteAllByClothId(Long clothId);
+    void deleteByClothId(Long clothId);
 }
