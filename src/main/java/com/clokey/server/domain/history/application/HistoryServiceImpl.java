@@ -236,6 +236,32 @@ public class HistoryServiceImpl implements HistoryService {
         commentToUpdate.updateContent(updateCommentRequest.getContent());
     }
 
+    @Override
+    @Transactional
+    public void deleteHistory(Long historyId, Long memberId) {
+        historyAccessibleValidator.validateMyHistory(historyId,memberId);
+
+        //댓글 지우기
+        commentRepositoryService.deleteAllComments(historyId);
+
+        //기록_옷 지우기
+        List<Cloth> cloths =historyClothRepositoryService.findAllClothByHistoryId(historyId);
+        cloths.forEach(Cloth::decreaseWearNum);
+        historyClothRepositoryService.deleteAllByHistoryId(historyId);
+
+        //기록-해시태그 지우기
+        hashtagHistoryRepositoryService.deleteAllByHistoryId(historyId);
+
+        //좋아요 기록 삭제
+        memberLikeRepositoryService.deleteAllByHistoryId(historyId);
+
+        //기록 사진 삭제
+        historyImageRepositoryService.deleteAllByHistoryId(historyId);
+
+        //기록 삭제
+        historyRepositoryService.deleteById(historyId);
+    }
+
     private void validateMyComment(Long commentId, Long memberId) {
         Comment comment = commentRepositoryService.findById(commentId);
         if(!comment.getMember().getId().equals(memberId)){

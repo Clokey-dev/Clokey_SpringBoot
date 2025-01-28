@@ -21,4 +21,9 @@ public interface HashtagHistoryRepository extends JpaRepository<HashtagHistory, 
     @Modifying
     @Query("DELETE FROM HashtagHistory hh WHERE hh.hashtag = :hashtag AND hh.history = :history")
     void deleteByHashtagAndHistory(@Param("hashtag") Hashtag hashtag, @Param("history") History history);
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM HashtagHistory hh WHERE hh.history.id = :historyId")
+    void deleteAllByHistoryId(@Param("historyId") Long historyId);
 }

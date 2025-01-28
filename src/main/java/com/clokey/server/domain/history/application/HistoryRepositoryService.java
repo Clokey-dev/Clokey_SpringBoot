@@ -22,4 +22,6 @@ public interface HistoryRepositoryService {
     boolean checkHistoryExistOfDate(LocalDate date, Long memberId);
 
     History getHistoryOfDate(LocalDate date, Long memberId);
+
+    void deleteById(Long historyId);
 }

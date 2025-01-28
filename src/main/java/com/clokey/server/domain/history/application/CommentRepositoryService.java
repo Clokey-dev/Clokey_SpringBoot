@@ -21,4 +21,6 @@ public interface CommentRepositoryService {
     void deleteChildren(Long commentId);
 
     void deleteById(Long commentId);
+
+    void deleteAllComments(Long HistoryId);
 }

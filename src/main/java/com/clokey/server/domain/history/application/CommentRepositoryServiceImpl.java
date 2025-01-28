@@ -55,4 +55,10 @@ public class CommentRepositoryServiceImpl implements CommentRepositoryService{
         commentRepository.deleteById(commentId);
     }
 
+    @Override
+    public void deleteAllComments(Long historyId) {
+        commentRepository.deleteRepliesByHistoryId(historyId);
+        commentRepository.deleteParentCommentsByHistoryId(historyId);
+    }
+
 }

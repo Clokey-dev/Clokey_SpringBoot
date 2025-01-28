@@ -27,4 +27,6 @@ public interface HistoryService {
     void deleteComment(Long commentId,Long memberId);
 
     void updateComment(HistoryRequestDTO.UpdateComment updateCommentRequest,Long commentId,Long memberId);
+
+    void deleteHistory(Long historyId, Long memberId);
 }
