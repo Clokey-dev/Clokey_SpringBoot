@@ -108,6 +108,15 @@ public class HistoryResponseDTO {
         Long historyId;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LastYearHistoryResult{
+        Long historyId;
+        List<String> imageUrls;
+    }
+
 }
 
 

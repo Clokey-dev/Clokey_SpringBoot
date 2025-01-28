@@ -21,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 
@@ -185,7 +186,7 @@ public class HistoryServiceImpl implements HistoryService {
                     }
                 });
 
-        return HistoryConverter.historyCreateResult(history);
+        return HistoryConverter.toHistoryCreateResult(history);
     }
 
     @Override
@@ -242,6 +243,23 @@ public class HistoryServiceImpl implements HistoryService {
         }
     }
 
+    @Override
+    public HistoryResponseDTO.LastYearHistoryResult getLastYearHistory(Long memberId) {
+
+        LocalDate today = LocalDate.now();
+        LocalDate oneYearAgo = today.minusYears(1);
+
+        if(historyRepositoryService.checkHistoryExistOfDate(oneYearAgo,memberId)){
+            Long historyOneYearAgoId = historyRepositoryService.getHistoryOfDate(oneYearAgo,memberId).getId();
+            List<String> historyUrls = historyImageRepositoryService.findByHistory_Id(historyOneYearAgoId).stream()
+                    .map(HistoryImage::getImageUrl)
+                    .toList();
+            return HistoryConverter.toLastYearHistoryResult(historyOneYearAgoId,historyUrls);
+        }
+
+        return null;
+    }
+
     private void updateHistoryClothes(List<Long> updatedClothes, List<Long> savedClothes, History history) {
 
         //updateClothes에만 존재하는 것은 추가 대상
@@ -288,6 +306,8 @@ public class HistoryServiceImpl implements HistoryService {
         hashtagToAdd.forEach(hashtag -> hashtagHistoryRepositoryService.addHashtagHistory(hashtag, history));
         hashtagToDelete.forEach(hashtag -> hashtagHistoryRepositoryService.deleteHashtagHistory(hashtag, history));
     }
+
+
 
 
 }

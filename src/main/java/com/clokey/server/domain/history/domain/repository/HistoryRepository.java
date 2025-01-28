@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface HistoryRepository extends JpaRepository<History, Long> {
 
@@ -20,4 +21,6 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
     void decrementLikes(Long historyId);
 
     boolean existsByHistoryDateAndMember_Id(LocalDate historyDate, Long memberId);
+
+    Optional<History> findByHistoryDateAndMember_Id(LocalDate historyDate, Long memberId);
 }

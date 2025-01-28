@@ -169,7 +169,21 @@ public class HistoryRestController {
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_UPDATED,null);
     }
 
-    //임시로 토큰을 request param으로 받는중.
+    @GetMapping(value = "/1-year-ago")
+    @Operation(summary = "1년전 나의 기록을 확인하는 API", description = "따로 요구하는 값은 없습니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_202", description = "성공적으로 조회되었습니다."),
+    })
+    public BaseResponse<HistoryResponseDTO.LastYearHistoryResult> viewLastYearHistory(
+            @RequestParam Long memberId
+    ) {
+
+        HistoryResponseDTO.LastYearHistoryResult result = historyService.getLastYearHistory(memberId);
+
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS,result);
+    }
+
+
     @DeleteMapping(value = "/comments/{commentId}")
     @Operation(summary = "댓글을 삭제하는 API", description = "Path Parameter로 Comment Id를 입력해주세요.")
     @ApiResponses({
@@ -201,9 +215,5 @@ public class HistoryRestController {
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_UPDATED,null);
     }
-
-
-
-
 
 }

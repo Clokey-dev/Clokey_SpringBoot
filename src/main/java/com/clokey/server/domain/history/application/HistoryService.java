@@ -22,6 +22,8 @@ public interface HistoryService {
 
     void updateHistory(HistoryRequestDTO.HistoryUpdate historyUpdate, Long memberId, Long historyId, List<MultipartFile> images);
 
+    HistoryResponseDTO.LastYearHistoryResult getLastYearHistory(Long memberId);
+
     void deleteComment(Long commentId,Long memberId);
 
     void updateComment(HistoryRequestDTO.UpdateComment updateCommentRequest,Long commentId,Long memberId);

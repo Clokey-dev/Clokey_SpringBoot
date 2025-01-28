@@ -29,7 +29,7 @@ public class HistoryImageRepositoryServiceImpl implements HistoryImageRepository
 
     @Override
     public List<HistoryImage> findByHistory_Id(Long historyId) {
-        return findByHistory_Id(historyId);
+        return historyImageRepository.findByHistory_Id(historyId);
     }
 
     @Override
