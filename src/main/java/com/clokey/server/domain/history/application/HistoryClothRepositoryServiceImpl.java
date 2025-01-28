@@ -36,4 +36,9 @@ public class HistoryClothRepositoryServiceImpl implements HistoryClothRepository
     public List<Long> findClothIdsByHistoryId(Long historyId){
         return historyClothRepository.findClothIdsByHistoryId(historyId);
     }
+
+    @Override
+    public void deleteAllByClothId(Long clothId){
+        historyClothRepository.deleteAllByClothId(clothId);
+    }
 }

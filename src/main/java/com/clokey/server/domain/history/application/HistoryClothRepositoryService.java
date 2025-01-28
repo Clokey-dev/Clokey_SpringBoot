@@ -12,4 +12,6 @@ public interface HistoryClothRepositoryService {
     void delete(History history, Cloth cloth);
 
     List<Long> findClothIdsByHistoryId(Long historyId);
+
+    void deleteAllByClothId(Long clothId);
 }

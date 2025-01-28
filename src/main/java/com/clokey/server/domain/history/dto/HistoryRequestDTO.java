@@ -82,5 +82,16 @@ public class HistoryRequestDTO {
         String content;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateComment {
+
+        @CommentContentLength
+        @NotBlank
+        String content;
+    }
+
 
 }

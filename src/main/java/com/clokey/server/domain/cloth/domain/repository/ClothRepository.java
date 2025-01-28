@@ -12,7 +12,7 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
 
     boolean existsById(Long id);
 
-    @EntityGraph(attributePaths = {"images"})
+    @EntityGraph(attributePaths = {"image"})
     Optional<Cloth> findById(Long id);
 
     @Transactional

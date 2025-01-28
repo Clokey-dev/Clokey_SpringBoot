@@ -19,7 +19,8 @@ public enum SuccessStatus implements BaseCode {
     //옷 성공
     CLOTH_SUCCESS(HttpStatus.OK, "CLOTH_200", "옷이 성공적으로 조회되었습니다."),
     CLOTH_CREATED(HttpStatus.CREATED, "CLOTH_201", "옷이 성공적으로 생성되었습니다."),
-    CLOTH_DELETED(HttpStatus.OK, "CLOTH_200", "옷이 성공적으로 삭제되었습니다."),
+    CLOTH_EDITED(HttpStatus.NO_CONTENT, "CLOTH_204", "옷이 성공적으로 수정되었습니다."),
+    CLOTH_DELETED(HttpStatus.NO_CONTENT, "CLOTH_204", "옷이 성공적으로 삭제되었습니다."),
 
     //카테고리 성공
     CATEGORY_SUCCESS(HttpStatus.OK, "CATEGORY_200", "성공적으로 조회되었습니다."),
@@ -40,6 +41,8 @@ public enum SuccessStatus implements BaseCode {
     HISTORY_LIKE_STATUS_CHANGED(HttpStatus.OK,"HISTORY_200","좋아요 상태가 성공적으로 변경되었습니다."),
     HISTORY_COMMENT_CREATED(HttpStatus.CREATED,"HISTORY_201","성공적으로 댓글이 생성되었습니다."),
     HISTORY_UPDATED(HttpStatus.NO_CONTENT,"HISTORY_204","성공적으로 수정되었습니다"),
+    HISTORY_COMMENT_DELETED(HttpStatus.NO_CONTENT,"HISTORY_204","댓글이 성공적으로 삭제되었습니다"),
+    HISTORY_COMMENT_UPDATED(HttpStatus.NO_CONTENT,"HISTORY_204","댓글이 성공적으로 수정되었습니다"),
 
     //알림 성공
     NOTIFICATION_SUCCESS(HttpStatus.OK, "NOTIFICATION_200", "성공적으로 조회되었습니다."),
