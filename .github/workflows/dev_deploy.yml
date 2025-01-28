@@ -41,11 +41,12 @@ jobs:
         run: |
           docker build -t yongjun0511/clokey-docker:develop-latest .
 
-      - name: Push Docker Image And Pull
+      - name: Push Docker Image And update
         run: |
           echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
           docker push yongjun0511/clokey-docker:develop-latest 
-          docker pull yongjun0511/clokey-docker:develop-latest 
+          docker rmi yongjun0511/clokey-docker:develop-latest
+          docker pull yongjun0511/clokey-docker:develop-latest
 
       - name: Copy docker-compose file to remote
         uses: appleboy/scp-action@v0.1.3
