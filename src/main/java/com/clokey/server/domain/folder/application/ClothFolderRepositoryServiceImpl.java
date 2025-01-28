@@ -1,13 +1,16 @@
 package com.clokey.server.domain.folder.application;
 
+import com.clokey.server.domain.folder.domain.entity.ClothFolder;
 import com.clokey.server.domain.folder.domain.repository.ClothFolderRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
-@Transactional
+import java.util.List;
+
+
 @Service
 @RequiredArgsConstructor
 public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositoryService{
@@ -22,5 +25,11 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
     @Modifying
     public void deleteAllByClothId(@Param("clothId") Long clothId){
         clothFolderRepository.deleteAllByClothId(clothId);
+    }
+
+    @Override
+    @Transactional
+    public void saveAll(List<ClothFolder> clothFolder) {
+        clothFolderRepository.saveAll(clothFolder);
     }
 }
