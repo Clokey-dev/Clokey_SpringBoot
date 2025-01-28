@@ -1,5 +1,6 @@
 package com.clokey.server.domain.history.converter;
 
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.history.dto.HistoryRequestDTO;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.domain.history.domain.entity.Comment;
@@ -16,8 +17,8 @@ import java.util.stream.IntStream;
 
 public class HistoryConverter {
 
-    public static HistoryResponseDTO.DayViewResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked) {
-        return HistoryResponseDTO.DayViewResult.builder()
+    public static HistoryResponseDTO.DailyHistoryView toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked, List<Cloth> cloths) {
+        return HistoryResponseDTO.DailyHistoryView.builder()
                 .userId(history.getMember().getId())
                 .contents(history.getContent())
                 .imageUrl(imageUrl)
@@ -26,6 +27,18 @@ public class HistoryConverter {
                 .likeCount(likeCount)
                 .isLiked(isLiked)
                 .date(history.getHistoryDate())
+                .nickName(history.getMember().getNickname())
+                .clokeyId(history.getMember().getClokeyId())
+                .cloths(cloths.stream()
+                        .map(HistoryConverter::toHistoryCloth)
+                        .toList())
+                .build();
+    }
+
+    private static HistoryResponseDTO.HistoryCloth toHistoryCloth(Cloth cloth){
+        return HistoryResponseDTO.HistoryCloth.builder()
+                .clothId(cloth.getId())
+                .clothImageUrl(cloth.getClothUrl())
                 .build();
     }
 

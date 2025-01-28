@@ -87,7 +87,7 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public HistoryResponseDTO.DayViewResult getDaily(Long historyId, Long memberId) {
+    public HistoryResponseDTO.DailyHistoryView getDaily(Long historyId, Long memberId) {
         History history = historyRepositoryService.findById(historyId);
         List<HistoryImage> historyImages = historyImageRepositoryService.findByHistoryId(historyId);
         List<String> imageUrl = historyImages.stream()

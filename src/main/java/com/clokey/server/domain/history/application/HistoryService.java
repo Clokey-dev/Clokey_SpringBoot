@@ -12,7 +12,7 @@ public interface HistoryService {
 
     HistoryResponseDTO.CommentWriteResult writeComment(Long historyId, Long parentCommentId, Long memberId, String content);
 
-    HistoryResponseDTO.DayViewResult getDaily(Long historyId, Long memberId);
+    HistoryResponseDTO.DailyHistoryView getDaily(Long historyId, Long memberId);
 
     HistoryResponseDTO.HistoryCommentResult getComments(Long historyId, int page);
 

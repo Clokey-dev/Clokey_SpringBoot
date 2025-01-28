@@ -47,12 +47,12 @@ public class HistoryRestController {
     @Parameters({
             @Parameter(name = "historyId", description = "기록의 id, path variable 입니다.")
     })
-    public BaseResponse<HistoryResponseDTO.DayViewResult> getDailyHistory(@PathVariable @Valid @HistoryExist Long historyId,
-                                                                          @RequestParam Long myMemberId) {
+    public BaseResponse<HistoryResponseDTO.DailyHistoryView> getDailyHistory(@PathVariable @Valid @HistoryExist Long historyId,
+                                                                             @RequestParam Long myMemberId) {
 
         historyAccessibleValidator.validateHistoryAccessOfMember(historyId, myMemberId);
 
-        HistoryResponseDTO.DayViewResult result = historyService.getDaily(historyId, myMemberId);
+        HistoryResponseDTO.DailyHistoryView result = historyService.getDaily(historyId, myMemberId);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, result);
     }
