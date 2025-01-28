@@ -89,7 +89,7 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     public HistoryResponseDTO.DayViewResult getDaily(Long historyId, Long memberId) {
         History history = historyRepositoryService.findById(historyId);
-        List<HistoryImage> historyImages = historyImageRepositoryService.findByHistory_Id(historyId);
+        List<HistoryImage> historyImages = historyImageRepositoryService.findByHistoryId(historyId);
         List<String> imageUrl = historyImages.stream()
                 .map(HistoryImage::getImageUrl)
                 .toList();
@@ -114,25 +114,38 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long this_member_id, Long memberId, String month) {
+    public HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long myMemberId, Long memberId, String month) {
+
+        //요청 대상 memberId가 null인 경우 자신의 기록을 확인합니다.
+        if(memberId == null){
+            List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(myMemberId,month);
+            List<String> firstImageUrlsOfHistory = histories.stream()
+                    .map(history -> historyImageRepositoryService.findByHistoryId(history.getId())
+                            .stream()
+                            .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
+                            .findFirst()
+                            .map(HistoryImage::getImageUrl)
+                            .orElse("")) // 사진이 없다면 빈칸
+                    .toList();
+
+            return HistoryConverter.toAllMonthViewResult(myMemberId, histories, firstImageUrlsOfHistory);
+        }
+
+        //나의 기록이 아닌 경우 대상 멤버에게 접근 권한이 있는지 확인합니다.
+        historyAccessibleValidator.validateMemberAccessOfMember(memberId,myMemberId);
+
         List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(memberId, month);
-        List<String> historyImageUrls = histories.stream()
-                .map(history -> historyImageRepositoryService.findByHistory_Id(history.getId())
+        List<String> firstImageUrlsOfHistory = histories.stream()
+                .map(history -> historyImageRepositoryService.findByHistoryId(history.getId())
                         .stream()
-                        .sorted(Comparator.comparing(HistoryImage::getCreatedAt)) // createdAt 기준으로 정렬
-                        .findFirst() // 첫 번째 이미지 가져오기
-                        .map(HistoryImage::getImageUrl) // 이미지 URL을 추출
+                        .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
+                        .findFirst()
+                        .map(HistoryImage::getImageUrl)
                         .orElse("")) // 없으면 빈 문자열 반환
                 .toList();
 
-        //나의 기록 열람은 공개 범위와 상관없이 모두 열람 가능합니다.
 
-        if (this_member_id.equals(memberId)) {
-            return HistoryConverter.toAllMonthViewResult(memberId, histories, historyImageUrls);
-        }
-
-        //다른 멤버 기록 열람시 PUBLIC 기록만을 모아줍니다.
-        return HistoryConverter.toPublicMonthViewResult(memberId, histories, historyImageUrls);
+        return HistoryConverter.toPublicMonthViewResult(memberId, histories, firstImageUrlsOfHistory);
 
     }
 
@@ -277,7 +290,7 @@ public class HistoryServiceImpl implements HistoryService {
 
         if(historyRepositoryService.checkHistoryExistOfDate(oneYearAgo,memberId)){
             Long historyOneYearAgoId = historyRepositoryService.getHistoryOfDate(oneYearAgo,memberId).getId();
-            List<String> historyUrls = historyImageRepositoryService.findByHistory_Id(historyOneYearAgoId).stream()
+            List<String> historyUrls = historyImageRepositoryService.findByHistoryId(historyOneYearAgoId).stream()
                     .map(HistoryImage::getImageUrl)
                     .toList();
             return HistoryConverter.toLastYearHistoryResult(historyOneYearAgoId,historyUrls);

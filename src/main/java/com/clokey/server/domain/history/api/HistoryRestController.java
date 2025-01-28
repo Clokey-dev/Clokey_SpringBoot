@@ -57,7 +57,7 @@ public class HistoryRestController {
 
     //임시로 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
     //결국 자신의 기록을 보는지 확인하기 위해 MemberId 쿼리 파라미터는 필수적으로 받아야합니다.
-    @GetMapping("/monthly/{this_member_id}/")
+    @GetMapping("/monthly")
     @Operation(summary = "특정 멤버의 특정 월의 기록을 확인할 수 있는 API", description = "query parameter로 member_id와 month를 입력해주세요(YYYY-MM) 형태.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "성공적으로 조회되었습니다."),
@@ -67,14 +67,11 @@ public class HistoryRestController {
             @Parameter(name = "month", description = "조회하고자 하는 월입니다. YYYY-MM 형식으로 입력해주세요.")
     })
 
-    public BaseResponse<HistoryResponseDTO.MonthViewResult> getMonthlyHistories(@PathVariable Long this_member_id,
-                                                                                @RequestParam(value = "memberId") @Valid @MemberExist Long memberId,
+    public BaseResponse<HistoryResponseDTO.MonthViewResult> getMonthlyHistories(@RequestParam(value = "thisMemberId") Long thisMemberId,
+                                                                                @RequestParam(value = "memberId", required = false) @Valid @MemberExist Long memberId,
                                                                                 @RequestParam(value = "month") @Valid @MonthFormat String month) {
 
-        //멤버 자체에 대한 접근 권한 확인.
-        historyAccessibleValidator.validateMemberAccessOfMember(memberId, this_member_id);
-
-        HistoryResponseDTO.MonthViewResult result = historyService.getMonthlyHistories(this_member_id, memberId, month);
+        HistoryResponseDTO.MonthViewResult result = historyService.getMonthlyHistories(thisMemberId, memberId, month);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, result);
 

@@ -23,12 +23,7 @@ public class HistoryImageRepositoryServiceImpl implements HistoryImageRepository
     private final S3ImageService s3ImageService;
 
     @Override
-    public boolean existsByHistory_Id(Long historyId) {
-        return historyImageRepository.existsByHistory_Id(historyId);
-    }
-
-    @Override
-    public List<HistoryImage> findByHistory_Id(Long historyId) {
+    public List<HistoryImage> findByHistoryId(Long historyId) {
         return historyImageRepository.findByHistory_Id(historyId);
     }
 
