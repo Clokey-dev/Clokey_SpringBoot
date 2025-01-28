@@ -19,12 +19,11 @@ public class ClothRequestDTO {
     public static class ClothCreateOrUpdateRequest {
         private String name;
         private List<Season> seasons;
-        private int tempUpperBound;
-        private int tempLowerBound;
+        private Integer tempUpperBound;
+        private Integer tempLowerBound;
         private ThicknessLevel thicknessLevel;
         private Visibility visibility;
         private String clothUrl;
         private String brand;
-        private Long categoryId;
     }
 }
