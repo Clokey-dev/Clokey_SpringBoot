@@ -17,4 +17,6 @@ public interface HashtagHistoryRepositoryService {
     void addHashtagHistory(Hashtag hashtag, History history);
 
     void deleteHashtagHistory(Hashtag hashtag, History history);
+
+    void deleteAllByHistoryId(Long historyId);
 }

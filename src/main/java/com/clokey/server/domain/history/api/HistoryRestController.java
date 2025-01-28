@@ -223,7 +223,7 @@ public class HistoryRestController {
     })
     public BaseResponse<Void> deleteHistory(
             @RequestParam Long memberId,
-            @PathVariable Long historyId
+            @PathVariable @HistoryExist Long historyId
     ) {
 
         historyService.deleteHistory(historyId,memberId);

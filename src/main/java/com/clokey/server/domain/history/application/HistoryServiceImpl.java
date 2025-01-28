@@ -249,6 +249,12 @@ public class HistoryServiceImpl implements HistoryService {
         cloths.forEach(Cloth::decreaseWearNum);
         historyClothRepositoryService.deleteAllByHistoryId(historyId);
 
+        //기록-해시태그 지우기
+        hashtagHistoryRepositoryService.deleteAllByHistoryId(historyId);
+
+        //좋아요 기록 삭제
+        memberLikeRepositoryService.deleteAllByHistoryId(historyId);
+
 
 
     }
