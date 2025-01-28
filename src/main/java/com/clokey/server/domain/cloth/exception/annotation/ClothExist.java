@@ -1,7 +1,6 @@
 package com.clokey.server.domain.cloth.exception.annotation;
 
 import com.clokey.server.domain.cloth.exception.validator.ClothExistValidator;
-import com.clokey.server.domain.history.exception.validator.HistoryExistValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
