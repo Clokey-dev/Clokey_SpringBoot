@@ -228,6 +228,10 @@ public class HistoryServiceImpl implements HistoryService{
 
         if(historyRepositoryService.checkHistoryExistOfDate(oneYearAgo,memberId)){
             Long historyOneYearAgoId = historyRepositoryService.getHistoryOfDate(oneYearAgo,memberId).getId();
+            List<HistoryImage> historyImages = historyImageRepositoryService.findByHistory_Id(historyOneYearAgoId);
+            if(historyImages == null || historyImages.isEmpty()){
+                return HistoryConverter.toLastYearHistoryResult(historyOneYearAgoId,null);
+            }
             List<String> historyUrls = historyImageRepositoryService.findByHistory_Id(historyOneYearAgoId).stream()
                     .map(HistoryImage::getImageUrl)
                     .toList();
