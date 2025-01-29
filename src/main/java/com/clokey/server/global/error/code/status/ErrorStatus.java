@@ -64,6 +64,9 @@ public enum ErrorStatus implements BaseErrorCode {
     //추천 에러
     NO_TEMP_PARAMETER(HttpStatus.BAD_REQUEST,"RECOMMEND_4001","온도값은 필수입니다."),
 
+    //로그인 에러
+    INVALID_TOKEN(HttpStatus.BAD_REQUEST,"LOGIN_4001","유효하지 않은 토큰입니다."),
+
     ;
 
 

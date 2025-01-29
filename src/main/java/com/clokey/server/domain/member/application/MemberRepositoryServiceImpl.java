@@ -63,14 +63,13 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     }
 
     @Override
-    public Member findMemberByEmail(String email) {
+    public Optional<Member> findMemberByEmail(String email) {
         String jpql = "SELECT m FROM Member m WHERE m.email = :email";
         TypedQuery<Member> query = entityManager.createQuery(jpql, Member.class);
         query.setParameter("email", email);
 
-        return query.getResultStream()
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("이메일에 해당하는 사용자가 없습니다."));
+        return query.getResultStream().findFirst(); // Optional<Member> 반환
     }
+
 
 }

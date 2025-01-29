@@ -17,5 +17,5 @@ public interface MemberRepositoryService {
     boolean idExist(String clokeyId);
     Member findMemberByClokeyId(String clokeyId);
 
-    Member findMemberByEmail(String email);
+    Optional <Member> findMemberByEmail(String email);
 }

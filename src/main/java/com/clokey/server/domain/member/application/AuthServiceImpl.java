@@ -1,16 +1,22 @@
 package com.clokey.server.domain.member.application;
 
 import com.clokey.server.domain.member.dto.AuthDTO;
+import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.domain.model.entity.Member;
 import com.clokey.server.domain.model.repository.MemberRepository;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
+import javax.security.auth.login.LoginException;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -18,22 +24,36 @@ public class AuthServiceImpl implements AuthService {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    @Value("${jwt.expiration}")
-    private long expirationTime;
+    @Value("${jwt.access-expiration}")  // accessToken 만료 시간
+    private long accessExpirationTime;
+
+    @Value("${jwt.refresh-expiration}") // refreshToken 만료 시간
+    private long refreshExpirationTime;
 
     @Autowired
     private MemberRepositoryService memberRepositoryService;
 
     @Override
-    public String generateJwtToken(Long userId, String email) {
+    public String generateAccessToken(Long userId, String email) {
         return Jwts.builder()
                 .setSubject(String.valueOf(userId))
                 .claim("email", email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .setExpiration(new Date(System.currentTimeMillis() + accessExpirationTime))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
+
+    @Override
+    public String generateRefreshToken(Long userId) {
+        return Jwts.builder()
+                .setSubject(String.valueOf(userId))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + refreshExpirationTime))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
 
     @Override
     public boolean validateJwtToken(String token) {
@@ -55,14 +75,18 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthDTO.KakaoUserResponse getKakaoUserInfo(String accessToken) {
-        // 카카오 사용자 정보 조회
-        AuthDTO.KakaoUserResponse kakaoUser = getUserInfoFromKakao(accessToken);
+    public AuthDTO.TokenResponse authenticateKakaoUser(String kakaoAccessToken){
+        //카카오에서 사용자 정보 가져오기
+        AuthDTO.KakaoUserResponse kakaoUser = getUserInfoFromKakao(kakaoAccessToken);
 
-        // 카카오 사용자 정보가 DB에 없으면 신규로 회원가입
-        Member member = memberRepositoryService.findMemberByEmail(kakaoUser.getKakaoAccount().getEmail());
-        if (member == null) {
-            // 신규 회원 정보 DB에 저장 (Builder 패턴 사용)
+        // DB에서 해당 이메일을 가진 사용자 찾기
+        Optional<Member> optionalMember = memberRepositoryService.findMemberByEmail(kakaoUser.getKakaoAccount().getEmail());
+
+        Member member;
+        if (optionalMember.isPresent()) {
+            member = optionalMember.get();  // Optional에서 Member 추출
+        } else {
+            // DB에 사용자 정보가 없으면 회원가입
             member = Member.builder()
                     .nickname(kakaoUser.getKakaoAccount().getProfile().getNickname())
                     .email(kakaoUser.getKakaoAccount().getEmail())
@@ -70,33 +94,78 @@ public class AuthServiceImpl implements AuthService {
             memberRepositoryService.saveMember(member);
         }
 
-        return kakaoUser;
+        //어세스토큰, 리프레시토큰 생성
+        String accessToken = generateAccessToken(member.getId(), member.getEmail());
+        String refreshToken = generateRefreshToken(member.getId());
+
+        //리프레쉬 토큰을 DB에 저장
+        member.setRefreshToken(refreshToken);
+        memberRepositoryService.saveMember(member);
+
+        //토큰 반환
+        return new AuthDTO.TokenResponse(accessToken, refreshToken);
     }
 
+
+
     // 카카오 사용자 정보 조회 메서드
-    private AuthDTO.KakaoUserResponse getUserInfoFromKakao(String accessToken) {
+    public AuthDTO.KakaoUserResponse getUserInfoFromKakao(String accessToken) {
         RestTemplate restTemplate = new RestTemplate();
 
-        // 헤더에 Access Token 추가
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        // 카카오 API 호출
-        ResponseEntity<AuthDTO.KakaoUserResponse> response = restTemplate.exchange(
-                "https://kapi.kakao.com/v2/user/me",  // 카카오 사용자 정보 API
-                HttpMethod.GET,
-                entity,
-                AuthDTO.KakaoUserResponse.class  // 반환 타입을 KakaoUserResponse로 수정
-        );
+        try {
+            ResponseEntity<AuthDTO.KakaoUserResponse> response = restTemplate.exchange(
+                    "https://kapi.kakao.com/v2/user/me",
+                    HttpMethod.GET,
+                    entity,
+                    AuthDTO.KakaoUserResponse.class
+            );
 
-        if (response.getStatusCode() == HttpStatus.OK) {
             return response.getBody();
-        } else {
-            throw new RuntimeException("카카오 사용자 정보 조회 실패");
         }
+
+        /* 프론트와 연결 시 이 부분 주석해제 */
+//        catch (HttpClientErrorException e) {
+//            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+//                throw new MemberException(ErrorStatus.INVALID_TOKEN);
+//            }
+        /* 프론트와 연결 시 이 부분 주석해제 */
+
+
+
+    /* 프론트와 연결시 이 부분 주석*/
+        catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                // ✅ 유효하지 않은 토큰이라도 더미 데이터 반환
+                AuthDTO.KakaoUserResponse dummyResponse = new AuthDTO.KakaoUserResponse();
+                dummyResponse.setId(123456L);  // 임의의 사용자 ID 설정
+
+                // KakaoAccount 객체와 Profile 설정
+                AuthDTO.KakaoUserResponse.KakaoAccount kakaoAccount = new AuthDTO.KakaoUserResponse.KakaoAccount();
+                kakaoAccount.setEmail("dummy@example.com");
+
+                AuthDTO.KakaoUserResponse.KakaoAccount.Profile profile = new AuthDTO.KakaoUserResponse.KakaoAccount.Profile();
+                profile.setNickname("Dummy User");
+
+                // Profile을 KakaoAccount에 설정
+                kakaoAccount.setProfile(profile);
+                dummyResponse.setKakaoAccount(kakaoAccount);
+
+                return dummyResponse;
+            }
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 API 요청에 실패했습니다.");
+        }
+
+        /* 프론트와 연결 시 이 부분 주석*/
+
     }
 
+
 }
+
+

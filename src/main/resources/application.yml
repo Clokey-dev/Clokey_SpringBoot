@@ -79,5 +79,7 @@ server:
 jwt:
   secret: ${JWT_SECRET_KEY}
   expiration: 86400000 # 1일 (밀리초 단위)
+  access-expiration: 86400000
+  refresh-expiration: 1209600000
 
 

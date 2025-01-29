@@ -1,6 +1,7 @@
 package com.clokey.server.domain.member.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
@@ -31,6 +32,13 @@ public class AuthDTO {
     @Data
     public static class KakaoLoginRequest {
         private String accessToken;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class TokenResponse {
+        private String accessToken;
+        private String refreshToken;
     }
 }
 
