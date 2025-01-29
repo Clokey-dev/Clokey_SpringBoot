@@ -119,7 +119,26 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     public HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long myMemberId, Long memberId, String month) {
 
-        List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(myMemberId,month);
+
+
+        //회원 ID를 제공하지 않았다면 자기 자신의 기록 확인으로 전부 반환.
+        if(memberId == null){
+            List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(myMemberId,month);
+            List<String> firstImageUrlsOfHistory = histories.stream()
+                    .map(history -> historyImageRepositoryService.findByHistoryId(history.getId())
+                            .stream()
+                            .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
+                            .findFirst()
+                            .map(HistoryImage::getImageUrl)
+                            .orElse("")) // 사진이 없다면 빈칸
+                    .collect(Collectors.toList());
+            return HistoryConverter.toMonthViewResult(myMemberId, histories, firstImageUrlsOfHistory);
+        }
+
+        //나의 기록이 아닌 경우 대상 멤버에게 접근 권한이 있는지 확인합니다.
+        historyAccessibleValidator.validateMemberAccessOfMember(memberId,myMemberId);
+
+        List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(memberId,month);
         List<String> firstImageUrlsOfHistory = histories.stream()
                 .map(history -> historyImageRepositoryService.findByHistoryId(history.getId())
                         .stream()
@@ -128,14 +147,6 @@ public class HistoryServiceImpl implements HistoryService {
                         .map(HistoryImage::getImageUrl)
                         .orElse("")) // 사진이 없다면 빈칸
                 .collect(Collectors.toList());
-
-        //회원 ID를 제공하지 않았다면 자기 자신의 기록 확인으로 전부 반환.
-        if(memberId == null){
-            return HistoryConverter.toMonthViewResult(myMemberId, histories, firstImageUrlsOfHistory);
-        }
-
-        //나의 기록이 아닌 경우 대상 멤버에게 접근 권한이 있는지 확인합니다.
-        historyAccessibleValidator.validateMemberAccessOfMember(memberId,myMemberId);
 
         //비공개 게시물을 가려줍니다.
         for (int i = 0; i < histories.size(); i++) {
