@@ -7,8 +7,6 @@ import com.clokey.server.domain.history.exception.annotation.CheckPage;
 import com.clokey.server.domain.history.exception.annotation.HistoryExist;
 import com.clokey.server.domain.history.exception.annotation.HistoryImageQuantityLimit;
 import com.clokey.server.domain.history.exception.annotation.MonthFormat;
-import com.clokey.server.domain.history.exception.validator.CommentValidator;
-import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
 import com.clokey.server.domain.member.exception.annotation.MemberExist;
 import com.clokey.server.domain.member.exception.annotation.NullableMemberExist;
 import com.clokey.server.global.common.response.BaseResponse;
@@ -178,6 +176,9 @@ public class HistoryRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_204", description = "댓글이 성공적으로 삭제되었습니다."),
     })
+    @Parameters({
+            @Parameter(name = "commentId", description = "삭제하고자 하는 댓글의 ID")
+    })
     public BaseResponse<Void> deleteComment(
             @RequestParam Long memberId,
             @PathVariable Long commentId
@@ -193,6 +194,9 @@ public class HistoryRestController {
     @Operation(summary = "댓글을 수정하는 API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_204", description = "댓글이 성공적으로 수정되었습니다."),
+    })
+    @Parameters({
+            @Parameter(name = "commentId", description = "수정하고자 하는 댓글의 ID")
     })
     public BaseResponse<Void> updateComment(
             @RequestBody @Valid HistoryRequestDTO.UpdateComment updateCommentRequest,
