@@ -15,6 +15,7 @@ import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.global.error.code.status.ErrorStatus;
+import com.clokey.server.global.error.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -70,7 +71,10 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
+    @Transactional
     public HistoryResponseDTO.CommentWriteResult writeComment(Long historyId, Long parentCommentId, Long memberId, String content) {
+
+        validateParentCommentHistory(historyId, parentCommentId);
 
         History history = historyRepositoryService.findById(historyId);
 
@@ -93,6 +97,18 @@ public class HistoryServiceImpl implements HistoryService {
         return HistoryConverter.toCommentWriteResult(savedComment);
     }
 
+    private void validateParentCommentHistory(Long historyId,Long parentCommentId) {
+        if(parentCommentId == null) {
+            return;
+        }
+
+        Long parentHistoryId = commentRepositoryService.findById(parentCommentId).getHistory().getId();
+
+        if(!parentHistoryId.equals(historyId)) {
+            throw new GeneralException(ErrorStatus.PARENT_COMMENT_HISTORY_ERROR);
+        }
+    }
+
     @Override
     @Transactional(readOnly = true)
     public HistoryResponseDTO.DailyHistoryView getDaily(Long historyId, Long memberId) {
@@ -112,6 +128,7 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public HistoryResponseDTO.HistoryCommentResult getComments(Long historyId, int page) {
         Page<Comment> comments = commentRepositoryService.findByHistoryIdAndCommentIsNull(historyId, PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "createdAt")));
         List<List<Comment>> repliesForEachComment = comments.stream()
@@ -301,6 +318,7 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public HistoryResponseDTO.LastYearHistoryResult getLastYearHistory(Long memberId) {
 
         LocalDate today = LocalDate.now();

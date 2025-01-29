@@ -33,7 +33,6 @@ import java.util.List;
 public class HistoryRestController {
 
     private final HistoryService historyService;
-    private final CommentValidator commentValidator;
 
     //임시로 엔드 포인트 맨 뒤에 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
     @GetMapping("/daily/{historyId}")
@@ -72,7 +71,7 @@ public class HistoryRestController {
     }
 
     @GetMapping("/{historyId}/comments")
-    @Operation(summary = "특정 기록의 댓글을 읽어올 수 있는 API", description = "쿼리 파라미터로 페이지를 넘겨주세요.")
+    @Operation(summary = "특정 기록의 댓글을 읽어올 수 있는 API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "OK, 성공적으로 조회되었습니다.")
     })
@@ -93,12 +92,9 @@ public class HistoryRestController {
 
     //사용자 토큰 받는 부분 추가해야함.
     @PostMapping("/like")
-    @Operation(summary = "특정 기록에 좋아요를 누를 수 있는 API", description = "history의 ID와 isLiked 정보를 body에 넣어서 넘겨주세요.")
+    @Operation(summary = "특정 기록에 좋아요를 누를 수 있는 API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "좋아요 상태가 성공적으로 변경되었습니다."),
-    })
-    @Parameters({
-            @Parameter(name = "thisMemberId", description = "현재 유저의 ID 토큰 대체용입니다.")
     })
     public BaseResponse<HistoryResponseDTO.LikeResult> like(@RequestParam Long myMemberId,
                                                             @RequestBody @Valid HistoryRequestDTO.LikeStatusChange request) {
@@ -110,14 +106,16 @@ public class HistoryRestController {
     }
 
     @PostMapping("/{historyId}/comments")
-    @Operation(summary = "댓글을 남길 수 있는 API", description = "History_id를 path parameter로 넘겨주세요. Body에는 내용과 대댓글 대상 댓글 Id(Optional)을 받습니다.")
+    @Operation(summary = "댓글을 남길 수 있는 API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_201", description = "성공적으로 댓글이 생성되었습니다."),
+    })
+    @Parameters({
+            @Parameter(name = "historyId", description = "댓글을 남기고자 하는 기록의 ID")
     })
     public BaseResponse<HistoryResponseDTO.CommentWriteResult> writeComments(@PathVariable @Valid @HistoryExist Long historyId,
                                                                              @RequestParam @Valid @MemberExist Long myMemberId,
                                                                              @RequestBody @Valid HistoryRequestDTO.CommentWrite request) {
-        commentValidator.validateParentCommentHistory(historyId, request.getCommentId());
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_CREATED, historyService.writeComment(historyId, request.getCommentId(), myMemberId, request.getContent()));
 
     }
@@ -141,7 +139,7 @@ public class HistoryRestController {
 
     //임시로 토큰을 request param으로 받는중.
     @PatchMapping(value = "/{historyId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "기록을 수정하는 API", description = "request body에 HistoryRequestDTO.HistoryUpdate 형식의 데이터를 전달해주세요.")
+    @Operation(summary = "기록을 수정하는 API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_204", description = "성공적으로 수정되었습니다."),
     })
@@ -176,7 +174,7 @@ public class HistoryRestController {
 
 
     @DeleteMapping(value = "/comments/{commentId}")
-    @Operation(summary = "댓글을 삭제하는 API", description = "Path Parameter로 Comment Id를 입력해주세요.")
+    @Operation(summary = "댓글을 삭제하는 API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_204", description = "댓글이 성공적으로 삭제되었습니다."),
     })
@@ -208,7 +206,7 @@ public class HistoryRestController {
     }
 
     @DeleteMapping(value = "/{historyId}")
-    @Operation(summary = "기록을 삭제하는 API", description = "Path Parameter로 history Id를 입력해주세요.")
+    @Operation(summary = "기록을 삭제하는 API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_204", description = "기록이 성공적으로 삭제되었습니다."),
     })
