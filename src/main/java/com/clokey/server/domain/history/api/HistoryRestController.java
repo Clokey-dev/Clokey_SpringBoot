@@ -40,7 +40,7 @@ public class HistoryRestController {
 
     //임시로 엔드 포인트 맨 뒤에 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
     @GetMapping("/daily/{historyId}")
-    @Operation(summary = "특정 일의 기록을 확인할 수 있는 API", description = "path variable로 history_id를 넘겨주세요.")
+    @Operation(summary = "특정 일의 기록을 확인할 수 있는 API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "OK, 성공적으로 조회되었습니다."),
     })
@@ -57,18 +57,15 @@ public class HistoryRestController {
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, result);
     }
 
-    //임시로 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
-    //결국 자신의 기록을 보는지 확인하기 위해 MemberId 쿼리 파라미터는 필수적으로 받아야합니다.
     @GetMapping("/monthly")
-    @Operation(summary = "특정 멤버의 특정 월의 기록을 확인할 수 있는 API", description = "query parameter로 member_id와 month를 입력해주세요(YYYY-MM) 형태.")
+    @Operation(summary = "특정 멤버의 특정 월의 기록을 확인할 수 있는 API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "성공적으로 조회되었습니다."),
     })
     @Parameters({
             @Parameter(name = "memberId", description = "조회하고자 하는 memberId, 빈칸 입력시 현재 유저를 기준으로 합니다."),
-            @Parameter(name = "month", description = "조회하고자 하는 월입니다. YYYY-MM 형식으로 입력해주세요.")
+            @Parameter(name = "month", description = "조회하고자 하는 월입니다. YYYY-MM 형식으로 입력해주세요. ex)2025-01")
     })
-
     public BaseResponse<HistoryResponseDTO.MonthViewResult> getMonthlyHistories(@RequestParam(value = "myMemberId") Long myMemberId,
                                                                                 @RequestParam(value = "memberId", required = false) @Valid @NullableMemberExist Long memberId,
                                                                                 @RequestParam(value = "month") @Valid @MonthFormat String month) {
@@ -165,7 +162,7 @@ public class HistoryRestController {
 
         historyService.updateHistory(historyUpdate, myMemberId, historyId, imageFiles);
 
-        return BaseResponse.onSuccess(SuccessStatus.HISTORY_UPDATED,null);
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_UPDATED, null);
     }
 
     @GetMapping(value = "/1-year-ago")
@@ -179,7 +176,7 @@ public class HistoryRestController {
 
         HistoryResponseDTO.LastYearHistoryResult result = historyService.getLastYearHistory(myMemberId);
 
-        return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS,result);
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, result);
     }
 
 
@@ -193,9 +190,9 @@ public class HistoryRestController {
             @PathVariable Long commentId
     ) {
 
-        historyService.deleteComment(commentId,memberId);
+        historyService.deleteComment(commentId, memberId);
 
-        return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_DELETED,null);
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_DELETED, null);
     }
 
     //임시로 토큰을 request param으로 받는중.
@@ -210,9 +207,9 @@ public class HistoryRestController {
             @PathVariable Long commentId
     ) {
 
-        historyService.updateComment(updateCommentRequest,commentId,myMemberId);
+        historyService.updateComment(updateCommentRequest, commentId, myMemberId);
 
-        return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_UPDATED,null);
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_UPDATED, null);
     }
 
     @DeleteMapping(value = "/{historyId}")
@@ -225,9 +222,9 @@ public class HistoryRestController {
             @PathVariable @HistoryExist Long historyId
     ) {
 
-        historyService.deleteHistory(historyId,memberId);
+        historyService.deleteHistory(historyId, memberId);
 
-        return BaseResponse.onSuccess(SuccessStatus.HISTORY_DELETED,null);
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_DELETED, null);
     }
 
 

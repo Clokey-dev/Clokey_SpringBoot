@@ -12,6 +12,7 @@ import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -117,37 +119,34 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     public HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long myMemberId, Long memberId, String month) {
 
-        //요청 대상 memberId가 null인 경우 자신의 기록을 확인합니다.
-        if(memberId == null){
-            List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(myMemberId,month);
-            List<String> firstImageUrlsOfHistory = histories.stream()
-                    .map(history -> historyImageRepositoryService.findByHistoryId(history.getId())
-                            .stream()
-                            .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
-                            .findFirst()
-                            .map(HistoryImage::getImageUrl)
-                            .orElse("")) // 사진이 없다면 빈칸
-                    .toList();
-
-            return HistoryConverter.toAllMonthViewResult(myMemberId, histories, firstImageUrlsOfHistory);
-        }
-
-        //나의 기록이 아닌 경우 대상 멤버에게 접근 권한이 있는지 확인합니다.
-        historyAccessibleValidator.validateMemberAccessOfMember(memberId,myMemberId);
-
-        List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(memberId, month);
+        List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(myMemberId,month);
         List<String> firstImageUrlsOfHistory = histories.stream()
                 .map(history -> historyImageRepositoryService.findByHistoryId(history.getId())
                         .stream()
                         .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
                         .findFirst()
                         .map(HistoryImage::getImageUrl)
-                        .orElse("")) // 없으면 빈 문자열 반환
-                .toList();
+                        .orElse("")) // 사진이 없다면 빈칸
+                .collect(Collectors.toList());
 
+        //회원 ID를 제공하지 않았다면 자기 자신의 기록 확인으로 전부 반환.
+        if(memberId == null){
+            return HistoryConverter.toMonthViewResult(myMemberId, histories, firstImageUrlsOfHistory);
+        }
 
-        return HistoryConverter.toPublicMonthViewResult(memberId, histories, firstImageUrlsOfHistory);
+        //나의 기록이 아닌 경우 대상 멤버에게 접근 권한이 있는지 확인합니다.
+        historyAccessibleValidator.validateMemberAccessOfMember(memberId,myMemberId);
 
+        //비공개 게시물을 가려줍니다.
+        for (int i = 0; i < histories.size(); i++) {
+            History history = histories.get(i);
+
+            if (history.getVisibility().equals(Visibility.PRIVATE)){
+                firstImageUrlsOfHistory.set(i, "비공개입니다");
+            }
+
+        }
+        return HistoryConverter.toMonthViewResult(memberId,histories,firstImageUrlsOfHistory);
     }
 
     @Override
