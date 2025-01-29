@@ -315,16 +315,15 @@ public class HistoryServiceImpl implements HistoryService {
     private void updateHistoryClothes(List<Long> updatedClothes, List<Long> savedClothes, History history) {
 
         //updateClothes에만 존재하는 것은 추가 대상
-        List<Cloth> clothesToAdd = updatedClothes.stream()
+        List<Cloth> clothesToAdd = clothRepositoryService.findAllById(
+                 updatedClothes.stream()
                 .filter(clothId -> !savedClothes.contains(clothId))
-                .map(clothRepositoryService::findById)
-                .toList();
+                .toList());
 
         //반대는 삭제 대상
-        List<Cloth> clothesToDelete = savedClothes.stream()
+        List<Cloth> clothesToDelete = clothRepositoryService.findAllById(savedClothes.stream()
                 .filter(clothId -> !updatedClothes.contains(clothId))
-                .map(clothRepositoryService::findById)
-                .toList();
+                .toList());
 
         clothesToAdd.forEach(cloth -> historyClothRepositoryService.save(history, cloth));
         clothesToDelete.forEach(cloth -> historyClothRepositoryService.delete(history, cloth));
@@ -344,16 +343,14 @@ public class HistoryServiceImpl implements HistoryService {
 
 
         //updateHashtag에만 존재하는 것은 매핑 테이블에
-        List<Hashtag> hashtagToAdd = updatedHashtags.stream()
+        List<Hashtag> hashtagToAdd = hashtagRepositoryService.findHashtagsByNames(updatedHashtags.stream()
                 .filter(hashtagNames -> !savedHashtags.contains(hashtagNames))
-                .map(hashtagRepositoryService::findByName)
-                .toList();
+                .toList());
 
         //반대는 삭제 대상
-        List<Hashtag> hashtagToDelete = savedHashtags.stream()
+        List<Hashtag> hashtagToDelete = hashtagRepositoryService.findHashtagsByNames(savedHashtags.stream()
                 .filter(hashtagNames -> !updatedHashtags.contains(hashtagNames))
-                .map(hashtagRepositoryService::findByName)
-                .toList();
+                .toList());
 
         hashtagToAdd.forEach(hashtag -> hashtagHistoryRepositoryService.addHashtagHistory(hashtag, history));
         hashtagToDelete.forEach(hashtag -> hashtagHistoryRepositoryService.deleteHashtagHistory(hashtag, history));

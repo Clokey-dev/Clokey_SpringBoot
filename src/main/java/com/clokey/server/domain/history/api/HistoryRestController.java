@@ -150,6 +150,9 @@ public class HistoryRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_204", description = "성공적으로 수정되었습니다."),
     })
+    @Parameters({
+            @Parameter(name = "historyId", description = "수정하고자 하는 기록의 Id입니다.")
+    })
     public BaseResponse<Void> updateHistory(
             @RequestPart("historyUpdateRequest") @Valid HistoryRequestDTO.HistoryUpdate historyUpdate,
             @RequestPart(value = "imageFile", required = false) @Valid @HistoryImageQuantityLimit List<MultipartFile> imageFiles,
@@ -194,7 +197,7 @@ public class HistoryRestController {
 
     //임시로 토큰을 request param으로 받는중.
     @PatchMapping(value = "/comments/{commentId}")
-    @Operation(summary = "댓글을 수정하는 API", description = "Path Parameter로 Comment Id를 입력해주세요, HistoryRequestDTO.UpdateComment에는 수정되는 내용을 담아주세요.")
+    @Operation(summary = "댓글을 수정하는 API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_204", description = "댓글이 성공적으로 수정되었습니다."),
     })
