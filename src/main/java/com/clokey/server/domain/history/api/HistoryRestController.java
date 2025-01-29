@@ -217,6 +217,9 @@ public class HistoryRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_204", description = "기록이 성공적으로 삭제되었습니다."),
     })
+    @Parameters({
+            @Parameter(name = "historyId", description = "삭제하고자 하는 기록의 ID입니다.")
+    })
     public BaseResponse<Void> deleteHistory(
             @RequestParam Long memberId,
             @PathVariable @HistoryExist Long historyId
