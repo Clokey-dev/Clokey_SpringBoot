@@ -75,9 +75,9 @@ server:
       enabled: true
 
 
-kakao:
-  client_id: ${REST_API_KEY}
-  redirect_uri: http://localhost:8080/callback
 
+jwt:
+  secret: ${JWT_SECRET_KEY}
+  expiration: 86400000 # 1일 (밀리초 단위)
 
 
