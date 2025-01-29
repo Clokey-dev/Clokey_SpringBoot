@@ -8,7 +8,6 @@ import com.clokey.server.domain.history.exception.annotation.HistoryExist;
 import com.clokey.server.domain.history.exception.annotation.HistoryImageQuantityLimit;
 import com.clokey.server.domain.history.exception.annotation.MonthFormat;
 import com.clokey.server.domain.history.exception.validator.CommentValidator;
-import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
 import com.clokey.server.domain.member.exception.annotation.MemberExist;
 import com.clokey.server.domain.member.exception.annotation.NullableMemberExist;
@@ -33,7 +32,6 @@ import java.util.List;
 @Validated
 public class HistoryRestController {
 
-    private final HistoryLikedValidator historyLikedValidator;
     private final HistoryService historyService;
     private final CommentValidator commentValidator;
 
@@ -104,9 +102,6 @@ public class HistoryRestController {
     })
     public BaseResponse<HistoryResponseDTO.LikeResult> like(@RequestParam Long myMemberId,
                                                             @RequestBody @Valid HistoryRequestDTO.LikeStatusChange request) {
-
-        //isLiked 정보가 정확한지 검증합니다.
-        historyLikedValidator.validateIsLiked(myMemberId, request.getHistoryId(), request.isLiked());
 
         //isLiked의 상태에 따라서 좋아요 -> 취소 , 좋아요가 없는 상태 -> 좋아요 로 바꿔주게 됩니다.
         HistoryResponseDTO.LikeResult result = historyService.changeLike(myMemberId, request.getHistoryId(), request.isLiked());

@@ -8,6 +8,7 @@ import com.clokey.server.domain.history.dto.HistoryRequestDTO;
 import com.clokey.server.domain.history.exception.HistoryException;
 import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryAlreadyExistValidator;
+import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.history.converter.HistoryConverter;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class HistoryServiceImpl implements HistoryService {
 
+    private final HistoryLikedValidator historyLikedValidator;
     private final HistoryAlreadyExistValidator historyAlreadyExistValidator;
     private final HistoryRepositoryService historyRepositoryService;
     private final CommentRepositoryService commentRepositoryService;
@@ -46,6 +48,8 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     public HistoryResponseDTO.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked) {
+
+        historyLikedValidator.validateIsLiked(memberId, historyId, isLiked);
 
         History history = historyRepositoryService.findById(historyId);
 
