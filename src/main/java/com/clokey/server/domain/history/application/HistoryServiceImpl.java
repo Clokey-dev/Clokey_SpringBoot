@@ -47,6 +47,7 @@ public class HistoryServiceImpl implements HistoryService {
     private final HistoryAccessibleValidator historyAccessibleValidator;
 
     @Override
+    @Transactional
     public HistoryResponseDTO.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked) {
 
         historyLikedValidator.validateIsLiked(memberId, historyId, isLiked);
