@@ -34,7 +34,6 @@ import java.util.List;
 public class HistoryRestController {
 
     private final HistoryLikedValidator historyLikedValidator;
-    private final HistoryAccessibleValidator historyAccessibleValidator;
     private final HistoryService historyService;
     private final CommentValidator commentValidator;
 
@@ -49,8 +48,6 @@ public class HistoryRestController {
     })
     public BaseResponse<HistoryResponseDTO.DailyHistoryView> getDailyHistory(@PathVariable @Valid @HistoryExist Long historyId,
                                                                              @RequestParam Long myMemberId) {
-
-        historyAccessibleValidator.validateHistoryAccessOfMember(historyId, myMemberId);
 
         HistoryResponseDTO.DailyHistoryView result = historyService.getDaily(historyId, myMemberId);
 

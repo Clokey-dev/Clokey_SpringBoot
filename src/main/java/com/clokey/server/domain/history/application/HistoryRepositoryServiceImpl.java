@@ -19,20 +19,17 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
     private final HistoryRepository historyRepository;
 
     @Override
-    @Transactional(readOnly = true)
     public List<History> findHistoriesByMemberAndYearMonth(Long memberId, String yearMonth){
         return historyRepository.findHistoriesByMemberAndYearMonth(memberId,yearMonth);
     }
 
 
     @Override
-    @Modifying
     public void incrementLikes(Long historyId){
         historyRepository.incrementLikes(historyId);
     }
 
     @Override
-    @Modifying
     public void decrementLikes(Long historyId){
         historyRepository.decrementLikes(historyId);
     }

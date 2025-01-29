@@ -50,7 +50,7 @@ public class HistoryImageRepositoryServiceImpl implements HistoryImageRepository
 
     }
 
-
+    @Override
     public void deleteAllByHistoryId(Long historyId) {
         // 특정 historyId에 해당하는 모든 이미지를 조회
         List<HistoryImage> historyImages = historyImageRepository.findByHistory_Id(historyId);

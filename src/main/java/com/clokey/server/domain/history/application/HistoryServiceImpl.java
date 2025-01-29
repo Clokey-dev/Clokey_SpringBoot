@@ -89,17 +89,16 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public HistoryResponseDTO.DailyHistoryView getDaily(Long historyId, Long memberId) {
+
+        historyAccessibleValidator.validateHistoryAccessOfMember(historyId, memberId);
+
         History history = historyRepositoryService.findById(historyId);
-        List<HistoryImage> historyImages = historyImageRepositoryService.findByHistoryId(historyId);
-        List<String> imageUrl = historyImages.stream()
+        List<String> imageUrl = historyImageRepositoryService.findByHistoryId(historyId).stream()
                 .map(HistoryImage::getImageUrl)
                 .toList();
-        List<HashtagHistory> hashtagHistories = hashtagHistoryRepositoryService.findByHistory_Id(historyId);
-        List<String> hashtags = hashtagHistories.stream()
-                .map(HashtagHistory::getHashtag)
-                .map(Hashtag::getName)
-                .toList();
+        List<String> hashtags = hashtagHistoryRepositoryService.findHashtagNamesByHistoryId(historyId);
         int likeCount = memberLikeRepositoryService.countByHistory_Id(historyId);
         boolean isLiked = memberLikeRepositoryService.existsByMember_IdAndHistory_Id(memberId, historyId);
         List<Cloth> cloths = historyClothRepositoryService.findAllClothByHistoryId(historyId);
