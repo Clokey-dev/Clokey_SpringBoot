@@ -17,8 +17,8 @@ import java.util.stream.IntStream;
 
 public class HistoryConverter {
 
-    public static HistoryResponseDTO.DailyHistoryView toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked, List<Cloth> cloths) {
-        return HistoryResponseDTO.DailyHistoryView.builder()
+    public static HistoryResponseDTO.DailyHistoryResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked, List<Cloth> cloths) {
+        return HistoryResponseDTO.DailyHistoryResult.builder()
                 .userId(history.getMember().getId())
                 .contents(history.getContent())
                 .memberImageUrl(history.getMember().getProfileImageUrl())
@@ -36,8 +36,8 @@ public class HistoryConverter {
                 .build();
     }
 
-    private static HistoryResponseDTO.HistoryCloth toHistoryCloth(Cloth cloth){
-        return HistoryResponseDTO.HistoryCloth.builder()
+    private static HistoryResponseDTO.HistoryClothResult toHistoryCloth(Cloth cloth){
+        return HistoryResponseDTO.HistoryClothResult.builder()
                 .clothId(cloth.getId())
                 .clothImageUrl(cloth.getClothUrl())
                 .build();

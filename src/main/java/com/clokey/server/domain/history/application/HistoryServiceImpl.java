@@ -111,7 +111,7 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public HistoryResponseDTO.DailyHistoryView getDaily(Long historyId, Long memberId) {
+    public HistoryResponseDTO.DailyHistoryResult getDaily(Long historyId, Long memberId) {
 
         historyAccessibleValidator.validateHistoryAccessOfMember(historyId, memberId);
 

@@ -41,10 +41,10 @@ public class HistoryRestController {
     @Parameters({
             @Parameter(name = "historyId", description = "기록의 id, path variable 입니다.")
     })
-    public BaseResponse<HistoryResponseDTO.DailyHistoryView> getDailyHistory(@PathVariable @Valid @HistoryExist Long historyId,
-                                                                             @RequestParam Long myMemberId) {
+    public BaseResponse<HistoryResponseDTO.DailyHistoryResult> getDailyHistory(@PathVariable @Valid @HistoryExist Long historyId,
+                                                                               @RequestParam Long myMemberId) {
 
-        HistoryResponseDTO.DailyHistoryView result = historyService.getDaily(historyId, myMemberId);
+        HistoryResponseDTO.DailyHistoryResult result = historyService.getDaily(historyId, myMemberId);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, result);
     }
