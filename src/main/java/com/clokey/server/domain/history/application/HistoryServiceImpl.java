@@ -178,13 +178,15 @@ public class HistoryServiceImpl implements HistoryService {
             historyImageRepositoryService.save(imageFiles, history);
         }
 
-
-        //기록-옷 테이블에 추가해줍니다.
-        historyCreateRequest.getClothes()
-                .forEach(clothId -> {
-                    historyClothRepositoryService.save(history, clothRepositoryService.findById(clothId));
-                });
-
+        List<Cloth> cloths = clothRepositoryService.findAllById(historyCreateRequest.getClothes());
+        List<HistoryCloth> historyCloths = cloths.stream()
+                        .map(cloth -> {
+                            return HistoryCloth.builder()
+                                    .history(history)
+                                    .cloth(cloth)
+                                    .build();
+                        }).toList();
+        historyClothRepositoryService.saveAll(historyCloths);
 
         historyCreateRequest.getHashtags()
                 .forEach(hashtagNames -> {

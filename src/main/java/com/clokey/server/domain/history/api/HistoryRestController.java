@@ -129,7 +129,7 @@ public class HistoryRestController {
 
     //임시로 토큰을 request param으로 받는중.
     @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "새로운 기록을 생성하는 API", description = "request body에 HistoryRequestDTO.HistoryCreate 형식의 데이터를 전달해주세요.")
+    @Operation(summary = "새로운 기록을 생성하는 API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_201", description = "CREATED, 성공적으로 생성되었습니다."),
     })

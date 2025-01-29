@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -39,5 +40,10 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
     @Override
     public boolean existsById(Long clothId) {
         return clothRepository.existsById(clothId);
+    }
+
+    @Override
+    public List<Cloth> findAllById(List<Long> clothIds) {
+        return clothRepository.findAllById(clothIds);
     }
 }
