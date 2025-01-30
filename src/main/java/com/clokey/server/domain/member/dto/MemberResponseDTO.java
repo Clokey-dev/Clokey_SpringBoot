@@ -41,6 +41,8 @@ public class MemberResponseDTO {
         private String profileImageUrl;
 
         private String bio;
+
+        private String profileBackImageUrl;
     }
 
 
@@ -56,6 +58,7 @@ public class MemberResponseDTO {
         String nickname;
         String clokeyId;
         String profileImageUrl;
+        String profileBackImageUrl;
         LocalDateTime updatedAt;
     }
 }
