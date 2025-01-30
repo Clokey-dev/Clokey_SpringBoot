@@ -18,4 +18,5 @@ public interface MemberRepositoryService {
     Member findMemberByClokeyId(String clokeyId);
 
     Member getReferencedById(Long memberId);
+    Optional <Member> findMemberByEmail(String email);
 }

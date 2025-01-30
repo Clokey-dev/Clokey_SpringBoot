@@ -85,6 +85,11 @@ public enum ErrorStatus implements BaseErrorCode {
     S3_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "S3_002", "S3 업로드 실패"),
     S3_EMPTY_FILE_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "S3_003", "파일이 존재하지 않습니다."),
     S3_DELETE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "S3_004", "S3 삭제 실패"),
+    //로그인 에러
+    INVALID_TOKEN(HttpStatus.BAD_REQUEST,"LOGIN_4001","유효하지 않은 토큰입니다."),
+    MISSING_LOGIN_TYPE(HttpStatus.BAD_REQUEST,"LOGIN_4002","로그인 타입이 누락되었습니다."),
+    INVALID_LOGIN_TYPE(HttpStatus.BAD_REQUEST,"LOGIN_4003","잘못된 로그인 타입입니다."),
+    LOGIN_FAILED(HttpStatus.BAD_REQUEST,"LOGIN_4004","로그인에 실패했습니다."),
 
     ;
 

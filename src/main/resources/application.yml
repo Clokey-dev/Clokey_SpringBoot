@@ -13,8 +13,28 @@ spring:
         highlight_sql : true
 
 logging:
+<<<<<<< HEAD
   level:
     org.springframework.web: DEBUG
     org.springframework.web.client.DefaultRestClient: OFF
+=======
+  level.org:
+    hibernate.SQL: DEBUG
+    type.descriptor.sql.BasicBinder: TRACE
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+
+
+
+jwt:
+  secret: ${JWT_SECRET_KEY}
+  expiration: 86400000 # 1일 (밀리초 단위)
+  access-expiration: 86400000
+  refresh-expiration: 1209600000
+>>>>>>> feat/#53-kakao-login
 
 

@@ -68,4 +68,13 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
         return memberRepository.getReferenceById(memberId);
     }
 
+    public Optional<Member> findMemberByEmail(String email) {
+        String jpql = "SELECT m FROM Member m WHERE m.email = :email";
+        TypedQuery<Member> query = entityManager.createQuery(jpql, Member.class);
+        query.setParameter("email", email);
+
+        return query.getResultStream().findFirst(); // Optional<Member> 반환
+    }
+
+
 }

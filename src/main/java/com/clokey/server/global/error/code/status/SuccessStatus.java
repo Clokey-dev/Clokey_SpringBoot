@@ -57,7 +57,11 @@ public enum SuccessStatus implements BaseCode {
     MEMBER_ACTION_CREATED(HttpStatus.CREATED, "MEMBER_ACTION_201", "멤버 관련 요소가 성공적으로 생성되었습니다."),
 
     //아이디 성공
-    MEMBER_ID_SUCCESS(HttpStatus.OK, "MEMBER_ID_200", "사용가능한 아이디입니다.");
+    MEMBER_ID_SUCCESS(HttpStatus.OK, "MEMBER_ID_200", "사용가능한 아이디입니다."),
+
+    //로그인 성공
+    LOGIN_SUCCESS(HttpStatus.OK, "LOGIN_200", "로그인에 성공하였습니다."),
+    LOGIN_CREATED(HttpStatus.CREATED, "LOGIN_201", "회원가입과 로그인에 성공하였습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
