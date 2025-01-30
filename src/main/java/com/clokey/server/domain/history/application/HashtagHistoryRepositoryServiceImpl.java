@@ -51,4 +51,9 @@ public class HashtagHistoryRepositoryServiceImpl implements HashtagHistoryReposi
     public void deleteAllByHistoryId(Long historyId) {
         hashtagHistoryRepository.deleteAllByHistoryId(historyId);
     }
+
+    @Override
+    public List<String> findHashtagNamesByHistoryId(Long historyId) {
+        return hashtagHistoryRepository.findHashtagNamesByHistoryId(historyId);
+    }
 }

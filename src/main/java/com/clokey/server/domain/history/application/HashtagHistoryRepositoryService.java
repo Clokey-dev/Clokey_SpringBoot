@@ -19,4 +19,6 @@ public interface HashtagHistoryRepositoryService {
     void deleteHashtagHistory(Hashtag hashtag, History history);
 
     void deleteAllByHistoryId(Long historyId);
+
+    List<String> findHashtagNamesByHistoryId(Long historyId);
 }
