@@ -1,18 +1,18 @@
-package com.clokey.server.domain.history.exception.annotation;
+package com.clokey.server.domain.category.exception.annotation;
 
-import com.clokey.server.domain.history.exception.validator.CheckPageValidator;
+import com.clokey.server.domain.category.exception.validator.CategoryExistValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = CheckPageValidator.class)
+@Constraint(validatedBy = CategoryExistValidator.class)
 @Target( { ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CheckPage {
+public @interface CategoryExist {
 
-    String message() default "페이지가 1보다 작을 수 없습니다.";
+    String message() default "해당하는 옷이 존재하지 않습니다.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

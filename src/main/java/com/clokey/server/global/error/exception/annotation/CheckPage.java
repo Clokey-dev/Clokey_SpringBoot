@@ -1,18 +1,18 @@
-package com.clokey.server.domain.cloth.exception.annotation;
+package com.clokey.server.global.error.exception.annotation;
 
-import com.clokey.server.domain.cloth.exception.validator.ClothExistValidator;
+import com.clokey.server.global.error.exception.validator.CheckPageValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = ClothExistValidator.class)
+@Constraint(validatedBy = CheckPageValidator.class)
 @Target( { ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ClothExist {
+public @interface CheckPage {
 
-    String message() default "해당하는 옷이 존재하지 않습니다.";
+    String message() default "페이지가 1보다 작을 수 없습니다.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

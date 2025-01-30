@@ -1,6 +1,5 @@
 package com.clokey.server.domain.history.exception.validator;
 
-import com.clokey.server.domain.history.exception.annotation.CheckPage;
 import com.clokey.server.domain.history.exception.annotation.UniqueHashtags;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.validation.ConstraintValidator;
