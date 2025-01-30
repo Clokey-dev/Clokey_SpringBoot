@@ -71,7 +71,7 @@ public class FolderServiceImpl implements FolderService {
         Folder folder = folderRepositoryService.findById(folderId);
         folderAccessibleValidator.validateFolderAccessOfMember(folder.getId(), memberId);
 
-        List<Cloth> clothes = clothRepositoryService.findAllById(request.getClothesId());
+        List<Cloth> clothes = clothRepositoryService.findAllById(request.getClothIds());
         clothAccessibleValidator.validateClothOfMember(clothes.stream().map(Cloth::getId).collect(Collectors.toList()), memberId);
 
         // 이미 폴더에 있는 옷 ID 목록 조회

@@ -29,6 +29,6 @@ public class FolderRequestDTO {
     @Getter
     public static class AddClothesToFolderRequest {
         @NotEmpty(message = "clothesId은 필수 입력 값입니다.")
-        List<Long> clothesId;
+        List<Long> clothIds;
     }
 }
