@@ -53,7 +53,7 @@ public enum SuccessStatus implements BaseCode {
     MEMBER_ID_SUCCESS(HttpStatus.OK, "MEMBER_ID_200", "사용가능한 아이디입니다."),
 
     //로그인 성공
-    LOGIN_SUCCESS(HttpStatus.OK, "LOGIN_200", "로그인 성공");
+    LOGIN_SUCCESS(HttpStatus.OK, "LOGIN_200", "로그인에 성공하였습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

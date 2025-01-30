@@ -1,5 +1,6 @@
 package com.clokey.server.domain.model.entity;
 
+import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.domain.model.entity.mapping.MemberTerm;
 import com.clokey.server.domain.model.entity.enums.MemberStatus;
@@ -50,6 +51,10 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING) //활성화여부
     @Column(columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'" , nullable = false)
     private MemberStatus status;
+
+    @Enumerated(EnumType.STRING) //성별
+    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'NOT_AGREED'", nullable = false)
+    private RegisterStatus registerStatus;
 
     private LocalDate inactiveDate;
 

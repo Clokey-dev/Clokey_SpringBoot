@@ -3,6 +3,8 @@ package com.clokey.server.domain.member.application;
 import com.clokey.server.domain.member.dto.AuthDTO;
 import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.domain.model.entity.Member;
+import com.clokey.server.domain.model.entity.enums.RegisterStatus;
+import com.clokey.server.domain.model.entity.enums.SocialType;
 import com.clokey.server.domain.model.repository.MemberRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import io.jsonwebtoken.*;
@@ -90,6 +92,8 @@ public class AuthServiceImpl implements AuthService {
             member = Member.builder()
                     .nickname(kakaoUser.getKakaoAccount().getProfile().getNickname())
                     .email(kakaoUser.getKakaoAccount().getEmail())
+                    .registerStatus(RegisterStatus.NOT_AGREED)
+                    .socialType(SocialType.KAKAO)
                     .build();
             memberRepositoryService.saveMember(member);
         }
@@ -103,7 +107,7 @@ public class AuthServiceImpl implements AuthService {
         memberRepositoryService.saveMember(member);
 
         //토큰 반환
-        return new AuthDTO.TokenResponse(accessToken, refreshToken);
+        return new AuthDTO.TokenResponse(member.getId(), member.getEmail(), member.getNickname(), accessToken, refreshToken, member.getRegisterStatus());
     }
 
 
@@ -130,40 +134,43 @@ public class AuthServiceImpl implements AuthService {
         }
 
         /* 프론트와 연결 시 이 부분 주석해제 */
-//        catch (HttpClientErrorException e) {
-//            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-//                throw new MemberException(ErrorStatus.INVALID_TOKEN);
-//            }
-        /* 프론트와 연결 시 이 부분 주석해제 */
-
-
-
-    /* 프론트와 연결시 이 부분 주석*/
         catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-                // ✅ 유효하지 않은 토큰이라도 더미 데이터 반환
-                AuthDTO.KakaoUserResponse dummyResponse = new AuthDTO.KakaoUserResponse();
-                dummyResponse.setId(123456L);  // 임의의 사용자 ID 설정
-
-                // KakaoAccount 객체와 Profile 설정
-                AuthDTO.KakaoUserResponse.KakaoAccount kakaoAccount = new AuthDTO.KakaoUserResponse.KakaoAccount();
-                kakaoAccount.setEmail("dummy@example.com");
-
-                AuthDTO.KakaoUserResponse.KakaoAccount.Profile profile = new AuthDTO.KakaoUserResponse.KakaoAccount.Profile();
-                profile.setNickname("Dummy User");
-
-                // Profile을 KakaoAccount에 설정
-                kakaoAccount.setProfile(profile);
-                dummyResponse.setKakaoAccount(kakaoAccount);
-
-                return dummyResponse;
+                throw new MemberException(ErrorStatus.INVALID_TOKEN);
             }
+
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 API 요청에 실패했습니다.");
         }
+            /* 프론트와 연결 시 이 부분 주석해제 */
 
-        /* 프론트와 연결 시 이 부분 주석*/
 
-    }
+
+            /* 프론트와 연결시 이 부분 주석*/
+//        catch (HttpClientErrorException e) {
+//            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+//                // ✅ 유효하지 않은 토큰이라도 더미 데이터 반환
+//                AuthDTO.KakaoUserResponse dummyResponse = new AuthDTO.KakaoUserResponse();
+//                dummyResponse.setId(123456L);  // 임의의 사용자 ID 설정
+//
+//                // KakaoAccount 객체와 Profile 설정
+//                AuthDTO.KakaoUserResponse.KakaoAccount kakaoAccount = new AuthDTO.KakaoUserResponse.KakaoAccount();
+//                kakaoAccount.setEmail("dummy@example.com");
+//
+//                AuthDTO.KakaoUserResponse.KakaoAccount.Profile profile = new AuthDTO.KakaoUserResponse.KakaoAccount.Profile();
+//                profile.setNickname("Dummy User");
+//
+//                // Profile을 KakaoAccount에 설정
+//                kakaoAccount.setProfile(profile);
+//                dummyResponse.setKakaoAccount(kakaoAccount);
+//
+//                return dummyResponse;
+//            }
+//            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 API 요청에 실패했습니다.");
+//        }
+
+            /* 프론트와 연결 시 이 부분 주석*/
+
+        }
 
 
 }

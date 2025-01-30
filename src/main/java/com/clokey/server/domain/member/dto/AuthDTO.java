@@ -1,8 +1,11 @@
 package com.clokey.server.domain.member.dto;
 
+import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Data
 public class AuthDTO {
@@ -31,14 +34,20 @@ public class AuthDTO {
     // KakaoLoginRequest 클래스
     @Data
     public static class KakaoLoginRequest {
+        private String type; // 로그인 타입 (ex: "kakao", "apple")
         private String accessToken;
     }
 
     @Data
     @AllArgsConstructor
     public static class TokenResponse {
+
+        Long id;
+        String email;
+        String nickname;
         private String accessToken;
         private String refreshToken;
+        RegisterStatus registerStatus;
     }
 }
 
