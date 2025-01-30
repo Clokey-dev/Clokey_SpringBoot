@@ -22,7 +22,7 @@ public class TermRestController {
 
     @Operation(summary = "약관 동의 API", description = "약관동의하는 API입니다.")
     @PostMapping
-    public BaseResponse<TermResponseDTO> join(
+    public BaseResponse<TermResponseDTO> termAgree(
             @PathVariable Long userId,
             @EssentialTermAgree @RequestBody @Valid TermRequestDTO.Join request) {
 

@@ -3,6 +3,8 @@ package com.clokey.server.domain.history.api;
 import com.clokey.server.domain.history.application.HistoryService;
 import com.clokey.server.domain.history.dto.HistoryRequestDTO;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.global.error.exception.annotation.CheckPage;
 import com.clokey.server.domain.history.exception.annotation.HistoryExist;
 import com.clokey.server.domain.history.exception.annotation.HistoryImageQuantityLimit;
@@ -232,11 +234,11 @@ public class HistoryRestController {
             @Parameter(name = "historyId", description = "삭제하고자 하는 기록의 ID입니다.")
     })
     public BaseResponse<Void> deleteHistory(
-            @RequestParam Long memberId,
+            @Parameter(name = "user", hidden = true) @AuthUser Member member,
             @PathVariable @HistoryExist Long historyId
     ) {
 
-        historyService.deleteHistory(historyId, memberId);
+        historyService.deleteHistory(historyId, member.getId());
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_DELETED, null);
     }

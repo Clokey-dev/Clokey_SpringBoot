@@ -2,7 +2,7 @@ package com.clokey.server.domain.member.domain.entity;
 
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.history.domain.entity.History;
-import com.clokey.server.domain.member.dto.MemberResponseDTO;
+import com.clokey.server.domain.member.dto.MemberDTO;
 import com.clokey.server.domain.model.entity.BaseEntity;
 import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.clokey.server.domain.model.entity.enums.Visibility;
@@ -68,6 +68,14 @@ public class Member extends BaseEntity {
     @Column(columnDefinition = "VARCHAR(15) DEFAULT 'PUBLIC'",nullable = false) // 공개 범위
     private Visibility visibility;
 
+    @Column(nullable = true, unique = true)
+    private String refreshToken;
+
+    @Column(nullable = true, unique = true)
+    private String accessToken;
+
+
+
     //필요한 양방향 매핑을 제외하고 삭제해주세요.
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberTerm> memberTermList = new ArrayList<>();
@@ -82,7 +90,7 @@ public class Member extends BaseEntity {
     private List<History> historyList = new ArrayList<>();
 
 
-    public void profileUpdate(MemberResponseDTO.ProfileRQ request) {
+    public void profileUpdate(MemberDTO.ProfileRQ request) {
         this.nickname = request.getNickname();
         this.clokeyId = request.getClokeyId();
         this.profileImageUrl = request.getProfileImageUrl();
@@ -92,5 +100,10 @@ public class Member extends BaseEntity {
 
     public void updateRegisterStatus(RegisterStatus registerStatus) {
         this.registerStatus = registerStatus;
+    }
+
+    public void updateToken(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 }

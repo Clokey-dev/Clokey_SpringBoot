@@ -25,11 +25,12 @@ public enum ErrorStatus implements BaseErrorCode {
     CLOKEY_ID_INVALID(HttpStatus.BAD_REQUEST,"MEMBER_4004","잘못된 클로키 아이디입니다."),
     DUPLICATE_CLOKEY_ID(HttpStatus.BAD_REQUEST,"MEMBER_4005","중복된 클로키 아이디입니다."),
     ESSENTIAL_INPUT_REQUIRED(HttpStatus.BAD_REQUEST,"MEMBER_4006","필수 입력 요소 값이 누락되었습니다."),
+    CANNOT_FOLLOW_MYSELF(HttpStatus.BAD_REQUEST,"MEMBER_4007", "팔로우 아이디와 팔로잉 아이디가 같을 수 없습니다."),
 
     //옷 에러
     NO_SUCH_CLOTH(HttpStatus.NOT_FOUND,"CLOTH_4041","존재하지 않는 옷 ID입니다."),
     NO_PERMISSION_TO_ACCESS_CLOTH(HttpStatus.BAD_REQUEST,"CLOTH_4002","옷에 대한 접근 권한이 없습니다."),
-    NOT_MY_CLOTH(HttpStatus.BAD_REQUEST,"CLOTH_4003","나의 옷이 아닙니다."),
+    NOT_MY_CLOTH(HttpStatus.BAD_REQUEST,"CLOTH_4003","사용자의 옷이 아닙니다."),
     CLOTH_VISIBILITY_INVALID(HttpStatus.BAD_REQUEST,"CLOTH_4004","잘못된 Visibility 값을 입력했습니다."),
     CLOTH_TEMP_OUT_OF_RANGE(HttpStatus.BAD_REQUEST,"CLOTH_4005","옷의 상한 또는 하한 온도가 범위를 벗어났습니다."),
     CLOTH_TEMP_ORDER_INVALID(HttpStatus.BAD_REQUEST,"CLOTH_4006","옷의 하한 온도가 상한 온도보다 높습니다."),
@@ -44,6 +45,9 @@ public enum ErrorStatus implements BaseErrorCode {
     FOLDER_NAME_INVALID(HttpStatus.BAD_REQUEST,"FOLDER_4002","잘못된 폴더 이름입니다."),
     NO_SUCH_CLOTH_IN_FOLDER(HttpStatus.BAD_REQUEST,"FOLDER_4003","폴더에 존재하는 옷이 아닙니다."),
     FAILED_TO_DELETE_FOLDER(HttpStatus.BAD_REQUEST,"FOLDER_4004","폴더 삭제에 실패했습니다."),
+    NO_PERMISSION_TO_ACCESS_FOLDER(HttpStatus.BAD_REQUEST,"FOLDER_4005","폴더에 대한 접근 권한이 없습니다."),
+    CLOTH_ALREADY_IN_FOLDER(HttpStatus.BAD_REQUEST,"FOLDER_4006","이미 폴더에 존재하는 옷입니다."),
+
 
     //카테고리 에러
     NO_SUCH_CATEGORY(HttpStatus.NOT_FOUND,"CATEGORY_4041","존재하지 않는 카테고리 ID입니다."),
@@ -86,6 +90,11 @@ public enum ErrorStatus implements BaseErrorCode {
     S3_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "S3_002", "S3 업로드 실패"),
     S3_EMPTY_FILE_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "S3_003", "파일이 존재하지 않습니다."),
     S3_DELETE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "S3_004", "S3 삭제 실패"),
+    //로그인 에러
+    INVALID_TOKEN(HttpStatus.BAD_REQUEST,"LOGIN_4001","유효하지 않은 토큰입니다."),
+    MISSING_LOGIN_TYPE(HttpStatus.BAD_REQUEST,"LOGIN_4002","로그인 타입이 누락되었습니다."),
+    INVALID_LOGIN_TYPE(HttpStatus.BAD_REQUEST,"LOGIN_4003","잘못된 로그인 타입입니다."),
+    LOGIN_FAILED(HttpStatus.BAD_REQUEST,"LOGIN_4004","로그인에 실패했습니다."),
 
     ;
 
