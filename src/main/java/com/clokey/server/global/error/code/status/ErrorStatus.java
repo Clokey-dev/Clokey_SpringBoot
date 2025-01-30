@@ -30,7 +30,7 @@ public enum ErrorStatus implements BaseErrorCode {
     //옷 에러
     NO_SUCH_CLOTH(HttpStatus.NOT_FOUND,"CLOTH_4041","존재하지 않는 옷 ID입니다."),
     NO_PERMISSION_TO_ACCESS_CLOTH(HttpStatus.BAD_REQUEST,"CLOTH_4002","옷에 대한 접근 권한이 없습니다."),
-    NOT_MY_CLOTH(HttpStatus.BAD_REQUEST,"CLOTH_4003","나의 옷이 아닙니다."),
+    NOT_MY_CLOTH(HttpStatus.BAD_REQUEST,"CLOTH_4003","사용자의 옷이 아닙니다."),
     CLOTH_VISIBILITY_INVALID(HttpStatus.BAD_REQUEST,"CLOTH_4004","잘못된 Visibility 값을 입력했습니다."),
     CLOTH_TEMP_OUT_OF_RANGE(HttpStatus.BAD_REQUEST,"CLOTH_4005","옷의 상한 또는 하한 온도가 범위를 벗어났습니다."),
     CLOTH_TEMP_ORDER_INVALID(HttpStatus.BAD_REQUEST,"CLOTH_4006","옷의 하한 온도가 상한 온도보다 높습니다."),
@@ -45,6 +45,9 @@ public enum ErrorStatus implements BaseErrorCode {
     FOLDER_NAME_INVALID(HttpStatus.BAD_REQUEST,"FOLDER_4002","잘못된 폴더 이름입니다."),
     NO_SUCH_CLOTH_IN_FOLDER(HttpStatus.BAD_REQUEST,"FOLDER_4003","폴더에 존재하는 옷이 아닙니다."),
     FAILED_TO_DELETE_FOLDER(HttpStatus.BAD_REQUEST,"FOLDER_4004","폴더 삭제에 실패했습니다."),
+    NO_PERMISSION_TO_ACCESS_FOLDER(HttpStatus.BAD_REQUEST,"FOLDER_4005","폴더에 대한 접근 권한이 없습니다."),
+    CLOTH_ALREADY_IN_FOLDER(HttpStatus.BAD_REQUEST,"FOLDER_4006","이미 폴더에 존재하는 옷입니다."),
+
 
     //카테고리 에러
     NO_SUCH_CATEGORY(HttpStatus.NOT_FOUND,"CATEGORY_4041","존재하지 않는 카테고리 ID입니다."),
