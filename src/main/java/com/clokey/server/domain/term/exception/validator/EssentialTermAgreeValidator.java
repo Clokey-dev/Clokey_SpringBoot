@@ -2,6 +2,7 @@ package com.clokey.server.domain.term.exception.validator;
 
 import com.clokey.server.domain.term.dto.TermRequestDTO;
 import com.clokey.server.domain.term.exception.annotation.EssentialTermAgree;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class EssentialTermAgreeValidator implements ConstraintValidator<Essentia
 
         if (!allEssentialAgreed) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("필수 약관에 동의하지 않았습니다.").addConstraintViolation();
+            context.buildConstraintViolationWithTemplate(ErrorStatus.ESSENTIAL_TERM_NOT_AGREED.toString()).addConstraintViolation();
         }
         return allEssentialAgreed;
     }
