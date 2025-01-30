@@ -68,4 +68,14 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
         return memberRepository.getReferenceById(memberId);
     }
 
+    @Override
+    public boolean existsByClokeyId(String clokeyId) {
+        return memberRepository.existsByClokeyId(clokeyId);
+    }
+
+    @Override
+    public Member findByClokeyId(String clokeyId) {
+        return memberRepository.findByClokeyId(clokeyId).orElseThrow(()->new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
+    }
+
 }

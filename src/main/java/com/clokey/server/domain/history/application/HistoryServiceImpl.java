@@ -140,12 +140,12 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long myMemberId, Long memberId, String month) {
+    public HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long myMemberId, String clokeyId, String month) {
 
 
 
-        //회원 ID를 제공하지 않았다면 자기 자신의 기록 확인으로 전부 반환.
-        if(memberId == null){
+        //Clokey ID를 제공하지 않았다면 자기 자신의 기록 확인으로 전부 반환.
+        if(clokeyId == null){
             List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(myMemberId,month);
             List<String> firstImageUrlsOfHistory = histories.stream()
                     .map(history -> historyImageRepositoryService.findByHistoryId(history.getId())
@@ -157,6 +157,9 @@ public class HistoryServiceImpl implements HistoryService {
                     .collect(Collectors.toList());
             return HistoryConverter.toMonthViewResult(myMemberId, histories, firstImageUrlsOfHistory);
         }
+
+        Member member = memberRepositoryService.findMemberByClokeyId(clokeyId);
+        Long memberId = member.getId();
 
         //나의 기록이 아닌 경우 대상 멤버에게 접근 권한이 있는지 확인합니다.
         historyAccessibleValidator.validateMemberAccessOfMember(memberId,myMemberId);

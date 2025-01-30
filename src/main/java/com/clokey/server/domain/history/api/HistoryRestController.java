@@ -8,7 +8,7 @@ import com.clokey.server.domain.history.exception.annotation.HistoryExist;
 import com.clokey.server.domain.history.exception.annotation.HistoryImageQuantityLimit;
 import com.clokey.server.domain.history.exception.annotation.MonthFormat;
 import com.clokey.server.domain.member.exception.annotation.MemberExist;
-import com.clokey.server.domain.member.exception.annotation.NullableMemberExist;
+import com.clokey.server.domain.member.exception.annotation.NullableClokeyIdExist;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,14 +55,14 @@ public class HistoryRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "성공적으로 조회되었습니다."),
     })
     @Parameters({
-            @Parameter(name = "memberId", description = "조회하고자 하는 memberId, 빈칸 입력시 현재 유저를 기준으로 합니다."),
+            @Parameter(name = "clokeyId", description = "조회하고자 하는 clokeyId, 빈칸 입력시 현재 유저를 기준으로 합니다."),
             @Parameter(name = "month", description = "조회하고자 하는 월입니다. YYYY-MM 형식으로 입력해주세요. ex)2025-01")
     })
     public BaseResponse<HistoryResponseDTO.MonthViewResult> getMonthlyHistories(@RequestParam(value = "myMemberId") Long myMemberId,
-                                                                                @RequestParam(value = "memberId", required = false) @Valid @NullableMemberExist Long memberId,
+                                                                                @RequestParam(value = "clokeyId", required = false) @Valid @NullableClokeyIdExist String clokeyId,
                                                                                 @RequestParam(value = "month") @Valid @MonthFormat String month) {
 
-        HistoryResponseDTO.MonthViewResult result = historyService.getMonthlyHistories(myMemberId, memberId, month);
+        HistoryResponseDTO.MonthViewResult result = historyService.getMonthlyHistories(myMemberId, clokeyId, month);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, result);
 

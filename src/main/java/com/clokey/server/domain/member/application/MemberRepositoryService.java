@@ -18,4 +18,8 @@ public interface MemberRepositoryService {
     Member findMemberByClokeyId(String clokeyId);
 
     Member getReferencedById(Long memberId);
+
+    boolean existsByClokeyId(String clokeyId);
+
+    Member findByClokeyId(String clokeyId);
 }
