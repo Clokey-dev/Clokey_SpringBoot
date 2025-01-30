@@ -1,5 +1,6 @@
 package com.clokey.server.global.config.security;
 
+import com.clokey.server.global.config.security.jwt.JwtRequestFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtRequestFilter jwtRequestFilter;
     private static final String[] SECURITY_ALLOW_ARRAY  = {
             "/api/login",
             "/health",
@@ -29,10 +32,8 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/login",
             "/refresh",
-            "/actuator/prometheus",
             "/ws/**",
-            "/topic/**",
-            "/**"
+            "/topic/**"
     };
 
     @Bean
@@ -50,6 +51,8 @@ public class SecurityConfig {
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         configureAuthorization(http);
         configureExceptionHandling(http);
+
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
