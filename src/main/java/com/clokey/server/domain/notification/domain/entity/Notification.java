@@ -32,6 +32,7 @@ public class Notification extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
 
+    @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(15) DEFAULT 'NOT_READ'",nullable = false)
     private ReadStatus readStatus;
 }

@@ -216,4 +216,20 @@ public class HistoryRestController {
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_UPDATED,null);
     }
 
+    @DeleteMapping(value = "/{historyId}")
+    @Operation(summary = "기록을 삭제하는 API", description = "Path Parameter로 history Id를 입력해주세요.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_204", description = "기록이 성공적으로 삭제되었습니다."),
+    })
+    public BaseResponse<Void> deleteHistory(
+            @RequestParam Long memberId,
+            @PathVariable @HistoryExist Long historyId
+    ) {
+
+        historyService.deleteHistory(historyId,memberId);
+
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_DELETED,null);
+    }
+
+
 }

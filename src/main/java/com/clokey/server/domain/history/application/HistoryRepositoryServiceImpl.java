@@ -60,4 +60,9 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
         return historyRepository.findByHistoryDateAndMember_Id(date,memberId)
                 .orElseThrow(()-> new DatabaseException(ErrorStatus.NO_HISTORY_FOR_DATE));
     }
+
+    @Override
+    public void deleteById(Long historyId) {
+        historyRepository.deleteById(historyId);
+    }
 }

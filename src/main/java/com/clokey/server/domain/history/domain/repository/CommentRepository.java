@@ -17,9 +17,22 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findByCommentId(Long parentId);
 
+    //햐나의 댓글을 기준으로 대댓글을 삭제합니다.
     @Transactional
     @Modifying
     @Query("DELETE FROM Comment c WHERE c.comment.id = :commentId")
     void deleteChildren(@Param("commentId") Long commentId);
+
+    //하나의 기록을 기준으로 대댓글을 모두 삭제합니다.
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Comment c WHERE c.history.id = :historyId AND c.comment IS NOT NULL")
+    void deleteRepliesByHistoryId(@Param("historyId") Long historyId);
+
+    //하나의 기록을 기준으로 댓글을 모두 삭제합니다.
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Comment c WHERE c.history.id = :historyId")
+    void deleteParentCommentsByHistoryId(@Param("historyId") Long historyId);
 
 }

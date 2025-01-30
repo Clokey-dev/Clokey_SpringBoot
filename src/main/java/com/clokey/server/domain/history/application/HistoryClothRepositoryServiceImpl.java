@@ -7,6 +7,9 @@ import com.clokey.server.domain.history.domain.repository.HistoryClothRepository
 import com.clokey.server.domain.history.domain.repository.HistoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,5 +43,15 @@ public class HistoryClothRepositoryServiceImpl implements HistoryClothRepository
     @Override
     public void deleteAllByClothId(Long clothId){
         historyClothRepository.deleteAllByClothId(clothId);
+    }
+
+    @Override
+    public List<Cloth> findAllClothByHistoryId(Long historyId) {
+        return historyClothRepository.findAllClothsByHistoryId(historyId);
+    }
+
+    @Override
+    public void deleteAllByHistoryId(Long historyId) {
+        historyClothRepository.deleteAllByHistoryId(historyId);
     }
 }

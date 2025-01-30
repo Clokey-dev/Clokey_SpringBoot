@@ -32,4 +32,9 @@ public class MemberLikeRepositoryServiceImpl implements MemberLikeRepositoryServ
     public void save(MemberLike memberLike) {
         memberLikeRepository.save(memberLike);
     }
+
+    @Override
+    public void deleteAllByHistoryId(Long historyId) {
+        memberLikeRepository.deleteAllByHistoryId(historyId);
+    }
 }
