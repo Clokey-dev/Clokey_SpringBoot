@@ -324,6 +324,7 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public HistoryResponseDTO.LikedUserResults getLikedUser(Long memberId, Long historyId) {
 
         historyAccessibleValidator.validateHistoryAccessOfMember(historyId,memberId);
