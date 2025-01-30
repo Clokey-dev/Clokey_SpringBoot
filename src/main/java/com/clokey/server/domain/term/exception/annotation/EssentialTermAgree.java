@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 
 @Documented
 @Constraint(validatedBy = EssentialTermAgreeValidator.class)
-@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER }) // 메소드, 필드, 파라미터에서 사용 가능
+@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER ,ElementType.TYPE}) // 메소드, 필드, 파라미터에서 사용 가능
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EssentialTermAgree {
     String message() default "필수 약관에 동의하지 않았습니다.";  // 기본 에러 메시지

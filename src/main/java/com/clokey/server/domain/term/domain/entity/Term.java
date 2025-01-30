@@ -1,6 +1,7 @@
 package com.clokey.server.domain.term.domain.entity;
 
 import com.clokey.server.domain.model.entity.BaseEntity;
+import com.clokey.server.domain.term.exception.annotation.EssentialTermAgree;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +11,6 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Term extends BaseEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
