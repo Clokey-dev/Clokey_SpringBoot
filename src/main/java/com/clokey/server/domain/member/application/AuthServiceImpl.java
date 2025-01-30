@@ -134,48 +134,7 @@ public class AuthServiceImpl implements AuthService {
 
 
 
-// 로그 확인용 메서드
-//    public AuthDTO.KakaoUserResponse getUserInfoFromKakao(String accessToken) {
-//        RestTemplate restTemplate = new RestTemplate();
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setBearerAuth(accessToken);
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//
-//        HttpEntity<String> entity = new HttpEntity<>(headers);
-//
-//        String url = "https://kapi.kakao.com/v2/user/me"
-//                + "?property_keys=[\"kakao_account.profile\", \"kakao_account.email\"]";
-//
-//        try {
-//            ResponseEntity<String> response = restTemplate.exchange(
-//                    url,
-//                    HttpMethod.GET,
-//                    entity,
-//                    String.class
-//            );
-//
-//            logger.info("Kakao API Response: {}", response.getBody());
-//
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            AuthDTO.KakaoUserResponse kakaoUser = objectMapper.readValue(response.getBody(), AuthDTO.KakaoUserResponse.class);
-//
-//            // ✅ 예외 처리: profile도 없으면 문제!
-//            if (kakaoUser.getKakaoAccount() == null || kakaoUser.getKakaoAccount().getProfile() == null) {
-//                throw new MemberException(ErrorStatus.ESSENTIAL_TERM_NOT_AGREED);
-//            }
-//
-//            return kakaoUser;
-//
-//        } catch (HttpClientErrorException e) {
-//            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-//                throw new MemberException(ErrorStatus.INVALID_TOKEN);
-//            }
-//            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 API 요청에 실패했습니다.");
-//        } catch (JsonProcessingException e) {
-//            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "JSON 파싱 오류");
-//        }
-//    }
+
 
 
 
@@ -202,7 +161,6 @@ public class AuthServiceImpl implements AuthService {
             return response.getBody();
         }
 
-        /* 프론트와 연결 시 이 부분 주석해제 */
         catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
                 throw new MemberException(ErrorStatus.INVALID_TOKEN);
@@ -210,34 +168,8 @@ public class AuthServiceImpl implements AuthService {
 
             throw new MemberException(ErrorStatus.LOGIN_FAILED);
         }
-            /* 프론트와 연결 시 이 부분 주석해제 */
 
 
-
-            /* 프론트와 연결시 이 부분 주석*/
-//        catch (HttpClientErrorException e) {
-//            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-//                // ✅ 유효하지 않은 토큰이라도 더미 데이터 반환
-//                AuthDTO.KakaoUserResponse dummyResponse = new AuthDTO.KakaoUserResponse();
-//                dummyResponse.setId(123456L);  // 임의의 사용자 ID 설정
-//
-//                // KakaoAccount 객체와 Profile 설정
-//                AuthDTO.KakaoUserResponse.KakaoAccount kakaoAccount = new AuthDTO.KakaoUserResponse.KakaoAccount();
-//                kakaoAccount.setEmail("dummy2@example.com");
-//
-//                AuthDTO.KakaoUserResponse.KakaoAccount.Profile profile = new AuthDTO.KakaoUserResponse.KakaoAccount.Profile();
-//                profile.setNickname("Dummy User2");
-//
-//                // Profile을 KakaoAccount에 설정
-//                kakaoAccount.setProfile(profile);
-//                dummyResponse.setKakaoAccount(kakaoAccount);
-//
-//                return dummyResponse;
-//            }
-//            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 API 요청에 실패했습니다.");
-//        }
-
-            /* 프론트와 연결 시 이 부분 주석*/
 
         }
 
