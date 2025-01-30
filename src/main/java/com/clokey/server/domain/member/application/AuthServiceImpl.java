@@ -208,7 +208,7 @@ public class AuthServiceImpl implements AuthService {
                 throw new MemberException(ErrorStatus.INVALID_TOKEN);
             }
 
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 API 요청에 실패했습니다.");
+            throw new MemberException(ErrorStatus.LOGIN_FAILED);
         }
             /* 프론트와 연결 시 이 부분 주석해제 */
 
