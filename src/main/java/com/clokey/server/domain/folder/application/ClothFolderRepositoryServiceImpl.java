@@ -18,8 +18,8 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
     private final ClothFolderRepository clothFolderRepository;
 
     @Override
-    public boolean existsByCloth_IdAndFolder_Id(Long clothId, Long folderId){
-        return clothFolderRepository.existsByCloth_IdAndFolder_Id(clothId,folderId);
+    public boolean existsByClothIdAndFolderId(Long clothId, Long folderId){
+        return clothFolderRepository.existsByClothIdAndFolderId(clothId,folderId);
     }
 
     @Modifying
@@ -31,5 +31,10 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
     @Transactional
     public void saveAll(List<ClothFolder> clothFolder) {
         clothFolderRepository.saveAll(clothFolder);
+    }
+
+    @Override
+    public List<ClothFolder> existsByAllClothIdsAndFolderId(List<Long> clothIds, Long folderId) {
+        return clothFolderRepository.findByClothIdInAndFolderId(clothIds, folderId);
     }
 }

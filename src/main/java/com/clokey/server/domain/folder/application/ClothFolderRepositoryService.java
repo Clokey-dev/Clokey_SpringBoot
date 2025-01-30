@@ -9,9 +9,11 @@ import java.util.List;
 
 public interface ClothFolderRepositoryService {
 
-    boolean existsByCloth_IdAndFolder_Id(Long clothId, Long folderId);
+    boolean existsByClothIdAndFolderId(Long clothId, Long folderId);
 
     void deleteAllByClothId(@Param("clothId") Long clothId);
 
     void saveAll(List<ClothFolder> clothFolder);
+
+    List<ClothFolder> existsByAllClothIdsAndFolderId(List<Long> clothIds, Long folderId);
 }
