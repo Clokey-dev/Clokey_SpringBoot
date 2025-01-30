@@ -29,4 +29,6 @@ public interface HistoryService {
     void updateComment(HistoryRequestDTO.UpdateComment updateCommentRequest,Long commentId,Long memberId);
 
     void deleteHistory(Long historyId, Long memberId);
+
+    HistoryResponseDTO.LikedUserResults getLikedUser(Long memberId, Long historyId);
 }

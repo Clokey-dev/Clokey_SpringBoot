@@ -321,6 +321,11 @@ public class HistoryServiceImpl implements HistoryService {
         historyRepositoryService.deleteById(historyId);
     }
 
+    @Override
+    public HistoryResponseDTO.LikedUserResults getLikedUser(Long memberId, Long historyId) {
+        return null;
+    }
+
     private void validateMyComment(Long commentId, Long memberId) {
         Comment comment = commentRepositoryService.findById(commentId);
         if(!comment.getMember().getId().equals(memberId)){

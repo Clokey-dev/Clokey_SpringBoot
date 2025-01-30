@@ -103,6 +103,20 @@ public class HistoryRestController {
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_LIKE_STATUS_CHANGED, result);
     }
 
+    @GetMapping("/{historyId}/likes")
+    @Operation(summary = "특정 기록에 좋아요를 누른 유저의 정보를 확인합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "기록의 좋아요를 누른 유저 정보를 성공적으로 조회했습니다."),
+    })
+    public BaseResponse<HistoryResponseDTO.LikedUserResults> getLikedUsers(@PathVariable @HistoryExist Long historyId,
+                                        @RequestParam Long myMemberId) {
+
+        HistoryResponseDTO.LikedUserResults result = historyService.getLikedUser(historyId, myMemberId);
+
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_LIKE_USER, result);
+    }
+
+
     @PostMapping("/{historyId}/comments")
     @Operation(summary = "댓글을 남길 수 있는 API")
     @ApiResponses({
