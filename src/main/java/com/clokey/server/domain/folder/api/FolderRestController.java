@@ -28,22 +28,25 @@ public class FolderRestController {
 
     @Operation(summary = "폴더 삭제 API", description = "폴더 삭제하는 API입니다.")
     @DeleteMapping("/folders/{folderId}")
-    public BaseResponse<String> deleteFolder(@FolderExist @PathVariable Long folderId) {
-        folderService.deleteFolder(folderId);
+    public BaseResponse<String> deleteFolder(@RequestParam Long memberId,
+                                             @FolderExist @PathVariable Long folderId) {
+        folderService.deleteFolder(folderId, memberId);
         return BaseResponse.onSuccess(SuccessStatus.FOLDER_DELETED, null);
     }
 
     @Operation(summary = "폴더 이름 수정 API", description = "폴더 이름 수정하는 API입니다.")
     @PatchMapping("/folders/{folderId}")
-    public BaseResponse<String> editFolderName(@RequestBody FolderRequestDTO.FolderEditRequest request) {
-        folderService.editFolderName(request.getFolderId(), request.getNewName());
+    public BaseResponse<String> editFolderName(@RequestParam Long memberId,
+                                               @RequestBody FolderRequestDTO.FolderEditRequest request) {
+        folderService.editFolderName(request.getFolderId(), request.getNewName(), memberId);
         return BaseResponse.onSuccess(SuccessStatus.FOLDER_EDIT_SUCCESS, null);
     }
 
     @Operation(summary = "폴더에 옷 추가 API", description = "폴더에 옷 추가하는 API입니다.")
     @PatchMapping("folders/{folderId}/clothes")
-    public BaseResponse<String> addClothesToFolder(@RequestBody FolderRequestDTO.AddClothesToFolderRequest request) {
-        folderService.addClothesToFolder(request);
+    public BaseResponse<String> addClothesToFolder(@RequestParam Long memberId,
+                                                   @RequestBody FolderRequestDTO.AddClothesToFolderRequest request) {
+        folderService.addClothesToFolder(request, memberId);
         return BaseResponse.onSuccess(SuccessStatus.FOLDER_ADD_CLOTHES_SUCCESS, null);
     }
 }

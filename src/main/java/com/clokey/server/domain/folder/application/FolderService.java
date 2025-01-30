@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface FolderService {
     Folder createFolder(Long memberId, FolderRequestDTO.FolderCreateRequest request);
-    void deleteFolder(Long folderId);
-    void editFolderName(Long folderId, String newName);
-    void addClothesToFolder(FolderRequestDTO.AddClothesToFolderRequest request);
+    void deleteFolder(Long folderId, Long memberId);
+    void editFolderName(Long folderId, String newName, Long memberId);
+    void addClothesToFolder(FolderRequestDTO.AddClothesToFolderRequest request, Long memberId);
 }

@@ -7,6 +7,7 @@ import com.clokey.server.domain.folder.exception.FolderException;
 import com.clokey.server.domain.folder.domain.entity.Folder;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.folder.domain.entity.ClothFolder;
+import com.clokey.server.domain.folder.exception.validator.FolderAccessibleValidator;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.folder.domain.repository.FolderRepository;
@@ -30,6 +31,8 @@ public class FolderServiceImpl implements FolderService {
     private final ClothFolderRepositoryService clothFolderRepositoryService;
     private final ClothRepositoryService clothRepositoryService;
 
+    private final FolderAccessibleValidator folderAccessibleValidator;
+
 
     @Override
     @Transactional
@@ -42,7 +45,8 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     @Transactional
-    public void deleteFolder(Long folderId) {
+    public void deleteFolder(Long folderId, Long memberId) {
+        folderAccessibleValidator.validateFolderAccessOfMember(folderId, memberId);
         try {
             folderRepositoryService.deleteById(folderId);
         } catch (Exception ex) {
@@ -52,7 +56,8 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     @Transactional
-    public void editFolderName(Long folderId, String newName) {
+    public void editFolderName(Long folderId, String newName, Long memberId) {
+        folderAccessibleValidator.validateFolderAccessOfMember(folderId, memberId);
         Folder folder = folderRepositoryService.findById(folderId);
         folder.rename(newName);
         folderRepositoryService.save(folder);
@@ -60,7 +65,8 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     @Transactional
-    public void addClothesToFolder(FolderRequestDTO.AddClothesToFolderRequest request) {
+    public void addClothesToFolder(FolderRequestDTO.AddClothesToFolderRequest request, Long memberId) {
+        folderAccessibleValidator.validateFolderAccessOfMember(request.getFolderId(), memberId);
         Folder folder = folderRepositoryService.findById(request.getFolderId());
 
         List<Cloth> clothes = clothRepositoryService.findAllById(request.getClothesId());
