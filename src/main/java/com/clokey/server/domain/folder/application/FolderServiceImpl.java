@@ -1,6 +1,7 @@
 package com.clokey.server.domain.folder.application;
 
 import com.clokey.server.domain.cloth.application.ClothRepositoryService;
+import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
 import com.clokey.server.domain.folder.converter.FolderConverter;
 import com.clokey.server.domain.folder.dto.FolderRequestDTO;
 import com.clokey.server.domain.folder.exception.FolderException;
@@ -32,6 +33,7 @@ public class FolderServiceImpl implements FolderService {
     private final ClothRepositoryService clothRepositoryService;
 
     private final FolderAccessibleValidator folderAccessibleValidator;
+    private final ClothAccessibleValidator clothAccessibleValidator;
 
 
     @Override
@@ -66,10 +68,12 @@ public class FolderServiceImpl implements FolderService {
     @Override
     @Transactional
     public void addClothesToFolder(FolderRequestDTO.AddClothesToFolderRequest request, Long memberId) {
-        folderAccessibleValidator.validateFolderAccessOfMember(request.getFolderId(), memberId);
         Folder folder = folderRepositoryService.findById(request.getFolderId());
+        folderAccessibleValidator.validateFolderAccessOfMember(folder.getId(), memberId);
 
         List<Cloth> clothes = clothRepositoryService.findAllById(request.getClothesId());
+        clothAccessibleValidator.validateClothOfMember(clothes.stream().map(Cloth::getId).collect(Collectors.toList()), memberId);
+
         List<ClothFolder> clothFolders = clothes.stream()
                 .map(cloth -> new ClothFolder(cloth, folder))
                 .collect(Collectors.toList());
