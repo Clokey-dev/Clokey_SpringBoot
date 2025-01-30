@@ -9,6 +9,7 @@ import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +80,7 @@ public class AuthServiceImpl implements AuthService {
         return claims.get("email", String.class);
     }
 
+    @Transactional
     @Override
     public ResponseEntity<AuthDTO.TokenResponse> authenticateKakaoUser(String kakaoAccessToken){
         // 카카오에서 사용자 정보 가져오기
@@ -103,12 +105,10 @@ public class AuthServiceImpl implements AuthService {
             isNewUser = true; // 새로운 사용자
         }
 
-        // 어세스토큰, 리프레시토큰 생성
         String accessToken = generateAccessToken(member.getId(), member.getEmail());
         String refreshToken = generateRefreshToken(member.getId());
 
-        // 리프레쉬 토큰을 DB에 저장
-        member.setRefreshToken(refreshToken);
+        member.updateToken(accessToken, refreshToken);
         memberRepositoryService.saveMember(member);
 
         // 토큰 반환
@@ -116,8 +116,8 @@ public class AuthServiceImpl implements AuthService {
                 member.getId(),
                 member.getEmail(),
                 member.getNickname(),
-                accessToken,
-                refreshToken,
+                member.getAccessToken(),
+                member.getRefreshToken(),
                 member.getRegisterStatus()
         );
 

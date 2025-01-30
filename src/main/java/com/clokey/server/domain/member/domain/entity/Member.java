@@ -71,6 +71,10 @@ public class Member extends BaseEntity {
     @Column(nullable = true, unique = true)
     private String refreshToken;
 
+    @Column(nullable = true, unique = true)
+    private String accessToken;
+
+
 
     //필요한 양방향 매핑을 제외하고 삭제해주세요.
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
@@ -96,5 +100,10 @@ public class Member extends BaseEntity {
 
     public void updateRegisterStatus(RegisterStatus registerStatus) {
         this.registerStatus = registerStatus;
+    }
+
+    public void updateToken(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 }
