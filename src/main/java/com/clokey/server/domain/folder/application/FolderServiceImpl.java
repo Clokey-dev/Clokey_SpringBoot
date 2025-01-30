@@ -67,8 +67,8 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     @Transactional
-    public void addClothesToFolder(FolderRequestDTO.AddClothesToFolderRequest request, Long memberId) {
-        Folder folder = folderRepositoryService.findById(request.getFolderId());
+    public void addClothesToFolder(Long folderId, FolderRequestDTO.AddClothesToFolderRequest request, Long memberId) {
+        Folder folder = folderRepositoryService.findById(folderId);
         folderAccessibleValidator.validateFolderAccessOfMember(folder.getId(), memberId);
 
         List<Cloth> clothes = clothRepositoryService.findAllById(request.getClothesId());

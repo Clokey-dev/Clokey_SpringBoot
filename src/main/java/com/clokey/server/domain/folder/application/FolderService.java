@@ -9,5 +9,5 @@ public interface FolderService {
     Folder createFolder(Long memberId, FolderRequestDTO.FolderCreateRequest request);
     void deleteFolder(Long folderId, Long memberId);
     void editFolderName(Long folderId, String newName, Long memberId);
-    void addClothesToFolder(FolderRequestDTO.AddClothesToFolderRequest request, Long memberId);
+    void addClothesToFolder(Long folderId, FolderRequestDTO.AddClothesToFolderRequest request, Long memberId);
 }

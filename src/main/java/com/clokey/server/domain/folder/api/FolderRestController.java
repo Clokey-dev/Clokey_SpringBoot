@@ -26,7 +26,7 @@ public class FolderRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_201", description = "성공적으로 생성되었습니다."),
     })
     public BaseResponse<FolderResponseDTO.FolderIdDTO> createFolder(@RequestParam Long memberId,
-                                                                    @RequestBody  @Valid FolderRequestDTO.FolderCreateRequest request) {
+                                                                    @RequestBody @Valid FolderRequestDTO.FolderCreateRequest request) {
         FolderResponseDTO.FolderIdDTO response = FolderConverter.toFolderIdDTO(folderService.createFolder(memberId, request));
         return BaseResponse.onSuccess(SuccessStatus.FOLDER_CREATED, response);
     }
@@ -59,8 +59,9 @@ public class FolderRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_201", description = "성공적으로 추가되었습니다."),
     })
     public BaseResponse<String> addClothesToFolder(@RequestParam Long memberId,
-                                                   @RequestBody  @Valid FolderRequestDTO.AddClothesToFolderRequest request) {
-        folderService.addClothesToFolder(request, memberId);
+                                                   @PathVariable @FolderExist Long folderId,
+                                                   @RequestBody @Valid FolderRequestDTO.AddClothesToFolderRequest request) {
+        folderService.addClothesToFolder(folderId, request, memberId);
         return BaseResponse.onSuccess(SuccessStatus.FOLDER_ADD_CLOTHES_SUCCESS, null);
     }
 }
