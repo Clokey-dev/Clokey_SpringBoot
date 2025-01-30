@@ -54,7 +54,7 @@ public class FolderRestController {
     }
 
     @Operation(summary = "폴더에 옷 추가 API", description = "폴더에 옷 추가하는 API입니다.")
-    @PatchMapping("folders/{folderId}/clothes")
+    @PostMapping("folders/{folderId}/clothes")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_201", description = "성공적으로 추가되었습니다."),
     })
