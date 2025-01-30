@@ -64,6 +64,7 @@ public enum ErrorStatus implements BaseErrorCode {
     IMAGE_QUANTITY_OVER_HISTORY_IMAGE_LIMIT(HttpStatus.BAD_REQUEST,"HISTORY_4013","사진을 10개 넘게 업로드 할 수 없습니다."),
     NOT_MY_HISTORY(HttpStatus.BAD_REQUEST,"HISTORY_4014","사용자의 기록이 아닙니다"),
     NOT_MY_COMMENT(HttpStatus.BAD_REQUEST,"HISTORY_4015","사용자의 댓글이 아닙니다"),
+    MUST_POST_HISTORY_IMAGE(HttpStatus.BAD_REQUEST,"HISTORY_4016","기록에는 반드시 사진을 첨부해야합니다"),
 
     NO_HISTORY_FOR_DATE(HttpStatus.BAD_REQUEST,"HISTORY_4016","해당 날짜에 기록이 없습니다"),
 

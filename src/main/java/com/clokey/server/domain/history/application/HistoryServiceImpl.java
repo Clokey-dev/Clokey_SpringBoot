@@ -15,6 +15,7 @@ import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.global.error.code.status.ErrorStatus;
+import com.clokey.server.global.error.exception.DatabaseException;
 import com.clokey.server.global.error.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -195,10 +196,13 @@ public class HistoryServiceImpl implements HistoryService {
         // History 엔티티 생성 후 요청 정보 반환해서 저장
         History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));
 
-        // 이미지는 첨부했다면 업로드를 진행합니다.
-        if (imageFiles != null && !imageFiles.isEmpty()) {
-            historyImageRepositoryService.save(imageFiles, history);
+        //이미지는 반드시 첨부해야 합니다.
+        if (imageFiles == null || imageFiles.isEmpty()) {
+            throw new HistoryException(ErrorStatus.MUST_POST_HISTORY_IMAGE);
         }
+
+        historyImageRepositoryService.save(imageFiles, history);
+
 
         List<Cloth> cloths = clothRepositoryService.findAllById(historyCreateRequest.getClothes());
         List<HistoryCloth> historyCloths = cloths.stream()
@@ -248,9 +252,14 @@ public class HistoryServiceImpl implements HistoryService {
         clothAccessibleValidator.validateClothOfMember(historyUpdate.getClothes(), memberId);
 
         historyImageRepositoryService.deleteAllByHistoryId(historyId);
-        if (images != null && !images.isEmpty()) {
-            historyImageRepositoryService.save(images, historyRepositoryService.findById(historyId));
+
+        //이미지는 반드시 첨부해야 합니다.
+        if (images == null || images.isEmpty()) {
+            throw new HistoryException(ErrorStatus.MUST_POST_HISTORY_IMAGE);
         }
+
+        historyImageRepositoryService.save(images, historyRepositoryService.findById(historyId));
+
 
         updateHistoryClothes(
                 historyUpdate.getClothes(),
