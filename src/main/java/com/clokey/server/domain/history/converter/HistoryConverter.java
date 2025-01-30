@@ -147,8 +147,20 @@ public class HistoryConverter {
                 .imageUrls(historyImageUrls)
                 .build();
     }
-
-
-
+    public static HistoryResponseDTO.LikedUserResults toLikedUserResult(List<Member> members, List<Boolean> followStatus){
+        List<HistoryResponseDTO.LikedUserResult> likedUserResults = new ArrayList<>();
+        for(int i=0; i<members.size(); i++){
+            Member member = members.get(i);
+            likedUserResults.add(HistoryResponseDTO.LikedUserResult.builder()
+                            .clokeyId(member.getClokeyId())
+                            .followStatus(followStatus.get(i))
+                            .memberId(member.getId())
+                            .nickname(member.getNickname())
+                    .build());
+        }
+        return HistoryResponseDTO.LikedUserResults.builder()
+                .likedUsers(likedUserResults)
+                .build();
+    }
 }
 
