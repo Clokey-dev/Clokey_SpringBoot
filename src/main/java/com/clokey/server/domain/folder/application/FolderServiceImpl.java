@@ -2,6 +2,7 @@ package com.clokey.server.domain.folder.application;
 
 import com.clokey.server.domain.cloth.application.ClothRepositoryService;
 import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
+import com.clokey.server.domain.cloth.exception.validator.ClothExistValidator;
 import com.clokey.server.domain.folder.converter.FolderConverter;
 import com.clokey.server.domain.folder.dto.FolderRequestDTO;
 import com.clokey.server.domain.folder.exception.FolderException;
@@ -70,6 +71,12 @@ public class FolderServiceImpl implements FolderService {
     public void addClothesToFolder(Long folderId, FolderRequestDTO.AddClothesToFolderRequest request, Long memberId) {
         Folder folder = folderRepositoryService.findById(folderId);
         folderAccessibleValidator.validateFolderAccessOfMember(folder.getId(), memberId);
+
+        request.getClothIds().forEach(clothId -> {
+            if(!clothRepositoryService.existsById(clothId)){
+                throw new FolderException(ErrorStatus.NO_SUCH_CLOTH);
+            }
+        });
 
         List<Cloth> clothes = clothRepositoryService.findAllById(request.getClothIds());
         clothAccessibleValidator.validateClothOfMember(clothes.stream().map(Cloth::getId).collect(Collectors.toList()), memberId);
