@@ -4,7 +4,6 @@ import com.clokey.server.domain.cloth.domain.entity.Cloth;
 
 import java.util.List;
 
-
 public interface ClothRepositoryService {
 
     Cloth findById(Long id);
@@ -15,5 +14,5 @@ public interface ClothRepositoryService {
 
     boolean existsById(Long clothId);
 
-    List<Cloth> findAllById(List<Long> clothId);
+    List<Cloth> findAllById(List<Long> clothIds);
 }

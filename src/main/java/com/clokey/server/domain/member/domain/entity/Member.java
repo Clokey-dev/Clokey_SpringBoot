@@ -2,7 +2,9 @@ package com.clokey.server.domain.member.domain.entity;
 
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.member.dto.MemberResponseDTO;
 import com.clokey.server.domain.model.entity.BaseEntity;
+import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.domain.term.domain.entity.MemberTerm;
 import com.clokey.server.domain.model.entity.enums.MemberStatus;
@@ -50,9 +52,15 @@ public class Member extends BaseEntity {
 
     private String profileImageUrl;
 
+    private String profileBackImageUrl;
+
     @Enumerated(EnumType.STRING) //활성화여부
     @Column(columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'" , nullable = false)
     private MemberStatus status;
+
+    @Enumerated(EnumType.STRING) //성별
+    @Column(columnDefinition = "VARCHAR(30) DEFAULT 'NOT_AGREED'", nullable = false)
+    private RegisterStatus registerStatus;
 
     private LocalDate inactiveDate;
 
@@ -72,4 +80,17 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<History> historyList = new ArrayList<>();
+
+
+    public void profileUpdate(MemberResponseDTO.ProfileRQ request) {
+        this.nickname = request.getNickname();
+        this.clokeyId = request.getClokeyId();
+        this.profileImageUrl = request.getProfileImageUrl();
+        this.bio = request.getBio();
+        this.profileBackImageUrl = request.getProfileBackImageUrl();
+    }
+
+    public void updateRegisterStatus(RegisterStatus registerStatus) {
+        this.registerStatus = registerStatus;
+    }
 }

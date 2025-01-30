@@ -43,7 +43,7 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
     }
 
     @Override
-    public List<Cloth> findAllById(List<Long> clothId) {
-        return clothRepository.findAllById(clothId);
+    public List<Cloth> findAllById(List<Long> clothIds) {
+        return clothRepository.findAllById(clothIds);
     }
 }

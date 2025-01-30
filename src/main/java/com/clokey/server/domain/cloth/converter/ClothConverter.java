@@ -39,7 +39,7 @@ public class ClothConverter {
                 .visibility(cloth.getVisibility())
                 .brand(cloth.getBrand())
                 .clothUrl(cloth.getClothUrl())
-                .categoryId(cloth.getCategory().getId())
+                .category(cloth.getCategory().getName())
                 .build();
     }
 
@@ -81,7 +81,7 @@ public class ClothConverter {
                 .build();
     }
 
-    public static Cloth toCloth(Long memberId, ClothRequestDTO.ClothCreateOrUpdateRequest request) {
+    public static Cloth toCloth(Long categoryId, Long memberId, ClothRequestDTO.ClothCreateOrUpdateRequest request) {
         return Cloth.builder()
                 .name(request.getName())
                 .seasons(request.getSeasons()) // List<Season> 직접 할당
@@ -92,7 +92,7 @@ public class ClothConverter {
                 .clothUrl(request.getClothUrl())
                 .brand(request.getBrand())
                 .category(Category.builder()
-                        .id(request.getCategoryId())
+                        .id(categoryId)
                         .build()) // Category를 간단히 생성 (참조만 설정)
                 .member(Member.builder()
                         .id(memberId)

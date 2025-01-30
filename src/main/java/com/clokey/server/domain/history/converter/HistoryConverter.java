@@ -1,5 +1,6 @@
 package com.clokey.server.domain.history.converter;
 
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.history.dto.HistoryRequestDTO;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.domain.history.domain.entity.Comment;
@@ -16,45 +17,33 @@ import java.util.stream.IntStream;
 
 public class HistoryConverter {
 
-    public static HistoryResponseDTO.DayViewResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked) {
-        return HistoryResponseDTO.DayViewResult.builder()
+    public static HistoryResponseDTO.DailyHistoryResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked, List<Cloth> cloths) {
+        return HistoryResponseDTO.DailyHistoryResult.builder()
                 .userId(history.getMember().getId())
                 .contents(history.getContent())
+                .memberImageUrl(history.getMember().getProfileImageUrl())
                 .imageUrl(imageUrl)
                 .hashtags(hashtags)
                 .visibility(history.getVisibility().equals(Visibility.PUBLIC))
                 .likeCount(likeCount)
                 .isLiked(isLiked)
                 .date(history.getHistoryDate())
+                .nickName(history.getMember().getNickname())
+                .clokeyId(history.getMember().getClokeyId())
+                .cloths(cloths.stream()
+                        .map(HistoryConverter::toHistoryCloth)
+                        .toList())
                 .build();
     }
 
-    public static HistoryResponseDTO.MonthViewResult toPublicMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
-
-        List<HistoryResponseDTO.HistoryResult> HistoryResults = new ArrayList<>();
-
-        for (int i = 0; i < histories.size(); i++) {
-            History history = histories.get(i);
-
-            String historyImageUrl;
-
-            //공개된 경우 사진 URL을 가져오고 아닌 경우 "비공개입니다"를 반환합니다.
-            if (history.getVisibility().equals(Visibility.PUBLIC)){
-                historyImageUrl = historyFirstImageUrls.get(i);
-            } else {
-                historyImageUrl = "비공개입니다";
-            }
-
-            HistoryResults.add(toHistoryResult(history, historyImageUrl));
-        }
-
-        return HistoryResponseDTO.MonthViewResult.builder()
-                .userId(memberId)
-                .histories(HistoryResults)
+    private static HistoryResponseDTO.HistoryClothResult toHistoryCloth(Cloth cloth){
+        return HistoryResponseDTO.HistoryClothResult.builder()
+                .clothId(cloth.getId())
+                .clothImageUrl(cloth.getClothUrl())
                 .build();
     }
 
-    public static HistoryResponseDTO.MonthViewResult toAllMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
+    public static HistoryResponseDTO.MonthViewResult toMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
 
         List<HistoryResponseDTO.HistoryResult> HistoryResults = new ArrayList<>();
 

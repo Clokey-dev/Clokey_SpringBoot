@@ -3,8 +3,6 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ develop ]
-  pull_request:
-    branches: [ develop ]
 
 jobs:
   build:
@@ -41,7 +39,7 @@ jobs:
         run: |
           docker build -t yongjun0511/clokey-docker:develop-latest .
 
-      - name: Push Docker Image And update
+      - name: Push Docker Image
         run: |
           echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
           docker push yongjun0511/clokey-docker:develop-latest 
@@ -63,7 +61,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-            sudo docker pull yongjun0511/clokey-docker:develop-latest 
+            docker pull yongjun0511/clokey-docker:develop-latest 
             sudo chmod +x /home/ubuntu/cicd/deploy.sh
             sudo /home/ubuntu/cicd/deploy.sh
             

@@ -2,6 +2,7 @@ package com.clokey.server.domain.term.application;
 
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.clokey.server.domain.term.domain.entity.Term;
 import com.clokey.server.domain.term.domain.entity.MemberTerm;
 import com.clokey.server.domain.term.domain.repository.MemberTermRepository;
@@ -55,6 +56,14 @@ public class TermCommandServiceImpl implements TermCommandService {
                     .termId(term.getId())
                     .agreed(termDto.getAgreed())
                     .build());
+        }
+
+        if(member.getRegisterStatus()==RegisterStatus.NOT_AGREED) {
+            // 약관 동의가 완료되었으므로 회원의 등록 상태를 업데이트
+            member.updateRegisterStatus(RegisterStatus.AGREED_PROFILE_NOT_SET);
+
+            // 저장 (등록 상태 업데이트 반영)
+            memberRepositoryService.saveMember(member);
         }
 
         // 최종 응답 생성

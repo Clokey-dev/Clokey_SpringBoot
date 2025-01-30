@@ -8,9 +8,7 @@ import java.util.List;
 
 public interface HistoryImageRepositoryService {
 
-    boolean existsByHistory_Id(Long historyId);
-
-    List<HistoryImage> findByHistory_Id(Long historyId);
+    List<HistoryImage> findByHistoryId(Long historyId);
 
     void save(MultipartFile historyImage, History history);
 

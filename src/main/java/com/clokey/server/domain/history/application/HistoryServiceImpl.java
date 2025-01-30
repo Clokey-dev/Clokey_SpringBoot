@@ -8,27 +8,32 @@ import com.clokey.server.domain.history.dto.HistoryRequestDTO;
 import com.clokey.server.domain.history.exception.HistoryException;
 import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryAlreadyExistValidator;
+import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import jakarta.transaction.Transactional;
+import com.clokey.server.global.error.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class HistoryServiceImpl implements HistoryService {
 
+    private final HistoryLikedValidator historyLikedValidator;
     private final HistoryAlreadyExistValidator historyAlreadyExistValidator;
     private final HistoryRepositoryService historyRepositoryService;
     private final CommentRepositoryService commentRepositoryService;
@@ -43,7 +48,10 @@ public class HistoryServiceImpl implements HistoryService {
     private final HistoryAccessibleValidator historyAccessibleValidator;
 
     @Override
+    @Transactional
     public HistoryResponseDTO.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked) {
+
+        historyLikedValidator.validateIsLiked(memberId, historyId, isLiked);
 
         History history = historyRepositoryService.findById(historyId);
 
@@ -63,7 +71,10 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
+    @Transactional
     public HistoryResponseDTO.CommentWriteResult writeComment(Long historyId, Long parentCommentId, Long memberId, String content) {
+
+        validateParentCommentHistory(historyId, parentCommentId);
 
         History history = historyRepositoryService.findById(historyId);
 
@@ -86,25 +97,38 @@ public class HistoryServiceImpl implements HistoryService {
         return HistoryConverter.toCommentWriteResult(savedComment);
     }
 
-    @Override
-    public HistoryResponseDTO.DayViewResult getDaily(Long historyId, Long memberId) {
-        History history = historyRepositoryService.findById(historyId);
-        List<HistoryImage> historyImages = historyImageRepositoryService.findByHistory_Id(historyId);
-        List<String> imageUrl = historyImages.stream()
-                .map(HistoryImage::getImageUrl)
-                .toList();
-        List<HashtagHistory> hashtagHistories = hashtagHistoryRepositoryService.findByHistory_Id(historyId);
-        List<String> hashtags = hashtagHistories.stream()
-                .map(HashtagHistory::getHashtag)
-                .map(Hashtag::getName)
-                .toList();
-        int likeCount = memberLikeRepositoryService.countByHistory_Id(historyId);
-        boolean isLiked = memberLikeRepositoryService.existsByMember_IdAndHistory_Id(memberId, historyId);
+    private void validateParentCommentHistory(Long historyId,Long parentCommentId) {
+        if(parentCommentId == null) {
+            return;
+        }
 
-        return HistoryConverter.toDayViewResult(history, imageUrl, hashtags, likeCount, isLiked);
+        Long parentHistoryId = commentRepositoryService.findById(parentCommentId).getHistory().getId();
+
+        if(!parentHistoryId.equals(historyId)) {
+            throw new GeneralException(ErrorStatus.PARENT_COMMENT_HISTORY_ERROR);
+        }
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public HistoryResponseDTO.DailyHistoryResult getDaily(Long historyId, Long memberId) {
+
+        historyAccessibleValidator.validateHistoryAccessOfMember(historyId, memberId);
+
+        History history = historyRepositoryService.findById(historyId);
+        List<String> imageUrl = historyImageRepositoryService.findByHistoryId(historyId).stream()
+                .map(HistoryImage::getImageUrl)
+                .toList();
+        List<String> hashtags = hashtagHistoryRepositoryService.findHashtagNamesByHistoryId(historyId);
+        int likeCount = memberLikeRepositoryService.countByHistory_Id(historyId);
+        boolean isLiked = memberLikeRepositoryService.existsByMember_IdAndHistory_Id(memberId, historyId);
+        List<Cloth> cloths = historyClothRepositoryService.findAllClothByHistoryId(historyId);
+
+        return HistoryConverter.toDayViewResult(history, imageUrl, hashtags, likeCount, isLiked,cloths);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public HistoryResponseDTO.HistoryCommentResult getComments(Long historyId, int page) {
         Page<Comment> comments = commentRepositoryService.findByHistoryIdAndCommentIsNull(historyId, PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "createdAt")));
         List<List<Comment>> repliesForEachComment = comments.stream()
@@ -114,26 +138,48 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long this_member_id, Long memberId, String month) {
-        List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(memberId, month);
-        List<String> historyImageUrls = histories.stream()
-                .map(history -> historyImageRepositoryService.findByHistory_Id(history.getId())
-                        .stream()
-                        .sorted(Comparator.comparing(HistoryImage::getCreatedAt)) // createdAt 기준으로 정렬
-                        .findFirst() // 첫 번째 이미지 가져오기
-                        .map(HistoryImage::getImageUrl) // 이미지 URL을 추출
-                        .orElse("")) // 없으면 빈 문자열 반환
-                .toList();
+    @Transactional(readOnly = true)
+    public HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long myMemberId, Long memberId, String month) {
 
-        //나의 기록 열람은 공개 범위와 상관없이 모두 열람 가능합니다.
 
-        if (this_member_id.equals(memberId)) {
-            return HistoryConverter.toAllMonthViewResult(memberId, histories, historyImageUrls);
+
+        //회원 ID를 제공하지 않았다면 자기 자신의 기록 확인으로 전부 반환.
+        if(memberId == null){
+            List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(myMemberId,month);
+            List<String> firstImageUrlsOfHistory = histories.stream()
+                    .map(history -> historyImageRepositoryService.findByHistoryId(history.getId())
+                            .stream()
+                            .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
+                            .findFirst()
+                            .map(HistoryImage::getImageUrl)
+                            .orElse("")) // 사진이 없다면 빈칸
+                    .collect(Collectors.toList());
+            return HistoryConverter.toMonthViewResult(myMemberId, histories, firstImageUrlsOfHistory);
         }
 
-        //다른 멤버 기록 열람시 PUBLIC 기록만을 모아줍니다.
-        return HistoryConverter.toPublicMonthViewResult(memberId, histories, historyImageUrls);
+        //나의 기록이 아닌 경우 대상 멤버에게 접근 권한이 있는지 확인합니다.
+        historyAccessibleValidator.validateMemberAccessOfMember(memberId,myMemberId);
 
+        List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(memberId,month);
+        List<String> firstImageUrlsOfHistory = histories.stream()
+                .map(history -> historyImageRepositoryService.findByHistoryId(history.getId())
+                        .stream()
+                        .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
+                        .findFirst()
+                        .map(HistoryImage::getImageUrl)
+                        .orElse("")) // 사진이 없다면 빈칸
+                .collect(Collectors.toList());
+
+        //비공개 게시물을 가려줍니다.
+        for (int i = 0; i < histories.size(); i++) {
+            History history = histories.get(i);
+
+            if (history.getVisibility().equals(Visibility.PRIVATE)){
+                firstImageUrlsOfHistory.set(i, "비공개입니다");
+            }
+
+        }
+        return HistoryConverter.toMonthViewResult(memberId,histories,firstImageUrlsOfHistory);
     }
 
     @Override
@@ -154,13 +200,15 @@ public class HistoryServiceImpl implements HistoryService {
             historyImageRepositoryService.save(imageFiles, history);
         }
 
-
-        //기록-옷 테이블에 추가해줍니다.
-        historyCreateRequest.getClothes()
-                .forEach(clothId -> {
-                    historyClothRepositoryService.save(history, clothRepositoryService.findById(clothId));
-                });
-
+        List<Cloth> cloths = clothRepositoryService.findAllById(historyCreateRequest.getClothes());
+        List<HistoryCloth> historyCloths = cloths.stream()
+                        .map(cloth -> {
+                            return HistoryCloth.builder()
+                                    .history(history)
+                                    .cloth(cloth)
+                                    .build();
+                        }).toList();
+        historyClothRepositoryService.saveAll(historyCloths);
 
         historyCreateRequest.getHashtags()
                 .forEach(hashtagNames -> {
@@ -270,6 +318,7 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public HistoryResponseDTO.LastYearHistoryResult getLastYearHistory(Long memberId) {
 
         LocalDate today = LocalDate.now();
@@ -277,7 +326,7 @@ public class HistoryServiceImpl implements HistoryService {
 
         if(historyRepositoryService.checkHistoryExistOfDate(oneYearAgo,memberId)){
             Long historyOneYearAgoId = historyRepositoryService.getHistoryOfDate(oneYearAgo,memberId).getId();
-            List<String> historyUrls = historyImageRepositoryService.findByHistory_Id(historyOneYearAgoId).stream()
+            List<String> historyUrls = historyImageRepositoryService.findByHistoryId(historyOneYearAgoId).stream()
                     .map(HistoryImage::getImageUrl)
                     .toList();
             return HistoryConverter.toLastYearHistoryResult(historyOneYearAgoId,historyUrls);
@@ -289,16 +338,15 @@ public class HistoryServiceImpl implements HistoryService {
     private void updateHistoryClothes(List<Long> updatedClothes, List<Long> savedClothes, History history) {
 
         //updateClothes에만 존재하는 것은 추가 대상
-        List<Cloth> clothesToAdd = updatedClothes.stream()
+        List<Cloth> clothesToAdd = clothRepositoryService.findAllById(
+                 updatedClothes.stream()
                 .filter(clothId -> !savedClothes.contains(clothId))
-                .map(clothRepositoryService::findById)
-                .toList();
+                .toList());
 
         //반대는 삭제 대상
-        List<Cloth> clothesToDelete = savedClothes.stream()
+        List<Cloth> clothesToDelete = clothRepositoryService.findAllById(savedClothes.stream()
                 .filter(clothId -> !updatedClothes.contains(clothId))
-                .map(clothRepositoryService::findById)
-                .toList();
+                .toList());
 
         clothesToAdd.forEach(cloth -> historyClothRepositoryService.save(history, cloth));
         clothesToDelete.forEach(cloth -> historyClothRepositoryService.delete(history, cloth));
@@ -318,16 +366,14 @@ public class HistoryServiceImpl implements HistoryService {
 
 
         //updateHashtag에만 존재하는 것은 매핑 테이블에
-        List<Hashtag> hashtagToAdd = updatedHashtags.stream()
+        List<Hashtag> hashtagToAdd = hashtagRepositoryService.findHashtagsByNames(updatedHashtags.stream()
                 .filter(hashtagNames -> !savedHashtags.contains(hashtagNames))
-                .map(hashtagRepositoryService::findByName)
-                .toList();
+                .toList());
 
         //반대는 삭제 대상
-        List<Hashtag> hashtagToDelete = savedHashtags.stream()
+        List<Hashtag> hashtagToDelete = hashtagRepositoryService.findHashtagsByNames(savedHashtags.stream()
                 .filter(hashtagNames -> !updatedHashtags.contains(hashtagNames))
-                .map(hashtagRepositoryService::findByName)
-                .toList();
+                .toList());
 
         hashtagToAdd.forEach(hashtag -> hashtagHistoryRepositoryService.addHashtagHistory(hashtag, history));
         hashtagToDelete.forEach(hashtag -> hashtagHistoryRepositoryService.deleteHashtagHistory(hashtag, history));

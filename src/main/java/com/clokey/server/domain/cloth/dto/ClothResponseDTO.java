@@ -34,7 +34,7 @@ public class ClothResponseDTO {
         private Visibility visibility;
         private String brand;
         private String clothUrl;
-        private Long categoryId;
+        private String category;
     }
 
     @Builder

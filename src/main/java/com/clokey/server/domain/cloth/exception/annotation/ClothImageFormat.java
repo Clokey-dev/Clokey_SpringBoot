@@ -1,18 +1,18 @@
 package com.clokey.server.domain.cloth.exception.annotation;
 
-import com.clokey.server.domain.cloth.exception.validator.ClothExistValidator;
+import com.clokey.server.domain.cloth.exception.validator.ClothImageFormatValidator;
+import com.clokey.server.domain.cloth.exception.validator.ClothImagePresenceValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = ClothExistValidator.class)
+@Constraint(validatedBy = ClothImageFormatValidator.class)
 @Target( { ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ClothExist {
-
-    String message() default "해당하는 옷이 존재하지 않습니다.";
+public @interface ClothImageFormat {
+    String message() default "옷 이미지 형식이 올바르지 않았습니다.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

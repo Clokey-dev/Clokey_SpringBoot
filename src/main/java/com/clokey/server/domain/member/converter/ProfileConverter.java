@@ -16,6 +16,7 @@ public class ProfileConverter {
                 .nickname(member.getNickname())
                 .clokeyId(member.getClokeyId())
                 .profileImageUrl(member.getProfileImageUrl())
+                .profileBackImageUrl(member.getProfileBackImageUrl())
                 .updatedAt(LocalDateTime.now())
                 .build();
     }

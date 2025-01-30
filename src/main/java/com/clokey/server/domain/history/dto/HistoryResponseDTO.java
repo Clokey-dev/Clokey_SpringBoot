@@ -15,8 +15,11 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class DayViewResult {
+    public static class DailyHistoryResult {
         Long userId;
+        String memberImageUrl;
+        String nickName;
+        String clokeyId;
         String contents;
         List<String> imageUrl;
         List<String> hashtags;
@@ -24,7 +27,18 @@ public class HistoryResponseDTO {
         int likeCount;
         boolean isLiked;
         LocalDate date;
+        List<HistoryClothResult> cloths;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class HistoryClothResult {
+        Long clothId;
+        String clothImageUrl;
+    }
+
 
     @Builder
     @Getter

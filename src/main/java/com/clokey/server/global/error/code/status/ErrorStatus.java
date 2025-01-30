@@ -30,11 +30,14 @@ public enum ErrorStatus implements BaseErrorCode {
     NO_SUCH_CLOTH(HttpStatus.NOT_FOUND,"CLOTH_4041","존재하지 않는 옷 ID입니다."),
     NO_PERMISSION_TO_ACCESS_CLOTH(HttpStatus.BAD_REQUEST,"CLOTH_4002","옷에 대한 접근 권한이 없습니다."),
     NOT_MY_CLOTH(HttpStatus.BAD_REQUEST,"CLOTH_4003","나의 옷이 아닙니다."),
-    CLOTH_VISIBILITY_INVALID(HttpStatus.BAD_REQUEST,"CLOTH_4004","잘못된 visibility 값을 입력했습니다"),
-    CLOTH_TEMP_OUT_OF_RANGE(HttpStatus.BAD_REQUEST,"CLOTH_4005","옷의 상한 또는 하한 온도가 범위를 벗어났습니다"),
+    CLOTH_VISIBILITY_INVALID(HttpStatus.BAD_REQUEST,"CLOTH_4004","잘못된 Visibility 값을 입력했습니다."),
+    CLOTH_TEMP_OUT_OF_RANGE(HttpStatus.BAD_REQUEST,"CLOTH_4005","옷의 상한 또는 하한 온도가 범위를 벗어났습니다."),
     CLOTH_TEMP_ORDER_INVALID(HttpStatus.BAD_REQUEST,"CLOTH_4006","옷의 하한 온도가 상한 온도보다 높습니다."),
-    CLOTH_THICKNESS_OUT_OF_RANGE(HttpStatus.BAD_REQUEST,"CLOTH_4005","옷의 두께가 범위를 벗어났습니다."),
-    CLOTH_WEAR_NUM_BELOW_ZERO(HttpStatus.BAD_REQUEST,"CLOTH_4006","옷의 착용 횟수를 0아래로 내릴 수 없습니다"),
+    CLOTH_THICKNESS_INVALID(HttpStatus.BAD_REQUEST,"CLOTH_4007","잘못된 ThicknessLevel 값을 입력했습니다."),
+    CLOTH_WEAR_NUM_BELOW_ZERO(HttpStatus.BAD_REQUEST,"CLOTH_4008","옷의 착용 횟수를 0아래로 내릴 수 없습니다."),
+    CLOTH_INVAID_IMAGE_FORMAT(HttpStatus.BAD_REQUEST,"CLOTH_4009","옷의 사진을 입력하지 않았습니다."),
+    NO_CLOTH_IMAGE_INPUT(HttpStatus.BAD_REQUEST,"CLOTH_4010","옷의 사진 형식이 올바르지 않습니다."),
+    INVALID_CREATE_OR_UPDATE_CLOTH_FORMAT(HttpStatus.BAD_REQUEST,"CLOTH_4011","옷의 생성 및 수정 형식이 올바르지 않습니다."),
 
     //폴더 에러
     NO_SUCH_FOLDER(HttpStatus.NOT_FOUND,"FOLDER_4041","존재하지 않는 폴더 ID입니다."),
