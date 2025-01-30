@@ -7,7 +7,11 @@ import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.clokey.server.domain.model.entity.enums.SocialType;
 import com.clokey.server.domain.model.repository.MemberRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -109,6 +113,56 @@ public class AuthServiceImpl implements AuthService {
         //토큰 반환
         return new AuthDTO.TokenResponse(member.getId(), member.getEmail(), member.getNickname(), accessToken, refreshToken, member.getRegisterStatus());
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+
+
+
+
+// 로그 확인용 메서드
+//    public AuthDTO.KakaoUserResponse getUserInfoFromKakao(String accessToken) {
+//        RestTemplate restTemplate = new RestTemplate();
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setBearerAuth(accessToken);
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//
+//        HttpEntity<String> entity = new HttpEntity<>(headers);
+//
+//        String url = "https://kapi.kakao.com/v2/user/me"
+//                + "?property_keys=[\"kakao_account.profile\", \"kakao_account.email\"]";
+//
+//        try {
+//            ResponseEntity<String> response = restTemplate.exchange(
+//                    url,
+//                    HttpMethod.GET,
+//                    entity,
+//                    String.class
+//            );
+//
+//            logger.info("Kakao API Response: {}", response.getBody());
+//
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            AuthDTO.KakaoUserResponse kakaoUser = objectMapper.readValue(response.getBody(), AuthDTO.KakaoUserResponse.class);
+//
+//            // ✅ 예외 처리: profile도 없으면 문제!
+//            if (kakaoUser.getKakaoAccount() == null || kakaoUser.getKakaoAccount().getProfile() == null) {
+//                throw new MemberException(ErrorStatus.ESSENTIAL_TERM_NOT_AGREED);
+//            }
+//
+//            return kakaoUser;
+//
+//        } catch (HttpClientErrorException e) {
+//            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+//                throw new MemberException(ErrorStatus.INVALID_TOKEN);
+//            }
+//            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 API 요청에 실패했습니다.");
+//        } catch (JsonProcessingException e) {
+//            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "JSON 파싱 오류");
+//        }
+//    }
+
+
 
 
 

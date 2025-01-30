@@ -24,6 +24,7 @@ public class MemberResponseDTO {
         String nickname;
         String bio;
         String visibility;
+        boolean isFollowing;
     }
 
     @Getter
