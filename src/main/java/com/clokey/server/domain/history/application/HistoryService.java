@@ -16,7 +16,7 @@ public interface HistoryService {
 
     HistoryResponseDTO.HistoryCommentResult getComments(Long historyId, int page);
 
-    HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long this_member_id, Long memberId, String month);
+    HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long myMemberId, String clokeyId, String month);
 
     HistoryResponseDTO.HistoryCreateResult createHistory(HistoryRequestDTO.HistoryCreate historyCreateRequest, Long memberId, List<MultipartFile> images);
 
@@ -29,4 +29,6 @@ public interface HistoryService {
     void updateComment(HistoryRequestDTO.UpdateComment updateCommentRequest,Long commentId,Long memberId);
 
     void deleteHistory(Long historyId, Long memberId);
+
+    HistoryResponseDTO.LikedUserResults getLikedUser(Long memberId, Long historyId);
 }

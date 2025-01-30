@@ -74,6 +74,18 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
         return memberRepository.getReferenceById(memberId);
     }
 
+
+    @Override
+    public boolean existsByClokeyId(String clokeyId) {
+        return memberRepository.existsByClokeyId(clokeyId);
+    }
+
+    @Override
+    public Member findByClokeyId(String clokeyId) {
+        return memberRepository.findByClokeyId(clokeyId).orElseThrow(()->new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
+    }
+
+
     public Optional<Member> findMemberByEmail(String email) {
         String jpql = "SELECT m FROM Member m WHERE m.email = :email";
         TypedQuery<Member> query = entityManager.createQuery(jpql, Member.class);
@@ -81,6 +93,7 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
 
         return query.getResultStream().findFirst(); // Optional<Member> 반환
     }
+
 
 
 }

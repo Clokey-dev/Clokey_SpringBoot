@@ -9,6 +9,7 @@ import com.clokey.server.domain.history.exception.HistoryException;
 import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryAlreadyExistValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
+import com.clokey.server.domain.member.application.FollowRepositoryService;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.history.converter.HistoryConverter;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class HistoryServiceImpl implements HistoryService {
 
+    private final FollowRepositoryService followRepositoryService;
     private final HistoryLikedValidator historyLikedValidator;
     private final HistoryAlreadyExistValidator historyAlreadyExistValidator;
     private final HistoryRepositoryService historyRepositoryService;
@@ -139,12 +141,12 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long myMemberId, Long memberId, String month) {
+    public HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long myMemberId, String clokeyId, String month) {
 
 
 
-        //회원 ID를 제공하지 않았다면 자기 자신의 기록 확인으로 전부 반환.
-        if(memberId == null){
+        //Clokey ID를 제공하지 않았다면 자기 자신의 기록 확인으로 전부 반환.
+        if(clokeyId == null){
             List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(myMemberId,month);
             List<String> firstImageUrlsOfHistory = histories.stream()
                     .map(history -> historyImageRepositoryService.findByHistoryId(history.getId())
@@ -156,6 +158,9 @@ public class HistoryServiceImpl implements HistoryService {
                     .collect(Collectors.toList());
             return HistoryConverter.toMonthViewResult(myMemberId, histories, firstImageUrlsOfHistory);
         }
+
+        Member member = memberRepositoryService.findMemberByClokeyId(clokeyId);
+        Long memberId = member.getId();
 
         //나의 기록이 아닌 경우 대상 멤버에게 접근 권한이 있는지 확인합니다.
         historyAccessibleValidator.validateMemberAccessOfMember(memberId,myMemberId);
@@ -195,10 +200,13 @@ public class HistoryServiceImpl implements HistoryService {
         // History 엔티티 생성 후 요청 정보 반환해서 저장
         History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));
 
-        // 이미지는 첨부했다면 업로드를 진행합니다.
-        if (imageFiles != null && !imageFiles.isEmpty()) {
-            historyImageRepositoryService.save(imageFiles, history);
+        //이미지는 반드시 첨부해야 합니다.
+        if (imageFiles == null || imageFiles.isEmpty()) {
+            throw new HistoryException(ErrorStatus.MUST_POST_HISTORY_IMAGE);
         }
+
+        historyImageRepositoryService.save(imageFiles, history);
+
 
         List<Cloth> cloths = clothRepositoryService.findAllById(historyCreateRequest.getClothes());
         List<HistoryCloth> historyCloths = cloths.stream()
@@ -248,9 +256,14 @@ public class HistoryServiceImpl implements HistoryService {
         clothAccessibleValidator.validateClothOfMember(historyUpdate.getClothes(), memberId);
 
         historyImageRepositoryService.deleteAllByHistoryId(historyId);
-        if (images != null && !images.isEmpty()) {
-            historyImageRepositoryService.save(images, historyRepositoryService.findById(historyId));
+
+        //이미지는 반드시 첨부해야 합니다.
+        if (images == null || images.isEmpty()) {
+            throw new HistoryException(ErrorStatus.MUST_POST_HISTORY_IMAGE);
         }
+
+        historyImageRepositoryService.save(images, historyRepositoryService.findById(historyId));
+
 
         updateHistoryClothes(
                 historyUpdate.getClothes(),
@@ -308,6 +321,18 @@ public class HistoryServiceImpl implements HistoryService {
 
         //기록 삭제
         historyRepositoryService.deleteById(historyId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public HistoryResponseDTO.LikedUserResults getLikedUser(Long memberId, Long historyId) {
+
+        historyAccessibleValidator.validateHistoryAccessOfMember(historyId,memberId);
+
+        List<Member> likedMembers = memberLikeRepositoryService.findMembersByHistory(historyId);
+        List<Boolean> followStatus = followRepositoryService.checkFollowingStatus(memberId,likedMembers);
+
+        return HistoryConverter.toLikedUserResult(likedMembers,followStatus);
     }
 
     private void validateMyComment(Long commentId, Long memberId) {

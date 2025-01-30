@@ -110,6 +110,25 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class LikedUserResults{
+        List<LikedUserResult> likedUsers;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LikedUserResult{
+        Long memberId;
+        String clokeyId;
+        String nickname;
+        boolean followStatus;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class CommentWriteResult{
         Long commentId;
     }

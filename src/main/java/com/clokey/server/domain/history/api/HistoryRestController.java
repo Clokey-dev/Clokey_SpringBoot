@@ -10,7 +10,7 @@ import com.clokey.server.domain.history.exception.annotation.HistoryExist;
 import com.clokey.server.domain.history.exception.annotation.HistoryImageQuantityLimit;
 import com.clokey.server.domain.history.exception.annotation.MonthFormat;
 import com.clokey.server.domain.member.exception.annotation.MemberExist;
-import com.clokey.server.domain.member.exception.annotation.NullableMemberExist;
+import com.clokey.server.domain.member.exception.annotation.NullableClokeyIdExist;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,14 +57,14 @@ public class HistoryRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "성공적으로 조회되었습니다."),
     })
     @Parameters({
-            @Parameter(name = "memberId", description = "조회하고자 하는 memberId, 빈칸 입력시 현재 유저를 기준으로 합니다."),
+            @Parameter(name = "clokeyId", description = "조회하고자 하는 clokeyId, 빈칸 입력시 현재 유저를 기준으로 합니다."),
             @Parameter(name = "month", description = "조회하고자 하는 월입니다. YYYY-MM 형식으로 입력해주세요. ex)2025-01")
     })
     public BaseResponse<HistoryResponseDTO.MonthViewResult> getMonthlyHistories(@RequestParam(value = "myMemberId") Long myMemberId,
-                                                                                @RequestParam(value = "memberId", required = false) @Valid @NullableMemberExist Long memberId,
+                                                                                @RequestParam(value = "clokeyId", required = false) @Valid @NullableClokeyIdExist String clokeyId,
                                                                                 @RequestParam(value = "month") @Valid @MonthFormat String month) {
 
-        HistoryResponseDTO.MonthViewResult result = historyService.getMonthlyHistories(myMemberId, memberId, month);
+        HistoryResponseDTO.MonthViewResult result = historyService.getMonthlyHistories(myMemberId, clokeyId, month);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, result);
 
@@ -105,6 +105,20 @@ public class HistoryRestController {
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_LIKE_STATUS_CHANGED, result);
     }
 
+    @GetMapping("/{historyId}/likes")
+    @Operation(summary = "특정 기록에 좋아요를 누른 유저의 정보를 확인합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "기록의 좋아요를 누른 유저 정보를 성공적으로 조회했습니다."),
+    })
+    public BaseResponse<HistoryResponseDTO.LikedUserResults> getLikedUsers(@PathVariable @HistoryExist Long historyId,
+                                        @RequestParam Long myMemberId) {
+
+        HistoryResponseDTO.LikedUserResults result = historyService.getLikedUser(historyId, myMemberId);
+
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_LIKE_USER, result);
+    }
+
+
     @PostMapping("/{historyId}/comments")
     @Operation(summary = "댓글을 남길 수 있는 API")
     @ApiResponses({
@@ -128,7 +142,7 @@ public class HistoryRestController {
     })
     public BaseResponse<HistoryResponseDTO.HistoryCreateResult> createHistory(
             @RequestPart("historyCreateRequest") @Valid HistoryRequestDTO.HistoryCreate historyCreateRequest,
-            @RequestPart(value = "imageFile", required = false) @Valid @HistoryImageQuantityLimit List<MultipartFile> imageFiles,
+            @RequestPart(value = "imageFile") @Valid @HistoryImageQuantityLimit List<MultipartFile> imageFiles,
             @RequestParam Long memberId
     ) {
 
@@ -148,7 +162,7 @@ public class HistoryRestController {
     })
     public BaseResponse<Void> updateHistory(
             @RequestPart("historyUpdateRequest") @Valid HistoryRequestDTO.HistoryUpdate historyUpdate,
-            @RequestPart(value = "imageFile", required = false) @Valid @HistoryImageQuantityLimit List<MultipartFile> imageFiles,
+            @RequestPart(value = "imageFile") @Valid @HistoryImageQuantityLimit List<MultipartFile> imageFiles,
             @RequestParam Long myMemberId,
             @PathVariable Long historyId
     ) {
