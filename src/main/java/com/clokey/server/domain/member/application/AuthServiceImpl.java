@@ -2,10 +2,9 @@ package com.clokey.server.domain.member.application;
 
 import com.clokey.server.domain.member.dto.AuthDTO;
 import com.clokey.server.domain.member.exception.MemberException;
-import com.clokey.server.domain.model.entity.Member;
+import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.clokey.server.domain.model.entity.enums.SocialType;
-import com.clokey.server.domain.model.repository.MemberRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

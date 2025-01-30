@@ -2,7 +2,7 @@ package com.clokey.server.domain.member.api;
 
 import com.clokey.server.domain.member.application.AuthService;
 import com.clokey.server.domain.member.dto.AuthDTO;
-import com.clokey.server.domain.member.dto.MemberResponseDTO;
+import com.clokey.server.domain.member.dto.MemberDTO;
 import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.ErrorStatus;

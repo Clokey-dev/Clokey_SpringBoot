@@ -1,9 +1,9 @@
 package com.clokey.server.domain.member.application;
 
 import com.clokey.server.domain.member.converter.ProfileConverter;
-import com.clokey.server.domain.member.dto.MemberResponseDTO;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.RegisterStatus;
+import com.clokey.server.domain.member.dto.MemberDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +16,7 @@ public class ProfileCommandServiceImpl implements ProfileCommandService {
 
     @Override
     @Transactional
-    public MemberResponseDTO.ProfileRP updateProfile(Long userId, MemberResponseDTO.ProfileRQ request) {
+    public MemberDTO.ProfileRP updateProfile(Long userId, MemberDTO.ProfileRQ request) {
         // 사용자 확인
         Member member = memberRepositoryService.findMemberById(userId);
 
