@@ -29,9 +29,9 @@ public enum SuccessStatus implements BaseCode {
     //폴더 성공
     FOLDER_SUCCESS(HttpStatus.OK, "FOLDER_200", "성공적으로 조회되었습니다."),
     FOLDER_CREATED(HttpStatus.CREATED, "FOLDER_201", "성공적으로 생성되었습니다."),
-    FOLDER_DELETED(HttpStatus.OK, "FOLDER_200", "성공적으로 삭제되었습니다."),
-    FOLDER_EDIT_SUCCESS(HttpStatus.OK, "FOLDER_200", "성공적으로 수정되었습니다."),
-    FOLDER_ADD_CLOTHES_SUCCESS(HttpStatus.OK, "FOLDER_200", "성공적으로 추가되었습니다."),
+    FOLDER_DELETED(HttpStatus.NO_CONTENT, "FOLDER_204", "성공적으로 삭제되었습니다."),
+    FOLDER_EDIT_SUCCESS(HttpStatus.NO_CONTENT, "FOLDER_204", "성공적으로 수정되었습니다."),
+    FOLDER_ADD_CLOTHES_SUCCESS(HttpStatus.CREATED, "FOLDER_201", "성공적으로 추가되었습니다."),
 
     //검색 성공
     SEARCH_SUCCESS(HttpStatus.OK, "SEARCH_200", "성공적으로 조회되었습니다."),
