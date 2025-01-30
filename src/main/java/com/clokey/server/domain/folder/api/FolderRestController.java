@@ -9,6 +9,7 @@ import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class FolderRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_201", description = "성공적으로 생성되었습니다."),
     })
     public BaseResponse<FolderResponseDTO.FolderIdDTO> createFolder(@RequestParam Long memberId,
-                                                                    @RequestBody FolderRequestDTO.FolderCreateRequest request) {
+                                                                    @RequestBody  @Valid FolderRequestDTO.FolderCreateRequest request) {
         FolderResponseDTO.FolderIdDTO response = FolderConverter.toFolderIdDTO(folderService.createFolder(memberId, request));
         return BaseResponse.onSuccess(SuccessStatus.FOLDER_CREATED, response);
     }
@@ -47,7 +48,7 @@ public class FolderRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_204", description = "성공적으로 수정되었습니다."),
     })
     public BaseResponse<String> editFolderName(@RequestParam Long memberId,
-                                               @RequestBody FolderRequestDTO.FolderEditRequest request) {
+                                               @RequestBody @Valid FolderRequestDTO.FolderEditRequest request) {
         folderService.editFolderName(request.getFolderId(), request.getNewName(), memberId);
         return BaseResponse.onSuccess(SuccessStatus.FOLDER_EDIT_SUCCESS, null);
     }
@@ -58,7 +59,7 @@ public class FolderRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_201", description = "성공적으로 추가되었습니다."),
     })
     public BaseResponse<String> addClothesToFolder(@RequestParam Long memberId,
-                                                   @RequestBody FolderRequestDTO.AddClothesToFolderRequest request) {
+                                                   @RequestBody  @Valid FolderRequestDTO.AddClothesToFolderRequest request) {
         folderService.addClothesToFolder(request, memberId);
         return BaseResponse.onSuccess(SuccessStatus.FOLDER_ADD_CLOTHES_SUCCESS, null);
     }
