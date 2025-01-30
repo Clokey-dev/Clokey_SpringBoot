@@ -9,6 +9,7 @@ import com.clokey.server.domain.history.exception.HistoryException;
 import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryAlreadyExistValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
+import com.clokey.server.domain.member.application.FollowRepositoryService;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.history.converter.HistoryConverter;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class HistoryServiceImpl implements HistoryService {
 
+    private final FollowRepositoryService followRepositoryService;
     private final HistoryLikedValidator historyLikedValidator;
     private final HistoryAlreadyExistValidator historyAlreadyExistValidator;
     private final HistoryRepositoryService historyRepositoryService;
@@ -323,7 +325,13 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     public HistoryResponseDTO.LikedUserResults getLikedUser(Long memberId, Long historyId) {
-        return null;
+
+        historyAccessibleValidator.validateHistoryAccessOfMember(historyId,memberId);
+
+        List<Member> likedMembers = memberLikeRepositoryService.findMembersByHistory(historyId);
+        List<Boolean> followStatus = followRepositoryService.checkFollowingStatus(memberId,likedMembers);
+
+        return HistoryConverter.toLikedUserResult(likedMembers,followStatus);
     }
 
     private void validateMyComment(Long commentId, Long memberId) {
