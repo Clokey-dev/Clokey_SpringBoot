@@ -81,16 +81,17 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthDTO.TokenResponse authenticateKakaoUser(String kakaoAccessToken){
-        //카카오에서 사용자 정보 가져오기
+    public ResponseEntity<AuthDTO.TokenResponse> authenticateKakaoUser(String kakaoAccessToken){
+        // 카카오에서 사용자 정보 가져오기
         AuthDTO.KakaoUserResponse kakaoUser = getUserInfoFromKakao(kakaoAccessToken);
 
         // DB에서 해당 이메일을 가진 사용자 찾기
         Optional<Member> optionalMember = memberRepositoryService.findMemberByEmail(kakaoUser.getKakaoAccount().getEmail());
 
         Member member;
+        boolean isNewUser = false;
         if (optionalMember.isPresent()) {
-            member = optionalMember.get();  // Optional에서 Member 추출
+            member = optionalMember.get();  // 기존 사용자
         } else {
             // DB에 사용자 정보가 없으면 회원가입
             member = Member.builder()
@@ -100,21 +101,35 @@ public class AuthServiceImpl implements AuthService {
                     .socialType(SocialType.KAKAO)
                     .build();
             memberRepositoryService.saveMember(member);
+            isNewUser = true; // 새로운 사용자
         }
 
-        //어세스토큰, 리프레시토큰 생성
+        // 어세스토큰, 리프레시토큰 생성
         String accessToken = generateAccessToken(member.getId(), member.getEmail());
         String refreshToken = generateRefreshToken(member.getId());
 
-        //리프레쉬 토큰을 DB에 저장
+        // 리프레쉬 토큰을 DB에 저장
         member.setRefreshToken(refreshToken);
         memberRepositoryService.saveMember(member);
 
-        //토큰 반환
-        return new AuthDTO.TokenResponse(member.getId(), member.getEmail(), member.getNickname(), accessToken, refreshToken, member.getRegisterStatus());
+        // 토큰 반환
+        AuthDTO.TokenResponse tokenResponse = new AuthDTO.TokenResponse(
+                member.getId(),
+                member.getEmail(),
+                member.getNickname(),
+                accessToken,
+                refreshToken,
+                member.getRegisterStatus()
+        );
+
+        // 새로운 사용자라면 201 Created 반환, 기존 사용자라면 200 OK 반환
+        if (isNewUser) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(tokenResponse); // 201
+        } else {
+            return ResponseEntity.ok(tokenResponse); // 200
+        }
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
 
 
@@ -208,10 +223,10 @@ public class AuthServiceImpl implements AuthService {
 //
 //                // KakaoAccount 객체와 Profile 설정
 //                AuthDTO.KakaoUserResponse.KakaoAccount kakaoAccount = new AuthDTO.KakaoUserResponse.KakaoAccount();
-//                kakaoAccount.setEmail("dummy@example.com");
+//                kakaoAccount.setEmail("dummy2@example.com");
 //
 //                AuthDTO.KakaoUserResponse.KakaoAccount.Profile profile = new AuthDTO.KakaoUserResponse.KakaoAccount.Profile();
-//                profile.setNickname("Dummy User");
+//                profile.setNickname("Dummy User2");
 //
 //                // Profile을 KakaoAccount에 설정
 //                kakaoAccount.setProfile(profile);

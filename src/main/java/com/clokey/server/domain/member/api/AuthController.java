@@ -22,7 +22,7 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/login")
-    public BaseResponse<AuthDTO.TokenResponse> login(@RequestBody AuthDTO.KakaoLoginRequest loginRequest) {
+    public ResponseEntity<BaseResponse<AuthDTO.TokenResponse>> login(@RequestBody AuthDTO.KakaoLoginRequest loginRequest) {
         // 로그인 타입 확인
         String loginType = loginRequest.getType();
 
@@ -30,16 +30,24 @@ public class AuthController {
             throw new MemberException(ErrorStatus.MISSING_LOGIN_TYPE);
         }
 
-        AuthDTO.TokenResponse response;
+        ResponseEntity<AuthDTO.TokenResponse> responseEntity;
 
         if (loginType.equalsIgnoreCase("kakao")) {
             // 카카오 로그인 처리
-            response = authService.authenticateKakaoUser(loginRequest.getAccessToken());
+            responseEntity = authService.authenticateKakaoUser(loginRequest.getAccessToken());
         } else {
             throw new MemberException(ErrorStatus.INVALID_LOGIN_TYPE);
         }
 
-        return BaseResponse.onSuccess(SuccessStatus.LOGIN_SUCCESS, response);
+        // ResponseEntity에 BaseResponse 래핑해서 반환
+        SuccessStatus successStatus = (responseEntity.getStatusCode() == HttpStatus.CREATED)
+                ? SuccessStatus.LOGIN_CREATED
+                : SuccessStatus.LOGIN_SUCCESS;
+
+        return ResponseEntity.status(responseEntity.getStatusCode())
+                .body(BaseResponse.onSuccess(successStatus, responseEntity.getBody()));
     }
 }
+
+
 

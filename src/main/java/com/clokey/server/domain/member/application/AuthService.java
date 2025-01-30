@@ -1,6 +1,7 @@
 package com.clokey.server.domain.member.application;
 
 import com.clokey.server.domain.member.dto.AuthDTO;
+import org.springframework.http.ResponseEntity;
 
 public interface AuthService {
 
@@ -12,6 +13,6 @@ public interface AuthService {
     String extractEmailFromToken(String token);
 
     // 카카오 사용자 정보 조회 및 DB 저장 메서드 추가
-    AuthDTO.TokenResponse authenticateKakaoUser(String kakaoAccessToken);
+    ResponseEntity<AuthDTO.TokenResponse> authenticateKakaoUser(String kakaoAccessToken);
     AuthDTO.KakaoUserResponse getUserInfoFromKakao(String kakaoAccessToken);
 }
