@@ -2,6 +2,7 @@ package com.clokey.server.domain.member.dto;
 
 import com.clokey.server.domain.member.exception.annotation.EssentialFieldNotNull;
 import com.clokey.server.domain.member.exception.annotation.IdValid;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,7 +25,8 @@ public class MemberDTO {
         Long followingCount;
         String nickname;
         String bio;
-        String visibility;
+        String profileBackImageUrl;
+        Visibility visibility;
         boolean isFollowing;
     }
 
@@ -46,6 +48,8 @@ public class MemberDTO {
 
         private String profileBackImageUrl;
 
+        Visibility visibility;
+
     }
 
 
@@ -62,6 +66,7 @@ public class MemberDTO {
         String clokeyId;
         String profileImageUrl;
         String profileBackImageUrl;
+        Visibility visibility;
         LocalDateTime updatedAt;
     }
 

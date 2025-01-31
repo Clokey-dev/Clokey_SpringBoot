@@ -15,7 +15,8 @@ public class GetUserConverter {
                 .followingCount(followingCount)
                 .nickname(member.getNickname())
                 .bio(member.getBio())
-                .visibility(member.getVisibility().toString())
+                .profileBackImageUrl(member.getProfileBackImageUrl())
+                .visibility(member.getVisibility())
                 .build();
     }
 }
