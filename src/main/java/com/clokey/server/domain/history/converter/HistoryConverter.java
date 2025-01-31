@@ -141,9 +141,10 @@ public class HistoryConverter {
                 .build();
     }
 
-    public static HistoryResponseDTO.LastYearHistoryResult toLastYearHistoryResult(Long historyId, List<String> historyImageUrls) {
+    public static HistoryResponseDTO.LastYearHistoryResult toLastYearHistoryResult(Long historyId, List<String> historyImageUrls, Member member) {
         return HistoryResponseDTO.LastYearHistoryResult.builder()
                 .historyId(historyId)
+                .nickName(member.getNickname())
                 .imageUrls(historyImageUrls)
                 .build();
     }

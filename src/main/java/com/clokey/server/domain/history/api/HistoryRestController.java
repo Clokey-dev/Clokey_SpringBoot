@@ -172,9 +172,9 @@ public class HistoryRestController {
     }
 
     @GetMapping(value = "/1-year-ago")
-    @Operation(summary = "1년전 나의 기록을 확인하는 API", description = "따로 요구하는 값은 없습니다.")
+    @Operation(summary = "1년전 나 또는 팔로우의 기록을 확인하는 API")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_202", description = "성공적으로 조회되었습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "성공적으로 조회되었습니다."),
     })
     public BaseResponse<HistoryResponseDTO.LastYearHistoryResult> getLastYearHistory(
             @Parameter(name = "user",hidden = true) @AuthUser Member member

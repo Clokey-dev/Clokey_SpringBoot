@@ -5,10 +5,7 @@ import com.clokey.server.domain.history.domain.repository.HistoryRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -63,5 +60,10 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
     @Override
     public void deleteById(Long historyId) {
         historyRepository.deleteById(historyId);
+    }
+
+    @Override
+    public List<Boolean> existsByHistoryDateAndMemberIds(LocalDate historyDate, List<Long> memberIds) {
+        return historyRepository.existsByHistoryDateAndMemberIds(historyDate,memberIds);
     }
 }

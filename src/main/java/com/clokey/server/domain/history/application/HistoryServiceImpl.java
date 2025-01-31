@@ -26,8 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -354,11 +356,51 @@ public class HistoryServiceImpl implements HistoryService {
             List<String> historyUrls = historyImageRepositoryService.findByHistoryId(historyOneYearAgoId).stream()
                     .map(HistoryImage::getImageUrl)
                     .toList();
-            return HistoryConverter.toLastYearHistoryResult(historyOneYearAgoId,historyUrls);
+            return HistoryConverter.toLastYearHistoryResult(historyOneYearAgoId,historyUrls,memberRepositoryService.findMemberById(memberId));
+        }
+
+        List<Long> followingMembers = followRepositoryService.findFollowedByFollowingId(memberId).stream()
+                .map(Member::getId)
+                .toList();
+
+        List<Boolean> membersHaveHistoryOneYearAgo = historyRepositoryService.existsByHistoryDateAndMemberIds(oneYearAgo,followingMembers);
+
+        Long memberPicked = getRandomMemberWithHistory(followingMembers,membersHaveHistoryOneYearAgo);
+
+        if(memberPicked != null){
+            Long historyOneYearAgoId = historyRepositoryService.getHistoryOfDate(oneYearAgo,memberPicked).getId();
+            List<String> historyUrls = historyImageRepositoryService.findByHistoryId(historyOneYearAgoId).stream()
+                    .map(HistoryImage::getImageUrl)
+                    .toList();
+            return HistoryConverter.toLastYearHistoryResult(historyOneYearAgoId,historyUrls,memberRepositoryService.findMemberById(memberPicked));
         }
 
         return null;
     }
+
+    private Long getRandomMemberWithHistory(List<Long> followingMembers, List<Boolean> membersHaveHistoryOneYearAgo) {
+        if (followingMembers == null || membersHaveHistoryOneYearAgo == null) {
+            return null;
+        }
+
+        if (followingMembers.isEmpty() || membersHaveHistoryOneYearAgo.isEmpty()) {
+            return null;
+        }
+
+        List<Long> candidates = new ArrayList<>();
+        for (int i = 0; i < followingMembers.size(); i++) {
+            if (Boolean.TRUE.equals(membersHaveHistoryOneYearAgo.get(i))) { // true인 경우만 추가
+                candidates.add(followingMembers.get(i));
+            }
+        }
+
+        if (candidates.isEmpty()) {
+            return null;
+        }
+
+        return candidates.get(new Random().nextInt(candidates.size()));
+    }
+
 
     private void updateHistoryClothes(List<Long> updatedClothes, List<Long> savedClothes, History history) {
 
