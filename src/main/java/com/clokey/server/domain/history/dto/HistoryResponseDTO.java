@@ -147,6 +147,7 @@ public class HistoryResponseDTO {
     @AllArgsConstructor
     public static class LastYearHistoryResult{
         Long historyId;
+        String nickName;
         List<String> imageUrls;
     }
 
