@@ -131,14 +131,6 @@ public class AuthServiceImpl implements AuthService {
 
 
 
-
-
-
-
-
-
-
-
     // 카카오 사용자 정보 조회 메서드
     public AuthDTO.KakaoUserResponse getUserInfoFromKakao(String accessToken) {
         RestTemplate restTemplate = new RestTemplate();
@@ -170,7 +162,49 @@ public class AuthServiceImpl implements AuthService {
 
 
 
+    }
+
+
+    @Transactional
+    @Override
+    public ResponseEntity<AuthDTO.TokenResponse> refreshAccessToken(String refreshToken) {
+        // 리프레시 토큰 검증
+        if (!validateJwtToken(refreshToken)) {
+            throw new MemberException(ErrorStatus.INVALID_TOKEN);  // 유효하지 않은 리프레시 토큰
         }
+
+        // 리프레시 토큰에서 userId 추출
+        Long userId = Long.valueOf(extractEmailFromToken(refreshToken));
+
+        // DB에서 사용자 정보 조회 (Member가 null일 수 있음)
+        Member member = memberRepositoryService.findMemberById(userId);
+        if (member == null) {
+            throw new MemberException(ErrorStatus.LOGIN_FAILED);  // 사용자가 존재하지 않으면 오류
+        }
+
+        // 새로운 액세스 토큰 생성
+        String newAccessToken = generateAccessToken(member.getId(), member.getEmail());
+
+        // 새로운 리프레시 토큰 생성 (optional, 리프레시 토큰 재발급 여부)
+        String newRefreshToken = generateRefreshToken(member.getId());
+
+        // 새로운 토큰을 DB에 업데이트
+        member.updateToken(newAccessToken, newRefreshToken);
+        memberRepositoryService.saveMember(member);
+
+        // 새로 발급된 토큰들 반환
+        AuthDTO.TokenResponse tokenResponse = new AuthDTO.TokenResponse(
+                member.getId(),
+                member.getEmail(),
+                member.getNickname(),
+                newAccessToken,
+                newRefreshToken,
+                member.getRegisterStatus()
+        );
+
+        return ResponseEntity.ok(tokenResponse);  // 200 OK
+    }
+
 
 
 }

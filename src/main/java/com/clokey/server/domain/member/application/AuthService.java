@@ -15,4 +15,6 @@ public interface AuthService {
     // 카카오 사용자 정보 조회 및 DB 저장 메서드 추가
     ResponseEntity<AuthDTO.TokenResponse> authenticateKakaoUser(String kakaoAccessToken);
     AuthDTO.KakaoUserResponse getUserInfoFromKakao(String kakaoAccessToken);
+
+    public ResponseEntity<AuthDTO.TokenResponse> refreshAccessToken(String refreshToken);
 }

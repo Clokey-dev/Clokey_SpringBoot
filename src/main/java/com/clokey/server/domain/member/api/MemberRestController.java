@@ -50,12 +50,14 @@ public class MemberRestController {
     @Operation(summary = "회원 조회 API", description = "다른 회원의 프로필을 조회하는 API입니다.")
     @GetMapping("users/{clokey_id}")
     public BaseResponse<Object> getUser(
+            @AuthUser Member currentUser, // 현재 로그인한 사용자 추가
             @IdValid @PathVariable("clokey_id") String clokeyId) {
 
-        MemberDTO.GetUserRP response = getUserQueryService.getUser(clokeyId);
+        MemberDTO.GetUserRP response = getUserQueryService.getUser(clokeyId, currentUser);
 
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_SUCCESS, response);
     }
+
 
 
     @Operation(summary = "팔로우 조회 API", description = "내가 다른 사용자를 팔로우하고있는지 확인하는 API입니다.")
