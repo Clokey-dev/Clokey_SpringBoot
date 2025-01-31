@@ -52,7 +52,7 @@ public class AuthDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public class RefreshTokenRequest {
+    public static class RefreshTokenRequest {
         private String refreshToken;
     }
 
