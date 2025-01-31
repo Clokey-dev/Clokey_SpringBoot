@@ -84,7 +84,7 @@ public class ClothResponseDTO {
     public static class ClothPreview {
         private Long id;
         private String name;
-        private String mainImage;
+        private String imageUrl;
         private int wearNum;
     }
 
@@ -92,7 +92,7 @@ public class ClothResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CategoryClothReadResult {
+    public static class CategoryClothPreviewListResult {
         private List<ClothPreview> clothes;
         private int listSize;
         private int totalPage;
