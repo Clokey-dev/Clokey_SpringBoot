@@ -15,16 +15,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users/{userId}/terms")
 public class TermRestController {
 
     private final TermCommandService termCommandService;
 
     @Operation(summary = "약관 동의 API", description = "약관동의하는 API입니다.")
-    @PostMapping
+    @PostMapping("/users/terms")
     public BaseResponse<TermResponseDTO> termAgree(
             @Parameter(name = "user",hidden = true) @AuthUser Member member,
             @EssentialTermAgree @RequestBody @Valid TermRequestDTO.Join request) {
@@ -34,6 +35,16 @@ public class TermRestController {
 
         // 성공 응답 반환
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_CREATED, response);
+    }
+
+    @Operation(summary = "모든 약관 조회 API", description = "모든 약관을 조회하는 API입니다.")
+    @GetMapping("/users/terms")
+    public BaseResponse<List<TermResponseDTO.TermList>> getTerms() {
+        // 약관 목록 조회
+        List<TermResponseDTO.TermList> terms = termCommandService.getTerms();
+
+        // 성공 응답 반환
+        return BaseResponse.onSuccess(SuccessStatus.MEMBER_SUCCESS, terms);
     }
 }
 

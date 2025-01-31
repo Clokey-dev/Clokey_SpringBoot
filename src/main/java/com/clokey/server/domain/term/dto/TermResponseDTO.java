@@ -24,4 +24,16 @@ public class TermResponseDTO {
         private Long termId;
         private Boolean agreed;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class TermList {
+        private Long termId;
+        private String title;
+        private String content;
+        private boolean optional;
+    }
+
 }

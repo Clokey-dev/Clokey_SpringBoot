@@ -164,10 +164,14 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
-
     @Transactional
     @Override
     public ResponseEntity<AuthDTO.TokenResponse> refreshAccessToken(String refreshToken) {
+
+        if (isRefreshTokenExpired(refreshToken)) {
+            throw new MemberException(ErrorStatus.EXPIRED_REFRESH_TOKEN);  // 리프레시 토큰 만료
+        }
+
         // 리프레시 토큰 검증
         if (!validateJwtToken(refreshToken)) {
             throw new MemberException(ErrorStatus.INVALID_TOKEN);  // 유효하지 않은 리프레시 토큰
@@ -204,6 +208,29 @@ public class AuthServiceImpl implements AuthService {
 
         return ResponseEntity.ok(tokenResponse);  // 200 OK
     }
+
+    private boolean isRefreshTokenExpired(String refreshToken) {
+        try {
+            // 토큰에서 만료 시간 추출 (JWT에서 만료 시간은 "exp" 클레임에 저장)
+            Date expiration = extractExpirationFromToken(refreshToken);
+
+            // 만료 시간이 현재 시간 이전이면 만료된 것
+            return expiration.before(new Date());
+        } catch (Exception e) {
+            // 토큰에서 만료 시간 추출에 실패하면 만료된 것으로 간주
+            return true;
+        }
+    }
+
+    // JWT에서 만료 시간을 추출하는 메소드
+    private Date extractExpirationFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)  // 비밀키로 서명된 토큰 파싱
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getExpiration();  // 만료 시간을 반환
+    }
+
 
 
 
