@@ -16,5 +16,5 @@ public interface AuthService {
     ResponseEntity<AuthDTO.TokenResponse> authenticateKakaoUser(String kakaoAccessToken);
     AuthDTO.KakaoUserResponse getUserInfoFromKakao(String kakaoAccessToken);
 
-    public ResponseEntity<AuthDTO.TokenResponse> refreshAccessToken(String refreshToken);
+    public AuthDTO.TokenResponse refreshAccessToken(String refreshToken);
 }

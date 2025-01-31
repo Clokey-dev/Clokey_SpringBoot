@@ -175,7 +175,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public ResponseEntity<AuthDTO.TokenResponse> refreshAccessToken(String refreshToken) {
+    public AuthDTO.TokenResponse refreshAccessToken(String refreshToken) {
 
         if (isRefreshTokenExpired(refreshToken)) {
             throw new MemberException(ErrorStatus.EXPIRED_REFRESH_TOKEN);  // 리프레시 토큰 만료
@@ -215,7 +215,7 @@ public class AuthServiceImpl implements AuthService {
                 member.getRegisterStatus()
         );
 
-        return ResponseEntity.ok(tokenResponse);  // 200 OK
+        return tokenResponse;
     }
 
     private boolean isRefreshTokenExpired(String refreshToken) {
