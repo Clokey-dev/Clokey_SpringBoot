@@ -5,10 +5,13 @@ import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
 import com.clokey.server.domain.category.domain.entity.Category;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.member.domain.entity.Member;
+import org.springframework.data.domain.Page;
 
 import java.time.format.TextStyle;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class ClothConverter {
 
@@ -78,6 +81,29 @@ public class ClothConverter {
                 .categoryId(cloth.getCategory().getId())
                 .createdAt(cloth.getCreatedAt())
                 .updatedAt(cloth.getUpdatedAt())
+                .build();
+    }
+
+    public static List<ClothResponseDTO.ClothPreview> toClothPreviewList(Page<Cloth> clothes){
+        return clothes.getContent().stream()
+                .map(cloth -> ClothResponseDTO.ClothPreview.builder()
+                        .id(cloth.getId())
+                        .name(cloth.getName())
+                        .imageUrl(cloth.getImage() != null ? cloth.getImage().getImageUrl() : null)
+                        .wearNum(cloth.getWearNum())
+                        .build()
+                ).collect(Collectors.toList());
+    }
+
+    public static ClothResponseDTO.CategoryClothPreviewListResult toClothPreviewListResult(Page<Cloth> clothes,
+                                                                                           List<ClothResponseDTO.ClothPreview> clothPreviews){
+        return ClothResponseDTO.CategoryClothPreviewListResult.builder()
+                .clothes(clothPreviews)
+                .listSize(clothPreviews.size())
+                .totalPage(clothes.getTotalPages())
+                .totalElements(clothes.getTotalElements())
+                .isFirst(clothes.isFirst())
+                .isLast(clothes.isLast())
                 .build();
     }
 
