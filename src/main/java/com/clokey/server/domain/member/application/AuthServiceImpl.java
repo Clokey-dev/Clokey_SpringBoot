@@ -87,14 +87,6 @@ public class AuthServiceImpl implements AuthService {
         return claims.get("email", String.class);
     }
 
-    private Long extractIdFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(secretKey)  // 비밀키로 서명된 토큰 파싱
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.get("id", Long.class);  // Id를 클레임에서 추출
-    }
-
 
 
     @Transactional
@@ -196,8 +188,6 @@ public class AuthServiceImpl implements AuthService {
 
         // 리프레시 토큰에서 userId 추출
         String email = extractEmailFromToken(refreshToken);
-
-        System.out.println("Email extracted from refresh token: " + email);
 
         // DB에서 사용자 정보 조회 (Member가 null일 수 있음)
         Member member = memberRepositoryService.findMemberByEmail(email).orElse(null);
