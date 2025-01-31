@@ -1,6 +1,11 @@
 package com.clokey.server.domain.cloth.application;
 
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.model.entity.enums.ClothSort;
+import com.clokey.server.domain.model.entity.enums.Season;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
 public interface ClothRepositoryService {
 
@@ -11,4 +16,12 @@ public interface ClothRepositoryService {
     Cloth save(Cloth cloth);
 
     boolean existsById(Long clothId);
+
+    Page<Cloth> findByFilters(
+            @Param("clokeyId") String clokeyId,
+            @Param("categoryId") Long categoryId,
+            @Param("season") Season season,
+            @Param("sort") ClothSort sort,
+            Pageable pageable
+    );
 }
