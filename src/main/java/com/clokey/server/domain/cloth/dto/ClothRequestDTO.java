@@ -29,20 +29,16 @@ public class ClothRequestDTO {
         @NotBlank
         private List<Season> seasons;
         @NotNull
-        @NotBlank
         @Min(-20)
         @Max(40)
         private Integer tempUpperBound;
         @NotNull
-        @NotBlank
         @Min(-20)
         @Max(40)
         private Integer tempLowerBound;
         @NotNull
-        @NotBlank
         private ThicknessLevel thicknessLevel;
         @NotNull
-        @NotBlank
         private Visibility visibility;
         private String clothUrl;
         private String brand;
