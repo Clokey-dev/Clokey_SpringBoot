@@ -49,13 +49,14 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
 
     @Override
     public Page<Cloth> findByFilters(
-            @Param("clokeyId") String clokeyId,
+            @Param("ownerClokeyId") String ownerClokeyId,
+            @Param("requesterId") Long requesterId,
             @Param("categoryId") Long categoryId,
             @Param("season") Season season,
             @Param("sort") ClothSort sort,
             Pageable pageable
     ){
-        return clothRepository.findByFilters(clokeyId, categoryId, season, sort.toString(), pageable);
+        return clothRepository.findByFilters(ownerClokeyId, requesterId, categoryId, season, sort.toString(), pageable);
     }
   
     public List<Cloth> findAllById(List<Long> clothIds) {

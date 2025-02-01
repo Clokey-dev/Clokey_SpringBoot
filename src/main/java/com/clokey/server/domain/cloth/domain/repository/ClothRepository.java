@@ -30,6 +30,7 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
             "WHERE m.clokeyId = :clokeyId " +
             "AND (:categoryId = 0 OR cat.id = :categoryId OR cat.parent.id = :categoryId) " + // 1차 카테고리라면 모든 하위 카테고리 포함
             "AND (:season = 'ALL' OR :season MEMBER OF c.seasons) " + // ALL이면 모든 계절 조회, 아니면 특정 계절만 조회
+            "AND (c.visibility = 'PUBLIC' OR m.id = :memberId) " + // 비공개일 경우 본인만 조회 가능
             "ORDER BY " +
             "CASE WHEN :sort = 'WEAR' THEN c.wearNum END DESC, " +
             "CASE WHEN :sort = 'NOT_WEAR' THEN c.wearNum END ASC, " +
@@ -38,6 +39,7 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
     )
     Page<Cloth> findByFilters(
             @Param("clokeyId") String clokeyId,
+            @Param("memberId") Long memberId,
             @Param("categoryId") Long categoryId,
             @Param("season") Season season,
             @Param("sort") String sort,

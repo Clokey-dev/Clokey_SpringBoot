@@ -21,6 +21,7 @@ public interface ClothRepositoryService {
 
     Page<Cloth> findByFilters(
             @Param("clokeyId") String clokeyId,
+            @Param("requesterId") Long requesterId,
             @Param("categoryId") Long categoryId,
             @Param("season") Season season,
             @Param("sort") ClothSort sort,
