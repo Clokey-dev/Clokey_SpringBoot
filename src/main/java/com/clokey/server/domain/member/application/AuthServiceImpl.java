@@ -52,8 +52,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String generateRefreshToken(Long userId) {
+        Member member= memberRepositoryService.findMemberById(userId);
+        if(member == null){
+            throw new MemberException(ErrorStatus.NO_SUCH_MEMBER);
+        }
+        String email = member.getEmail();
+
         return Jwts.builder()
                 .setSubject(String.valueOf(userId))
+                .claim("email", email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + refreshExpirationTime))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -79,6 +86,8 @@ public class AuthServiceImpl implements AuthService {
                 .getBody();
         return claims.get("email", String.class);
     }
+
+
 
     @Transactional
     @Override
@@ -131,14 +140,6 @@ public class AuthServiceImpl implements AuthService {
 
 
 
-
-
-
-
-
-
-
-
     // 카카오 사용자 정보 조회 메서드
     public AuthDTO.KakaoUserResponse getUserInfoFromKakao(String accessToken) {
         RestTemplate restTemplate = new RestTemplate();
@@ -170,7 +171,76 @@ public class AuthServiceImpl implements AuthService {
 
 
 
+    }
+
+    @Transactional
+    @Override
+    public AuthDTO.TokenResponse refreshAccessToken(String refreshToken) {
+
+        if (isRefreshTokenExpired(refreshToken)) {
+            throw new MemberException(ErrorStatus.EXPIRED_REFRESH_TOKEN);  // 리프레시 토큰 만료
         }
+
+        // 리프레시 토큰 검증
+        if (!validateJwtToken(refreshToken)) {
+            throw new MemberException(ErrorStatus.INVALID_TOKEN);  // 유효하지 않은 리프레시 토큰
+        }
+
+        // 리프레시 토큰에서 userId 추출
+        String email = extractEmailFromToken(refreshToken);
+
+        // DB에서 사용자 정보 조회 (Member가 null일 수 있음)
+        Member member = memberRepositoryService.findMemberByEmail(email).orElse(null);
+        if (member == null) {
+            throw new MemberException(ErrorStatus.LOGIN_FAILED);  // 사용자가 존재하지 않으면 오류
+        }
+
+        // 새로운 액세스 토큰 생성
+        String newAccessToken = generateAccessToken(member.getId(), member.getEmail());
+
+        // 새로운 리프레시 토큰 생성 (optional, 리프레시 토큰 재발급 여부)
+        String newRefreshToken = generateRefreshToken(member.getId());
+
+        // 새로운 토큰을 DB에 업데이트
+        member.updateToken(newAccessToken, newRefreshToken);
+        memberRepositoryService.saveMember(member);
+
+        // 새로 발급된 토큰들 반환
+        AuthDTO.TokenResponse tokenResponse = new AuthDTO.TokenResponse(
+                member.getId(),
+                member.getEmail(),
+                member.getNickname(),
+                newAccessToken,
+                newRefreshToken,
+                member.getRegisterStatus()
+        );
+
+        return tokenResponse;
+    }
+
+    private boolean isRefreshTokenExpired(String refreshToken) {
+        try {
+            // 토큰에서 만료 시간 추출 (JWT에서 만료 시간은 "exp" 클레임에 저장)
+            Date expiration = extractExpirationFromToken(refreshToken);
+
+            // 만료 시간이 현재 시간 이전이면 만료된 것
+            return expiration.before(new Date());
+        } catch (Exception e) {
+            // 토큰에서 만료 시간 추출에 실패하면 만료된 것으로 간주
+            return true;
+        }
+    }
+
+    // JWT에서 만료 시간을 추출하는 메소드
+    private Date extractExpirationFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)  // 비밀키로 서명된 토큰 파싱
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getExpiration();  // 만료 시간을 반환
+    }
+
+
 
 
 }

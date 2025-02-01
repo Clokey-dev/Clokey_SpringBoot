@@ -6,7 +6,7 @@ import com.clokey.server.domain.member.dto.MemberDTO;
 
 public class GetUserConverter {
 
-    public static MemberDTO.GetUserRP toGetUserResponseDTO(Member member, Long recordCount, Long followerCount, Long followingCount) {
+    public static MemberDTO.GetUserRP toGetUserResponseDTO(Member member, Long recordCount, Long followerCount, Long followingCount, boolean isFollowing) {
         return MemberDTO.GetUserRP.builder()
                 .clokeyId(member.getClokeyId())
                 .profileImageUrl(member.getProfileImageUrl())
@@ -16,9 +16,11 @@ public class GetUserConverter {
                 .nickname(member.getNickname())
                 .bio(member.getBio())
                 .profileBackImageUrl(member.getProfileBackImageUrl())
-                .visibility(member.getVisibility())
+                .visibility(member.getVisibility().toString())
+                .isFollowing(isFollowing) // 추가된 필드 반영
                 .build();
     }
 }
+
 
 

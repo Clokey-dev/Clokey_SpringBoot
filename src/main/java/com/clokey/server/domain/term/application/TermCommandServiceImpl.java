@@ -3,6 +3,7 @@ package com.clokey.server.domain.term.application;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.RegisterStatus;
+import com.clokey.server.domain.term.converter.TermConverter;
 import com.clokey.server.domain.term.domain.entity.Term;
 import com.clokey.server.domain.term.domain.entity.MemberTerm;
 import com.clokey.server.domain.term.domain.repository.MemberTermRepository;
@@ -72,4 +73,19 @@ public class TermCommandServiceImpl implements TermCommandService {
                 .terms(termResponses)
                 .build();
     }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TermResponseDTO.TermList> getTerms() {
+        List<Term> terms = termRepository.findAll();  // 모든 약관 조회
+
+        List<TermResponseDTO.TermList> termList = new ArrayList<>();
+        for (Term term : terms) {
+            termList.add(TermConverter.toTermListDto(term));
+        }
+
+        return termList;
+    }
+
 }

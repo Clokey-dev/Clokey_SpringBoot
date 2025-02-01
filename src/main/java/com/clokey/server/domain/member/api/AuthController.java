@@ -47,6 +47,15 @@ public class AuthController {
         return ResponseEntity.status(responseEntity.getStatusCode())
                 .body(BaseResponse.onSuccess(successStatus, responseEntity.getBody()));
     }
+
+
+    @PostMapping("/reissue-token")
+    public BaseResponse<AuthDTO.TokenResponse> reissueToken(@RequestBody AuthDTO.RefreshTokenRequest request) {
+
+        AuthDTO.TokenResponse response = authService.refreshAccessToken(request.getRefreshToken());
+        return BaseResponse.onSuccess(SuccessStatus.LOGIN_UPDATED, response);
+
+    }
 }
 
 

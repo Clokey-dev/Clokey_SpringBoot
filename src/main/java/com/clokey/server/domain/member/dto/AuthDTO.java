@@ -2,8 +2,7 @@ package com.clokey.server.domain.member.dto;
 
 import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -49,5 +48,13 @@ public class AuthDTO {
         private String refreshToken;
         RegisterStatus registerStatus;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RefreshTokenRequest {
+        private String refreshToken;
+    }
+
 }
 
