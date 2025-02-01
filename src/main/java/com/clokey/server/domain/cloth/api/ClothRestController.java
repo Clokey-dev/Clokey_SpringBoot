@@ -9,13 +9,16 @@ import com.clokey.server.domain.cloth.exception.annotation.ClothExist;
 import com.clokey.server.domain.cloth.exception.annotation.ClothImageFormat;
 import com.clokey.server.domain.cloth.exception.annotation.ClothImagePresence;
 import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.domain.member.exception.annotation.IdValid;
-import com.clokey.server.domain.member.exception.annotation.MemberExist;
+import com.clokey.server.domain.member.exception.validator.MemberAccessibleValidator;
 import com.clokey.server.domain.model.entity.enums.ClothSort;
 import com.clokey.server.domain.model.entity.enums.Season;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import com.clokey.server.global.error.exception.annotation.CheckPage;
+import com.clokey.server.global.error.exception.annotation.CheckPageSize;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -35,6 +38,7 @@ public class ClothRestController {
 
     private final ClothService clothService;
     private final ClothAccessibleValidator clothAccessibleValidator;
+    private final MemberAccessibleValidator memberAccessibleValidator;
 
     // 옷장의 옷 조회 API, 사용자 토큰 받는 부분 추가 및 변경해야함
     @GetMapping("/{clokeyId}")
@@ -66,10 +70,14 @@ public class ClothRestController {
             @RequestParam Season season,
             @RequestParam ClothSort sort,
             @RequestParam @CheckPage int page,
-            @RequestParam int size
+            @RequestParam @CheckPageSize int size,
+            @Parameter(name = "user", hidden = true) @AuthUser Member member
     ) {
+        // 조회하는 유저와 다른 유저의 옷장이고, 그 유저가 비공개인 유저인지 확인합니다.
+        memberAccessibleValidator.validateClothAccessOfMember(clokeyId, member.getId());
+
         // ClothService를 통해 데이터를 가져오고, 결과 반환
-        ClothResponseDTO.CategoryClothPreviewListResult result = clothService.readClothPreviewInfoListByClokeyId(clokeyId, categoryId, season, sort, page, size);
+        ClothResponseDTO.CategoryClothPreviewListResult result = clothService.readClothPreviewInfoListByClokeyId(clokeyId, member.getId(), categoryId, season, sort, page, size);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
     }
@@ -85,13 +93,16 @@ public class ClothRestController {
     })
     public BaseResponse<ClothResponseDTO.ClothPopupViewResult> getClothPopupInfo(
             @PathVariable @ClothExist Long clothId,
-            @RequestParam @MemberExist Long memberId
+            @Parameter(name = "user", hidden = true) @AuthUser Member member
     ) {
-        // 멤버가 옷에 대해서 접근 권한이 있는지 확인합니다. -> 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 조회하는 현 유저를 나타냄
-        clothAccessibleValidator.validateClothAccessOfMember(clothId, memberId);
+        // 조회하는 현 유저가 옷에 대해서 접근 권한이 있는지 확인합니다.
+        clothAccessibleValidator.validateClothAccessOfMember(clothId, member.getId());
+
+        // 조회하는 유저와 다른 유저의 옷이고, 그 유저가 비공개인 유저인지 확인합니다.
+        clothAccessibleValidator.validateMemberAccessOfMemberByCloth(clothId, member.getId());
 
         // ClothService를 통해 데이터를 가져오고, 결과 반환
-        ClothResponseDTO.ClothPopupViewResult result = clothService.readClothPopupInfoById(clothId, memberId);
+        ClothResponseDTO.ClothPopupViewResult result = clothService.readClothPopupInfoById(clothId);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
     }
@@ -107,13 +118,16 @@ public class ClothRestController {
     })
     public BaseResponse<ClothResponseDTO.ClothEditViewResult> getClothEditInfo(
             @PathVariable @ClothExist Long clothId,
-            @RequestParam @MemberExist Long memberId
+            @Parameter(name = "user", hidden = true) @AuthUser Member member
     ) {
-        // 멤버가 옷에 대해서 접근 권한이 있는지 확인합니다. -> 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 조회하는 현 유저를 나타냄
-        clothAccessibleValidator.validateClothAccessOfMember(clothId, memberId);
+        // 조회하는 현 유저가 옷에 대해서 접근 권한이 있는지 확인합니다.
+        clothAccessibleValidator.validateClothAccessOfMember(clothId, member.getId());
+
+        // 조회하는 유저와 다른 유저의 옷이고, 그 유저가 비공개인 유저인지 확인합니다.
+        clothAccessibleValidator.validateMemberAccessOfMemberByCloth(clothId, member.getId());
 
         // ClothService를 통해 데이터를 가져오고, 결과 반환
-        ClothResponseDTO.ClothEditViewResult result = clothService.readClothEditInfoById(clothId, memberId);
+        ClothResponseDTO.ClothEditViewResult result = clothService.readClothEditInfoById(clothId);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
     }
@@ -129,13 +143,16 @@ public class ClothRestController {
     })
     public BaseResponse<ClothResponseDTO.ClothDetailViewResult> getClothDetatilInfo(
             @PathVariable @ClothExist Long clothId,
-            @RequestParam @MemberExist Long memberId
+            @Parameter(name = "user", hidden = true) @AuthUser Member member
     ) {
-        // 멤버가 옷에 대해서 접근 권한이 있는지 확인합니다. -> 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 조회하는 현 유저를 나타냄
-        clothAccessibleValidator.validateClothAccessOfMember(clothId, memberId);
+        // 조회하는 현 유저가 옷에 대해서 접근 권한이 있는지 확인합니다.
+        clothAccessibleValidator.validateClothAccessOfMember(clothId, member.getId());
+
+        // 조회하는 유저와 다른 유저의 옷이고, 그 유저가 비공개인 유저인지 확인합니다.
+        clothAccessibleValidator.validateMemberAccessOfMemberByCloth(clothId, member.getId());
 
         // ClothService를 통해 데이터를 가져오고, 결과 반환
-        ClothResponseDTO.ClothDetailViewResult result = clothService.readClothDetailInfoById(clothId, memberId);
+        ClothResponseDTO.ClothDetailViewResult result = clothService.readClothDetailInfoById(clothId);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
     }
@@ -153,12 +170,10 @@ public class ClothRestController {
             @RequestPart("clothCreateRequest") @Valid @ClothCreateOrUpdateFormat ClothRequestDTO.ClothCreateOrUpdateRequest clothCreateRequest,
             @RequestPart("imageFile") @ClothImagePresence @ClothImageFormat MultipartFile imageFile,
             @RequestParam @CategoryExist Long categoryId,
-            @RequestParam @MemberExist Long memberId
+            @Parameter(name = "user", hidden = true) @AuthUser Member member
     ) {
-        // 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 생성하는 현 유저를 나타냄
-
         // ClothService를 통해 데이터를 생성하고, 결과 반환
-        ClothResponseDTO.ClothCreateResult result =clothService.createCloth(categoryId, memberId, clothCreateRequest, imageFile);
+        ClothResponseDTO.ClothCreateResult result =clothService.createCloth(categoryId, member.getId(), clothCreateRequest, imageFile);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_CREATED, result);
     }
@@ -178,13 +193,13 @@ public class ClothRestController {
             @RequestPart(value = "imageFile", required = false) @ClothImageFormat MultipartFile imageFile,
             @PathVariable @ClothExist Long clothId,
             @RequestParam @CategoryExist Long categoryId,
-            @RequestParam @MemberExist Long memberId
+            @Parameter(name = "user", hidden = true) @AuthUser Member member
     ) {
-        // 멤버가 옷에 대해서 수정 권한이 있는지 확인합니다. -> 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 삭제하는 현 유저를 나타냄
-        clothAccessibleValidator.validateClothOfMember(clothId, memberId);
+        // 조회하는 현 유저가 옷에 대해서 수정 권한이 있는지 확인합니다.
+        clothAccessibleValidator.validateClothOfMember(clothId, member.getId());
 
         // ClothService를 통해 데이터를 수정
-        clothService.updateClothById(clothId, categoryId, memberId, clothUpdateRequest, imageFile);
+        clothService.updateClothById(clothId, categoryId, clothUpdateRequest, imageFile);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_EDITED, null);
     }
@@ -200,10 +215,10 @@ public class ClothRestController {
     })
     public BaseResponse<Void> deleteCloth(
             @PathVariable @ClothExist Long clothId,
-            @RequestParam @MemberExist Long memberId
+            @Parameter(name = "user", hidden = true) @AuthUser Member member
             ) {
-        // 멤버가 옷에 대해서 수정 권한이 있는지 확인합니다. -> 토큰을 이용해서 현재 로그인 중인 memberId 뽑아와서 넣어줄 것. 삭제하는 현 유저를 나타냄
-        clothAccessibleValidator.validateClothOfMember(clothId, memberId);
+        // 조회하는 현 유저가 옷에 대해서 수정 권한이 있는지 확인합니다.
+        clothAccessibleValidator.validateClothOfMember(clothId, member.getId());
 
         // ClothService를 통해 데이터를 삭제
         clothService.deleteClothById(clothId);
