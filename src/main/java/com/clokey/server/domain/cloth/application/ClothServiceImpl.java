@@ -29,41 +29,30 @@ public class ClothServiceImpl implements ClothService {
     private final ClothImageRepositoryService clothImageRepositoryService;
     private final ClothFolderRepositoryService clothFolderRepositoryService;
     private final HistoryClothRepositoryService historyClothRepositoryService;
-    private final ClothAccessibleValidator clothAccessibleValidator;
     private final S3ImageService s3ImageService;
 
-    // 옷ID로 Details 조회 후 DTO로 변환해서 반환
-    public ClothResponseDTO.ClothPopupViewResult readClothPopupInfoById(Long clothId, Long memberId) {
+    public ClothResponseDTO.ClothPopupViewResult readClothPopupInfoById(Long clothId) {
 
         // Cloth 레포지토리 조회
         Cloth cloth = clothRepositoryService.findById(clothId);
-
-        // 다른 유저의 옷이고, 비공개인 유저인지 확인하는 validator
-        clothAccessibleValidator.validateMemberAccessOfMember(cloth.getMemberId(), memberId);
 
         // Cloth를 응답형식로 변환하여 반환
         return ClothConverter.toClothPopupViewResult(cloth);
     }
 
-    public ClothResponseDTO.ClothEditViewResult readClothEditInfoById(Long clothId, Long memberId){
+    public ClothResponseDTO.ClothEditViewResult readClothEditInfoById(Long clothId){
 
         // Cloth 레포지토리 조회
         Cloth cloth = clothRepositoryService.findById(clothId);
-
-        // 다른 유저의 옷이고, 비공개인 유저인지 확인하는 validator
-        clothAccessibleValidator.validateMemberAccessOfMember(cloth.getMemberId(), memberId);
 
         // Cloth를 응답형식로 변환하여 반환
         return ClothConverter.toClothEditViewResult(cloth);
     }
 
-    public ClothResponseDTO.ClothDetailViewResult readClothDetailInfoById(Long clothId, Long memberId){
+    public ClothResponseDTO.ClothDetailViewResult readClothDetailInfoById(Long clothId){
 
         // Cloth 레포지토리 조회
         Cloth cloth = clothRepositoryService.findById(clothId);
-
-        // 다른 유저의 옷이고, 비공개인 유저인지 확인하는 validator
-        clothAccessibleValidator.validateMemberAccessOfMember(cloth.getMemberId(), memberId);
 
         // Cloth를 응답형식로 변환하여 반환
         return ClothConverter.toClothDetailViewResult(cloth);
@@ -71,10 +60,10 @@ public class ClothServiceImpl implements ClothService {
 
     // 카테고리ID와 멤버ID로 PreView 조회 후 DTO로 변환해서 반환
     public ClothResponseDTO.CategoryClothPreviewListResult readClothPreviewInfoListByClokeyId(
-            String clokeyId, Long categoryId, Season season, ClothSort sort, int page, int size) {
+            String ownerClokeyId, Long requesterId, Long categoryId, Season season, ClothSort sort, int page, int size) {
 
         Pageable pageable = PageRequest.of(page-1, size);
-        Page<Cloth> clothes = clothRepositoryService.findByFilters(clokeyId, categoryId, season, sort, pageable);
+        Page<Cloth> clothes = clothRepositoryService.findByFilters(ownerClokeyId, requesterId, categoryId, season, sort, pageable);
 
         // Cloth -> ClothPreview 변환
         List<ClothResponseDTO.ClothPreview> clothPreviews = ClothConverter.toClothPreviewList(clothes);
@@ -112,7 +101,6 @@ public class ClothServiceImpl implements ClothService {
     @Transactional
     public void updateClothById(Long clothId,
                                 Long categoryId,
-                                Long memberId,
                                 ClothRequestDTO.ClothCreateOrUpdateRequest request,
                                 MultipartFile imageFile){
 
