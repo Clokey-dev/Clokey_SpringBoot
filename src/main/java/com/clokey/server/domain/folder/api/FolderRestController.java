@@ -60,8 +60,20 @@ public class FolderRestController {
     })
     public BaseResponse<String> addClothesToFolder(@RequestParam Long memberId,
                                                    @PathVariable @FolderExist Long folderId,
-                                                   @RequestBody @Valid FolderRequestDTO.AddClothesToFolderRequest request) {
+                                                   @RequestBody @Valid FolderRequestDTO.UpdateClothesInFolderRequest request) {
         folderService.addClothesToFolder(folderId, request, memberId);
         return BaseResponse.onSuccess(SuccessStatus.FOLDER_ADD_CLOTHES_SUCCESS, null);
+    }
+
+    @Operation(summary = "폴더에 옷 삭제 API", description = "폴더에 옷 삭제하는 API입니다.")
+    @DeleteMapping("folders/{folderId}/clothes")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_204", description = "성공적으로 삭제되었습니다."),
+    })
+    public BaseResponse<String> deleteClothesFromFolder(@RequestParam Long memberId,
+                                                      @PathVariable @FolderExist Long folderId,
+                                                      @RequestBody @Valid FolderRequestDTO.UpdateClothesInFolderRequest request) {
+        folderService.deleteClothesFromFolder(folderId, request, memberId);
+        return BaseResponse.onSuccess(SuccessStatus.FOLDER_DELETE_CLOTHES_SUCCESS, null);
     }
 }
