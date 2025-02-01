@@ -2,7 +2,6 @@ package com.clokey.server.domain.folder.application;
 
 import com.clokey.server.domain.cloth.application.ClothRepositoryService;
 import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
-import com.clokey.server.domain.cloth.exception.validator.ClothExistValidator;
 import com.clokey.server.domain.folder.converter.FolderConverter;
 import com.clokey.server.domain.folder.dto.FolderRequestDTO;
 import com.clokey.server.domain.folder.exception.FolderException;
@@ -12,10 +11,7 @@ import com.clokey.server.domain.folder.domain.entity.ClothFolder;
 import com.clokey.server.domain.folder.exception.validator.FolderAccessibleValidator;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.folder.domain.repository.FolderRepository;
-import com.clokey.server.domain.member.domain.repository.MemberRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import com.clokey.server.global.error.exception.DatabaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,7 +64,7 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     @Transactional
-    public void addClothesToFolder(Long folderId, FolderRequestDTO.AddClothesToFolderRequest request, Long memberId) {
+    public void addClothesToFolder(Long folderId, FolderRequestDTO.UpdateClothesInFolderRequest request, Long memberId) {
         Folder folder = folderRepositoryService.findById(folderId);
         folderAccessibleValidator.validateFolderAccessOfMember(folder.getId(), memberId);
 
