@@ -39,7 +39,7 @@ public class ClothRequestDTO {
         private ThicknessLevel thicknessLevel;
         @NotNull
         private Visibility visibility;
-        private String clothUrl;
-        private String brand;
+        private String clothUrl = null;
+        private String brand = null;
     }
 }
