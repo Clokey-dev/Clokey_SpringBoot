@@ -8,4 +8,5 @@ public interface FolderService {
     void deleteFolder(Long folderId, Long memberId);
     void editFolderName(Long folderId, String newName, Long memberId);
     void addClothesToFolder(Long folderId, FolderRequestDTO.UpdateClothesInFolderRequest request, Long memberId);
+    void deleteClothesFromFolder(Long folderId, FolderRequestDTO.UpdateClothesInFolderRequest request, Long memberId);
 }

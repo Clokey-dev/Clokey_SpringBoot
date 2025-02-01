@@ -69,7 +69,7 @@ public class FolderServiceImpl implements FolderService {
         folderAccessibleValidator.validateFolderAccessOfMember(folder.getId(), memberId);
 
         request.getClothIds().forEach(clothId -> {
-            if(!clothRepositoryService.existsById(clothId)){
+            if (!clothRepositoryService.existsById(clothId)) {
                 throw new FolderException(ErrorStatus.NO_SUCH_CLOTH);
             }
         });
@@ -78,7 +78,7 @@ public class FolderServiceImpl implements FolderService {
         clothAccessibleValidator.validateClothOfMember(clothes.stream().map(Cloth::getId).collect(Collectors.toList()), memberId);
 
         // 이미 폴더에 있는 옷 ID 목록 조회
-        List<ClothFolder> existingClothIds = clothFolderRepositoryService.existsByAllClothIdsAndFolderId(
+        List<ClothFolder> existingClothIds = clothFolderRepositoryService.findAllByClothIdsAndFolderId(
                 clothes.stream().map(Cloth::getId).collect(Collectors.toList()), folder.getId()
         );
         // 중복된 옷이 있으면 예외 발생
@@ -91,5 +91,27 @@ public class FolderServiceImpl implements FolderService {
                 .collect(Collectors.toList());
 
         clothFolderRepositoryService.saveAll(clothFolders);
+    }
+
+    @Override
+    @Transactional
+    public void deleteClothesFromFolder(Long folderId, FolderRequestDTO.UpdateClothesInFolderRequest request, Long memberId) {
+        Folder folder = folderRepositoryService.findById(folderId);
+        folderAccessibleValidator.validateFolderAccessOfMember(folder.getId(), memberId);
+
+        request.getClothIds().forEach(clothId -> {
+            if (!clothRepositoryService.existsById(clothId)) {
+                throw new FolderException(ErrorStatus.NO_SUCH_CLOTH);
+            }
+        });
+
+        List<Cloth> clothes = clothRepositoryService.findAllById(request.getClothIds());
+        clothAccessibleValidator.validateClothOfMember(clothes.stream().map(Cloth::getId).collect(Collectors.toList()), memberId);
+
+        List<ClothFolder> clothFolders = clothFolderRepositoryService.findAllByClothIdsAndFolderId(
+                clothes.stream().map(Cloth::getId).collect(Collectors.toList()), folder.getId()
+        );
+
+        clothFolderRepositoryService.deleteAllByClothIdIn(clothFolders.stream().map(ClothFolder::getCloth).map(Cloth::getId).collect(Collectors.toList()));
     }
 }
