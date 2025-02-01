@@ -18,6 +18,7 @@ public class ClothAccessibleValidator {
     private final MemberRepositoryService memberRepositoryService;
     private final ClothRepositoryService clothRepositoryService;
 
+    // 유저가 옷에 대한 접근 권한이 있는지 검증 -> 비공개 옷을 조회하지 못하도록 함
     public void validateClothAccessOfMember(Long clothId, Long memberId) {
         Cloth cloth = clothRepositoryService.findById(clothId);
 
@@ -30,6 +31,7 @@ public class ClothAccessibleValidator {
         }
     }
 
+    // 유저가 옷에 대한 수정권한이 있는지 검증 (내옷 인지 확인)
     public void validateClothOfMember(Long clothId, Long memberId) {
         Cloth cloth = clothRepositoryService.findById(clothId);
 
@@ -49,15 +51,18 @@ public class ClothAccessibleValidator {
         });
     }
 
-    public void validateMemberAccessOfMember(Long memberToBeQueried, Long memberRequestingQuery) {
+    // 유저가 다른 유저의 옷을 조회하려할 때를 검증 -> 비공개 유저의 옷을 조회하지 못하도록 함
+    public void validateMemberAccessOfMemberByCloth (Long clothId, Long requesterId) {
+        Cloth cloth = clothRepositoryService.findById(clothId);
+        Long ownerId = cloth.getMemberId();
 
         //접근 권한 확인 - 내 자신을 확인하는 것도 아니고 비공개인 경우.
-        boolean selfQuery = memberToBeQueried.equals(memberRequestingQuery);
-        boolean isPrivate = memberRepositoryService.getReferencedById(memberToBeQueried)
+        boolean selfQuery = ownerId.equals(requesterId);
+        boolean isOwnerPrivate = memberRepositoryService.getReferencedById(ownerId)
                 .getVisibility()
                 .equals(Visibility.PRIVATE);
 
-        if(!selfQuery && isPrivate) {
+        if(!selfQuery && isOwnerPrivate) {
             throw new ClothException(ErrorStatus.NO_PERMISSION_TO_ACCESS_CLOTH);
         }
     }
