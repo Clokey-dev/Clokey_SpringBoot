@@ -158,7 +158,7 @@ public class ClothRestController {
     }
 
     // 옷 생성 API, 사용자 토큰 받는 부분 추가 및 변경해야함
-    @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "새로운 옷을 생성하는 API", description = "query string으로 category_id를 넘겨주세요.\nrequest body에 ClothCreateRequestDTO 형식의 데이터를 전달해주세요.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CLOTH_201", description = "CREATED, 성공적으로 생성되었습니다."),
