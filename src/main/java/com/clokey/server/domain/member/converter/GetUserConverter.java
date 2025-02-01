@@ -15,6 +15,7 @@ public class GetUserConverter {
                 .followingCount(followingCount)
                 .nickname(member.getNickname())
                 .bio(member.getBio())
+                .profileBackImageUrl(member.getProfileBackImageUrl())
                 .visibility(member.getVisibility().toString())
                 .isFollowing(isFollowing) // 추가된 필드 반영
                 .build();

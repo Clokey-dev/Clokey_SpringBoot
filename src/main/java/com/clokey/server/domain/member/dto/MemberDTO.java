@@ -24,6 +24,7 @@ public class MemberDTO {
         Long followingCount;
         String nickname;
         String bio;
+        String profileBackImageUrl;
         String visibility;
         boolean isFollowing;
     }
