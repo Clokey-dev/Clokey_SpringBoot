@@ -33,8 +33,14 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
         clothFolderRepository.saveAll(clothFolder);
     }
 
+
     @Override
-    public List<ClothFolder> existsByAllClothIdsAndFolderId(List<Long> clothIds, Long folderId) {
+    public List<ClothFolder> findAllByClothIdsAndFolderId(List<Long> clothIds, Long folderId) {
         return clothFolderRepository.findByClothIdInAndFolderId(clothIds, folderId);
+    }
+
+    @Override
+    public void deleteAllByClothIdIn(List<Long> clothIds) {
+        clothFolderRepository.deleteAllByClothIdIn(clothIds);
     }
 }

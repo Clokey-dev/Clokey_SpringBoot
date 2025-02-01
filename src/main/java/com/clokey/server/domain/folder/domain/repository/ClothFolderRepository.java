@@ -17,4 +17,7 @@ public interface ClothFolderRepository extends JpaRepository<ClothFolder, Long> 
     void deleteAllByClothId(@Param("clothId") Long clothId);
 
     List<ClothFolder> findByClothIdInAndFolderId(List<Long> clothIds, Long folderId);
+
+    @Transactional
+    void deleteAllByClothIdIn(List<Long> clothId);
 }

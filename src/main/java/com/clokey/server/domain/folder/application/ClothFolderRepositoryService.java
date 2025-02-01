@@ -15,5 +15,7 @@ public interface ClothFolderRepositoryService {
 
     void saveAll(List<ClothFolder> clothFolder);
 
-    List<ClothFolder> existsByAllClothIdsAndFolderId(List<Long> clothIds, Long folderId);
+    List<ClothFolder> findAllByClothIdsAndFolderId(List<Long> clothIds, Long folderId);
+
+    void deleteAllByClothIdIn(List<Long> clothIds);
 }
