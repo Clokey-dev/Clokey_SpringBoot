@@ -15,8 +15,11 @@ public class CategoryExistValidator implements ConstraintValidator<CategoryExist
     private final CategoryRepositoryService categoryRepositoryService;
 
     @Override
-    public boolean isValid(Long clothId, ConstraintValidatorContext context) {
-        boolean isValid = categoryRepositoryService.existsById(clothId);
+    public boolean isValid(Long categoryId, ConstraintValidatorContext context) {
+        if(categoryId==0)
+            return true;
+
+        boolean isValid = categoryRepositoryService.existsById(categoryId);
 
         if (!isValid) {
             context.disableDefaultConstraintViolation();

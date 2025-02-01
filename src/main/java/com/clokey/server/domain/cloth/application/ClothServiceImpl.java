@@ -8,11 +8,18 @@ import com.clokey.server.domain.cloth.domain.entity.ClothImage;
 import com.clokey.server.domain.folder.application.ClothFolderRepositoryService;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.history.application.HistoryClothRepositoryService;
+import com.clokey.server.domain.model.entity.enums.ClothSort;
+import com.clokey.server.domain.model.entity.enums.Season;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.clokey.server.global.infra.s3.S3ImageService;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -63,8 +70,18 @@ public class ClothServiceImpl implements ClothService {
     }
 
     // 카테고리ID와 멤버ID로 PreView 조회 후 DTO로 변환해서 반환
-//    public ClothResponseDTO.CategoryClothReadResult readClothPreviewByCategoryAndMember(Long memberId, Long categoryId) {
-//    }
+    public ClothResponseDTO.CategoryClothPreviewListResult readClothPreviewInfoListByClokeyId(
+            String clokeyId, Long categoryId, Season season, ClothSort sort, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page-1, size);
+        Page<Cloth> clothes = clothRepositoryService.findByFilters(clokeyId, categoryId, season, sort, pageable);
+
+        // Cloth -> ClothPreview 변환
+        List<ClothResponseDTO.ClothPreview> clothPreviews = ClothConverter.toClothPreviewList(clothes);
+
+        // 페이징 정보를 담아 DTO 반환
+        return ClothConverter.toClothPreviewListResult(clothes, clothPreviews);
+    }
 
     @Transactional
     public ClothResponseDTO.ClothCreateResult createCloth(Long categoryId,
