@@ -29,8 +29,9 @@ public enum SuccessStatus implements BaseCode {
     //폴더 성공
     FOLDER_SUCCESS(HttpStatus.OK, "FOLDER_200", "성공적으로 조회되었습니다."),
     FOLDER_CREATED(HttpStatus.CREATED, "FOLDER_201", "성공적으로 생성되었습니다."),
-    FOLDER_DELETED(HttpStatus.OK, "FOLDER_200", "성공적으로 삭제되었습니다."),
-    FOLDER_EDIT_SUCCESS(HttpStatus.OK, "FOLDER_200", "성공적으로 수정되었습니다."),
+    FOLDER_DELETED(HttpStatus.NO_CONTENT, "FOLDER_204", "성공적으로 삭제되었습니다."),
+    FOLDER_EDIT_SUCCESS(HttpStatus.NO_CONTENT, "FOLDER_204", "성공적으로 수정되었습니다."),
+    FOLDER_ADD_CLOTHES_SUCCESS(HttpStatus.CREATED, "FOLDER_201", "성공적으로 추가되었습니다."),
 
     //검색 성공
     SEARCH_SUCCESS(HttpStatus.OK, "SEARCH_200", "성공적으로 조회되었습니다."),
@@ -41,6 +42,10 @@ public enum SuccessStatus implements BaseCode {
     HISTORY_LIKE_STATUS_CHANGED(HttpStatus.OK,"HISTORY_200","좋아요 상태가 성공적으로 변경되었습니다."),
     HISTORY_COMMENT_CREATED(HttpStatus.CREATED,"HISTORY_201","성공적으로 댓글이 생성되었습니다."),
     HISTORY_UPDATED(HttpStatus.NO_CONTENT,"HISTORY_204","성공적으로 수정되었습니다"),
+    HISTORY_COMMENT_DELETED(HttpStatus.NO_CONTENT,"HISTORY_204","댓글이 성공적으로 삭제되었습니다"),
+    HISTORY_COMMENT_UPDATED(HttpStatus.NO_CONTENT,"HISTORY_204","댓글이 성공적으로 수정되었습니다"),
+    HISTORY_DELETED(HttpStatus.NO_CONTENT,"HISTORY_204","기록이 성공적으로 삭제되었습니다"),
+    HISTORY_LIKE_USER(HttpStatus.OK,"HISTORY_200","기록의 좋아요를 누른 유저 정보를 성공적으로 조회했습니다."),
 
     //알림 성공
     NOTIFICATION_SUCCESS(HttpStatus.OK, "NOTIFICATION_200", "성공적으로 조회되었습니다."),
@@ -54,7 +59,11 @@ public enum SuccessStatus implements BaseCode {
     MEMBER_ACTION_CREATED(HttpStatus.CREATED, "MEMBER_ACTION_201", "멤버 관련 요소가 성공적으로 생성되었습니다."),
 
     //아이디 성공
-    MEMBER_ID_SUCCESS(HttpStatus.OK, "MEMBER_ID_200", "사용가능한 아이디입니다.");
+    MEMBER_ID_SUCCESS(HttpStatus.OK, "MEMBER_ID_200", "사용가능한 아이디입니다."),
+
+    //로그인 성공
+    LOGIN_SUCCESS(HttpStatus.OK, "LOGIN_200", "로그인에 성공하였습니다."),
+    LOGIN_CREATED(HttpStatus.CREATED, "LOGIN_201", "회원가입과 로그인에 성공하였습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

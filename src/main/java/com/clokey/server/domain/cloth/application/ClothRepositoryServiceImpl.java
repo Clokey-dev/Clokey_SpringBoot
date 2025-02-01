@@ -15,6 +15,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -53,5 +56,10 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
             Pageable pageable
     ){
         return clothRepository.findByFilters(clokeyId, categoryId, season, sort.toString(), pageable);
+    }
+  
+    public List<Cloth> findAllById(List<Long> clothIds) {
+        return clothRepository.findAllById(clothIds);
+
     }
 }

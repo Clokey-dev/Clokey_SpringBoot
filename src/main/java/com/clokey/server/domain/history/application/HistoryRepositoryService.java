@@ -1,6 +1,7 @@
 package com.clokey.server.domain.history.application;
 
 import com.clokey.server.domain.history.domain.entity.History;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,4 +21,11 @@ public interface HistoryRepositoryService {
     History save(History history);
 
     boolean checkHistoryExistOfDate(LocalDate date, Long memberId);
+
+    History getHistoryOfDate(LocalDate date, Long memberId);
+
+    void deleteById(Long historyId);
+
+    List<Boolean> existsByHistoryDateAndMemberIds(LocalDate historyDate, List<Long> memberIds);
+
 }

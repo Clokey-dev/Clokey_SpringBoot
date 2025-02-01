@@ -2,9 +2,12 @@ package com.clokey.server.domain.history.application;
 
 import com.clokey.server.domain.history.domain.entity.MemberLike;
 import com.clokey.server.domain.history.domain.repository.MemberLikeRepository;
+import com.clokey.server.domain.member.domain.entity.Member;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,5 +34,15 @@ public class MemberLikeRepositoryServiceImpl implements MemberLikeRepositoryServ
     @Override
     public void save(MemberLike memberLike) {
         memberLikeRepository.save(memberLike);
+    }
+
+    @Override
+    public void deleteAllByHistoryId(Long historyId) {
+        memberLikeRepository.deleteAllByHistoryId(historyId);
+    }
+
+    @Override
+    public List<Member> findMembersByHistory(Long historyId) {
+        return memberLikeRepository.findMembersByHistoryId(historyId);
     }
 }

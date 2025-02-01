@@ -12,13 +12,23 @@ public interface HistoryService {
 
     HistoryResponseDTO.CommentWriteResult writeComment(Long historyId, Long parentCommentId, Long memberId, String content);
 
-    HistoryResponseDTO.DayViewResult getDaily(Long historyId, Long memberId);
+    HistoryResponseDTO.DailyHistoryResult getDaily(Long historyId, Long memberId);
 
     HistoryResponseDTO.HistoryCommentResult getComments(Long historyId, int page);
 
-    HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long this_member_id, Long memberId, String month);
+    HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long myMemberId, String clokeyId, String month);
 
     HistoryResponseDTO.HistoryCreateResult createHistory(HistoryRequestDTO.HistoryCreate historyCreateRequest, Long memberId, List<MultipartFile> images);
 
     void updateHistory(HistoryRequestDTO.HistoryUpdate historyUpdate, Long memberId, Long historyId, List<MultipartFile> images);
+
+    HistoryResponseDTO.LastYearHistoryResult getLastYearHistory(Long memberId);
+
+    void deleteComment(Long commentId,Long memberId);
+
+    void updateComment(HistoryRequestDTO.UpdateComment updateCommentRequest,Long commentId,Long memberId);
+
+    void deleteHistory(Long historyId, Long memberId);
+
+    HistoryResponseDTO.LikedUserResults getLikedUser(Long memberId, Long historyId);
 }

@@ -8,6 +8,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Transactional
 @Service
 @RequiredArgsConstructor
@@ -29,4 +31,11 @@ public class HashtagRepositoryServiceImpl implements HashtagRepositoryService{
     public void save(Hashtag hashtag) {
         hashtagRepository.save(hashtag);
     }
+
+    @Override
+    public List<Hashtag> findHashtagsByNames(List<String> names) {
+        return hashtagRepository.findHashtagsByNames(names);
+    }
+
+
 }

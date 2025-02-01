@@ -30,5 +30,11 @@ public class Comment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Comment comment;
+
+    public void updateContent(String content) {
+        if(content != null && !content.isEmpty()) {
+            this.content = content;
+        }
+    }
 }
 

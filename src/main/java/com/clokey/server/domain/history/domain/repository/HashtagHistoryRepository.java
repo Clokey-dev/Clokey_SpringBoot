@@ -17,8 +17,16 @@ public interface HashtagHistoryRepository extends JpaRepository<HashtagHistory, 
 
     List<HashtagHistory> findByHistory_Id(Long historyId);
 
+    @Query("SELECT h.name FROM HashtagHistory hh JOIN hh.hashtag h WHERE hh.history.id = :historyId")
+    List<String> findHashtagNamesByHistoryId(@Param("historyId") Long historyId);
+
     @Transactional
     @Modifying
     @Query("DELETE FROM HashtagHistory hh WHERE hh.hashtag = :hashtag AND hh.history = :history")
     void deleteByHashtagAndHistory(@Param("hashtag") Hashtag hashtag, @Param("history") History history);
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM HashtagHistory hh WHERE hh.history.id = :historyId")
+    void deleteAllByHistoryId(@Param("historyId") Long historyId);
 }

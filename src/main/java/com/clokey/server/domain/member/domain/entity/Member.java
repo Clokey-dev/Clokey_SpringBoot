@@ -2,7 +2,9 @@ package com.clokey.server.domain.member.domain.entity;
 
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.member.dto.MemberDTO;
 import com.clokey.server.domain.model.entity.BaseEntity;
+import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.domain.term.domain.entity.MemberTerm;
 import com.clokey.server.domain.model.entity.enums.MemberStatus;
@@ -50,15 +52,29 @@ public class Member extends BaseEntity {
 
     private String profileImageUrl;
 
+    private String profileBackImageUrl;
+
     @Enumerated(EnumType.STRING) //활성화여부
     @Column(columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'" , nullable = false)
     private MemberStatus status;
+
+    @Enumerated(EnumType.STRING) //성별
+    @Column(columnDefinition = "VARCHAR(30) DEFAULT 'NOT_AGREED'", nullable = false)
+    private RegisterStatus registerStatus;
 
     private LocalDate inactiveDate;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(15) DEFAULT 'PUBLIC'",nullable = false) // 공개 범위
     private Visibility visibility;
+
+    @Column(nullable = true, unique = true)
+    private String refreshToken;
+
+    @Column(nullable = true, unique = true)
+    private String accessToken;
+
+
 
     //필요한 양방향 매핑을 제외하고 삭제해주세요.
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
@@ -72,4 +88,23 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<History> historyList = new ArrayList<>();
+
+
+    public void profileUpdate(MemberDTO.ProfileRQ request) {
+        this.nickname = request.getNickname();
+        this.clokeyId = request.getClokeyId();
+        this.profileImageUrl = request.getProfileImageUrl();
+        this.bio = request.getBio();
+        this.profileBackImageUrl = request.getProfileBackImageUrl();
+        this.visibility = request.getVisibility();
+    }
+
+    public void updateRegisterStatus(RegisterStatus registerStatus) {
+        this.registerStatus = registerStatus;
+    }
+
+    public void updateToken(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
 }

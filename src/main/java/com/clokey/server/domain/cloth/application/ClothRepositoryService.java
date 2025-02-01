@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface ClothRepositoryService {
 
     Cloth findById(Long id);
@@ -24,4 +26,6 @@ public interface ClothRepositoryService {
             @Param("sort") ClothSort sort,
             Pageable pageable
     );
+
+    List<Cloth> findAllById(List<Long> clothIds);
 }

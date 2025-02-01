@@ -4,7 +4,7 @@ import com.clokey.server.domain.folder.domain.entity.Folder;
 import com.clokey.server.domain.folder.domain.repository.FolderRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +27,7 @@ public class FolderRepositoryServiceImpl implements FolderRepositoryService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Folder findById(Long folderId) {
         return folderRepository.findById(folderId).orElseThrow(()-> new DatabaseException(ErrorStatus.NO_SUCH_FOLDER));
     }

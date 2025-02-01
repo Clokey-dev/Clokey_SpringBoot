@@ -1,6 +1,8 @@
 package com.clokey.server.domain.member.dto;
 
 import com.clokey.server.domain.member.exception.annotation.EssentialFieldNotNull;
+import com.clokey.server.domain.member.exception.annotation.IdValid;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-public class MemberResponseDTO {
+public class MemberDTO {
 
     @Builder
     @Getter
@@ -23,7 +25,9 @@ public class MemberResponseDTO {
         Long followingCount;
         String nickname;
         String bio;
-        String visibility;
+        String profileBackImageUrl;
+        Visibility visibility;
+        boolean isFollowing;
     }
 
     @Getter
@@ -33,14 +37,19 @@ public class MemberResponseDTO {
     public static class ProfileRQ {
 
         @EssentialFieldNotNull
-        private String nickname;
+        String nickname;
 
         @EssentialFieldNotNull
-        private String clokeyId;
+        String clokeyId;
 
-        private String profileImageUrl;
+        String profileImageUrl;
 
         private String bio;
+
+        private String profileBackImageUrl;
+
+        Visibility visibility;
+
     }
 
 
@@ -56,6 +65,34 @@ public class MemberResponseDTO {
         String nickname;
         String clokeyId;
         String profileImageUrl;
+        String profileBackImageUrl;
+        Visibility visibility;
         LocalDateTime updatedAt;
+    }
+
+
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class  FollowRQ{
+
+        @IdValid
+        String myClokeyId;
+        @IdValid
+        String yourClokeyId;
+
+    }
+
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class  FollowRP{
+
+        boolean isFollow;
+
     }
 }

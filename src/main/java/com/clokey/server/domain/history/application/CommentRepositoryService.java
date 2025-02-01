@@ -17,4 +17,10 @@ public interface CommentRepositoryService {
     Comment save(Comment comment);
 
     boolean existsById(Long commentId);
+
+    void deleteChildren(Long commentId);
+
+    void deleteById(Long commentId);
+
+    void deleteAllComments(Long HistoryId);
 }

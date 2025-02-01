@@ -25,4 +25,13 @@ public interface HistoryClothRepository extends JpaRepository<HistoryCloth, Long
 
     @Query("SELECT hc.cloth.id FROM HistoryCloth hc WHERE hc.history.id = :historyId")
     List<Long> findClothIdsByHistoryId(@Param("historyId") Long historyId);
+
+    // 특정 HistoryId에 연결된 모든 Cloth 조회
+    @Query("SELECT hc.cloth FROM HistoryCloth hc WHERE hc.history.id = :historyId")
+    List<Cloth> findAllClothsByHistoryId(@Param("historyId") Long historyId);
+
+    // 특정 HistoryId에 연결된 모든 HistoryClothResult 삭제
+    @Modifying
+    @Query("DELETE FROM HistoryCloth hc WHERE hc.history.id = :historyId")
+    void deleteAllByHistoryId(@Param("historyId") Long historyId);
 }

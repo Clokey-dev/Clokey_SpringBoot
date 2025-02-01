@@ -1,15 +1,19 @@
 package com.clokey.server.domain.member.api;
 
+import com.clokey.server.domain.member.application.FollowCommandService;
 import com.clokey.server.domain.member.application.GetUserQueryService;
-import com.clokey.server.domain.member.dto.MemberResponseDTO;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.member.dto.MemberDTO;
 import com.clokey.server.domain.member.application.ProfileCommandService;
+import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.domain.member.exception.annotation.IdExist;
 import com.clokey.server.domain.member.exception.annotation.IdValid;
+import com.clokey.server.domain.member.exception.annotation.NotFollowMyself;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,14 +25,15 @@ public class MemberRestController {
 
     private final ProfileCommandService profileCommandService;
     private final GetUserQueryService getUserQueryService;
+    private final FollowCommandService followCommandService;
 
     @Operation(summary = "프로필 수정 API", description = "사용자의 프로필 정보를 수정하는 API입니다.")
-    @PatchMapping("users/{user_id}/profile")
-    public BaseResponse<MemberResponseDTO.ProfileRP> updateProfile(
-            @PathVariable("user_id") Long userId,
-            @RequestBody @Valid MemberResponseDTO.ProfileRQ request) {
+    @PatchMapping("users/profile")
+    public BaseResponse<MemberDTO.ProfileRP> updateProfile(
+            @Parameter(name = "user",hidden = true) @AuthUser Member member,
+            @RequestBody @Valid MemberDTO.ProfileRQ request) {
 
-        MemberResponseDTO.ProfileRP response = profileCommandService.updateProfile(userId, request);
+        MemberDTO.ProfileRP response = profileCommandService.updateProfile(member.getId(), request);
 
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_SUCCESS, response);
     }
@@ -47,10 +52,34 @@ public class MemberRestController {
     public BaseResponse<Object> getUser(
             @IdValid @PathVariable("clokey_id") String clokeyId) {
 
-        MemberResponseDTO.GetUserRP response = getUserQueryService.getUser(clokeyId);
+        MemberDTO.GetUserRP response = getUserQueryService.getUser(clokeyId);
 
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_SUCCESS, response);
     }
+
+
+    @Operation(summary = "팔로우 조회 API", description = "내가 다른 사용자를 팔로우하고있는지 확인하는 API입니다.")
+    @PostMapping("users/follow/check")
+    public BaseResponse<MemberDTO.FollowRP> followCheck(
+            @RequestBody @Valid MemberDTO.FollowRQ request){
+
+        MemberDTO.FollowRP response= followCommandService.followCheck(request);
+
+        return BaseResponse.onSuccess(SuccessStatus.MEMBER_SUCCESS, response);
+    }
+
+
+
+    @Operation(summary = "팔로우 API", description = "다른 사용자를 팔로우/언팔로우하는 API입니다. 호출시마다 기존 상태와 반대로 변경됩니다.")
+    @PostMapping("users/follow")
+    public BaseResponse<Object> follow(
+        @NotFollowMyself @RequestBody @Valid MemberDTO.FollowRQ request) {
+
+        followCommandService.follow(request);
+
+        return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_SUCCESS, null);
+    }
+
 
 }
 

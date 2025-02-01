@@ -1,12 +1,13 @@
 package com.clokey.server.domain.member.converter;
 
-import com.clokey.server.domain.member.dto.MemberResponseDTO;
 import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.member.dto.MemberDTO;
+
 
 public class GetUserConverter {
 
-    public static MemberResponseDTO.GetUserRP toGetUserResponseDTO(Member member, Long recordCount, Long followerCount, Long followingCount) {
-        return MemberResponseDTO.GetUserRP.builder()
+    public static MemberDTO.GetUserRP toGetUserResponseDTO(Member member, Long recordCount, Long followerCount, Long followingCount) {
+        return MemberDTO.GetUserRP.builder()
                 .clokeyId(member.getClokeyId())
                 .profileImageUrl(member.getProfileImageUrl())
                 .recordCount(recordCount)
@@ -14,7 +15,8 @@ public class GetUserConverter {
                 .followingCount(followingCount)
                 .nickname(member.getNickname())
                 .bio(member.getBio())
-                .visibility(member.getVisibility().toString())
+                .profileBackImageUrl(member.getProfileBackImageUrl())
+                .visibility(member.getVisibility())
                 .build();
     }
 }
