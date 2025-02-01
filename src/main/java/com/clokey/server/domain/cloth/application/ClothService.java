@@ -16,7 +16,7 @@ public interface ClothService {
 
     ClothResponseDTO.CategoryClothPreviewListResult readClothPreviewInfoListByClokeyId(String ownerClokeyId, Long requesterId, Long categoryId, Season season, ClothSort sort, int page, int pageSize);
 
-    ClothResponseDTO.ClothCreateResult createCloth(Long categoryId, Long memberId, ClothRequestDTO.ClothCreateOrUpdateRequest request, MultipartFile imageFile);
+    ClothResponseDTO.ClothCreateResult createCloth(Long memberId, ClothRequestDTO.ClothCreateOrUpdateRequest request, MultipartFile imageFile);
 
     void updateClothById(Long clothId, Long categoryId, ClothRequestDTO.ClothCreateOrUpdateRequest request, MultipartFile imageFile);
 

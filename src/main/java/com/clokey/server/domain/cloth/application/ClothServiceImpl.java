@@ -73,13 +73,12 @@ public class ClothServiceImpl implements ClothService {
     }
 
     @Transactional
-    public ClothResponseDTO.ClothCreateResult createCloth(Long categoryId,
-                                                          Long memberId,
+    public ClothResponseDTO.ClothCreateResult createCloth(Long memberId,
                                                           ClothRequestDTO.ClothCreateOrUpdateRequest request,
                                                           MultipartFile imageFile) {
 
         // Cloth 엔티티 생성 후 요청 정보 반환해서 저장
-        Cloth cloth = clothRepositoryService.save(ClothConverter.toCloth(categoryId,memberId,request));
+        Cloth cloth = clothRepositoryService.save(ClothConverter.toCloth(memberId, request));
 
         // 이미지 업로드 후 URL 반환
         String imageUrl = (imageFile != null) ? s3ImageService.upload(imageFile) : null;
