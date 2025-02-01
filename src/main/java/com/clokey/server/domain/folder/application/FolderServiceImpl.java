@@ -65,26 +65,11 @@ public class FolderServiceImpl implements FolderService {
     @Override
     @Transactional
     public void addClothesToFolder(Long folderId, FolderRequestDTO.UpdateClothesInFolderRequest request, Long memberId) {
-        Folder folder = folderRepositoryService.findById(folderId);
-        folderAccessibleValidator.validateFolderAccessOfMember(folder.getId(), memberId);
+        Folder folder = folderAccessibleValidator.validateFolderAccessOfMember(folderId, memberId);
 
-        request.getClothIds().forEach(clothId -> {
-            if (!clothRepositoryService.existsById(clothId)) {
-                throw new FolderException(ErrorStatus.NO_SUCH_CLOTH);
-            }
-        });
+        List<Cloth> clothes = validateClothesExistAndAccessible(request.getClothIds(), memberId);
 
-        List<Cloth> clothes = clothRepositoryService.findAllById(request.getClothIds());
-        clothAccessibleValidator.validateClothOfMember(clothes.stream().map(Cloth::getId).collect(Collectors.toList()), memberId);
-
-        // 이미 폴더에 있는 옷 ID 목록 조회
-        List<ClothFolder> existingClothIds = clothFolderRepositoryService.findAllByClothIdsAndFolderId(
-                clothes.stream().map(Cloth::getId).collect(Collectors.toList()), folder.getId()
-        );
-        // 중복된 옷이 있으면 예외 발생
-        if (!existingClothIds.isEmpty()) {
-            throw new FolderException(ErrorStatus.CLOTH_ALREADY_IN_FOLDER);
-        }
+        clothFolderRepositoryService.validateNoDuplicateClothes(clothes, folder.getId());
 
         List<ClothFolder> clothFolders = clothes.stream()
                 .map(cloth -> new ClothFolder(cloth, folder))
@@ -96,22 +81,30 @@ public class FolderServiceImpl implements FolderService {
     @Override
     @Transactional
     public void deleteClothesFromFolder(Long folderId, FolderRequestDTO.UpdateClothesInFolderRequest request, Long memberId) {
-        Folder folder = folderRepositoryService.findById(folderId);
-        folderAccessibleValidator.validateFolderAccessOfMember(folder.getId(), memberId);
+        Folder folder = folderAccessibleValidator.validateFolderAccessOfMember(folderId, memberId);
 
-        request.getClothIds().forEach(clothId -> {
-            if (!clothRepositoryService.existsById(clothId)) {
-                throw new FolderException(ErrorStatus.NO_SUCH_CLOTH);
-            }
-        });
-
-        List<Cloth> clothes = clothRepositoryService.findAllById(request.getClothIds());
-        clothAccessibleValidator.validateClothOfMember(clothes.stream().map(Cloth::getId).collect(Collectors.toList()), memberId);
+        List<Cloth> clothes = validateClothesExistAndAccessible(request.getClothIds(), memberId);
 
         List<ClothFolder> clothFolders = clothFolderRepositoryService.findAllByClothIdsAndFolderId(
                 clothes.stream().map(Cloth::getId).collect(Collectors.toList()), folder.getId()
         );
 
         clothFolderRepositoryService.deleteAllByClothIdIn(clothFolders.stream().map(ClothFolder::getCloth).map(Cloth::getId).collect(Collectors.toList()));
+    }
+
+    private List<Cloth> validateClothesExistAndAccessible(List<Long> clothIds, Long memberId) {
+        clothIds.forEach(clothId -> {
+            if (!clothRepositoryService.existsById(clothId)) {
+                throw new FolderException(ErrorStatus.NO_SUCH_CLOTH);
+            }
+        });
+
+        List<Cloth> clothes = clothRepositoryService.findAllById(clothIds);
+
+        clothAccessibleValidator.validateClothOfMember(
+                clothes.stream().map(Cloth::getId).collect(Collectors.toList()), memberId
+        );
+
+        return clothes;
     }
 }
