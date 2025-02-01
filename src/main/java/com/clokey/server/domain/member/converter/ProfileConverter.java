@@ -17,6 +17,7 @@ public class ProfileConverter {
                 .clokeyId(member.getClokeyId())
                 .profileImageUrl(member.getProfileImageUrl())
                 .profileBackImageUrl(member.getProfileBackImageUrl())
+                .visibility(member.getVisibility())
                 .updatedAt(LocalDateTime.now())
                 .build();
     }

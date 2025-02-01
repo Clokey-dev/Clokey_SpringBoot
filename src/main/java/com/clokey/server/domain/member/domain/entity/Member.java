@@ -96,6 +96,7 @@ public class Member extends BaseEntity {
         this.profileImageUrl = request.getProfileImageUrl();
         this.bio = request.getBio();
         this.profileBackImageUrl = request.getProfileBackImageUrl();
+        this.visibility = request.getVisibility();
     }
 
     public void updateRegisterStatus(RegisterStatus registerStatus) {
