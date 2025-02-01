@@ -27,6 +27,7 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
     }
 
     @Modifying
+    @Transactional
     public void deleteAllByClothId(@Param("clothId") Long clothId){
         clothFolderRepository.deleteAllByClothId(clothId);
     }
@@ -44,6 +45,7 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
     }
 
     @Override
+    @Transactional
     public void deleteAllByClothIdIn(List<Long> clothIds) {
         clothFolderRepository.deleteAllByClothIdIn(clothIds);
     }
