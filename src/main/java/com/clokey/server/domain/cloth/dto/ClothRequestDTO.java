@@ -26,7 +26,6 @@ public class ClothRequestDTO {
         @NotBlank
         private String name;
         @NotNull
-        @NotBlank
         private List<Season> seasons;
         @NotNull
         @Min(-20)
