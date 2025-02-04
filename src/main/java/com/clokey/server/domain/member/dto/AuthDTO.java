@@ -4,7 +4,9 @@ import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import javax.naming.AuthenticationException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class AuthDTO {
@@ -56,5 +58,6 @@ public class AuthDTO {
         private String refreshToken;
     }
 
+    
 }
 

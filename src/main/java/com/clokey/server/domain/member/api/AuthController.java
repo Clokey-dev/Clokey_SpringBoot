@@ -1,5 +1,6 @@
 package com.clokey.server.domain.member.api;
 
+import com.clokey.server.domain.member.application.AppleAuthService;
 import com.clokey.server.domain.member.application.AuthService;
 import com.clokey.server.domain.member.dto.AuthDTO;
 import com.clokey.server.domain.member.dto.MemberDTO;
@@ -7,6 +8,9 @@ import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.code.status.SuccessStatus;
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +24,7 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+    private AppleAuthService appleAuthService;
 
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<AuthDTO.TokenResponse>> login(@RequestBody AuthDTO.KakaoLoginRequest loginRequest) {
@@ -46,6 +51,23 @@ public class AuthController {
 
         return ResponseEntity.status(responseEntity.getStatusCode())
                 .body(BaseResponse.onSuccess(successStatus, responseEntity.getBody()));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<BaseResponse<AuthDTO.TokenResponse>> callback(HttpServletRequest request, HttpServletResponse response){
+        AuthDTO.TokenResponse tokenResponse= appleAuthService.login(request.getParameter("code"),response);
+
+        // 로그인 실패
+        if (tokenResponse == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(BaseResponse.onFailure(ErrorStatus.LOGIN_FAILED, null));
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(BaseResponse.onSuccess(SuccessStatus.LOGIN_SUCCESS, tokenResponse));
+        }
     }
 
 
