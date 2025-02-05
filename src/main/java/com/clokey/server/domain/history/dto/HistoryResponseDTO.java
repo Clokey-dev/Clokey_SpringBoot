@@ -77,10 +77,11 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    @JsonPropertyOrder({"commentId", "memberId", "userImageUrl", "content", "replyResults"})
+    @JsonPropertyOrder({"commentId", "memberId","nickName","userImageUrl", "content", "replyResults"})
     public static class CommentResult{
         Long commentId;
         Long memberId;
+        String nickName;
         String userImageUrl;
         String content;
         List<ReplyResult> replyResults;
@@ -93,6 +94,7 @@ public class HistoryResponseDTO {
     public static class ReplyResult{
         Long commentId;
         Long MemberId;
+        String nickName;
         String userImageUrl;
         String content;
     }
