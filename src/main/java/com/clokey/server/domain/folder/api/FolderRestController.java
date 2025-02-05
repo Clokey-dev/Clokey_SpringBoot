@@ -9,6 +9,7 @@ import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
+import com.clokey.server.global.error.exception.annotation.CheckPage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -28,9 +29,9 @@ public class FolderRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_201", description = "성공적으로 생성되었습니다."),
     })
-    public BaseResponse<FolderResponseDTO.FolderIdDTO> createFolder(@Parameter(name = "user",hidden = true) @AuthUser Member member,
-                                                                    @RequestBody @Valid FolderRequestDTO.FolderCreateRequest request) {
-        FolderResponseDTO.FolderIdDTO response = FolderConverter.toFolderIdDTO(folderService.createFolder(member.getId(), request));
+    public BaseResponse<FolderResponseDTO.FolderId> createFolder(@Parameter(name = "user",hidden = true) @AuthUser Member member,
+                                                                 @RequestBody @Valid FolderRequestDTO.FolderCreateRequest request) {
+        FolderResponseDTO.FolderId response = FolderConverter.toFolderIdDTO(folderService.createFolder(member.getId(), request));
         return BaseResponse.onSuccess(SuccessStatus.FOLDER_CREATED, response);
     }
 
@@ -78,5 +79,17 @@ public class FolderRestController {
                                                       @RequestBody @Valid FolderRequestDTO.UpdateClothesInFolderRequest request) {
         folderService.deleteClothesFromFolder(folderId, request, member.getId());
         return BaseResponse.onSuccess(SuccessStatus.FOLDER_DELETE_CLOTHES_SUCCESS, null);
+    }
+
+    @Operation(summary = "폴더별 옷 조회 API", description = "폴더별 옷 조회하는 API입니다.")
+    @GetMapping("folders/{folderId}/clothes")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_200", description = "성공적으로 조회되었습니다."),
+    })
+    public BaseResponse<FolderResponseDTO.FolderClothes> getClothesFromFolder(@Parameter(name = "user",hidden = true) @AuthUser Member member,
+                                                        @PathVariable @FolderExist Long folderId,
+                                                                                 @RequestParam(value = "page") @Valid @CheckPage Integer page) {
+        FolderResponseDTO.FolderClothes result = folderService.getClothesFromFolder(folderId, page, member.getId());
+        return BaseResponse.onSuccess(SuccessStatus.FOLDER_SUCCESS, result);
     }
 }
