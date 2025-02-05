@@ -1,7 +1,6 @@
 package com.clokey.server.domain.history.application;
 
 import com.clokey.server.domain.history.domain.entity.History;
-import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,6 +8,8 @@ import java.util.List;
 public interface HistoryRepositoryService {
 
     List<History> findHistoriesByMemberAndYearMonth(Long memberId, String yearMonth);
+
+    List<History> findHistoriesByMemberWithinWeek(Long memberId);
 
     void incrementLikes(Long historyId);
 

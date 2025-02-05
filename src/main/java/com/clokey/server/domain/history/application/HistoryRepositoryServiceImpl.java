@@ -20,6 +20,11 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
         return historyRepository.findHistoriesByMemberAndYearMonth(memberId,yearMonth);
     }
 
+    @Override
+    public List<History> findHistoriesByMemberWithinWeek(Long memberId){
+        LocalDate weekAgo = LocalDate.now().minusWeeks(1);
+        return historyRepository.findHistoriesWithinWeek(memberId,weekAgo);
+    }
 
     @Override
     public void incrementLikes(Long historyId){
