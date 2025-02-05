@@ -99,6 +99,7 @@ public class ClothServiceImpl implements ClothService {
         Category category = categoryEntry.getKey();
         Long count = categoryEntry.getValue();
         Double averageUsage = calculateAverageUsage(count);
+        averageUsage = Math.round(averageUsage * 100.0) / 100.0;
 
         // 카테고리별 옷 목록 조회
         List<Cloth> filteredClothes = clothRepositoryService.findBySmartSummaryFilters(frequencyType, memberId, category.getId());
@@ -109,15 +110,28 @@ public class ClothServiceImpl implements ClothService {
 
     // 카테고리와 착용 횟수 구하기
     private Map.Entry<Category, Long> getCategoryEntry(SummaryFrequency frequencyType, Map<Category, Long> categoryCountMap) {
+        // 부모가 존재하는(2차) 카테고리만 필터링
+        List<Map.Entry<Category, Long>> filteredEntries = categoryCountMap.entrySet().stream()
+                .filter(entry -> entry.getKey().getParent() != null)
+                .collect(Collectors.toList());
+
+        if (filteredEntries.isEmpty()) {
+            throw new CategoryException(ErrorStatus.CATEGORY_NOT_FOUND_IN_SUMMARY);
+        }
+
         if (frequencyType == SummaryFrequency.FREQUENT) {
-            return categoryCountMap.entrySet().stream()
-                    .max(Map.Entry.comparingByValue()) // 가장 많이 입은 카테고리
+            // 가장 많이 입은 카테고리 선택
+            return filteredEntries.stream()
+                    .max(Map.Entry.comparingByValue())
                     .orElseThrow(() -> new CategoryException(ErrorStatus.CATEGORY_NOT_FOUND_IN_SUMMARY));
-        } else { // INFREQUENT
-            return categoryCountMap.entrySet().stream()
-                    .min(Map.Entry.comparingByValue()) // 가장 적게 입은 카테고리
+        } else if (frequencyType == SummaryFrequency.INFREQUENT){
+            // 가장 적게 입은 카테고리 선택
+            return filteredEntries.stream()
+                    .min(Map.Entry.comparingByValue())
                     .orElseThrow(() -> new CategoryException(ErrorStatus.CATEGORY_NOT_FOUND_IN_SUMMARY));
         }
+        else
+            throw new CategoryException(ErrorStatus.INVALID_SUMMARY_FREQUENCY_TYPE);
     }
 
     // 평균 착용 횟수 계산
