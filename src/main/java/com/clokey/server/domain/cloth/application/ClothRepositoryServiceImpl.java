@@ -4,6 +4,7 @@ import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.cloth.domain.repository.ClothRepository;
 import com.clokey.server.domain.model.entity.enums.ClothSort;
 import com.clokey.server.domain.model.entity.enums.Season;
+import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
 import jakarta.transaction.Transactional;
@@ -16,7 +17,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -48,7 +48,7 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
     }
 
     @Override
-    public Page<Cloth> findByFilters(
+    public Page<Cloth> findByClosetFilters(
             @Param("ownerClokeyId") String ownerClokeyId,
             @Param("requesterId") Long requesterId,
             @Param("categoryId") Long categoryId,
@@ -56,7 +56,19 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
             @Param("sort") ClothSort sort,
             Pageable pageable
     ){
-        return clothRepository.findByFilters(ownerClokeyId, requesterId, categoryId, season, sort.toString(), pageable);
+        return clothRepository.findByClosetFilters(ownerClokeyId, requesterId, categoryId, season, sort.toString(), pageable);
+    }
+
+    @Override
+    public List<Cloth> findBySmartSummaryFilters(
+            @Param("type") SummaryFrequency type,
+            @Param("memberId") Long memberId,
+            @Param("categoryId") Long categoryId
+    ){
+        return switch (type) {
+            case FREQUENT -> clothRepository.findMostFrequentClothList(memberId,categoryId);
+            case INFREQUENT -> clothRepository.findLeastFrequentClothList(memberId,categoryId);
+        };
     }
   
     public List<Cloth> findAllById(List<Long> clothIds) {
