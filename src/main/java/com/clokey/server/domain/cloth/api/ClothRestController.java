@@ -15,6 +15,7 @@ import com.clokey.server.domain.member.exception.annotation.IdValid;
 import com.clokey.server.domain.member.exception.validator.MemberAccessibleValidator;
 import com.clokey.server.domain.model.entity.enums.ClothSort;
 import com.clokey.server.domain.model.entity.enums.Season;
+import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import com.clokey.server.global.error.exception.annotation.CheckPage;
@@ -40,7 +41,29 @@ public class ClothRestController {
     private final ClothAccessibleValidator clothAccessibleValidator;
     private final MemberAccessibleValidator memberAccessibleValidator;
 
-    // 옷장의 옷 조회 API, 사용자 토큰 받는 부분 추가 및 변경해야함
+    // 스마트 요약 API
+    @GetMapping("/smart-summary")
+    @Operation(summary = "일주일간 평균 착용 횟수에 따른 스마트 요약 API", description = "query string으로 SummaryFrequency를 넘겨주세요")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CLOTH_200", description = "OK, 성공적으로 조회되었습니다."),
+    })
+    @Parameters({
+            @Parameter(name = "type", description = "빈도수(SummaryFrequency) ENUM 값 { "+
+                    "//지난 7일간 자주 착용한 옷 FREQUENT,"+
+                    "//지난 7일간 자주 착용하지 않은 옷 INFREQUENT,"+
+                    "}, query string 입니다."),
+    })
+    public BaseResponse<ClothResponseDTO.SmartSummaryClothPreviewListResult> getClothPreviewInfoListByCategoryId(
+            @RequestParam SummaryFrequency type,
+            @Parameter(name = "user", hidden = true) @AuthUser Member member
+    ) {
+        // ClothService를 통해 데이터를 가져오고, 결과 반환
+        ClothResponseDTO.SmartSummaryClothPreviewListResult result = clothService.readSmartSummaryByFrequencyType(type, member.getId());
+
+        return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
+    }
+
+    // 옷장의 옷 조회 API
     @GetMapping("/{clokeyId}")
     @Operation(summary = "유저의 옷장을 조회하는 API", description = "path variable으로 clokeyId를 넘겨주세요" +
                                                                     "query string으로 category_id를 넘겨주세요." +
@@ -82,7 +105,7 @@ public class ClothRestController {
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
     }
 
-    // 팝업용 옷 조회 API, 사용자 토큰 받는 부분 추가 및 변경해야함
+    // 팝업용 옷 조회 API
     @GetMapping("/{clothId}/popup-view")
     @Operation(summary = "특정 옷을 팝업용으로 조회하는 API", description = "path variable로 cloth_id를 넘겨주세요.")
     @ApiResponses({
@@ -107,7 +130,7 @@ public class ClothRestController {
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
     }
 
-    // 수정용 옷 조회 API, 사용자 토큰 받는 부분 추가 및 변경해야함
+    // 수정용 옷 조회 API
     @GetMapping("/{clothId}/edit-view")
     @Operation(summary = "특정 옷을 수정용으로 조회하는 API", description = "path variable로 cloth_id를 넘겨주세요.")
     @ApiResponses({
@@ -132,7 +155,7 @@ public class ClothRestController {
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
     }
 
-    // 옷 상세 조회 API, 사용자 토큰 받는 부분 추가 및 변경해야함
+    // 옷 상세 조회 API
     @GetMapping("/{clothId}/detail-view")
     @Operation(summary = "특정 옷을 상세 조회하는 API", description = "path variable로 cloth_id를 넘겨주세요.")
     @ApiResponses({
@@ -157,7 +180,7 @@ public class ClothRestController {
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
     }
 
-    // 옷 생성 API, 사용자 토큰 받는 부분 추가 및 변경해야함
+    // 옷 생성 API
     @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "새로운 옷을 생성하는 API", description = "query string으로 category_id를 넘겨주세요.\nrequest body에 ClothCreateRequestDTO 형식의 데이터를 전달해주세요.")
     @ApiResponses({
@@ -178,7 +201,7 @@ public class ClothRestController {
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_CREATED, result);
     }
 
-    // 옷 수정 API, 사용자 토큰 받는 부분 추가 및 변경해야함
+    // 옷 수정 API
     @PatchMapping(value = "/{clothId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "특정 옷을 수정하는 API", description = "path variable로 cloth_id를 넘겨주세요.\nquery string으로 category_id를 넘겨주세요.\nrequest body에 ClothCreateOrUpdateRequestDTO 형식의 데이터를 전달해주세요.")
     @ApiResponses({
@@ -204,7 +227,7 @@ public class ClothRestController {
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_EDITED, null);
     }
 
-    // 옷 삭제 API, 사용자 토큰 받는 부분 추가 및 변경해야함
+    // 옷 삭제 API
     @DeleteMapping("/{clothId}")
     @Operation(summary = "특정 옷을 삭제하는 API", description = "path variable로 cloth_id를 넘겨주세요.")
     @ApiResponses({
