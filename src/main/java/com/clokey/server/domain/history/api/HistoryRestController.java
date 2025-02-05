@@ -34,7 +34,7 @@ public class HistoryRestController {
     private final HistoryService historyService;
 
     //임시로 엔드 포인트 맨 뒤에 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
-    @GetMapping("/daily/{historyId}")
+    @GetMapping("/{historyId}")
     @Operation(summary = "특정 유저의 특정 일의 기록을 확인할 수 있는 API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "OK, 성공적으로 조회되었습니다."),
@@ -134,7 +134,7 @@ public class HistoryRestController {
     }
 
     //임시로 토큰을 request param으로 받는중.
-    @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "새로운 기록을 생성하는 API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_201", description = "CREATED, 성공적으로 생성되었습니다."),

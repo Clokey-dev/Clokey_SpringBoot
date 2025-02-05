@@ -1,7 +1,10 @@
 package com.clokey.server.domain.folder.application;
 
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.folder.domain.entity.ClothFolder;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.query.Param;
 
@@ -15,5 +18,11 @@ public interface ClothFolderRepositoryService {
 
     void saveAll(List<ClothFolder> clothFolder);
 
-    List<ClothFolder> existsByAllClothIdsAndFolderId(List<Long> clothIds, Long folderId);
+    List<ClothFolder> findAllByClothIdsAndFolderId(List<Long> clothIds, Long folderId);
+
+    void deleteAllByClothIdIn(List<Long> clothIds);
+
+    void validateNoDuplicateClothes(List<Cloth> clothes, Long folderId);
+
+    Page<ClothFolder> findAllByFolderId(Long folderId, Pageable page);
 }

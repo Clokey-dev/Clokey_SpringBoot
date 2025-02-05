@@ -1,5 +1,6 @@
 package com.clokey.server.domain.cloth.dto;
 
+import com.clokey.server.domain.category.exception.annotation.CategoryExist;
 import com.clokey.server.domain.cloth.exception.annotation.ClothCreateOrUpdateFormat;
 import com.clokey.server.domain.model.entity.enums.Season;
 import com.clokey.server.domain.model.entity.enums.ThicknessLevel;
@@ -12,9 +13,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
-
+@Validated
 public class ClothRequestDTO {
 
     @Builder
@@ -22,29 +24,26 @@ public class ClothRequestDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ClothCreateOrUpdateRequest {
+        @CategoryExist
+        private Long categoryId;
         @NotNull
         @NotBlank
         private String name;
         @NotNull
-        @NotBlank
         private List<Season> seasons;
         @NotNull
-        @NotBlank
         @Min(-20)
         @Max(40)
         private Integer tempUpperBound;
         @NotNull
-        @NotBlank
         @Min(-20)
         @Max(40)
         private Integer tempLowerBound;
         @NotNull
-        @NotBlank
         private ThicknessLevel thicknessLevel;
         @NotNull
-        @NotBlank
         private Visibility visibility;
-        private String clothUrl;
-        private String brand;
+        private String clothUrl = null;
+        private String brand = null;
     }
 }

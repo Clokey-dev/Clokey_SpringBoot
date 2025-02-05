@@ -19,7 +19,7 @@ public interface ClothService {
 
     ClothResponseDTO.SmartSummaryClothPreviewListResult readSmartSummaryByFrequencyType(SummaryFrequency frequencyType, Long memberId);
 
-    ClothResponseDTO.ClothCreateResult createCloth(Long categoryId, Long memberId, ClothRequestDTO.ClothCreateOrUpdateRequest request, MultipartFile imageFile);
+    ClothResponseDTO.ClothCreateResult createCloth(Long memberId, ClothRequestDTO.ClothCreateOrUpdateRequest request, MultipartFile imageFile);
 
     void updateClothById(Long clothId, Long categoryId, ClothRequestDTO.ClothCreateOrUpdateRequest request, MultipartFile imageFile);
 

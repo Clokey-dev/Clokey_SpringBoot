@@ -13,10 +13,13 @@ import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Validated
 @RestController
@@ -27,16 +30,32 @@ public class MemberRestController {
     private final GetUserQueryService getUserQueryService;
     private final FollowCommandService followCommandService;
 
-    @Operation(summary = "프로필 수정 API", description = "사용자의 프로필 정보를 수정하는 API입니다.")
-    @PatchMapping("users/profile")
-    public BaseResponse<MemberDTO.ProfileRP> updateProfile(
-            @Parameter(name = "user",hidden = true) @AuthUser Member member,
-            @RequestBody @Valid MemberDTO.ProfileRQ request) {
+//    @Operation(summary = "프로필 수정 API", description = "사용자의 프로필 정보를 수정하는 API입니다.")
+//    @PatchMapping("users/profile")
+//    public BaseResponse<MemberDTO.ProfileRP> updateProfile(
+//            @Parameter(name = "user",hidden = true) @AuthUser Member member,
+//            @RequestBody @Valid MemberDTO.ProfileRQ request) {
+//
+//        MemberDTO.ProfileRP response = profileCommandService.updateProfile(member.getId(), request);
+//
+//        return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_SUCCESS, response);
+//    }
 
-        MemberDTO.ProfileRP response = profileCommandService.updateProfile(member.getId(), request);
+    @Operation(summary = "프로필 수정 API", description = "사용자의 프로필 정보를 수정하는 API입니다.")
+    @PatchMapping(value = "users/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public BaseResponse<MemberDTO.ProfileRP> updateProfile(
+            @Parameter(name = "user", hidden = true) @AuthUser Member member,
+            @RequestPart("profileRequest") @Valid MemberDTO.ProfileRQ request,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
+            @RequestPart(value = "profileBackImage", required = false) MultipartFile profileBackImage) {
+
+        MemberDTO.ProfileRP response = profileCommandService.updateProfile(member.getId(), request, profileImage, profileBackImage);
 
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_SUCCESS, response);
     }
+
+
+
 
     @Operation(summary = "아이디 중복 조회 API", description = "사용자의 클로키 아이디가 이미 사용 중인지 조회하는 API입니다.")
     @GetMapping("users/{clokey_id}/check")

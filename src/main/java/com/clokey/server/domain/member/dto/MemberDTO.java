@@ -42,11 +42,7 @@ public class MemberDTO {
         @EssentialFieldNotNull
         String clokeyId;
 
-        String profileImageUrl;
-
         private String bio;
-
-        private String profileBackImageUrl;
 
         Visibility visibility;
 
