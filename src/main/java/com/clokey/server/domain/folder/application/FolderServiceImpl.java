@@ -39,6 +39,8 @@ public class FolderServiceImpl implements FolderService {
         Member member = memberRepositoryService.findMemberById(memberId);
         Folder newFolder = FolderConverter.toFolder(request, member);
         folderRepositoryService.save(newFolder);
+        if(!request.getClothIds().isEmpty())
+            addClothesToFolder(newFolder, request.getClothIds(), memberId);
         return newFolder;
     }
 
@@ -66,16 +68,7 @@ public class FolderServiceImpl implements FolderService {
     @Transactional
     public void addClothesToFolder(Long folderId, FolderRequestDTO.UpdateClothesInFolderRequest request, Long memberId) {
         Folder folder = folderAccessibleValidator.validateFolderAccessOfMember(folderId, memberId);
-
-        List<Cloth> clothes = validateClothesExistAndAccessible(request.getClothIds(), memberId);
-
-        clothFolderRepositoryService.validateNoDuplicateClothes(clothes, folder.getId());
-
-        List<ClothFolder> clothFolders = clothes.stream()
-                .map(cloth -> new ClothFolder(cloth, folder))
-                .collect(Collectors.toList());
-
-        clothFolderRepositoryService.saveAll(clothFolders);
+        addClothesToFolder(folder, request.getClothIds(), memberId);
     }
 
     @Override
@@ -106,5 +99,17 @@ public class FolderServiceImpl implements FolderService {
         );
 
         return clothes;
+    }
+
+    private void addClothesToFolder(Folder folder, List<Long> clothIds, Long memberId) {
+        List<Cloth> clothes = validateClothesExistAndAccessible(clothIds, memberId);
+
+        clothFolderRepositoryService.validateNoDuplicateClothes(clothes, folder.getId());
+
+        List<ClothFolder> clothFolders = clothes.stream()
+                .map(cloth -> new ClothFolder(cloth, folder))
+                .collect(Collectors.toList());
+
+        clothFolderRepositoryService.saveAll(clothFolders);
     }
 }
