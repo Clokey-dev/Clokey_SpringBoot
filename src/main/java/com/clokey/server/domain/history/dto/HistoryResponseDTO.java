@@ -45,7 +45,7 @@ public class HistoryResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MonthViewResult {
-        Long userId;
+        Long memberId;
         List<HistoryResult> histories;
     }
 
