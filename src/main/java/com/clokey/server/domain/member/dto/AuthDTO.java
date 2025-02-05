@@ -39,6 +39,13 @@ public class AuthDTO {
         private String accessToken;
     }
 
+    // AppleLoginRequest 클래스
+    @Data
+    public static class AppleLoginRequest {
+        private String type; // 로그인 타입 (ex: "kakao", "apple")
+        private String authorizationCode;
+    }
+
     @Data
     @AllArgsConstructor
     public static class TokenResponse {
@@ -57,6 +64,7 @@ public class AuthDTO {
     public static class RefreshTokenRequest {
         private String refreshToken;
     }
+
 
     
 }
