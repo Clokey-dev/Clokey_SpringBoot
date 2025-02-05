@@ -41,6 +41,8 @@ public enum ErrorStatus implements BaseErrorCode {
     CLOTH_INVAID_IMAGE_FORMAT(HttpStatus.BAD_REQUEST,"CLOTH_4009","옷의 사진을 입력하지 않았습니다."),
     NO_CLOTH_IMAGE_INPUT(HttpStatus.BAD_REQUEST,"CLOTH_4010","옷의 사진 형식이 올바르지 않습니다."),
     INVALID_CREATE_OR_UPDATE_CLOTH_FORMAT(HttpStatus.BAD_REQUEST,"CLOTH_4011","옷의 생성 및 수정 형식이 올바르지 않습니다."),
+    CLOTH_NOT_FOUND_IN_SUMMARY(HttpStatus.NOT_FOUND,"CLOTH_4012","스마트 요약에서 옷을 찾지 못했습니다."),
+
 
     //폴더 에러
     NO_SUCH_FOLDER(HttpStatus.NOT_FOUND,"FOLDER_4041","존재하지 않는 폴더 ID입니다."),
@@ -53,6 +55,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //카테고리 에러
     NO_SUCH_CATEGORY(HttpStatus.NOT_FOUND,"CATEGORY_4041","존재하지 않는 카테고리 ID입니다."),
+    CATEGORY_NOT_FOUND_IN_SUMMARY(HttpStatus.NOT_FOUND,"CATEGORY_4001","스마트 요약에서 카테고리를 찾지 못했습니다."),
 
     //기록 에러
     DATE_INVALID(HttpStatus.BAD_REQUEST,"HISTORY_4001","잘못된 날짜 형식입니다."),
