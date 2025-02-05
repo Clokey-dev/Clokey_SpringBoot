@@ -16,7 +16,8 @@ public class HistoryResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DailyHistoryResult {
-        Long userId;
+        Long memberId;
+        Long historyId;
         String memberImageUrl;
         String nickName;
         String clokeyId;

@@ -19,7 +19,8 @@ public class HistoryConverter {
 
     public static HistoryResponseDTO.DailyHistoryResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked, List<Cloth> cloths) {
         return HistoryResponseDTO.DailyHistoryResult.builder()
-                .userId(history.getMember().getId())
+                .memberId(history.getMember().getId())
+                .historyId(history.getId())
                 .contents(history.getContent())
                 .memberImageUrl(history.getMember().getProfileImageUrl())
                 .imageUrl(imageUrl)
