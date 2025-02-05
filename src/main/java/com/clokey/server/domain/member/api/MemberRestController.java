@@ -45,7 +45,7 @@ public class MemberRestController {
     @PatchMapping(value = "users/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<MemberDTO.ProfileRP> updateProfile(
             @Parameter(name = "user", hidden = true) @AuthUser Member member,
-            @RequestPart("data") @Valid MemberDTO.ProfileRQ request,
+            @RequestPart("profileRequest") @Valid MemberDTO.ProfileRQ request,
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
             @RequestPart(value = "profileBackImage", required = false) MultipartFile profileBackImage) {
 
