@@ -42,7 +42,7 @@ public enum ErrorStatus implements BaseErrorCode {
     NO_CLOTH_IMAGE_INPUT(HttpStatus.BAD_REQUEST,"CLOTH_4010","옷의 사진 형식이 올바르지 않습니다."),
     INVALID_CREATE_OR_UPDATE_CLOTH_FORMAT(HttpStatus.BAD_REQUEST,"CLOTH_4011","옷의 생성 및 수정 형식이 올바르지 않습니다."),
     CLOTH_NOT_FOUND_IN_SUMMARY(HttpStatus.NOT_FOUND,"CLOTH_4012","스마트 요약에서 옷을 찾지 못했습니다."),
-
+    INVALID_SUMMARY_FREQUENCY_TYPE(HttpStatus.BAD_REQUEST,"CLOTH_4013","스마트 요약에서 빈도수를 잘못 입력했습니다."),
 
     //폴더 에러
     NO_SUCH_FOLDER(HttpStatus.NOT_FOUND,"FOLDER_4041","존재하지 않는 폴더 ID입니다."),
