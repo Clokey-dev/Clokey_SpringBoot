@@ -1,5 +1,6 @@
 package com.clokey.server.domain.history.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -69,7 +70,10 @@ public class HistoryResponseDTO {
         List<CommentResult> comments;
         int totalPage;
         int totalElements;
+        @JsonProperty("isFirst")  // JSON 직렬화 시 필드명 고정
         boolean isFirst;
+
+        @JsonProperty("isLast")  // JSON 직렬화 시 필드명 고정
         boolean isLast;
     }
 
