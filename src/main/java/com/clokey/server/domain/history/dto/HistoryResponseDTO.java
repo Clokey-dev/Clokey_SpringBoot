@@ -124,6 +124,7 @@ public class HistoryResponseDTO {
     public static class LikedUserResult{
         Long memberId;
         String clokeyId;
+        String imageUrl;
         String nickname;
         boolean followStatus;
     }

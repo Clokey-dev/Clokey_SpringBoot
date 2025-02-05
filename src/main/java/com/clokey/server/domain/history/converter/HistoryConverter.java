@@ -157,6 +157,7 @@ public class HistoryConverter {
             Member member = members.get(i);
             likedUserResults.add(HistoryResponseDTO.LikedUserResult.builder()
                             .clokeyId(member.getClokeyId())
+                            .imageUrl(member.getProfileImageUrl())
                             .followStatus(followStatus.get(i))
                             .memberId(member.getId())
                             .nickname(member.getNickname())
