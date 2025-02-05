@@ -19,7 +19,8 @@ public class HistoryConverter {
 
     public static HistoryResponseDTO.DailyHistoryResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked, List<Cloth> cloths) {
         return HistoryResponseDTO.DailyHistoryResult.builder()
-                .userId(history.getMember().getId())
+                .memberId(history.getMember().getId())
+                .historyId(history.getId())
                 .contents(history.getContent())
                 .memberImageUrl(history.getMember().getProfileImageUrl())
                 .imageUrl(imageUrl)
@@ -55,7 +56,7 @@ public class HistoryConverter {
         }
 
         return HistoryResponseDTO.MonthViewResult.builder()
-                .userId(memberId)
+                .memberId(memberId)
                 .histories(HistoryResults)
                 .build();
     }
@@ -156,6 +157,7 @@ public class HistoryConverter {
             Member member = members.get(i);
             likedUserResults.add(HistoryResponseDTO.LikedUserResult.builder()
                             .clokeyId(member.getClokeyId())
+                            .imageUrl(member.getProfileImageUrl())
                             .followStatus(followStatus.get(i))
                             .memberId(member.getId())
                             .nickname(member.getNickname())
