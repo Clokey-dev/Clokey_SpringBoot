@@ -55,7 +55,7 @@ public class HistoryConverter {
         }
 
         return HistoryResponseDTO.MonthViewResult.builder()
-                .userId(memberId)
+                .memberId(memberId)
                 .histories(HistoryResults)
                 .build();
     }
