@@ -1,6 +1,7 @@
 package com.clokey.server.domain.cloth.dto;
 
 import com.clokey.server.domain.model.entity.enums.Season;
+import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
 import com.clokey.server.domain.model.entity.enums.ThicknessLevel;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 import lombok.*;
@@ -93,12 +94,23 @@ public class ClothResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class CategoryClothPreviewListResult {
-        private List<ClothPreview> clothes;
-        private int listSize;
+        private List<ClothPreview> clothPreviews;
         private int totalPage;
         private long totalElements;
         private boolean isFirst;
         private boolean isLast;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SmartSummaryClothPreviewListResult {
+        private SummaryFrequency type;
+        private String baseCategoryName;
+        private String coreCategoryName;
+        private Long coreCategoryId;
+        private Double averageUsage;
+        private List<ClothPreview> clothPreviews;
+    }
 }
