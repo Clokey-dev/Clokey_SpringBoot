@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -90,12 +92,24 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public FolderResponseDTO.FolderClothes getClothesFromFolder(Long folderId, Integer page, Long memberId){
+    public FolderResponseDTO.FolderClothesResult getClothesFromFolder(Long folderId, Integer page, Long memberId){
         Folder folder = folderAccessibleValidator.validateFolderAccessOfMember(folderId, memberId);
         Pageable pageable = PageRequest.of(page-1, 12);
         Page<ClothFolder> clothFolders = clothFolderRepositoryService.findAllByFolderId(folder.getId(), pageable);
         return FolderConverter.toFolderClothesDTO(clothFolders);
     }
+
+    @Override
+    public FolderResponseDTO.FoldersResult getFolders(Integer page, Long memberId){
+        Member member = memberRepositoryService.findMemberById(memberId);
+        Pageable pageable = PageRequest.of(page-1, 12);
+        Page<Folder> folders = folderRepositoryService.findAllByMemberId(member.getId(), pageable);
+        List<Long> folderIds = folders.stream().map(Folder::getId).toList();
+        Map<Long, String> folderImageMap = clothFolderRepositoryService.findClothImageUrlsFromFolderIds(folderIds);
+        Map<Long, Long> itemCountMap = clothFolderRepositoryService.countClothesByFolderIds(folderIds);
+        return FolderConverter.toFoldersDTO(folders, folderImageMap, itemCountMap);
+    }
+
 
     private List<Cloth> validateClothesExistAndAccessible(List<Long> clothIds, Long memberId) {
         clothIds.forEach(clothId -> {
