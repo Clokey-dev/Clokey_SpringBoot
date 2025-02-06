@@ -4,6 +4,7 @@ import com.clokey.server.domain.cloth.application.ClothRepositoryService;
 import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
 import com.clokey.server.domain.folder.converter.FolderConverter;
 import com.clokey.server.domain.folder.dto.FolderRequestDTO;
+import com.clokey.server.domain.folder.dto.FolderResponseDTO;
 import com.clokey.server.domain.folder.exception.FolderException;
 import com.clokey.server.domain.folder.domain.entity.Folder;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
@@ -13,6 +14,9 @@ import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +43,8 @@ public class FolderServiceImpl implements FolderService {
         Member member = memberRepositoryService.findMemberById(memberId);
         Folder newFolder = FolderConverter.toFolder(request, member);
         folderRepositoryService.save(newFolder);
+        if(!request.getClothIds().isEmpty())
+            addClothesToFolder(newFolder, request.getClothIds(), memberId);
         return newFolder;
     }
 
@@ -66,16 +72,7 @@ public class FolderServiceImpl implements FolderService {
     @Transactional
     public void addClothesToFolder(Long folderId, FolderRequestDTO.UpdateClothesInFolderRequest request, Long memberId) {
         Folder folder = folderAccessibleValidator.validateFolderAccessOfMember(folderId, memberId);
-
-        List<Cloth> clothes = validateClothesExistAndAccessible(request.getClothIds(), memberId);
-
-        clothFolderRepositoryService.validateNoDuplicateClothes(clothes, folder.getId());
-
-        List<ClothFolder> clothFolders = clothes.stream()
-                .map(cloth -> new ClothFolder(cloth, folder))
-                .collect(Collectors.toList());
-
-        clothFolderRepositoryService.saveAll(clothFolders);
+        addClothesToFolder(folder, request.getClothIds(), memberId);
     }
 
     @Override
@@ -92,6 +89,14 @@ public class FolderServiceImpl implements FolderService {
         clothFolderRepositoryService.deleteAllByClothIdIn(clothFolders.stream().map(ClothFolder::getCloth).map(Cloth::getId).collect(Collectors.toList()));
     }
 
+    @Override
+    public FolderResponseDTO.FolderClothes getClothesFromFolder(Long folderId, Integer page, Long memberId){
+        Folder folder = folderAccessibleValidator.validateFolderAccessOfMember(folderId, memberId);
+        Pageable pageable = PageRequest.of(page-1, 12);
+        Page<ClothFolder> clothFolders = clothFolderRepositoryService.findAllByFolderId(folder.getId(), pageable);
+        return FolderConverter.toFolderClothesDTO(clothFolders);
+    }
+
     private List<Cloth> validateClothesExistAndAccessible(List<Long> clothIds, Long memberId) {
         clothIds.forEach(clothId -> {
             if (!clothRepositoryService.existsById(clothId)) {
@@ -106,5 +111,17 @@ public class FolderServiceImpl implements FolderService {
         );
 
         return clothes;
+    }
+
+    private void addClothesToFolder(Folder folder, List<Long> clothIds, Long memberId) {
+        List<Cloth> clothes = validateClothesExistAndAccessible(clothIds, memberId);
+
+        clothFolderRepositoryService.validateNoDuplicateClothes(clothes, folder.getId());
+
+        List<ClothFolder> clothFolders = clothes.stream()
+                .map(cloth -> new ClothFolder(cloth, folder))
+                .collect(Collectors.toList());
+
+        clothFolderRepositoryService.saveAll(clothFolders);
     }
 }

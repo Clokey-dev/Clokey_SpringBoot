@@ -5,6 +5,8 @@ import com.clokey.server.domain.folder.domain.entity.ClothFolder;
 import com.clokey.server.domain.folder.domain.repository.ClothFolderRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -58,5 +60,10 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
         if (!existingClothIds.isEmpty()) {
             throw new DatabaseException(ErrorStatus.CLOTH_ALREADY_IN_FOLDER);
         }
+    }
+
+    @Override
+    public Page<ClothFolder> findAllByFolderId(Long folderId, Pageable page) {
+        return clothFolderRepository.findAllByFolderId(folderId, page);
     }
 }

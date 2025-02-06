@@ -19,7 +19,8 @@ public class HistoryConverter {
 
     public static HistoryResponseDTO.DailyHistoryResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked, List<Cloth> cloths) {
         return HistoryResponseDTO.DailyHistoryResult.builder()
-                .userId(history.getMember().getId())
+                .memberId(history.getMember().getId())
+                .historyId(history.getId())
                 .contents(history.getContent())
                 .memberImageUrl(history.getMember().getProfileImageUrl())
                 .imageUrl(imageUrl)
@@ -55,7 +56,7 @@ public class HistoryConverter {
         }
 
         return HistoryResponseDTO.MonthViewResult.builder()
-                .userId(memberId)
+                .memberId(memberId)
                 .histories(HistoryResults)
                 .build();
     }
@@ -97,6 +98,7 @@ public class HistoryConverter {
                     return HistoryResponseDTO.CommentResult.builder()
                             .commentId(comment.getId())
                             .memberId(comment.getMember().getId())
+                            .nickName(comment.getMember().getNickname())
                             .userImageUrl(comment.getMember().getProfileImageUrl())
                             .content(comment.getContent())
                             .replyResults(toReplyResultList(replyList))
@@ -110,6 +112,7 @@ public class HistoryConverter {
                 .map(reply-> HistoryResponseDTO.ReplyResult.builder()
                         .commentId(reply.getId())
                         .MemberId(reply.getMember().getId())
+                        .nickName(reply.getMember().getNickname())
                         .userImageUrl(reply.getMember().getProfileImageUrl())
                         .content(reply.getContent())
                         .build())
@@ -154,6 +157,7 @@ public class HistoryConverter {
             Member member = members.get(i);
             likedUserResults.add(HistoryResponseDTO.LikedUserResult.builder()
                             .clokeyId(member.getClokeyId())
+                            .imageUrl(member.getProfileImageUrl())
                             .followStatus(followStatus.get(i))
                             .memberId(member.getId())
                             .nickname(member.getNickname())

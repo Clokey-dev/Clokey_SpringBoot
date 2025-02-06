@@ -1,5 +1,7 @@
 package com.clokey.server.domain.history.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +18,8 @@ public class HistoryResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DailyHistoryResult {
-        Long userId;
+        Long memberId;
+        Long historyId;
         String memberImageUrl;
         String nickName;
         String clokeyId;
@@ -45,7 +48,7 @@ public class HistoryResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MonthViewResult {
-        Long userId;
+        Long memberId;
         List<HistoryResult> histories;
     }
 
@@ -68,8 +71,22 @@ public class HistoryResponseDTO {
         List<CommentResult> comments;
         int totalPage;
         int totalElements;
-        boolean isFirst;
-        boolean isLast;
+
+        @JsonProperty("isFirst") // JSON 직렬화 시 "isFirst" 사용
+        private boolean isFirst;
+
+        @JsonIgnore // "first" 필드 직렬화 방지
+        public boolean isFirst() {
+            return isFirst;
+        }
+
+        @JsonProperty("isLast") // JSON 직렬화 시 "isLast" 사용
+        private boolean isLast;
+
+        @JsonIgnore // "last" 필드 직렬화 방지
+        public boolean isLast() {
+            return isLast;
+        }
     }
 
 
@@ -77,10 +94,11 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    @JsonPropertyOrder({"commentId", "memberId", "userImageUrl", "content", "replyResults"})
+    @JsonPropertyOrder({"commentId", "memberId","nickName","userImageUrl", "content", "replyResults"})
     public static class CommentResult{
         Long commentId;
         Long memberId;
+        String nickName;
         String userImageUrl;
         String content;
         List<ReplyResult> replyResults;
@@ -93,6 +111,7 @@ public class HistoryResponseDTO {
     public static class ReplyResult{
         Long commentId;
         Long MemberId;
+        String nickName;
         String userImageUrl;
         String content;
     }
@@ -121,6 +140,7 @@ public class HistoryResponseDTO {
     public static class LikedUserResult{
         Long memberId;
         String clokeyId;
+        String imageUrl;
         String nickname;
         boolean followStatus;
     }
