@@ -87,4 +87,10 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
         return results.stream()
                 .collect(Collectors.toMap(row -> (Long) row[0], row -> (Long) row[1]));
     }
+
+    @Modifying
+    @Transactional
+    public void deleteAllByFolderId(@Param("folderId") Long folderId){
+        clothFolderRepository.deleteAllByFolderId(folderId);
+    }
 }

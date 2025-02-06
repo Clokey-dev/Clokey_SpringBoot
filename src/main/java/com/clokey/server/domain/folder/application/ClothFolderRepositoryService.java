@@ -30,4 +30,6 @@ public interface ClothFolderRepositoryService {
     Map<Long, String> findClothImageUrlsFromFolderIds(List<Long> folderIds);
 
     Map<Long, Long> countClothesByFolderIds(List<Long> folderIds);
+
+    void deleteAllByFolderId(@Param("folderId") Long folderId);
 }

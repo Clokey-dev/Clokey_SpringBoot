@@ -3,6 +3,7 @@ package com.clokey.server.domain.folder.application;
 import com.clokey.server.domain.cloth.application.ClothRepositoryService;
 import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
 import com.clokey.server.domain.folder.converter.FolderConverter;
+import com.clokey.server.domain.folder.domain.repository.FolderRepository;
 import com.clokey.server.domain.folder.dto.FolderRequestDTO;
 import com.clokey.server.domain.folder.dto.FolderResponseDTO;
 import com.clokey.server.domain.folder.exception.FolderException;
@@ -55,6 +56,7 @@ public class FolderServiceImpl implements FolderService {
     public void deleteFolder(Long folderId, Long memberId) {
         folderAccessibleValidator.validateFolderAccessOfMember(folderId, memberId);
         try {
+            clothFolderRepositoryService.deleteAllByFolderId(folderId);
             folderRepositoryService.deleteById(folderId);
         } catch (Exception ex) {
             throw new FolderException(ErrorStatus.FAILED_TO_DELETE_FOLDER);
@@ -89,6 +91,8 @@ public class FolderServiceImpl implements FolderService {
         );
 
         clothFolderRepositoryService.deleteAllByClothIdIn(clothFolders.stream().map(ClothFolder::getCloth).map(Cloth::getId).collect(Collectors.toList()));
+        folder.decreaseItemCount();
+        folderRepositoryService.save(folder);
     }
 
     @Override
@@ -106,8 +110,7 @@ public class FolderServiceImpl implements FolderService {
         Page<Folder> folders = folderRepositoryService.findAllByMemberId(member.getId(), pageable);
         List<Long> folderIds = folders.stream().map(Folder::getId).toList();
         Map<Long, String> folderImageMap = clothFolderRepositoryService.findClothImageUrlsFromFolderIds(folderIds);
-        Map<Long, Long> itemCountMap = clothFolderRepositoryService.countClothesByFolderIds(folderIds);
-        return FolderConverter.toFoldersDTO(folders, folderImageMap, itemCountMap);
+        return FolderConverter.toFoldersDTO(folders, folderImageMap);
     }
 
 
@@ -137,5 +140,7 @@ public class FolderServiceImpl implements FolderService {
                 .collect(Collectors.toList());
 
         clothFolderRepositoryService.saveAll(clothFolders);
+        folder.increaseItemCount();
+        folderRepositoryService.save(folder);
     }
 }

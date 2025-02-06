@@ -17,6 +17,7 @@ public class FolderConverter {
         return Folder.builder()
                 .name(request.getFolderName())
                 .member(member)
+                .itemCount(0L)
                 .build();
     }
 
@@ -45,13 +46,13 @@ public class FolderConverter {
                 .build();
     }
 
-    public static FolderResponseDTO.FoldersResult toFoldersDTO(Page<Folder> folderPage, Map<Long, String> folderImageMap, Map<Long, Long> itemCountMap) {
+    public static FolderResponseDTO.FoldersResult toFoldersDTO(Page<Folder> folderPage, Map<Long, String> folderImageMap) {
         List<FolderResponseDTO.FolderResult> folders = folderPage.getContent().stream()
                 .map(folder -> new FolderResponseDTO.FolderResult(
                         folder.getId(),
                         folder.getName(),
                         folderImageMap.getOrDefault(folder.getId(), null),
-                        itemCountMap.getOrDefault(folder.getId(), 0L)
+                        folder.getItemCount()
                 ))
                 .collect(Collectors.toList());
 
