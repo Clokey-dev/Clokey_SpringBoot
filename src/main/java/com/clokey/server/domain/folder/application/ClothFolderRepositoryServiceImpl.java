@@ -25,6 +25,7 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
     private final ClothFolderRepository clothFolderRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existsByClothIdAndFolderId(Long clothId, Long folderId){
         return clothFolderRepository.existsByClothIdAndFolderId(clothId,folderId);
     }
@@ -43,6 +44,7 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
 
 
     @Override
+    @Transactional(readOnly = true)
     public List<ClothFolder> findAllByClothIdsAndFolderId(List<Long> clothIds, Long folderId) {
         return clothFolderRepository.findByClothIdInAndFolderId(clothIds, folderId);
     }
@@ -54,6 +56,7 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void validateNoDuplicateClothes(List<Cloth> clothes, Long folderId) {
         List<Long> clothIds = clothes.stream().map(Cloth::getId).collect(Collectors.toList());
         List<ClothFolder> existingClothIds = clothFolderRepository.findByClothIdInAndFolderId(clothIds, folderId);
@@ -64,11 +67,13 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<ClothFolder> findAllByFolderId(Long folderId, Pageable page) {
         return clothFolderRepository.findAllByFolderId(folderId, page);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Map<Long, String> findClothImageUrlsFromFolderIds(List<Long> folderIds) {
         List<Object[]> results = clothFolderRepository.findClothImageUrlsFromFolderIds(folderIds);
         return results.stream()
@@ -76,6 +81,7 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Map<Long, Long> countClothesByFolderIds(List<Long> folderIds) {
         List<Object[]> results = clothFolderRepository.countClothesByFolderIds(folderIds);
         return results.stream()
