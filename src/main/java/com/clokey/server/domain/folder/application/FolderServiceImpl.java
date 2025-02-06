@@ -3,6 +3,7 @@ package com.clokey.server.domain.folder.application;
 import com.clokey.server.domain.cloth.application.ClothRepositoryService;
 import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
 import com.clokey.server.domain.folder.converter.FolderConverter;
+import com.clokey.server.domain.folder.domain.repository.FolderRepository;
 import com.clokey.server.domain.folder.dto.FolderRequestDTO;
 import com.clokey.server.domain.folder.dto.FolderResponseDTO;
 import com.clokey.server.domain.folder.exception.FolderException;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -53,6 +56,7 @@ public class FolderServiceImpl implements FolderService {
     public void deleteFolder(Long folderId, Long memberId) {
         folderAccessibleValidator.validateFolderAccessOfMember(folderId, memberId);
         try {
+            clothFolderRepositoryService.deleteAllByFolderId(folderId);
             folderRepositoryService.deleteById(folderId);
         } catch (Exception ex) {
             throw new FolderException(ErrorStatus.FAILED_TO_DELETE_FOLDER);
@@ -87,15 +91,28 @@ public class FolderServiceImpl implements FolderService {
         );
 
         clothFolderRepositoryService.deleteAllByClothIdIn(clothFolders.stream().map(ClothFolder::getCloth).map(Cloth::getId).collect(Collectors.toList()));
+        folder.decreaseItemCount();
+        folderRepositoryService.save(folder);
     }
 
     @Override
-    public FolderResponseDTO.FolderClothes getClothesFromFolder(Long folderId, Integer page, Long memberId){
+    public FolderResponseDTO.FolderClothesResult getClothesFromFolder(Long folderId, Integer page, Long memberId){
         Folder folder = folderAccessibleValidator.validateFolderAccessOfMember(folderId, memberId);
         Pageable pageable = PageRequest.of(page-1, 12);
         Page<ClothFolder> clothFolders = clothFolderRepositoryService.findAllByFolderId(folder.getId(), pageable);
         return FolderConverter.toFolderClothesDTO(clothFolders);
     }
+
+    @Override
+    public FolderResponseDTO.FoldersResult getFolders(Integer page, Long memberId){
+        Member member = memberRepositoryService.findMemberById(memberId);
+        Pageable pageable = PageRequest.of(page-1, 12);
+        Page<Folder> folders = folderRepositoryService.findAllByMemberId(member.getId(), pageable);
+        List<Long> folderIds = folders.stream().map(Folder::getId).toList();
+        Map<Long, String> folderImageMap = clothFolderRepositoryService.findClothImageUrlsFromFolderIds(folderIds);
+        return FolderConverter.toFoldersDTO(folders, folderImageMap);
+    }
+
 
     private List<Cloth> validateClothesExistAndAccessible(List<Long> clothIds, Long memberId) {
         clothIds.forEach(clothId -> {
@@ -123,5 +140,7 @@ public class FolderServiceImpl implements FolderService {
                 .collect(Collectors.toList());
 
         clothFolderRepositoryService.saveAll(clothFolders);
+        folder.increaseItemCount();
+        folderRepositoryService.save(folder);
     }
 }

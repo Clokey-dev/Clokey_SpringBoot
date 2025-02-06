@@ -12,7 +12,7 @@ public class FolderResponseDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class FolderId {
+    public static class FolderIdResult {
         private Long folderId;
     }
 
@@ -20,8 +20,8 @@ public class FolderResponseDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class FolderClothes {
-        private List<FolderCloth> clothes;
+    public static class FolderClothesResult {
+        private List<FolderClothResult> clothes;
         private Integer totalPage;
         private Integer totalElements;
         private Boolean isFirst;
@@ -30,10 +30,31 @@ public class FolderResponseDTO {
 
     @Getter
     @AllArgsConstructor
-    public static class FolderCloth {
+    public static class FolderClothResult {
         private Long clothId;
         private String clothName;
         private String imageUrl;
         private Integer clothCount;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class FoldersResult {
+        private List<FolderResult> folders;
+        private Integer totalPage;
+        private Integer totalElements;
+        private Boolean isFirst;
+        private Boolean isLast;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class FolderResult {
+        private Long folderId;
+        private String folderName;
+        private String imageUrl;
+        private Long itemCount;
     }
 }
