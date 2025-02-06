@@ -36,6 +36,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Date;
 import com.nimbusds.jose.crypto.ECDSASigner;
@@ -66,6 +67,10 @@ public class AppleAuthServiceImpl implements AppleAuthService {
 
     @Value("${apple.key.path}")
     private String APPLE_KEY_PATH;
+
+    @Value("${apple.privateKey}")
+    private String privateKeyString;
+
     //1. 여기까지 설정값을 application.properties에서 가져옴
 
     private final static String APPLE_AUTH_URL = "https://appleid.apple.com";
@@ -218,54 +223,64 @@ public class AppleAuthServiceImpl implements AppleAuthService {
         return jwt.serialize();
     }
 
+    public byte[] getPrivateKey() {
+        // "-----BEGIN PRIVATE KEY-----" 과 "-----END PRIVATE KEY-----" 제거
+        String key = privateKeyString.replace("-----BEGIN PRIVATE KEY-----", "")
+                .replace("-----END PRIVATE KEY-----", "")
+                .replaceAll("\\s", "");
+
+        // Base64로 디코딩하여 바이트 배열로 변환
+        return Base64.getDecoder().decode(key);
+    }
+
     //4. 여기까지 클라이언트 시크릿 생성
 
-    private byte[] getPrivateKey() {
-        byte[] content = null;
-        File file = new File(APPLE_KEY_PATH);
-        URL res = getClass().getResource(APPLE_KEY_PATH);
-
-        if (res == null) {
-            // 파일 시스템에서 파일을 로드할 때
-            file = new File(APPLE_KEY_PATH);
-        } else if ("jar".equals(res.getProtocol())) {
-            // JAR 파일 내부의 리소스를 읽을 때
-            try {
-                InputStream input = getClass().getResourceAsStream(APPLE_KEY_PATH);
-                file = File.createTempFile("tempfile", ".tmp");
-                OutputStream out = new FileOutputStream(file);
-
-                int read;
-                byte[] bytes = new byte[1024];
-
-                while ((read = input.read(bytes)) != -1) {
-                    out.write(bytes, 0, read);
-                }
-
-                out.close();
-                file.deleteOnExit();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                return null; // 예외 발생 시 null 반환
-            }
-        }
-
-        if (file.exists()) {
-            try (FileReader keyReader = new FileReader(file);
-                 PemReader pemReader = new PemReader(keyReader)) {
-                PemObject pemObject = pemReader.readPemObject();
-                content = pemObject.getContent();
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null; // 예외 발생 시 null 반환
-            }
-        } else {
-            // 파일이 존재하지 않는 경우
-            return null; // 예외 발생 시 null 반환
-        }
-
-        return content;
-    }
+//    private byte[] getPrivateKey() {
+//        byte[] content = null;
+//        File file = new File(APPLE_KEY_PATH);
+//        URL res = getClass().getResource(APPLE_KEY_PATH);
+//
+//        if (res == null) {
+//            // 파일 시스템에서 파일을 로드할 때
+//            file = new File(APPLE_KEY_PATH);
+//        } else if ("jar".equals(res.getProtocol())) {
+//            // JAR 파일 내부의 리소스를 읽을 때
+//            try {
+//                InputStream input = getClass().getResourceAsStream(APPLE_KEY_PATH);
+//                file = File.createTempFile("tempfile", ".tmp");
+//                OutputStream out = new FileOutputStream(file);
+//
+//                int read;
+//                byte[] bytes = new byte[1024];
+//
+//                while ((read = input.read(bytes)) != -1) {
+//                    out.write(bytes, 0, read);
+//                }
+//
+//                out.close();
+//                file.deleteOnExit();
+//            } catch (IOException ex) {
+//                ex.printStackTrace();
+//                return null; // 예외 발생 시 null 반환
+//            }
+//        }
+//
+//        if (file.exists()) {
+//            try (FileReader keyReader = new FileReader(file);
+//                 PemReader pemReader = new PemReader(keyReader)) {
+//                PemObject pemObject = pemReader.readPemObject();
+//                content = pemObject.getContent();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                return null; // 예외 발생 시 null 반환
+//            }
+//        } else {
+//            // 파일이 존재하지 않는 경우
+//            return null; // 예외 발생 시 null 반환
+//        }
+//
+//        return content;
+//    }
 
     //5. 여기까지 프라이빗 키 가져오기
 
