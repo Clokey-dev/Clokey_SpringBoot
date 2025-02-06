@@ -6,9 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ClothFolderRepository extends JpaRepository<ClothFolder, Long> {
 
@@ -24,4 +26,10 @@ public interface ClothFolderRepository extends JpaRepository<ClothFolder, Long> 
     void deleteAllByClothIdIn(List<Long> clothId);
 
     Page<ClothFolder> findAllByFolderId(Long folderId, Pageable page);
+
+    @Query("SELECT cf.folder.id, c.image.imageUrl FROM ClothFolder cf JOIN cf.cloth c WHERE cf.folder.id IN :folderIds GROUP BY cf.folder.id")
+    List<Object[]> findClothImageUrlsFromFolderIds(@Param("folderIds") List<Long> folderIds);
+
+    @Query("SELECT cf.folder.id, COUNT(cf) FROM ClothFolder cf WHERE cf.folder.id IN :folderIds GROUP BY cf.folder.id")
+    List<Object[]> countClothesByFolderIds(@Param("folderIds") List<Long> folderIds);
 }

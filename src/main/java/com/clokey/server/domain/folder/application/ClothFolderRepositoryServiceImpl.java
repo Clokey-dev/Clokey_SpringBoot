@@ -14,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -65,5 +66,19 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
     @Override
     public Page<ClothFolder> findAllByFolderId(Long folderId, Pageable page) {
         return clothFolderRepository.findAllByFolderId(folderId, page);
+    }
+
+    @Override
+    public Map<Long, String> findClothImageUrlsFromFolderIds(List<Long> folderIds) {
+        List<Object[]> results = clothFolderRepository.findClothImageUrlsFromFolderIds(folderIds);
+        return results.stream()
+                .collect(Collectors.toMap(row -> (Long) row[0], row -> (String) row[1]));
+    }
+
+    @Override
+    public Map<Long, Long> countClothesByFolderIds(List<Long> folderIds) {
+        List<Object[]> results = clothFolderRepository.countClothesByFolderIds(folderIds);
+        return results.stream()
+                .collect(Collectors.toMap(row -> (Long) row[0], row -> (Long) row[1]));
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ClothFolderRepositoryService {
 
@@ -25,4 +26,8 @@ public interface ClothFolderRepositoryService {
     void validateNoDuplicateClothes(List<Cloth> clothes, Long folderId);
 
     Page<ClothFolder> findAllByFolderId(Long folderId, Pageable page);
+
+    Map<Long, String> findClothImageUrlsFromFolderIds(List<Long> folderIds);
+
+    Map<Long, Long> countClothesByFolderIds(List<Long> folderIds);
 }
