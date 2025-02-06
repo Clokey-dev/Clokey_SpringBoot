@@ -205,7 +205,7 @@ public class AppleAuthServiceImpl implements AppleAuthService {
 
         byte[] privateKeyBytes = getPrivateKey(); // 예외 처리 제거
         if (privateKeyBytes == null) {
-            throw new IllegalStateException("Private key is null or invalid.");
+            throw new MemberException(ErrorStatus.DUPLICATE_HASHTAGS);
         }
 
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(privateKeyBytes);
@@ -213,7 +213,7 @@ public class AppleAuthServiceImpl implements AppleAuthService {
         try {
             kf = KeyFactory.getInstance("EC");
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("KeyFactory instance creation failed: " + e.getMessage(), e);
+            throw new MemberException(ErrorStatus.ESSENTIAL_TERM_NOT_AGREED);
         }
 
         try {
@@ -221,7 +221,7 @@ public class AppleAuthServiceImpl implements AppleAuthService {
             JWSSigner jwsSigner = new ECDSASigner(ecPrivateKey);
             jwt.sign(jwsSigner);
         } catch (InvalidKeySpecException | JOSEException e) {
-            throw new IllegalStateException("JWT signing failed: " + e.getMessage(), e);
+            throw new MemberException(ErrorStatus.NO_SUCH_MEMBER);
         }
 
         return jwt.serialize();
@@ -229,7 +229,7 @@ public class AppleAuthServiceImpl implements AppleAuthService {
 
     public byte[] getPrivateKey() {
         if (privateKeyString == null || privateKeyString.isBlank()) {
-            throw new IllegalArgumentException("Private key is missing or empty.");
+            throw new MemberException(ErrorStatus.ESSENTIAL_INPUT_REQUIRED);
         }
 
         // "-----BEGIN PRIVATE KEY-----" 과 "-----END PRIVATE KEY-----" 제거
@@ -240,7 +240,7 @@ public class AppleAuthServiceImpl implements AppleAuthService {
         try {
             return Base64.getDecoder().decode(key);
         } catch (IllegalArgumentException e) {
-            throw new IllegalStateException("Private key format is invalid: " + e.getMessage(), e);
+            throw new MemberException(ErrorStatus.CLOTH_ALREADY_IN_FOLDER);
         }
     }
 
