@@ -205,7 +205,7 @@ public class AppleAuthServiceImpl implements AppleAuthService {
 
         byte[] privateKeyBytes = getPrivateKey(); // 예외 처리 제거
         if (privateKeyBytes == null) {
-            throw new MemberException(ErrorStatus.DUPLICATE_HASHTAGS);
+            throw new MemberException(ErrorStatus.LOGIN_FAILED);
         }
 
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(privateKeyBytes);
@@ -213,7 +213,7 @@ public class AppleAuthServiceImpl implements AppleAuthService {
         try {
             kf = KeyFactory.getInstance("EC");
         } catch (NoSuchAlgorithmException e) {
-            throw new MemberException(ErrorStatus.ESSENTIAL_TERM_NOT_AGREED);
+            throw new MemberException(ErrorStatus.LOGIN_FAILED);
         }
 
         try {
@@ -221,15 +221,17 @@ public class AppleAuthServiceImpl implements AppleAuthService {
             JWSSigner jwsSigner = new ECDSASigner(ecPrivateKey);
             jwt.sign(jwsSigner);
         } catch (InvalidKeySpecException | JOSEException e) {
-            throw new MemberException(ErrorStatus.NO_SUCH_MEMBER);
+            throw new MemberException(ErrorStatus.LOGIN_FAILED);
         }
 
         return jwt.serialize();
     }
 
+    //4. 여기까지 클라이언트 시크릿 생성
+
     public byte[] getPrivateKey() {
         if (privateKeyString == null || privateKeyString.isBlank()) {
-            throw new MemberException(ErrorStatus.ESSENTIAL_INPUT_REQUIRED);
+            throw new MemberException(ErrorStatus.LOGIN_FAILED);
         }
 
         // "-----BEGIN PRIVATE KEY-----" 과 "-----END PRIVATE KEY-----" 제거
@@ -240,59 +242,12 @@ public class AppleAuthServiceImpl implements AppleAuthService {
         try {
             return Base64.getDecoder().decode(key);
         } catch (IllegalArgumentException e) {
-            throw new MemberException(ErrorStatus.CLOTH_ALREADY_IN_FOLDER);
+            throw new MemberException(ErrorStatus.LOGIN_FAILED);
         }
     }
 
 
-    //4. 여기까지 클라이언트 시크릿 생성
 
-//    private byte[] getPrivateKey() {
-//        byte[] content = null;
-//        File file = new File(APPLE_KEY_PATH);
-//        URL res = getClass().getResource(APPLE_KEY_PATH);
-//
-//        if (res == null) {
-//            // 파일 시스템에서 파일을 로드할 때
-//            file = new File(APPLE_KEY_PATH);
-//        } else if ("jar".equals(res.getProtocol())) {
-//            // JAR 파일 내부의 리소스를 읽을 때
-//            try {
-//                InputStream input = getClass().getResourceAsStream(APPLE_KEY_PATH);
-//                file = File.createTempFile("tempfile", ".tmp");
-//                OutputStream out = new FileOutputStream(file);
-//
-//                int read;
-//                byte[] bytes = new byte[1024];
-//
-//                while ((read = input.read(bytes)) != -1) {
-//                    out.write(bytes, 0, read);
-//                }
-//
-//                out.close();
-//                file.deleteOnExit();
-//            } catch (IOException ex) {
-//                ex.printStackTrace();
-//                return null; // 예외 발생 시 null 반환
-//            }
-//        }
-//
-//        if (file.exists()) {
-//            try (FileReader keyReader = new FileReader(file);
-//                 PemReader pemReader = new PemReader(keyReader)) {
-//                PemObject pemObject = pemReader.readPemObject();
-//                content = pemObject.getContent();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                return null; // 예외 발생 시 null 반환
-//            }
-//        } else {
-//            // 파일이 존재하지 않는 경우
-//            return null; // 예외 발생 시 null 반환
-//        }
-//
-//        return content;
-//    }
 
     //5. 여기까지 프라이빗 키 가져오기
 

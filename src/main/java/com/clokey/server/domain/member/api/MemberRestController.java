@@ -30,17 +30,6 @@ public class MemberRestController {
     private final GetUserQueryService getUserQueryService;
     private final FollowCommandService followCommandService;
 
-//    @Operation(summary = "프로필 수정 API", description = "사용자의 프로필 정보를 수정하는 API입니다.")
-//    @PatchMapping("users/profile")
-//    public BaseResponse<MemberDTO.ProfileRP> updateProfile(
-//            @Parameter(name = "user",hidden = true) @AuthUser Member member,
-//            @RequestBody @Valid MemberDTO.ProfileRQ request) {
-//
-//        MemberDTO.ProfileRP response = profileCommandService.updateProfile(member.getId(), request);
-//
-//        return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_SUCCESS, response);
-//    }
-
     @Operation(summary = "프로필 수정 API", description = "사용자의 프로필 정보를 수정하는 API입니다.")
     @PatchMapping(value = "users/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<MemberDTO.ProfileRP> updateProfile(
