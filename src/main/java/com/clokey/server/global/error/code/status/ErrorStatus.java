@@ -99,7 +99,8 @@ public enum ErrorStatus implements BaseErrorCode {
     LOGIN_FAILED(HttpStatus.BAD_REQUEST,"LOGIN_4004","로그인에 실패했습니다."),
     EXPIRED_REFRESH_TOKEN(HttpStatus.BAD_REQUEST,"LOGIN_4005","리프레시 토큰이 만료되었습니다. 다시 로그인 하세요."),
     INVALID_CODE(HttpStatus.BAD_REQUEST,"LOGIN_4006","유효하지 않은 코드입니다."),
-
+    NO_RESPONSE(HttpStatus.BAD_REQUEST,"LOGIN_4007","응답이 없습니다."),
+    INVALID_RESPONSE(HttpStatus.BAD_REQUEST,"LOGIN_4007","응답이 없습니다."),
     ;
 
 
