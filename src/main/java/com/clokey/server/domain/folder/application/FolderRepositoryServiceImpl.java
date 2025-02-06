@@ -4,6 +4,8 @@ import com.clokey.server.domain.folder.domain.entity.Folder;
 import com.clokey.server.domain.folder.domain.repository.FolderRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,5 +37,10 @@ public class FolderRepositoryServiceImpl implements FolderRepositoryService{
     @Override
     public boolean existsById(Long folderId) {
         return folderRepository.existsById(folderId);
+    }
+
+    @Override
+    public Page<Folder> findAllByMemberId(Long memberId, Pageable page) {
+        return folderRepository.findAllByMemberId(memberId, page);
     }
 }
