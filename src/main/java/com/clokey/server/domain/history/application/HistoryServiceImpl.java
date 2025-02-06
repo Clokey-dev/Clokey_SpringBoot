@@ -213,6 +213,7 @@ public class HistoryServiceImpl implements HistoryService {
         List<Cloth> cloths = clothRepositoryService.findAllById(historyCreateRequest.getClothes());
         List<HistoryCloth> historyCloths = cloths.stream()
                         .map(cloth -> {
+                            cloth.increaseWearNum();
                             return HistoryCloth.builder()
                                     .history(history)
                                     .cloth(cloth)

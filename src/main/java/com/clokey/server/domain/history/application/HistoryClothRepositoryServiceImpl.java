@@ -4,12 +4,8 @@ import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.history.domain.entity.HistoryCloth;
 import com.clokey.server.domain.history.domain.repository.HistoryClothRepository;
-import com.clokey.server.domain.history.domain.repository.HistoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
