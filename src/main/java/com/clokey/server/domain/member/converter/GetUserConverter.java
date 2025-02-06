@@ -6,7 +6,7 @@ import com.clokey.server.domain.member.dto.MemberDTO;
 
 public class GetUserConverter {
 
-    public static MemberDTO.GetUserRP toGetUserResponseDTO(Member member, Long recordCount, Long followerCount, Long followingCount, boolean isFollowing) {
+    public static MemberDTO.GetUserRP toGetUserResponseDTO(Member member, Long recordCount, Long followerCount, Long followingCount, Boolean isFollowing) {
         return MemberDTO.GetUserRP.builder()
                 .clokeyId(member.getClokeyId())
                 .profileImageUrl(member.getProfileImageUrl())

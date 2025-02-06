@@ -27,7 +27,7 @@ public class MemberDTO {
         String bio;
         String profileBackImageUrl;
         String visibility;
-        boolean isFollowing;
+        Boolean isFollowing;
     }
 
     @Getter
@@ -88,7 +88,7 @@ public class MemberDTO {
     @AllArgsConstructor
     public static class  FollowRP{
 
-        boolean isFollow;
+        Boolean isFollow;
 
     }
 }

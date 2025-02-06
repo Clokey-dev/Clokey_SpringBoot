@@ -4,7 +4,9 @@ import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import javax.naming.AuthenticationException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class AuthDTO {
@@ -30,11 +32,26 @@ public class AuthDTO {
         }
     }
 
+    @Data
+    public static class LoginRequest{
+        private String type; // 로그인 타입 (ex: "kakao", "apple")
+        private String accessToken;
+        private String authorizationCode;
+
+    }
+
     // KakaoLoginRequest 클래스
     @Data
     public static class KakaoLoginRequest {
         private String type; // 로그인 타입 (ex: "kakao", "apple")
         private String accessToken;
+    }
+
+    // AppleLoginRequest 클래스
+    @Data
+    public static class AppleLoginRequest {
+        private String type; // 로그인 타입 (ex: "kakao", "apple")
+        private String authorizationCode;
     }
 
     @Data
@@ -56,5 +73,7 @@ public class AuthDTO {
         private String refreshToken;
     }
 
+
+    
 }
 
