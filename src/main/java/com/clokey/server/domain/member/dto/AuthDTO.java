@@ -32,6 +32,14 @@ public class AuthDTO {
         }
     }
 
+    @Data
+    public static class LoginRequest{
+        private String type; // 로그인 타입 (ex: "kakao", "apple")
+        private String accessToken;
+        private String authorizationCode;
+
+    }
+
     // KakaoLoginRequest 클래스
     @Data
     public static class KakaoLoginRequest {

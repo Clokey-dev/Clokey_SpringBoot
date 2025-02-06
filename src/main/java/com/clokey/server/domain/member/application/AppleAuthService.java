@@ -6,5 +6,5 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public interface AppleAuthService {
 
-    public AuthDTO.TokenResponse login(String code) throws Exception;
+    AuthDTO.TokenResponse login(String code);
 }

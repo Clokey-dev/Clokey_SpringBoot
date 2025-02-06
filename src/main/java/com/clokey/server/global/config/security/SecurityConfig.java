@@ -35,7 +35,8 @@ public class SecurityConfig {
             "/login",
             "/refresh",
             "/ws/**",
-            "/topic/**"
+            "/topic/**",
+            "/reissue-token",
     };
 
     @Bean

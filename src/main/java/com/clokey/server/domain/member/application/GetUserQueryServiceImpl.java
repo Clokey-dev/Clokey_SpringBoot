@@ -28,13 +28,13 @@ public class GetUserQueryServiceImpl implements GetUserQueryService {
         Long recordCount = countHistoryByMember(member);
         Long followerCount = countFollowersByMember(member);
         Long followingCount = countFollowingByMember(member);
-        boolean isFollowing = isFollowing(currentUser, member); // 팔로우 여부 체크 추가
+        Boolean isFollowing = isFollowing(currentUser, member); // 팔로우 여부 체크 추가
 
         return GetUserConverter.toGetUserResponseDTO(member, recordCount, followerCount, followingCount, isFollowing);
     }
 
     @Transactional(readOnly = true)
-    public boolean isFollowing(Member currentUser, Member targetUser) {
+    public Boolean isFollowing(Member currentUser, Member targetUser) {
         String jpql = "SELECT COUNT(f) FROM Follow f WHERE f.following = :currentUser AND f.followed = :targetUser";
         TypedQuery<Long> query = entityManager.createQuery(jpql, Long.class);
         query.setParameter("currentUser", currentUser);
