@@ -90,12 +90,12 @@ public class Member extends BaseEntity {
     private List<History> historyList = new ArrayList<>();
 
 
-    public void profileUpdate(MemberDTO.ProfileRQ request) {
+    public void profileUpdate(MemberDTO.ProfileRQ request, String profileImageUrl, String profileBackImageUrl) {
         this.nickname = request.getNickname();
         this.clokeyId = request.getClokeyId();
-        this.profileImageUrl = request.getProfileImageUrl();
+        this.profileImageUrl = profileImageUrl;
         this.bio = request.getBio();
-        this.profileBackImageUrl = request.getProfileBackImageUrl();
+        this.profileBackImageUrl = profileBackImageUrl;
         this.visibility = request.getVisibility();
     }
 

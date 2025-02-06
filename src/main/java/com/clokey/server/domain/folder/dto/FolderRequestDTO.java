@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 
+import java.util.Collections;
 import java.util.List;
 
 public class FolderRequestDTO {
@@ -12,6 +13,7 @@ public class FolderRequestDTO {
     public static class FolderCreateRequest {
         @NotBlank(message = "폴더 이름은 필수 입력 값입니다.")
         String folderName;
+        List<Long> clothIds = Collections.emptyList();
     }
 
     @Getter
