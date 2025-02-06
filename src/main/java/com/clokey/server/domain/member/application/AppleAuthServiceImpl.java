@@ -88,7 +88,7 @@ public class AppleAuthServiceImpl implements AppleAuthService {
 
     public AuthDTO.TokenResponse login(String code) {
         // code가 null인 경우 처리
-        if (code.isBlank()) {
+        if (code == null || code.isBlank()) {
             throw new MemberException(ErrorStatus.INVALID_CODE);
         }
 
@@ -119,9 +119,19 @@ public class AppleAuthServiceImpl implements AppleAuthService {
                     String.class
             );
 
+            // 응답 상태 코드 체크
+            if (!response.getStatusCode().equals(HttpStatus.OK)) {
+                throw new MemberException(ErrorStatus.NO_RESPONSE);
+            }
+
             // 응답 파싱
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObj = (JSONObject) jsonParser.parse(response.getBody());
+
+            // access_token 및 id_token 유효성 확인
+            if (!jsonObj.containsKey("access_token") || !jsonObj.containsKey("id_token")) {
+                throw new MemberException(ErrorStatus.INVALID_RESPONSE);
+            }
 
             accessToken = String.valueOf(jsonObj.get("access_token"));
 
@@ -136,7 +146,6 @@ public class AppleAuthServiceImpl implements AppleAuthService {
             email = String.valueOf(payload.get("email"));
 
         } catch (Exception e) {
-            // 예외 처리
             e.printStackTrace();
             throw new MemberException(ErrorStatus.LOGIN_FAILED);
         }
@@ -176,9 +185,6 @@ public class AppleAuthServiceImpl implements AppleAuthService {
         );
     }
 
-
-    //3. 여기까지 로그인 정보 가져옴
-
     private String createClientSecret() {
         JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.ES256)
                 .keyID(APPLE_LOGIN_KEY)
@@ -199,7 +205,7 @@ public class AppleAuthServiceImpl implements AppleAuthService {
 
         byte[] privateKeyBytes = getPrivateKey(); // 예외 처리 제거
         if (privateKeyBytes == null) {
-            return null; // privateKeyBytes가 null일 경우 처리
+            throw new IllegalStateException("Private key is null or invalid.");
         }
 
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(privateKeyBytes);
@@ -207,8 +213,7 @@ public class AppleAuthServiceImpl implements AppleAuthService {
         try {
             kf = KeyFactory.getInstance("EC");
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null; // 예외 발생 시 null 반환
+            throw new IllegalStateException("KeyFactory instance creation failed: " + e.getMessage(), e);
         }
 
         try {
@@ -216,22 +221,29 @@ public class AppleAuthServiceImpl implements AppleAuthService {
             JWSSigner jwsSigner = new ECDSASigner(ecPrivateKey);
             jwt.sign(jwsSigner);
         } catch (InvalidKeySpecException | JOSEException e) {
-            e.printStackTrace();
-            return null; // 예외 발생 시 null 반환
+            throw new IllegalStateException("JWT signing failed: " + e.getMessage(), e);
         }
 
         return jwt.serialize();
     }
 
     public byte[] getPrivateKey() {
+        if (privateKeyString == null || privateKeyString.isBlank()) {
+            throw new IllegalArgumentException("Private key is missing or empty.");
+        }
+
         // "-----BEGIN PRIVATE KEY-----" 과 "-----END PRIVATE KEY-----" 제거
         String key = privateKeyString.replace("-----BEGIN PRIVATE KEY-----", "")
                 .replace("-----END PRIVATE KEY-----", "")
-                .replaceAll("\\s", "");
+                .replaceAll("[\\r\\n]", "");  // \r, \n을 명시적으로 제거
 
-        // Base64로 디코딩하여 바이트 배열로 변환
-        return Base64.getDecoder().decode(key);
+        try {
+            return Base64.getDecoder().decode(key);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException("Private key format is invalid: " + e.getMessage(), e);
+        }
     }
+
 
     //4. 여기까지 클라이언트 시크릿 생성
 
