@@ -10,5 +10,9 @@ public class CategoryConverter {
     public CategoryResponseDTO.CategoryRP convertToDTO(Category category) {
         return new CategoryResponseDTO.CategoryRP(category.getId(), category.getName());
     }
+
+    public static CategoryResponseDTO.CategoryRecommendResult toRecommendResultDTO(Long categoryId, String largeCategoryName, String smallCategoryName) {
+        return new CategoryResponseDTO.CategoryRecommendResult(categoryId, largeCategoryName, smallCategoryName);
+    }
 }
 

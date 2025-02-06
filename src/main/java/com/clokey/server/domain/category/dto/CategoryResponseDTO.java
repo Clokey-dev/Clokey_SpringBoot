@@ -17,4 +17,14 @@ public class CategoryResponseDTO {
         Long id;
         String name;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CategoryRecommendResult{
+        Long categoryId;
+        String largeCategoryName;
+        String smallCategoryName;
+    }
 }
