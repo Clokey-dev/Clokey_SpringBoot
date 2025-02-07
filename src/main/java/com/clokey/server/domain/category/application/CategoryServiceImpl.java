@@ -115,17 +115,20 @@ public class CategoryServiceImpl implements CategoryService{
         String model = "gpt-3.5-turbo";
 
         RestTemplate restTemplate = new RestTemplate();
-        org.springframework.http.HttpHeaders headers = new HttpHeaders();
+        HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(apiKey);
 
-        String jsonBody = String.format(
-                "{\"model\": \"%s\", \"messages\": [{\"role\": \"user\", \"content\": \"%s\"}]}",
-                model, prompt.replaceAll("\"", "\\\\\"")
+        Map<String, Object> requestBody = Map.of(
+                "model", model,
+                "messages", List.of(Map.of("role", "user", "content", prompt))
         );
 
-        HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
         try {
+            // JSON 변환
+            String jsonBody = objectMapper.writeValueAsString(requestBody);
+            HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
+
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
             return extractMessageFromJSONResponse(response.getBody());
 
@@ -133,11 +136,12 @@ public class CategoryServiceImpl implements CategoryService{
             e.printStackTrace();
             return "Error connecting to OpenAI: " + e.getMessage();
         }
-
     }
+
 
     public String extractMessageFromJSONResponse(String response) {
         try {
+            System.out.println("ChatGPT API Response: " + response);
             Map<String, Object> map = objectMapper.readValue(response, new TypeReference<>() {});
             List<Map<String, Object>> choices = (List<Map<String, Object>>) map.get("choices");
 
@@ -172,7 +176,7 @@ public class CategoryServiceImpl implements CategoryService{
                 // "큰 카테고리", "작은 카테고리", "카테고리 아이디" 추출
                 String largeCategory = (String) item.get("큰 카테고리");
                 String smallCategory = (String) item.get("작은 카테고리");
-                Long categoryId = (Long) item.get("카테고리 아이디");
+                Integer categoryId = (Integer) item.get("카테고리 아이디");
 
                 // DTO 생성 및 리스트에 추가
                 return CategoryConverter.toRecommendResultDTO(categoryId, largeCategory, smallCategory);
@@ -182,24 +186,5 @@ public class CategoryServiceImpl implements CategoryService{
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse response: " + e.getMessage(), e);
         }
-    }
-
-    public static void main(String[] args) {
-        CategoryServiceImpl chatGPTService = new CategoryServiceImpl(null); // `null`은 필요 시 `MusicService` 의존성 주입에 맞게 수정
-
-        // 프롬프트 생성
-        String prompt = chatGPTService.createPrompt("흰색 티셔츠");
-
-        // ChatGPT API 호출
-        String response = chatGPTService.chatGPT(prompt);
-
-        // 결과 출력
-        System.out.println("===== ChatGPT Response =====");
-        System.out.println(response);
-
-        CategoryResponseDTO.CategoryRecommendResult result = chatGPTService.parseResponse(response);
-
-        System.out.println(result);
-
     }
 }
