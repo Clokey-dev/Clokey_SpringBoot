@@ -23,7 +23,16 @@ public class Folder extends BaseEntity {
     @Column(nullable = false, length = 30)
     private String name;
 
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private Long itemCount = 0L;
+
     public void rename(String newName) {
         this.name = newName;
+    }
+    public void increaseItemCount() {
+        this.itemCount++;
+    }
+    public void decreaseItemCount() {
+        this.itemCount--;
     }
 }

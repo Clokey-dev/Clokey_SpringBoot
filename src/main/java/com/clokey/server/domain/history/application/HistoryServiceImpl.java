@@ -55,7 +55,7 @@ public class HistoryServiceImpl implements HistoryService {
     @Transactional
     public HistoryResponseDTO.LikeResult changeLike(Long memberId, Long historyId, boolean isLiked) {
 
-        historyLikedValidator.validateIsLiked(memberId, historyId, isLiked);
+        historyLikedValidator.validateIsLiked(historyId, memberId, isLiked);
 
         History history = historyRepositoryService.findById(historyId);
 
@@ -116,7 +116,6 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     @Transactional(readOnly = true)
     public HistoryResponseDTO.DailyHistoryResult getDaily(Long historyId, Long memberId) {
-
         historyAccessibleValidator.validateHistoryAccessOfMember(historyId, memberId);
 
         History history = historyRepositoryService.findById(historyId);

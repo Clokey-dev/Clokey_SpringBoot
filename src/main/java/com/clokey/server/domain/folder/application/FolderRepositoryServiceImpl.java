@@ -4,23 +4,25 @@ import com.clokey.server.domain.folder.domain.entity.Folder;
 import com.clokey.server.domain.folder.domain.repository.FolderRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-@Transactional
 @Service
 @RequiredArgsConstructor
 public class FolderRepositoryServiceImpl implements FolderRepositoryService{
 
     private final FolderRepository folderRepository;
 
-
+    @Transactional
     @Override
     public void save(Folder folderId) {
         folderRepository.save(folderId);
     }
 
+    @Transactional
     @Override
     public void deleteById(Long folderId) {
         folderRepository.deleteById(folderId);
@@ -33,7 +35,14 @@ public class FolderRepositoryServiceImpl implements FolderRepositoryService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existsById(Long folderId) {
         return folderRepository.existsById(folderId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Folder> findAllByMemberId(Long memberId, Pageable page) {
+        return folderRepository.findAllByMemberId(memberId, page);
     }
 }

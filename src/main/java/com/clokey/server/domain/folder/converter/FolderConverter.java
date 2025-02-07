@@ -8,6 +8,7 @@ import com.clokey.server.domain.member.domain.entity.Member;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -16,18 +17,19 @@ public class FolderConverter {
         return Folder.builder()
                 .name(request.getFolderName())
                 .member(member)
+                .itemCount(0L)
                 .build();
     }
 
-    public static FolderResponseDTO.FolderId toFolderIdDTO(Folder folder) {
-        return FolderResponseDTO.FolderId.builder()
+    public static FolderResponseDTO.FolderIdResult toFolderIdDTO(Folder folder) {
+        return FolderResponseDTO.FolderIdResult.builder()
                 .folderId(folder.getId())
                 .build();
     }
 
-    public static FolderResponseDTO.FolderClothes toFolderClothesDTO(Page<ClothFolder> clothPage) {
-        List<FolderResponseDTO.FolderCloth> clothes = clothPage.getContent().stream()
-                .map(clothFolder -> new FolderResponseDTO.FolderCloth(
+    public static FolderResponseDTO.FolderClothesResult toFolderClothesDTO(Page<ClothFolder> clothPage) {
+        List<FolderResponseDTO.FolderClothResult> clothes = clothPage.getContent().stream()
+                .map(clothFolder -> new FolderResponseDTO.FolderClothResult(
                         clothFolder.getCloth().getId(),
                         clothFolder.getCloth().getName(),
                         clothFolder.getCloth().getImage().getImageUrl(),
@@ -35,12 +37,31 @@ public class FolderConverter {
                 ))
                 .collect(Collectors.toList());
 
-        return FolderResponseDTO.FolderClothes.builder()
+        return FolderResponseDTO.FolderClothesResult.builder()
                 .clothes(clothes)
                 .totalPage(clothPage.getTotalPages())
                 .totalElements((int) clothPage.getTotalElements())
                 .isFirst(clothPage.isFirst())
                 .isLast(clothPage.isLast())
+                .build();
+    }
+
+    public static FolderResponseDTO.FoldersResult toFoldersDTO(Page<Folder> folderPage, Map<Long, String> folderImageMap) {
+        List<FolderResponseDTO.FolderResult> folders = folderPage.getContent().stream()
+                .map(folder -> new FolderResponseDTO.FolderResult(
+                        folder.getId(),
+                        folder.getName(),
+                        folderImageMap.getOrDefault(folder.getId(), null),
+                        folder.getItemCount()
+                ))
+                .collect(Collectors.toList());
+
+        return FolderResponseDTO.FoldersResult.builder()
+                .folders(folders)
+                .totalPage(folderPage.getTotalPages())
+                .totalElements((int) folderPage.getTotalElements())
+                .isFirst(folderPage.isFirst())
+                .isLast(folderPage.isLast())
                 .build();
     }
 }

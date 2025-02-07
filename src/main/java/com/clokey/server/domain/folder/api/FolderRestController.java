@@ -29,9 +29,9 @@ public class FolderRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_201", description = "성공적으로 생성되었습니다."),
     })
-    public BaseResponse<FolderResponseDTO.FolderId> createFolder(@Parameter(name = "user",hidden = true) @AuthUser Member member,
+    public BaseResponse<FolderResponseDTO.FolderIdResult> createFolder(@Parameter(name = "user",hidden = true) @AuthUser Member member,
                                                                  @RequestBody @Valid FolderRequestDTO.FolderCreateRequest request) {
-        FolderResponseDTO.FolderId response = FolderConverter.toFolderIdDTO(folderService.createFolder(member.getId(), request));
+        FolderResponseDTO.FolderIdResult response = FolderConverter.toFolderIdDTO(folderService.createFolder(member.getId(), request));
         return BaseResponse.onSuccess(SuccessStatus.FOLDER_CREATED, response);
     }
 
@@ -86,10 +86,21 @@ public class FolderRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_200", description = "성공적으로 조회되었습니다."),
     })
-    public BaseResponse<FolderResponseDTO.FolderClothes> getClothesFromFolder(@Parameter(name = "user",hidden = true) @AuthUser Member member,
+    public BaseResponse<FolderResponseDTO.FolderClothesResult> getClothesFromFolder(@Parameter(name = "user",hidden = true) @AuthUser Member member,
                                                         @PathVariable @FolderExist Long folderId,
                                                                                  @RequestParam(value = "page") @Valid @CheckPage Integer page) {
-        FolderResponseDTO.FolderClothes result = folderService.getClothesFromFolder(folderId, page, member.getId());
+        FolderResponseDTO.FolderClothesResult result = folderService.getClothesFromFolder(folderId, page, member.getId());
+        return BaseResponse.onSuccess(SuccessStatus.FOLDER_SUCCESS, result);
+    }
+
+    @Operation(summary = "전체 폴더 조회 API", description = "사용자가 가지고 있는 전체 폴더를 조회하는 API입니다.")
+    @GetMapping("folders")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_200", description = "성공적으로 조회되었습니다."),
+    })
+    public BaseResponse<FolderResponseDTO.FoldersResult> getFolders(@Parameter(name = "user",hidden = true) @AuthUser Member member,
+                                                                              @RequestParam(value = "page") @Valid @CheckPage Integer page) {
+        FolderResponseDTO.FoldersResult result = folderService.getFolders(page, member.getId());
         return BaseResponse.onSuccess(SuccessStatus.FOLDER_SUCCESS, result);
     }
 }
