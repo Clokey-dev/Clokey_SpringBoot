@@ -41,6 +41,7 @@ public class HistoryConverter {
         return HistoryResponseDTO.HistoryClothResult.builder()
                 .clothId(cloth.getId())
                 .clothImageUrl(cloth.getImage().getImageUrl())
+                .clothName(cloth.getName())
                 .build();
     }
 
