@@ -40,6 +40,7 @@ public class HistoryResponseDTO {
     public static class HistoryClothResult {
         Long clothId;
         String clothImageUrl;
+        String clothName;
     }
 
 
