@@ -57,21 +57,20 @@ public class HistoryServiceImpl implements HistoryService {
 
         historyLikedValidator.validateIsLiked(historyId, memberId, isLiked);
 
-        History history = historyRepositoryService.findById(historyId);
-
         if (isLiked) {
             historyRepositoryService.decrementLikes(historyId);
             memberLikeRepositoryService.deleteByMember_IdAndHistory_Id(memberId, historyId);
         } else {
             historyRepositoryService.incrementLikes(historyId);
             MemberLike memberLike = MemberLike.builder()
-                    .history(history)
+                    .history(historyRepositoryService.findById(historyId))
                     .member(memberRepositoryService.findMemberById(memberId))
                     .build();
             memberLikeRepositoryService.save(memberLike);
         }
+        History updatedHistory = historyRepositoryService.findById(historyId);
 
-        return HistoryConverter.toLikeResult(history, isLiked);
+        return HistoryConverter.toLikeResult(updatedHistory, isLiked);
     }
 
     @Override
@@ -126,8 +125,9 @@ public class HistoryServiceImpl implements HistoryService {
         int likeCount = memberLikeRepositoryService.countByHistory_Id(historyId);
         boolean isLiked = memberLikeRepositoryService.existsByMember_IdAndHistory_Id(memberId, historyId);
         List<Cloth> cloths = historyClothRepositoryService.findAllClothByHistoryId(historyId);
+        Long commentCount = commentRepositoryService.countByHistoryId(historyId);
 
-        return HistoryConverter.toDayViewResult(history, imageUrl, hashtags, likeCount, isLiked,cloths);
+        return HistoryConverter.toDayViewResult(history, imageUrl, hashtags, likeCount, isLiked, cloths, commentCount);
     }
 
     @Override

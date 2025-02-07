@@ -17,11 +17,11 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
     List<History> findHistoriesByMemberAndYearMonth(Long memberId, String yearMonth);
 
     @Query("UPDATE History h SET h.likes = h.likes + 1 WHERE h.id = :historyId")
-    @Modifying
+    @Modifying(clearAutomatically = true)
     void incrementLikes(Long historyId);
 
     @Query("UPDATE History h SET h.likes = h.likes - 1 WHERE h.id = :historyId")
-    @Modifying
+    @Modifying(clearAutomatically = true)
     void decrementLikes(Long historyId);
 
     boolean existsByHistoryDateAndMember_Id(LocalDate historyDate, Long memberId);

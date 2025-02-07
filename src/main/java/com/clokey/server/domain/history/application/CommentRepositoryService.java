@@ -23,4 +23,5 @@ public interface CommentRepositoryService {
     void deleteById(Long commentId);
 
     void deleteAllComments(Long HistoryId);
+    Long countByHistoryId(Long historyId);
 }

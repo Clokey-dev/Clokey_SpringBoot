@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
 
 public class HistoryConverter {
 
-    public static HistoryResponseDTO.DailyHistoryResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked, List<Cloth> cloths) {
+    public static HistoryResponseDTO.DailyHistoryResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked, List<Cloth> cloths, Long commentCount) {
         return HistoryResponseDTO.DailyHistoryResult.builder()
                 .memberId(history.getMember().getId())
                 .historyId(history.getId())
@@ -27,6 +27,7 @@ public class HistoryConverter {
                 .hashtags(hashtags)
                 .visibility(history.getVisibility().equals(Visibility.PUBLIC))
                 .likeCount(likeCount)
+                .commentCount(commentCount)
                 .isLiked(isLiked)
                 .date(history.getHistoryDate())
                 .nickName(history.getMember().getNickname())
