@@ -11,7 +11,7 @@ public class CategoryConverter {
         return new CategoryResponseDTO.CategoryRP(category.getId(), category.getName());
     }
 
-    public static CategoryResponseDTO.CategoryRecommendResult toRecommendResultDTO(Long categoryId, String largeCategoryName, String smallCategoryName) {
+    public static CategoryResponseDTO.CategoryRecommendResult toRecommendResultDTO(Integer categoryId, String largeCategoryName, String smallCategoryName) {
         return new CategoryResponseDTO.CategoryRecommendResult(categoryId, largeCategoryName, smallCategoryName);
     }
 }

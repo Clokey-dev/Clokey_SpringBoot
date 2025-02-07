@@ -23,7 +23,7 @@ public class CategoryResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class CategoryRecommendResult{
-        Long categoryId;
+        Integer categoryId;
         String largeCategoryName;
         String smallCategoryName;
     }
