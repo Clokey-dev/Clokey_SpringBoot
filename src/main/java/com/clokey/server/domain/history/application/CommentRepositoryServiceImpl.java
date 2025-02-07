@@ -61,4 +61,9 @@ public class CommentRepositoryServiceImpl implements CommentRepositoryService{
         commentRepository.deleteParentCommentsByHistoryId(historyId);
     }
 
+    @Override
+    public Long countByHistoryId(Long historyId) {
+        return commentRepository.countByHistoryId(historyId);
+    }
+
 }

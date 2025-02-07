@@ -31,6 +31,7 @@ public class HistoryResponseDTO {
         boolean isLiked;
         LocalDate date;
         List<HistoryClothResult> cloths;
+        Long commentCount;
     }
 
     @Builder
