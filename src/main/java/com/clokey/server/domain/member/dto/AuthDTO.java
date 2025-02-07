@@ -15,7 +15,7 @@ public class AuthDTO {
     @Data
     public static class KakaoUserResponse {
 
-        private Long id; // 사용자 고유 ID
+        private String id; // 사용자 고유 ID
 
         @JsonProperty("kakao_account")
         private KakaoAccount kakaoAccount;

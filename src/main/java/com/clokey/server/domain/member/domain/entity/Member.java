@@ -74,6 +74,9 @@ public class Member extends BaseEntity {
     @Column(nullable = true, unique = true)
     private String accessToken;
 
+    @Column(unique = true)
+    private String kakaoId;
+
 
 
     //필요한 양방향 매핑을 제외하고 삭제해주세요.

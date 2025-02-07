@@ -105,6 +105,7 @@ public class AuthServiceImpl implements AuthService {
         } else {
             // DB에 사용자 정보가 없으면 회원가입
             member = Member.builder()
+                    .kakaoId(kakaoUser.getId())
                     .nickname(kakaoUser.getKakaoAccount().getProfile().getNickname())
                     .email(kakaoUser.getKakaoAccount().getEmail())
                     .registerStatus(RegisterStatus.NOT_AGREED)
