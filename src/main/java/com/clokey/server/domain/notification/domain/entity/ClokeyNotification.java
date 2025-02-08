@@ -22,11 +22,15 @@ public class ClokeyNotification extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @Column(nullable = false, length = 20)
-    private String title;
-
     @Column(nullable = false, length = 50)
     private String content;
+
+    // 우선 그냥 두는데 픽토그램 이미지는 프론트에서 알아서 하는건지...?
+    private String notificationImageUrl;
+
+    //ex) historyId, clokeyId
+    @Column(nullable = false)
+    private Object redirectInfo;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
