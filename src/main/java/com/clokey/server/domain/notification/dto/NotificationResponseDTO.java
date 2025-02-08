@@ -28,7 +28,7 @@ public class NotificationResponseDTO {
     public static class NewFollowerNotificationResult {
         String content;
         String memberProfileUrl;
-        Long memberId;
+        String clokeyId;
     }
 
     @Builder

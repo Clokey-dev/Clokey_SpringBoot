@@ -2,6 +2,7 @@ package com.clokey.server.domain.notification.application;
 
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
 import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
+import com.clokey.server.domain.member.application.FollowRepositoryService;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.NotificationType;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class NotificationServiceImpl implements NotificationService{
 
     private final HistoryLikedValidator historyLikedValidator;
@@ -26,11 +28,12 @@ public class NotificationServiceImpl implements NotificationService{
     private final MemberRepositoryService memberRepositoryService;
     private final FirebaseMessaging firebaseMessaging;
     private final NotificationRepositoryService notificationRepositoryService;
+    private final FollowRepositoryService followRepositoryService;
 
     private static final String HISTORY_LIKED_NOTIFICATION_CONTENT = "%s님이 나의 기록에 좋아요를 눌렀습니다.";
+    private static final String NEW_FOLLOWER_NOTIFICATION_CONTENT = "%s님이 회원님의 옷장을 팔로우하기 시작했습니다.";
 
     @Override
-    @Transactional
     public NotificationResponseDTO.HistoryLikeNotificationResult sendHistoryLikeNotification(Long memberId, Long historyId) {
 
         historyLikedValidator.validateIsLiked(historyId,memberId,true);
@@ -77,4 +80,61 @@ public class NotificationServiceImpl implements NotificationService{
         }
         return null;
     }
+
+    @Override
+    public NotificationResponseDTO.NewFollowerNotificationResult sendNewFollowerNotification(String followedMemberClokeyId, Long followingMemberId) {
+
+        Member followedMember = memberRepositoryService.findMemberByClokeyId(followedMemberClokeyId);
+        Member followingMember = memberRepositoryService.findMemberById(followingMemberId);
+
+        checkFollowing(followingMemberId,followedMember.getId());
+
+        //로그아웃 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
+        if(followedMember.getDeviceToken() != null && followedMember.getRefreshToken() != null) {
+            String content = String.format(NEW_FOLLOWER_NOTIFICATION_CONTENT,followingMember.getNickname());
+            String followingMemberProfileUrl = followingMember.getProfileImageUrl();
+
+            Notification notification = Notification.builder()
+                    .setBody(content)
+                    .setImage(followingMemberProfileUrl)
+                    .build();
+
+            Message message = Message.builder()
+                    .setToken(followedMember.getDeviceToken())
+                    .setNotification(notification)
+                    .putData("clokeyID", followingMember.getClokeyId())
+                    .build();
+
+            try {
+                firebaseMessaging.send(message);
+            } catch (FirebaseMessagingException e) {
+                throw new NotificationException(ErrorStatus.NOTIFICATION_FIREBASE_ERROR);
+            }
+
+            ClokeyNotification clokeyNotification = ClokeyNotification.builder()
+                    .member(followedMember)
+                    .content(content)
+                    .notificationImageUrl(followingMemberProfileUrl)
+                    .redirectInfo(followingMember.getClokeyId())
+                    .notificationType(NotificationType.MEMBER_REDIRECT)
+                    .build();
+
+            notificationRepositoryService.save(clokeyNotification);
+
+            return NotificationResponseDTO.NewFollowerNotificationResult.builder()
+                    .content(content)
+                    .memberProfileUrl(followingMemberProfileUrl)
+                    .clokeyId(followingMember.getClokeyId())
+                    .build();
+        }
+        return null;
+    }
+
+    private void checkFollowing(Long followingId, Long followedId){
+        if(!followRepositoryService.existsByFollowing_IdAndFollowed_Id(followingId,followedId)){
+            throw new NotificationException(ErrorStatus.NOTIFICATION_NOT_FOLLOWING);
+        }
+    }
+
+
 }

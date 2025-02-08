@@ -80,6 +80,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //알림 에러
     NOTIFICATION_TYPE_INVALID(HttpStatus.BAD_REQUEST,"NOTIFICATION_4001","잘못된 알림 Type 입니다."),
+    NOTIFICATION_NOT_FOLLOWING(HttpStatus.BAD_REQUEST,"NOTIFICATION_4002","팔로우 하지 않는 대상에게 팔로우 알림을 보낼 수 없습니다"),
     NOTIFICATION_FIREBASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"NOTIFICATION_5001","Firebase 서버에러 입니다."),
 
     //검색 에러
