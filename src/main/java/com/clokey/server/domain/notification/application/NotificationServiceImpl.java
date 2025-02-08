@@ -6,6 +6,7 @@ import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.notification.dto.NotificationResponseDTO;
 import com.clokey.server.domain.notification.exception.NotificationException;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
@@ -49,7 +50,7 @@ public class NotificationServiceImpl implements NotificationService{
             try {
                 firebaseMessaging.send(message);
             } catch (FirebaseMessagingException e) {
-                throw new NotificationException()
+                throw new NotificationException(ErrorStatus.NOTIFICATION_FIREBASE_ERROR);
             }
 
 
@@ -57,20 +58,5 @@ public class NotificationServiceImpl implements NotificationService{
 
 
 
-                try {
-                    firebaseMessaging.send(message);
-                    return "알림을 성공적으로 전송했습니다. targetUserId=" + requestDto.getTargetUserId();
-                } catch (FirebaseMessagingException e) {
-                    e.printStackTrace();
-                    return "알림 보내기를 실패하였습니다. targetUserId=" + requestDto.getTargetUserId();
-                }
-            } else {
-                return "서버에 저장된 해당 유저의 FirebaseToken이 존재하지 않습니다. targetUserId=" + requestDto.getTargetUserId();
-            }
-
-        } else {
-            return "해당 유저가 존재하지 않습니다. targetUserId=" + requestDto.getTargetUserId();
-        }
-        return null;
     }
 }
