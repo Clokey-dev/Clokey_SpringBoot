@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.Comment;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -71,11 +70,29 @@ public class NotificationController {
     })
     public BaseResponse<NotificationResponseDTO.HistoryCommentNotificationResult> historyCommentNotification(@Parameter @Valid @HistoryExist Long historyId,
                                                                                                              @Parameter @Valid @CommentExist Long commentId,
-                                                                                                       @Parameter(name = "user",hidden = true) @AuthUser Member member) {
+                                                                                                             @Parameter(name = "user",hidden = true) @AuthUser Member member) {
 
         NotificationResponseDTO.HistoryCommentNotificationResult result = notificationService.sendHistoryCommentNotification(historyId,commentId, member.getId());
 
         return BaseResponse.onSuccess(SuccessStatus.NOTIFICATION_HISTORY_COMMENT_SUCCESS, result);
+    }
+
+    @PostMapping("/comment-reply}")
+    @Operation(summary = "댓글에 답글을 남기는 경우 댓글의 주인에게 알림을 보내는 API")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTIFICATION", description = "댓글에 대한 답글 알림이 성공적으로 발송되었습니다."),
+    })
+    @Parameters({
+            @Parameter(name = "commentId", description = "답글 대상인 댓글의 Id"),
+            @Parameter(name = "replyId", description = "작성된 답글의 Id")
+    })
+    public BaseResponse<NotificationResponseDTO.ReplyNotificationResult> replyNotification(@Parameter @Valid @CommentExist Long commentId,
+                                                                                                    @Parameter @Valid @CommentExist Long replyId,
+                                                                                                    @Parameter(name = "user",hidden = true) @AuthUser Member member) {
+
+        NotificationResponseDTO.ReplyNotificationResult result = notificationService.sendReplyNotification(commentId,replyId, member.getId());
+
+        return BaseResponse.onSuccess(SuccessStatus.NOTIFICATION_REPLY_SUCCESS, result);
     }
 
 

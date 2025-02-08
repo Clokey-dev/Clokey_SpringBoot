@@ -2,6 +2,7 @@ package com.clokey.server.domain.notification.application;
 
 import com.clokey.server.domain.history.application.CommentRepositoryService;
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
+import com.clokey.server.domain.history.domain.entity.Comment;
 import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
 import com.clokey.server.domain.member.application.FollowRepositoryService;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
@@ -35,6 +36,7 @@ public class NotificationServiceImpl implements NotificationService{
     private static final String HISTORY_LIKED_NOTIFICATION_CONTENT = "%s님이 나의 기록에 좋아요를 눌렀습니다.";
     private static final String NEW_FOLLOWER_NOTIFICATION_CONTENT = "%s님이 회원님의 옷장을 팔로우하기 시작했습니다.";
     private static final String HISTORY_COMMENT_NOTIFICATION_CONTENT = "%s님이 나의 기록에 댓글을 남겼습니다.";
+    private static final String COMMENT_REPLY_CONTENT = "%s님이 나의 댓글에 답장을 남겼습니다.";
 
     @Override
     public NotificationResponseDTO.HistoryLikeNotificationResult sendHistoryLikeNotification(Long memberId, Long historyId) {
@@ -201,6 +203,58 @@ public class NotificationServiceImpl implements NotificationService{
     private void checkHistoryComment(Long commentId, Long historyId){
         if(!commentRepositoryService.existsByIdAndHistoryId(commentId,historyId)){
             throw new NotificationException(ErrorStatus.NOTIFICATION_COMMENT_NOT_FROM_HISTORY);
+        }
+    }
+
+    @Override
+    public NotificationResponseDTO.ReplyNotificationResult sendReplyNotification(Long commentId, Long replyId, Long memberId) {
+
+        checkMyComment(replyId,memberId);
+        checkParentComment(commentId,replyId);
+
+        Member commentWriter = commentRepositoryService.findById(commentId).getMember();
+        Member replyWriter = commentRepositoryService.findById(replyId).getMember();
+
+        //로그아웃 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
+        if(commentWriter.getDeviceToken() != null && commentWriter.getRefreshToken() != null) {
+            String content = String.format(COMMENT_REPLY_CONTENT,replyWriter.getNickname());
+            String replyWriterProfileUrl = replyWriter.getProfileImageUrl();
+            Long historyId = commentRepositoryService.findById(commentId).getHistory().getId();
+
+            Notification notification = Notification.builder()
+                    .setBody(content)
+                    .setImage(replyWriterProfileUrl)
+                    .build();
+
+            Message message = Message.builder()
+                    .setToken(commentWriter.getDeviceToken())
+                    .setNotification(notification)
+                    .putData("historyId", historyId)
+                    .build();
+            try {
+                firebaseMessaging.send(message);
+            } catch (FirebaseMessagingException e) {
+                throw new NotificationException(ErrorStatus.NOTIFICATION_FIREBASE_ERROR);
+            }
+
+            ClokeyNotification clokeyNotification = ClokeyNotification.builder()
+                    .member(commentWriter)
+                    .content(content)
+                    .notificationImageUrl(replyWriterProfileUrl)
+                    .redirectInfo(historyId)
+                    .notificationType(NotificationType.HISTORY_REDIRECT)
+                    .build();
+
+            notificationRepositoryService.save(clokeyNotification);
+        }
+
+        return null;
+    }
+
+    private void checkParentComment(Long commentId, Long replyId){
+        Comment reply = commentRepositoryService.findById(replyId);
+        if(!reply.getComment().getId().equals(commentId)){
+            throw new NotificationException(ErrorStatus.NOTIFICATION_NOT_PARENT_COMMENT_OF_REPLY);
         }
     }
 
