@@ -1,5 +1,5 @@
 package com.clokey.server.domain.model.entity.enums;
 
 public enum NotificationType {
-    LIKE, FOLLOWER, WEATHER, RECAP
+    HISTORY_REDIRECT,MEMBER_REDIRECT
 }
