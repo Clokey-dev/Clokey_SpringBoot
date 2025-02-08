@@ -1,0 +1,8 @@
+package com.clokey.server.domain.notification.application;
+
+import com.clokey.server.domain.notification.dto.NotificationResponseDTO;
+
+public interface NotificationService {
+
+    NotificationResponseDTO.HistoryLikeNotificationResult sendHistoryLikeNotification(Long memberId, Long historyId);
+}

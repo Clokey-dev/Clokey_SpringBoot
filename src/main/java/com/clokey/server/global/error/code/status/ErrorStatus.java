@@ -80,7 +80,6 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //알림 에러
     NOTIFICATION_TYPE_INVALID(HttpStatus.BAD_REQUEST,"NOTIFICATION_4001","잘못된 알림 Type 입니다."),
-
     //검색 에러
     NO_SUCH_PARAMETER(HttpStatus.BAD_REQUEST,"SEARCH_4001","검색어는 필수입니다."),
 
