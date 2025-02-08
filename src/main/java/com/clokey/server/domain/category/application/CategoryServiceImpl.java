@@ -32,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService{
     @Value("${gpt.api.key}")
     private String apiKey;
 
-    public String createPrompt(String clothingName) {
+    private String createPrompt(String clothingName) {
         return String.format(
                 "옷 이름을 드릴 테니, 적절한 카테고리를 추천해주세요. "
                         + "카테고리는 다음과 같으며, 숫자는 카테고리 아이디입니다:\n\n"
@@ -109,8 +109,7 @@ public class CategoryServiceImpl implements CategoryService{
         return parseResponse(response);
     }
 
-    @Override
-    public String chatGPT(String prompt) {
+    private String chatGPT(String prompt) {
         System.out.println(url);
         String model = "gpt-3.5-turbo";
 
@@ -139,7 +138,7 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
 
-    public String extractMessageFromJSONResponse(String response) {
+    private String extractMessageFromJSONResponse(String response) {
         try {
             System.out.println("ChatGPT API Response: " + response);
             Map<String, Object> map = objectMapper.readValue(response, new TypeReference<>() {});
