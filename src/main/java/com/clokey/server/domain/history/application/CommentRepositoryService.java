@@ -23,4 +23,8 @@ public interface CommentRepositoryService {
     void deleteById(Long commentId);
 
     void deleteAllComments(Long HistoryId);
+
+    boolean existsByIdAndMemberId(Long id, Long memberId);
+
+    boolean existsByIdAndHistoryId(Long id, Long historyId);
 }

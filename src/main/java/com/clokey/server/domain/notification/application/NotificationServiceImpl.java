@@ -1,5 +1,6 @@
 package com.clokey.server.domain.notification.application;
 
+import com.clokey.server.domain.history.application.CommentRepositoryService;
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
 import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
 import com.clokey.server.domain.member.application.FollowRepositoryService;
@@ -29,9 +30,11 @@ public class NotificationServiceImpl implements NotificationService{
     private final FirebaseMessaging firebaseMessaging;
     private final NotificationRepositoryService notificationRepositoryService;
     private final FollowRepositoryService followRepositoryService;
+    private final CommentRepositoryService commentRepositoryService;
 
     private static final String HISTORY_LIKED_NOTIFICATION_CONTENT = "%s님이 나의 기록에 좋아요를 눌렀습니다.";
     private static final String NEW_FOLLOWER_NOTIFICATION_CONTENT = "%s님이 회원님의 옷장을 팔로우하기 시작했습니다.";
+    private static final String HISTORY_COMMENT_NOTIFICATION_CONTENT = "%s님이 나의 기록에 댓글을 남겼습니다.";
 
     @Override
     public NotificationResponseDTO.HistoryLikeNotificationResult sendHistoryLikeNotification(Long memberId, Long historyId) {
@@ -130,9 +133,74 @@ public class NotificationServiceImpl implements NotificationService{
         return null;
     }
 
+
     private void checkFollowing(Long followingId, Long followedId){
         if(!followRepositoryService.existsByFollowing_IdAndFollowed_Id(followingId,followedId)){
             throw new NotificationException(ErrorStatus.NOTIFICATION_NOT_FOLLOWING);
+        }
+    }
+
+    @Override
+    public NotificationResponseDTO.HistoryCommentNotificationResult sendHistoryCommentNotification(Long historyId, Long commentId, Long memberId) {
+
+        checkMyComment(commentId,memberId);
+        checkHistoryComment(commentId,historyId);
+
+        Member historyWriter = historyRepositoryService.findById(historyId).getMember();
+        Member commentWriter = memberRepositoryService.findMemberById(memberId);
+
+        //로그아웃 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
+        if(historyWriter.getDeviceToken() != null && historyWriter.getRefreshToken() != null) {
+            String content = String.format(HISTORY_COMMENT_NOTIFICATION_CONTENT,commentWriter.getNickname());
+            String commentWriterProfileUrl = commentWriter.getProfileImageUrl();
+
+            Notification notification = Notification.builder()
+                    .setBody(content)
+                    .setImage(commentWriterProfileUrl)
+                    .build();
+
+            Message message = Message.builder()
+                    .setToken(historyWriter.getDeviceToken())
+                    .setNotification(notification)
+                    .putData("historyId", historyId)
+                    .build();
+            try {
+                firebaseMessaging.send(message);
+            } catch (FirebaseMessagingException e) {
+                throw new NotificationException(ErrorStatus.NOTIFICATION_FIREBASE_ERROR);
+            }
+
+            ClokeyNotification clokeyNotification = ClokeyNotification.builder()
+                    .member(historyWriter)
+                    .content(content)
+                    .notificationImageUrl(commentWriterProfileUrl)
+                    .redirectInfo(historyId)
+                    .notificationType(NotificationType.HISTORY_REDIRECT)
+                    .build();
+
+            notificationRepositoryService.save(clokeyNotification);
+
+            return NotificationResponseDTO.HistoryCommentNotificationResult.builder()
+                    .content(content)
+                    .historyId(historyId)
+                    .memberProfileUrl(commentWriterProfileUrl)
+                    .build();
+
+        }
+
+
+        return null;
+    }
+
+    private void checkMyComment(Long commentId, Long memberId){
+        if(!commentRepositoryService.existsByIdAndMemberId(commentId,memberId)){
+            throw new NotificationException(ErrorStatus.NOTIFICATION_NOT_MY_COMMENT);
+        }
+    }
+
+    private void checkHistoryComment(Long commentId, Long historyId){
+        if(!commentRepositoryService.existsByIdAndHistoryId(commentId,historyId)){
+            throw new NotificationException(ErrorStatus.NOTIFICATION_COMMENT_NOT_FROM_HISTORY);
         }
     }
 

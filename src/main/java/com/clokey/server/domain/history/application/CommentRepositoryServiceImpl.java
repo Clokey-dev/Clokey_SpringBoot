@@ -61,4 +61,14 @@ public class CommentRepositoryServiceImpl implements CommentRepositoryService{
         commentRepository.deleteParentCommentsByHistoryId(historyId);
     }
 
+    @Override
+    public boolean existsByIdAndMemberId(Long id, Long memberId) {
+        return commentRepository.existsByIdAndMemberId(id,memberId);
+    }
+
+    @Override
+    public boolean existsByIdAndHistoryId(Long id, Long historyId) {
+        return commentRepository.existsByIdAndHistoryId(id, historyId);
+    }
+
 }
