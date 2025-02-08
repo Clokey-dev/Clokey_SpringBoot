@@ -56,7 +56,7 @@ public class CategoryRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CATEGORY_200", description = "성공적으로 조회되었습니다."),
     })
-    public BaseResponse<CategoryResponseDTO.CategoryRecommendResult> getFolders(@Parameter(name = "user",hidden = true) @AuthUser Member member,
+    public BaseResponse<CategoryResponseDTO.CategoryRecommendResult> getRecommendCategory(@Parameter(name = "user",hidden = true) @AuthUser Member member,
                                                                     @RequestParam(value = "name") @Valid String name) {
         CategoryResponseDTO.CategoryRecommendResult result = categoryService.getChatGPTResponse(name);
         return BaseResponse.onSuccess(SuccessStatus.CATEGORY_SUCCESS, result);
