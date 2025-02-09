@@ -133,9 +133,12 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     @Transactional(readOnly = true)
     public HistoryResponseDTO.HistoryCommentResult getComments(Long historyId, int page) {
-        Page<Comment> comments = commentRepositoryService.findByHistoryIdAndCommentIsNull(historyId, PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "createdAt")));
+        Page<Comment> comments = commentRepositoryService.findByHistoryIdAndCommentIsNull(historyId, PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdAt")));
         List<List<Comment>> repliesForEachComment = comments.stream()
-                .map(comment -> commentRepositoryService.findByCommentId(comment.getId()))
+                .map(comment -> commentRepositoryService.findByCommentId(comment.getId()).stream()
+                        .sorted(Comparator.comparing(Comment::getCreatedAt).reversed()) // 최신 순 정렬
+                        .toList()
+                )
                 .toList();
         return HistoryConverter.toHistoryCommentResult(comments, repliesForEachComment);
     }
