@@ -27,6 +27,18 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
+    @GetMapping("/not-read-exist}")
+    @Operation(summary = "안 읽은 알림 여부를 조회하는 API")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTIFICATION", description = "읽지 않은 알림 여부가 성공적으로 조회되었습니다."),
+    })
+    public BaseResponse<NotificationResponseDTO.UnReadNotificationCheckResult> checkUnReadNotifications(@Parameter(name = "user",hidden = true) @AuthUser Member member) {
+
+        NotificationResponseDTO.UnReadNotificationCheckResult result = notificationService.checkUnReadNotifications(member.getId());
+
+        return BaseResponse.onSuccess(SuccessStatus.UNREAD_NOTIFICATION_CHECKED, result);
+    }
+
     @PostMapping("/history-like}")
     @Operation(summary = "기록에 좋아요를 누를 경우 상대방에개 알림을 보내는 API")
     @ApiResponses({

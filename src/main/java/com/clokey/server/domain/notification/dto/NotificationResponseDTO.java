@@ -15,6 +15,14 @@ public class NotificationResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class UnReadNotificationCheckResult {
+       boolean unReadNotificationExist;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class HistoryLikeNotificationResult {
         String content;
         String memberProfileUrl;

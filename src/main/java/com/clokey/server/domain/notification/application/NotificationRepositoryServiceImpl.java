@@ -1,5 +1,6 @@
 package com.clokey.server.domain.notification.application;
 
+import com.clokey.server.domain.model.entity.enums.ReadStatus;
 import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
 import com.clokey.server.domain.notification.domain.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,5 +15,10 @@ public class NotificationRepositoryServiceImpl implements NotificationRepository
     @Override
     public void save(ClokeyNotification clokeyNotification) {
         notificationRepository.save(clokeyNotification);
+    }
+
+    @Override
+    public boolean existsByMemberIdAndReadStatus(Long memberId, ReadStatus readStatus) {
+        return notificationRepository.existsByMemberIdAndReadStatus(memberId,readStatus);
     }
 }

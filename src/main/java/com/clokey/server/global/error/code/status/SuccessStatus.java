@@ -50,7 +50,7 @@ public enum SuccessStatus implements BaseCode {
 
     //알림 성공
     NOTIFICATION_SUCCESS(HttpStatus.OK, "NOTIFICATION_200", "성공적으로 조회되었습니다."),
-    NOTIFICATION_CREATED(HttpStatus.CREATED, "NOTIFICATION_200", "성공적으로 생성되었습니다."),
+    UNREAD_NOTIFICATION_CHECKED(HttpStatus.OK,"NOTIFICATION_200","읽지 않은 알림 여부가 성공적으로 조회되었습니다."),
     NOTIFICATION_HISTORY_LIKED_SUCCESS(HttpStatus.OK,"NOTIFICATION_200","기록 좋아요 알림이 성공적으로 발송되었습니다."),
     NOTIFICATION_NEW_FOLLOWER_SUCCESS(HttpStatus.OK,"NOTIFICATION_200","팔로우 알림이 성공적으로 발송되었습니다."),
     NOTIFICATION_HISTORY_COMMENT_SUCCESS(HttpStatus.OK,"NOTIFICATION_200","기록 댓글 알림이 성공적으로 발송되었습니다."),

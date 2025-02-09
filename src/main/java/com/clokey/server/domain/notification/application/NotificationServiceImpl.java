@@ -10,6 +10,7 @@ import com.clokey.server.domain.member.application.FollowRepositoryService;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.NotificationType;
+import com.clokey.server.domain.model.entity.enums.ReadStatus;
 import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
 import com.clokey.server.domain.notification.dto.NotificationResponseDTO;
 import com.clokey.server.domain.notification.exception.NotificationException;
@@ -36,12 +37,18 @@ public class NotificationServiceImpl implements NotificationService{
     private final NotificationRepositoryService notificationRepositoryService;
     private final FollowRepositoryService followRepositoryService;
     private final CommentRepositoryService commentRepositoryService;
-    private final HistoryAccessibleValidator historyAccessibleValidator;
 
     private static final String HISTORY_LIKED_NOTIFICATION_CONTENT = "%s님이 나의 기록에 좋아요를 눌렀습니다.";
     private static final String NEW_FOLLOWER_NOTIFICATION_CONTENT = "%s님이 회원님의 옷장을 팔로우하기 시작했습니다.";
     private static final String HISTORY_COMMENT_NOTIFICATION_CONTENT = "%s님이 나의 기록에 댓글을 남겼습니다 : %s";
     private static final String COMMENT_REPLY_CONTENT = "%s님이 나의 댓글에 답장을 남겼습니다 : %s";
+
+    @Override
+    public NotificationResponseDTO.UnReadNotificationCheckResult checkUnReadNotifications(Long memberId) {
+        return NotificationResponseDTO.UnReadNotificationCheckResult.builder()
+                .unReadNotificationExist(notificationRepositoryService.existsByMemberIdAndReadStatus(memberId, ReadStatus.NOT_READ))
+                .build();
+    }
 
     @Override
     public NotificationResponseDTO.HistoryLikeNotificationResult sendHistoryLikeNotification(Long memberId, Long historyId) {
