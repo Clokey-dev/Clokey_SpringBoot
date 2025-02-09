@@ -6,6 +6,7 @@ import com.clokey.server.domain.history.exception.annotation.HistoryExist;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.domain.member.exception.annotation.IdValid;
+import com.clokey.server.domain.model.entity.enums.Season;
 import com.clokey.server.domain.notification.application.NotificationService;
 import com.clokey.server.domain.notification.dto.NotificationResponseDTO;
 import com.clokey.server.domain.notification.exception.annotation.NotificationExist;
@@ -122,6 +123,51 @@ public class NotificationRestController {
         NotificationResponseDTO.ReplyNotificationResult result = notificationService.sendReplyNotification(commentId,replyId, member.getId());
 
         return BaseResponse.onSuccess(SuccessStatus.NOTIFICATION_REPLY_SUCCESS, result);
+    }
+
+    @PostMapping("/1-year-ago")
+    @Operation(summary = "1년전 오늘의 소식을 확인하라는 알림을 발송하는 API")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTIFICATION_204", description = "알림이 성공적으로 발송되었습니다."),
+    })
+    public BaseResponse<Void> sendOneYearAgoNotification( @Parameter(name = "user",hidden = true) @AuthUser Member member) {
+
+        notificationService.sendOneYearAgoNotification(member.getId());
+
+        return BaseResponse.onSuccess(SuccessStatus.NOTIFICATION_SEND_SUCCESS, null);
+    }
+
+    @PostMapping("/today-temperature")
+    @Operation(summary = "오늘의 온도에 대한 알림을 발송하는 API")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTIFICATION_204", description = "알림이 성공적으로 발송되었습니다."),
+    })
+    @Parameters({
+            @Parameter(name = "temperatureDiff", description = "어제와의 온도차이를 정수로 입력해주세요")
+    })
+    public BaseResponse<Void> sendTodayTemperatureNotification(@Parameter @Valid Integer temperatureDiff,
+                                                               @Parameter(name = "user",hidden = true) @AuthUser Member member) {
+
+        notificationService.sendTodayTemperatureNotification(temperatureDiff,member.getId());
+
+        return BaseResponse.onSuccess(SuccessStatus.NOTIFICATION_SEND_SUCCESS, null);
+    }
+
+    @PostMapping("/seasons")
+    @Operation(summary = "계절 변화에 대한 알림을 발송하는 API")
+    @ApiResponses({
+
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTIFICATION_204", description = "알림이 성공적으로 발송되었습니다."),
+    })
+    @Parameters({
+            @Parameter(name = "seasons", description = "계절에 맞는 알림을 선택합니다.")
+    })
+    public BaseResponse<Void> sendSeasonsNotification(@Parameter @Valid Season season,
+                                                      @Parameter(name = "user",hidden = true) @AuthUser Member member) {
+
+        notificationService.sendSeasonsNotification(season, member.getId());
+
+        return BaseResponse.onSuccess(SuccessStatus.NOTIFICATION_SEND_SUCCESS, null);
     }
 
 

@@ -2,7 +2,7 @@ package com.clokey.server.domain.notification.domain.entity;
 
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.BaseEntity;
-import com.clokey.server.domain.model.entity.enums.NotificationType;
+import com.clokey.server.domain.model.entity.enums.RedirectType;
 import com.clokey.server.domain.model.entity.enums.ReadStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,7 +34,7 @@ public class ClokeyNotification extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private NotificationType notificationType;
+    private RedirectType redirectType;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(15) DEFAULT 'NOT_READ'",nullable = false)

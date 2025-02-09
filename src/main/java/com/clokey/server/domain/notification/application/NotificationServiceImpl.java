@@ -7,8 +7,9 @@ import com.clokey.server.domain.history.exception.validator.HistoryLikedValidato
 import com.clokey.server.domain.member.application.FollowRepositoryService;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.model.entity.enums.NotificationType;
+import com.clokey.server.domain.model.entity.enums.RedirectType;
 import com.clokey.server.domain.model.entity.enums.ReadStatus;
+import com.clokey.server.domain.model.entity.enums.Season;
 import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
 import com.clokey.server.domain.notification.dto.NotificationResponseDTO;
 import com.clokey.server.domain.notification.exception.NotificationException;
@@ -20,8 +21,6 @@ import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +38,20 @@ public class NotificationServiceImpl implements NotificationService{
     private static final String NEW_FOLLOWER_NOTIFICATION_CONTENT = "%s님이 회원님의 옷장을 팔로우하기 시작했습니다.";
     private static final String HISTORY_COMMENT_NOTIFICATION_CONTENT = "%s님이 나의 기록에 댓글을 남겼습니다 : %s";
     private static final String COMMENT_REPLY_CONTENT = "%s님이 나의 댓글에 답장을 남겼습니다 : %s";
+
+    private static final String ONE_YEAR_AGO_NOTIFICATION ="1년전 오늘의 기록을 확인해보세요.";
+    private static final String ONE_YEAR_AGO_NOTIFICATION_IMAGE_URL = "https://clokeybucket.s3.ap-northeast-2.amazonaws.com/clock.png";
+
+    private static final String SPRING_SEASON_NOTIFICATION = "봄이 다가오고 있어요 얇은 옷들을 꺼낼 시간입니다!";
+    private static final String SUMMER_SEASON_NOTIFICATION = "여름이 다가오고 있어요 시원한 옷들을 꺼낼 시간입니다!";
+    private static final String FALL_SEASON_NOTIFICATION = "가을이 다가오고 있어요 따뜻한 옷들을 꺼낼 시간입니다!";
+    private static final String WINTER_SEASON_NOTIFICATION = "겨울이 다가오고 있어요 두꺼운 옷들을 꺼낼 시간입니다!";
+    private static final String SEASON_NOTIFICATION_IMAGE_URL = "https://clokeybucket.s3.ap-northeast-2.amazonaws.com/cloth.png";
+
+    private static final String COLDER_THAN_YESTERDAY_NOTIFICATION = "기온이 어제보다 %d도 낮아요 오늘은 더 두꺼운 옷을 입어볼까요?";
+    private static final String WARMER_THAN_YESTERDAY_NOTIFICATION = "기온이 어제보다 %d도 높아요 오늘은 더 얇은 옷을 입어볼까요?";
+    private static final String SAME_AS_YESTERDAY_NOTIFICATION = "기온이 어제와 동일해요 어제와 비슷하게 입어볼까요?";
+    private static final String TODAY_TEMPERATURE_NOTIFICATION_URL = "https://clokeybucket.s3.ap-northeast-2.amazonaws.com/temperature.png";
 
     @Override
     @Transactional(readOnly = true)
@@ -97,7 +110,7 @@ public class NotificationServiceImpl implements NotificationService{
                     .content(content)
                     .notificationImageUrl(likedMemberProfileUrl)
                     .redirectInfo(historyId)
-                    .notificationType(NotificationType.HISTORY_REDIRECT)
+                    .redirectType(RedirectType.HISTORY_REDIRECT)
                     .build();
 
             notificationRepositoryService.save(clokeyNotification);
@@ -147,7 +160,7 @@ public class NotificationServiceImpl implements NotificationService{
                     .content(content)
                     .notificationImageUrl(followingMemberProfileUrl)
                     .redirectInfo(followingMember.getClokeyId())
-                    .notificationType(NotificationType.MEMBER_REDIRECT)
+                    .redirectType(RedirectType.MEMBER_REDIRECT)
                     .build();
 
             notificationRepositoryService.save(clokeyNotification);
@@ -205,7 +218,7 @@ public class NotificationServiceImpl implements NotificationService{
                     .content(content)
                     .notificationImageUrl(commentWriterProfileUrl)
                     .redirectInfo(historyId)
-                    .notificationType(NotificationType.HISTORY_REDIRECT)
+                    .redirectType(RedirectType.HISTORY_REDIRECT)
                     .build();
 
             notificationRepositoryService.save(clokeyNotification);
@@ -273,7 +286,7 @@ public class NotificationServiceImpl implements NotificationService{
                     .content(content)
                     .notificationImageUrl(replyWriterProfileUrl)
                     .redirectInfo(historyId)
-                    .notificationType(NotificationType.HISTORY_REDIRECT)
+                    .redirectType(RedirectType.HISTORY_REDIRECT)
                     .build();
 
             notificationRepositoryService.save(clokeyNotification);
@@ -290,4 +303,69 @@ public class NotificationServiceImpl implements NotificationService{
     }
 
 
+    @Override
+    public void sendOneYearAgoNotification(Long memberId) {
+
+        Member member = memberRepositoryService.findMemberById(memberId);
+
+        if(member.getDeviceToken() != null && member.getRefreshToken() != null) {
+            sendNotifications(ONE_YEAR_AGO_NOTIFICATION,ONE_YEAR_AGO_NOTIFICATION_IMAGE_URL,member.getDeviceToken());
+        }
+    }
+
+    @Override
+    public void sendTodayTemperatureNotification(Integer temperatureDiff , Long memberId) {
+
+        Member member = memberRepositoryService.findMemberById(memberId);
+
+        if(member.getDeviceToken() != null && member.getRefreshToken() != null){
+            return;
+        }
+
+        if(temperatureDiff > 0){
+            sendNotifications(String.format(WARMER_THAN_YESTERDAY_NOTIFICATION,Math.abs(temperatureDiff)),TODAY_TEMPERATURE_NOTIFICATION_URL,member.getDeviceToken());
+        } else if (temperatureDiff < 0) {
+            sendNotifications(String.format(COLDER_THAN_YESTERDAY_NOTIFICATION,Math.abs(temperatureDiff)),TODAY_TEMPERATURE_NOTIFICATION_URL,member.getDeviceToken());
+        } else {
+            sendNotifications(SAME_AS_YESTERDAY_NOTIFICATION,TODAY_TEMPERATURE_NOTIFICATION_URL,member.getDeviceToken());
+        }
+
+    }
+
+    @Override
+    public void sendSeasonsNotification(Season season, Long memberId) {
+
+        Member member = memberRepositoryService.findMemberById(memberId);
+
+        if(member.getDeviceToken() != null && member.getRefreshToken() != null){
+            return;
+        }
+
+        if(season.equals(Season.SPRING)){
+            sendNotifications(SPRING_SEASON_NOTIFICATION,SEASON_NOTIFICATION_IMAGE_URL,member.getDeviceToken());
+        } else if (season.equals(Season.SUMMER)) {
+            sendNotifications(SUMMER_SEASON_NOTIFICATION,SEASON_NOTIFICATION_IMAGE_URL,member.getDeviceToken());
+        } else if (season.equals(Season.FALL)){
+            sendNotifications(FALL_SEASON_NOTIFICATION,SEASON_NOTIFICATION_IMAGE_URL,member.getDeviceToken());
+        } else {
+            sendNotifications(WINTER_SEASON_NOTIFICATION,SEASON_NOTIFICATION_IMAGE_URL,member.getDeviceToken());
+        }
+    }
+
+    private void sendNotifications(String content, String imageUrl, String deviceToken){
+        Notification notification = Notification.builder()
+                .setBody(content)
+                .setImage(imageUrl)
+                .build();
+
+        Message message = Message.builder()
+                .setToken(deviceToken)
+                .setNotification(notification)
+                .build();
+        try {
+            firebaseMessaging.send(message);
+        } catch (FirebaseMessagingException e) {
+            throw new NotificationException(ErrorStatus.NOTIFICATION_FIREBASE_ERROR);
+        }
+    }
 }

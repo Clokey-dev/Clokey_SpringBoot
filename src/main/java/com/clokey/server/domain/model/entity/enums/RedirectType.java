@@ -1,5 +1,5 @@
 package com.clokey.server.domain.model.entity.enums;
 
-public enum NotificationType {
+public enum RedirectType {
     HISTORY_REDIRECT,MEMBER_REDIRECT
 }
