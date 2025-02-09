@@ -3,6 +3,8 @@ package com.clokey.server.domain.notification.application;
 import com.clokey.server.domain.history.application.CommentRepositoryService;
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
 import com.clokey.server.domain.history.domain.entity.Comment;
+import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
 import com.clokey.server.domain.member.application.FollowRepositoryService;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
@@ -20,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -32,6 +36,7 @@ public class NotificationServiceImpl implements NotificationService{
     private final NotificationRepositoryService notificationRepositoryService;
     private final FollowRepositoryService followRepositoryService;
     private final CommentRepositoryService commentRepositoryService;
+    private final HistoryAccessibleValidator historyAccessibleValidator;
 
     private static final String HISTORY_LIKED_NOTIFICATION_CONTENT = "%s님이 나의 기록에 좋아요를 눌렀습니다.";
     private static final String NEW_FOLLOWER_NOTIFICATION_CONTENT = "%s님이 회원님의 옷장을 팔로우하기 시작했습니다.";
@@ -59,7 +64,7 @@ public class NotificationServiceImpl implements NotificationService{
             Message message = Message.builder()
                     .setToken(historyWriter.getDeviceToken())
                     .setNotification(notification)
-                    .putData("historyId", historyId)
+                    .putData("historyId", String.valueOf(historyId))
                     .build();
             try {
                 firebaseMessaging.send(message);
@@ -107,7 +112,7 @@ public class NotificationServiceImpl implements NotificationService{
             Message message = Message.builder()
                     .setToken(followedMember.getDeviceToken())
                     .setNotification(notification)
-                    .putData("clokeyID", followingMember.getClokeyId())
+                    .putData("clokeyID",String.valueOf(followingMember.getClokeyId()))
                     .build();
 
             try {
@@ -164,7 +169,7 @@ public class NotificationServiceImpl implements NotificationService{
             Message message = Message.builder()
                     .setToken(historyWriter.getDeviceToken())
                     .setNotification(notification)
-                    .putData("historyId", historyId)
+                    .putData("historyId", String.valueOf(historyId))
                     .build();
             try {
                 firebaseMessaging.send(message);
@@ -229,7 +234,7 @@ public class NotificationServiceImpl implements NotificationService{
             Message message = Message.builder()
                     .setToken(commentWriter.getDeviceToken())
                     .setNotification(notification)
-                    .putData("historyId", historyId)
+                    .putData("historyId", String.valueOf(historyId))
                     .build();
             try {
                 firebaseMessaging.send(message);

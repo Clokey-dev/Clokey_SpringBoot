@@ -50,14 +50,4 @@ public class NotificationResponseDTO {
         String memberProfileUrl;
         Long historyId;
     }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class NewHistoryNotificationResult {
-        String content;
-        String historyImageUrl;
-        Long historyId;
-    }
 }
