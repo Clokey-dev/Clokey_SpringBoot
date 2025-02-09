@@ -68,4 +68,9 @@ public class HistoryImageRepositoryServiceImpl implements HistoryImageRepository
             historyImageRepository.delete(image);
         });
     }
+
+    @Override
+    public List<HistoryImage> findByHistoryIdIn(List<Long> historyIds) {
+        return historyImageRepository.findByHistoryIdIn(historyIds);
+    }
 }
