@@ -27,4 +27,9 @@ public class FollowRepositoryServiceImpl implements FollowRepositoryService{
     public boolean existsByFollowing_IdAndFollowed_Id(Long followingId, Long followedId) {
         return followRepository.existsByFollowing_IdAndFollowed_Id(followingId,followedId);
     }
+
+    @Override
+    public List<Member> findFollowingByFollowedId(Long followedId) {
+        return followRepository.findFollowingByFollowedId(followedId);
+    }
 }
