@@ -89,6 +89,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //추천 에러
     NO_TEMP_PARAMETER(HttpStatus.BAD_REQUEST,"RECOMMEND_4001","온도값은 필수입니다."),
+    NO_SUCH_RECOMMEND(HttpStatus.NOT_FOUND,"RECOMMEND_4041","추천 정보가 존재하지 않습니다."),
 
     // S3 관련
     S3_OBJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "S3_001", "S3 오브젝트를 찾을 수 없습니다."),
