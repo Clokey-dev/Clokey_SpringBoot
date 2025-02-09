@@ -3,19 +3,9 @@ package com.clokey.server.domain.recommendation.application;
 import com.clokey.server.domain.cloth.application.ClothRepositoryService;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.cloth.domain.entity.ClothImage;
-import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
-import com.clokey.server.domain.folder.application.ClothFolderRepositoryService;
-import com.clokey.server.domain.folder.converter.FolderConverter;
-import com.clokey.server.domain.folder.domain.entity.ClothFolder;
-import com.clokey.server.domain.folder.domain.entity.Folder;
-import com.clokey.server.domain.folder.dto.FolderRequestDTO;
-import com.clokey.server.domain.folder.dto.FolderResponseDTO;
-import com.clokey.server.domain.folder.exception.FolderException;
-import com.clokey.server.domain.folder.exception.validator.FolderAccessibleValidator;
 import com.clokey.server.domain.history.application.HashtagHistoryRepositoryService;
 import com.clokey.server.domain.history.application.HistoryImageRepositoryService;
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
-import com.clokey.server.domain.history.domain.entity.HashtagHistory;
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.history.domain.entity.HistoryImage;
 import com.clokey.server.domain.member.application.FollowRepositoryService;
@@ -25,17 +15,12 @@ import com.clokey.server.domain.model.entity.enums.NewsType;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.domain.recommendation.domain.entity.Recommendation;
 import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
-import com.clokey.server.global.error.code.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -171,15 +156,12 @@ public class RecommendationServiceImpl implements RecommendationService {
 
     // 팔로우 중인 캘린더 업데이트 조회
     private List<RecommendationResponseDTO.Calendar> getCalendarList(Member member, boolean isFull, int page, List<Member> followedMembers) {
-        // 1. 현재 사용자가 팔로우한 멤버 ID 리스트 가져오기
-
-
-        // 2. 팔로우한 멤버들의 최신 `History` 가져오기 (공개된 것만)
+        // 팔로우한 멤버들의 최신 `History` 가져오기 (공개된 것만)
         List<History> historyList = isFull
                 ? historyRepositoryService.findByMemberInAndVisibilityOrderByHistoryDateDesc(followedMembers, Visibility.PUBLIC, PageRequest.of(page, 6))
                 : historyRepositoryService.findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(followedMembers, Visibility.PUBLIC);
 
-        // 3. `HistoryImage` 조회 (History ID 리스트 기반)
+        // `HistoryImage` 조회 (History ID 리스트 기반)
         List<Long> historyIds = historyList.stream().map(History::getId).toList();
         Map<History, List<String>> historyImageMap = historyImageRepositoryService.findByHistoryIdIn(historyIds)
                 .stream()
@@ -188,7 +170,7 @@ public class RecommendationServiceImpl implements RecommendationService {
                         Collectors.mapping(HistoryImage::getImageUrl, Collectors.toList()) // `imageUrl` 리스트 생성
                 ));
 
-        // 4. 날짜별(`LocalDate`)로 그룹화하여 `RecommendationResponseDTO.Event` 리스트 생성
+        // 날짜별(`LocalDate`)로 그룹화하여 `RecommendationResponseDTO.Event` 리스트 생성
         Map<LocalDate, List<RecommendationResponseDTO.Event>> groupedEvents = historyList.stream()
                 .collect(Collectors.groupingBy(
                         History::getHistoryDate, // 날짜 기준 그룹화
@@ -204,7 +186,7 @@ public class RecommendationServiceImpl implements RecommendationService {
                                 }, Collectors.toList()
                         )));
 
-        // 4. 그룹핑된 데이터를 `CalendarDTO` 리스트로 변환
+        // 그룹핑된 데이터를 `CalendarDTO` 리스트로 변환
         return groupedEvents.entrySet().stream()
                 .map(entry -> new RecommendationResponseDTO.Calendar(
                         entry.getKey(), // 날짜
@@ -217,7 +199,7 @@ public class RecommendationServiceImpl implements RecommendationService {
     }
 
 
-    // 🔹 Hot 계정 조회
+    // Hot 계정 조회
     private List<RecommendationResponseDTO.People> getHotPeopleList(Member member) {
         //기록 최신 것부터 해시태그를 조회함. 해시태그 아이디를 hashtagHistoryRepository에서 찾아서 그 history의 주인들을 최대 네 명 추천해주는 로직.
         List<Long> hashtagIds = hashtagHistoryRepositoryService.findTop3HashtagIdsByMemberIdOrderByHistoryDateDesc(member.getId());
@@ -226,8 +208,8 @@ public class RecommendationServiceImpl implements RecommendationService {
             return List.of(); // 해시태그가 없으면 빈 리스트 반환
         }
 
-        // 해당 해시태그를 사용한 다른 사용자 찾기 (최대 10명)
-        List<Member> recommendedMembers = historyRepositoryService.findTop10MembersByHashtagIds(hashtagIds, member.getId());
+        // 해당 해시태그를 사용한 다른 사용자 찾기 (최대 10명) + 좋아요 많은 순
+        List<Member> recommendedMembers = historyRepositoryService.findTop10MembersByHashtagIdsOrderByLikes(hashtagIds, member.getId());
 
         // 중복 제거 및 최대 4명 추천
         return recommendedMembers.stream()
