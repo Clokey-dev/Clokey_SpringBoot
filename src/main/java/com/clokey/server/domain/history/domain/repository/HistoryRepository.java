@@ -1,6 +1,9 @@
 package com.clokey.server.domain.history.domain.repository;
 
 import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.enums.Visibility;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -39,4 +42,18 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
 
 
     Optional<History> findByHistoryDateAndMember_Id(LocalDate historyDate, Long memberId);
+
+    List<History> findByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> member, Visibility visibility, Pageable pageable);
+
+    List<History> findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> member, Visibility visibility);
+
+
+    @Query("SELECT DISTINCT h.member FROM History h " +
+            "JOIN HashtagHistory hh ON hh.history.id = h.id " +
+            "WHERE hh.hashtag.id IN :hashtagIds " +
+            "AND h.member.id <> :currentMemberId " + // 자기 자신 제외
+            "ORDER BY h.historyDate DESC " +
+            "LIMIT 10")
+    List<Member> findTop10MembersByHashtagIds(@Param("hashtagIds") List<Long> hashtagIds,
+                                              @Param("currentMemberId") Long currentMemberId);
 }

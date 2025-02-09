@@ -2,9 +2,12 @@ package com.clokey.server.domain.history.application;
 
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.history.domain.repository.HistoryRepository;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
@@ -71,4 +74,21 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
     public List<Boolean> existsByHistoryDateAndMemberIds(LocalDate historyDate, List<Long> memberIds) {
         return historyRepository.existsByHistoryDateAndMemberIds(historyDate,memberIds);
     }
+
+    @Override
+    public List<History> findByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> members, Visibility visibility, Pageable pageable) {
+        return historyRepository.findByMemberInAndVisibilityOrderByHistoryDateDesc(members, visibility, pageable);
+    }
+
+    @Override
+    public List<History> findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> member, Visibility visibility) {
+        return historyRepository.findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(member, visibility);
+    }
+
+    @Override
+    public List<Member> findTop10MembersByHashtagIds(List<Long> hashtagIds, Long currentMemberId) {
+        return historyRepository.findTop10MembersByHashtagIds(hashtagIds, currentMemberId);
+    }
+
+
 }
