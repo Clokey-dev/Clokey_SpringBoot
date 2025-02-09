@@ -2,9 +2,11 @@ package com.clokey.server.domain.cloth.application;
 
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.cloth.domain.repository.ClothRepository;
+import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.ClothSort;
 import com.clokey.server.domain.model.entity.enums.Season;
 import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
 import jakarta.transaction.Transactional;
@@ -74,5 +76,15 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
     public List<Cloth> findAllById(List<Long> clothIds) {
         return clothRepository.findAllById(clothIds);
 
+    }
+
+    @Override
+    public Page<Cloth> findByMemberInAndVisibilityOrderByCreatedAtDesc(List<Member> members, Visibility visibility, Pageable pageable) {
+        return clothRepository.findByMemberInAndVisibilityOrderByCreatedAtDesc(members, visibility, pageable);
+    }
+
+    @Override
+    public List<Cloth> findTop6ByMemberInAndVisibilityOrderByCreatedAtDesc(List<Member> members, Visibility visibility) {
+        return clothRepository.findTop6ByMemberInAndVisibilityOrderByCreatedAtDesc(members, visibility);
     }
 }

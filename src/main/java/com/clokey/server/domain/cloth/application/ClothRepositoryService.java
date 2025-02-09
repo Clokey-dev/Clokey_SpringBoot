@@ -1,9 +1,11 @@
 package com.clokey.server.domain.cloth.application;
 
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.ClothSort;
 import com.clokey.server.domain.model.entity.enums.Season;
 import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
@@ -36,4 +38,11 @@ public interface ClothRepositoryService {
     );
 
     List<Cloth> findAllById(List<Long> clothIds);
+
+    Page<Cloth> findByMemberInAndVisibilityOrderByCreatedAtDesc(
+            List<Member> members, Visibility visibility, Pageable pageable);
+
+    List<Cloth> findTop6ByMemberInAndVisibilityOrderByCreatedAtDesc(
+            List<Member> members, Visibility visibility);
+
 }
