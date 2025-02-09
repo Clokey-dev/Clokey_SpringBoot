@@ -133,9 +133,12 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     @Transactional(readOnly = true)
     public HistoryResponseDTO.HistoryCommentResult getComments(Long historyId, int page) {
-        Page<Comment> comments = commentRepositoryService.findByHistoryIdAndCommentIsNull(historyId, PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "createdAt")));
+        Page<Comment> comments = commentRepositoryService.findByHistoryIdAndCommentIsNull(historyId, PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdAt")));
         List<List<Comment>> repliesForEachComment = comments.stream()
-                .map(comment -> commentRepositoryService.findByCommentId(comment.getId()))
+                .map(comment -> commentRepositoryService.findByCommentId(comment.getId()).stream()
+                        .sorted(Comparator.comparing(Comment::getCreatedAt).reversed()) // 최신 순 정렬
+                        .toList()
+                )
                 .toList();
         return HistoryConverter.toHistoryCommentResult(comments, repliesForEachComment);
     }
@@ -143,8 +146,6 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     @Transactional(readOnly = true)
     public HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long myMemberId, String clokeyId, String month) {
-
-
 
         //Clokey ID를 제공하지 않았다면 자기 자신의 기록 확인으로 전부 반환.
         if(clokeyId == null){
@@ -157,7 +158,8 @@ public class HistoryServiceImpl implements HistoryService {
                             .map(HistoryImage::getImageUrl)
                             .orElse("")) // 사진이 없다면 빈칸
                     .collect(Collectors.toList());
-            return HistoryConverter.toMonthViewResult(myMemberId, histories, firstImageUrlsOfHistory);
+            String nickName = memberRepositoryService.findMemberById(myMemberId).getNickname();
+            return HistoryConverter.toMonthViewResult(myMemberId,nickName, histories, firstImageUrlsOfHistory);
         }
 
         Member member = memberRepositoryService.findMemberByClokeyId(clokeyId);
@@ -185,7 +187,7 @@ public class HistoryServiceImpl implements HistoryService {
             }
 
         }
-        return HistoryConverter.toMonthViewResult(memberId,histories,firstImageUrlsOfHistory);
+        return HistoryConverter.toMonthViewResult(memberId,member.getNickname(),histories,firstImageUrlsOfHistory);
     }
 
     @Override
