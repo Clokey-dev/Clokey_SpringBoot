@@ -144,8 +144,6 @@ public class HistoryServiceImpl implements HistoryService {
     @Transactional(readOnly = true)
     public HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long myMemberId, String clokeyId, String month) {
 
-
-
         //Clokey ID를 제공하지 않았다면 자기 자신의 기록 확인으로 전부 반환.
         if(clokeyId == null){
             List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(myMemberId,month);
@@ -157,7 +155,8 @@ public class HistoryServiceImpl implements HistoryService {
                             .map(HistoryImage::getImageUrl)
                             .orElse("")) // 사진이 없다면 빈칸
                     .collect(Collectors.toList());
-            return HistoryConverter.toMonthViewResult(myMemberId, histories, firstImageUrlsOfHistory);
+            String nickName = memberRepositoryService.findMemberById(myMemberId).getNickname();
+            return HistoryConverter.toMonthViewResult(myMemberId,nickName, histories, firstImageUrlsOfHistory);
         }
 
         Member member = memberRepositoryService.findMemberByClokeyId(clokeyId);
@@ -185,7 +184,7 @@ public class HistoryServiceImpl implements HistoryService {
             }
 
         }
-        return HistoryConverter.toMonthViewResult(memberId,histories,firstImageUrlsOfHistory);
+        return HistoryConverter.toMonthViewResult(memberId,member.getNickname(),histories,firstImageUrlsOfHistory);
     }
 
     @Override
