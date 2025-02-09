@@ -25,7 +25,7 @@ public class ClokeyNotification extends BaseEntity {
     @Column(nullable = false, length = 50)
     private String content;
 
-    // 우선 그냥 두는데 픽토그램 이미지는 프론트에서 알아서 하는건지...?
+    @Column(nullable = false)
     private String notificationImageUrl;
 
     //ex) historyId, clokeyId
