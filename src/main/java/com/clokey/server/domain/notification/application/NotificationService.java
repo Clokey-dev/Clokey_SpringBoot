@@ -13,4 +13,6 @@ public interface NotificationService {
     NotificationResponseDTO.ReplyNotificationResult sendReplyNotification(Long commentId, Long replyId, Long memberId);
 
     NotificationResponseDTO.UnReadNotificationCheckResult checkUnReadNotifications(Long memberId);
+
+    void readNotification(Long notificationId, Long memberId);
 }

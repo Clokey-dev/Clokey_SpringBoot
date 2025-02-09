@@ -85,6 +85,8 @@ public enum ErrorStatus implements BaseErrorCode {
     NOTIFICATION_NOT_MY_COMMENT(HttpStatus.BAD_REQUEST,"NOTIFICATION_4003","나의 댓글이 아닌 경우 기록에 댓글 작성 알림을 보낼 수 없습니다"),
     NOTIFICATION_COMMENT_NOT_FROM_HISTORY(HttpStatus.BAD_REQUEST,"NOTIFICATION_4004","댓글이 다른 기록에 작성되어 있는 경우 알림을 보낼 수 없습니다."),
     NOTIFICATION_NOT_PARENT_COMMENT_OF_REPLY(HttpStatus.BAD_REQUEST,"NOTIFICATION_4005","댓글이 답글의 부모 댓글과 일치하지 않는 경우 알림을 보낼 수 없습니다"),
+    NO_SUCH_NOTIFICATION(HttpStatus.BAD_REQUEST,"NOTIFICATION_4006","존재하지 않는 알림입니다."),
+    NOT_MY_NOTIFICATION(HttpStatus.BAD_REQUEST,"NOTIFICATION_4007","나의 알림이 아닙니다."),
     NOTIFICATION_FIREBASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"NOTIFICATION_5001","Firebase 서버에러 입니다."),
 
     //검색 에러

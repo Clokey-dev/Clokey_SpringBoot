@@ -39,4 +39,8 @@ public class ClokeyNotification extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(15) DEFAULT 'NOT_READ'",nullable = false)
     private ReadStatus readStatus;
+
+    public void readNotification() {
+        this.readStatus = ReadStatus.READ;
+    }
 }

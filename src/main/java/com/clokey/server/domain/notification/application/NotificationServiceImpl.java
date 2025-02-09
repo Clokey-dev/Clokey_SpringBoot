@@ -27,7 +27,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class NotificationServiceImpl implements NotificationService{
 
     private final HistoryLikedValidator historyLikedValidator;
@@ -44,6 +43,7 @@ public class NotificationServiceImpl implements NotificationService{
     private static final String COMMENT_REPLY_CONTENT = "%s님이 나의 댓글에 답장을 남겼습니다 : %s";
 
     @Override
+    @Transactional(readOnly = true)
     public NotificationResponseDTO.UnReadNotificationCheckResult checkUnReadNotifications(Long memberId) {
         return NotificationResponseDTO.UnReadNotificationCheckResult.builder()
                 .unReadNotificationExist(notificationRepositoryService.existsByMemberIdAndReadStatus(memberId, ReadStatus.NOT_READ))
@@ -51,6 +51,21 @@ public class NotificationServiceImpl implements NotificationService{
     }
 
     @Override
+    @Transactional
+    public void readNotification(Long notificationId, Long memberId) {
+        checkMyNotification(notificationId,memberId);
+        ClokeyNotification notification = notificationRepositoryService.findById(notificationId);
+        notification.readNotification();
+    }
+
+    private void checkMyNotification(Long notificationId, Long memberId) {
+        if(!notificationRepositoryService.findById(notificationId).getMember().getId().equals(memberId)){
+            throw new NotificationException(ErrorStatus.NOT_MY_NOTIFICATION);
+        }
+    }
+
+    @Override
+    @Transactional
     public NotificationResponseDTO.HistoryLikeNotificationResult sendHistoryLikeNotification(Long memberId, Long historyId) {
 
         historyLikedValidator.validateIsLiked(historyId,memberId,true);
@@ -99,6 +114,7 @@ public class NotificationServiceImpl implements NotificationService{
     }
 
     @Override
+    @Transactional
     public NotificationResponseDTO.NewFollowerNotificationResult sendNewFollowerNotification(String followedMemberClokeyId, Long followingMemberId) {
 
         Member followedMember = memberRepositoryService.findMemberByClokeyId(followedMemberClokeyId);
@@ -155,6 +171,7 @@ public class NotificationServiceImpl implements NotificationService{
     }
 
     @Override
+    @Transactional
     public NotificationResponseDTO.HistoryCommentNotificationResult sendHistoryCommentNotification(Long historyId, Long commentId, Long memberId) {
 
         checkMyComment(commentId,memberId);
@@ -220,6 +237,7 @@ public class NotificationServiceImpl implements NotificationService{
     }
 
     @Override
+    @Transactional
     public NotificationResponseDTO.ReplyNotificationResult sendReplyNotification(Long commentId, Long replyId, Long memberId) {
 
         checkMyComment(replyId,memberId);

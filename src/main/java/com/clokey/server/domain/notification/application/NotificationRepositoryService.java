@@ -9,4 +9,7 @@ public interface NotificationRepositoryService {
 
     boolean existsByMemberIdAndReadStatus(Long memberId, ReadStatus readStatus);
 
+    boolean existsById(Long notificationId);
+
+    ClokeyNotification findById(Long notificationId);
 }
