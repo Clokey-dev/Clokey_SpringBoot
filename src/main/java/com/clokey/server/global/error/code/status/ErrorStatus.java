@@ -104,6 +104,10 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_CODE(HttpStatus.BAD_REQUEST,"LOGIN_4006","유효하지 않은 코드입니다."),
     NO_RESPONSE(HttpStatus.BAD_REQUEST,"LOGIN_4007","응답이 없습니다."),
     INVALID_RESPONSE(HttpStatus.BAD_REQUEST,"LOGIN_4007","응답이 없습니다."),
+
+    Elastic_Search_Transport_Exception(HttpStatus.BAD_REQUEST,"SEARCH_4001","Elastic Search 연결 에러입니다."),
+    Index_Not_Fount_Exception(HttpStatus.BAD_REQUEST,"SEARCH_4002","Elastic Search에서 지정한 인덱스가 없습니다."),
+    Mapper_Parsing_Exception(HttpStatus.BAD_REQUEST,"SEARCH_4002","Elastic Search 문서 필드의 타입과 정의된 도메인 모델의 필드 타입이 일치하지 않습니다.")
     ;
 
 
