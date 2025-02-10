@@ -11,7 +11,7 @@ import com.clokey.server.domain.cloth.exception.annotation.ClothImagePresence;
 import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.exception.annotation.AuthUser;
-import com.clokey.server.domain.member.exception.annotation.IdValid;
+import com.clokey.server.domain.member.exception.annotation.NullableClokeyIdExist;
 import com.clokey.server.domain.member.exception.validator.MemberAccessibleValidator;
 import com.clokey.server.domain.model.entity.enums.ClothSort;
 import com.clokey.server.domain.model.entity.enums.Season;
@@ -63,32 +63,29 @@ public class ClothRestController {
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
     }
 
-    // 옷장의 옷 조회 API
-    @GetMapping("/{clokeyId}")
-    @Operation(summary = "유저의 옷장을 조회하는 API", description = "path variable으로 clokeyId를 넘겨주세요" +
-                                                                    "query string으로 category_id를 넘겨주세요." +
-                                                                    "query string으로 season을 넘겨주세요." +
-                                                                    "query string으로 sort를 넘겨주세요." +
-                                                                    "query string으로 page를 넘겨주세요." +
-                                                                    "query string으로 pageSize를 넘겨주세요.")
+    // 옷장의 옷 조회 API (clokeyId를 선택적으로 사용)
+    @GetMapping("/closet-view")
+    @Operation(
+            summary = "유저의 옷장을 조회하는 API",
+            description = "query string로 clokeyId를 선택적으로 넘길 수 있습니다. 전달하지 않을 경우 인증된 사용자의 clokeyId를 사용합니다. " +
+                    "또한 query string으로 category_id, season, sort, page, size를 넘겨주세요."
+    )
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CLOTH_200", description = "OK, 성공적으로 조회되었습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "CLOTH_200",
+                    description = "OK, 성공적으로 조회되었습니다."
+            )
     })
     @Parameters({
-            @Parameter(name = "clokeyId", description = "클로키 id, path variable 입니다."),
+            @Parameter(name = "clokeyId", description = "클로키 유저의 clokey id, query string 입니다."),
             @Parameter(name = "categoryId", description = "카테고리의 id, query string 입니다."),
             @Parameter(name = "season", description = "계절(Season) ENUM 값 { SPRING, SUMMER, FALL, WINTER }, query string 입니다."),
-            @Parameter(name = "sort", description = "정렬(Sort) ENUM 값 { "+
-                    "//착용순 WEAR,"+
-                    "//미착용순 NOT_WEAR,"+
-                    "//최신등록순 LATEST,"+
-                    "//오래된순 OLDEST,"+
-                    "}, query string 입니다."),
+            @Parameter(name = "sort", description = "정렬(Sort) ENUM 값 { WEAR, NOT_WEAR, LATEST, OLDEST }, query string 입니다."),
             @Parameter(name = "page", description = "페이지 값, query string 입니다."),
             @Parameter(name = "size", description = "페이지에 표시할 요소 개수 값, query string 입니다.")
     })
     public BaseResponse<ClothResponseDTO.CategoryClothPreviewListResult> getClothPreviewInfoListByCategoryId(
-            @PathVariable @IdValid String clokeyId,
+            @RequestParam(value = "clokeyId", required = false) @NullableClokeyIdExist String clokeyId,
             @RequestParam @CategoryExist Long categoryId,
             @RequestParam Season season,
             @RequestParam ClothSort sort,
@@ -96,9 +93,13 @@ public class ClothRestController {
             @RequestParam @CheckPageSize int size,
             @Parameter(name = "user", hidden = true) @AuthUser Member member
     ) {
-        // 조회하는 유저와 다른 유저의 옷장이고, 그 유저가 비공개인 유저인지 확인합니다.
-        memberAccessibleValidator.validateClothAccessOfMember(clokeyId, member.getId());
-
+        if(clokeyId==null || clokeyId.isEmpty()) {
+            clokeyId=member.getClokeyId();
+        }
+        else {
+            // 조회하는 유저와 다른 유저의 옷장이고, 그 유저가 비공개인 유저인지 확인합니다.
+            memberAccessibleValidator.validateClothAccessOfMember(clokeyId, member.getId());
+        }
         // ClothService를 통해 데이터를 가져오고, 결과 반환
         ClothResponseDTO.CategoryClothPreviewListResult result = clothService.readClothPreviewInfoListByClokeyId(clokeyId, member.getId(), categoryId, season, sort, page, size);
 
