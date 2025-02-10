@@ -15,6 +15,7 @@ import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.NewsType;
 import com.clokey.server.domain.model.entity.enums.Visibility;
+import com.clokey.server.domain.recommendation.converter.RecommendationConverter;
 import com.clokey.server.domain.recommendation.domain.entity.Recommendation;
 import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -113,30 +114,27 @@ public class RecommendationServiceImpl implements RecommendationService {
 
         // 시도하지 않은 스타일 - 랜덤 추천 hashtagRepositoryService에서 사용자의 기록들이 가지고 있는 해시태그들을 제외한 다른 해시태그 추천
         String unusedHashtag = hashtagRepositoryService.findRandomUnusedHashtag(member.getId());
-        recommendList.add(new RecommendationResponseDTO.Recommend(
+        recommendList.add(RecommendationConverter.toRecommendDTO(
                 getHistoryImageUrlByHashtagName(unusedHashtag),
                 member.getNickname()+"이 시도하지 않은 스타일",
-                "#" + unusedHashtag,
-                LocalDateTime.now()
+                unusedHashtag
         ));
 
 
         // 최근에 태그한 해시태그 - 최근에 사용자가 기록에 태그한 해시태그 하나 반환
         String recentHashtag = hashtagHistoryRepositoryService.findLatestTaggedHashtag(member.getId());
-        recommendList.add(new RecommendationResponseDTO.Recommend(
+        recommendList.add(RecommendationConverter.toRecommendDTO(
                 getHistoryImageUrlByHashtagName(recentHashtag),
                 member.getNickname() + "이 최근 태그한 해시태그",
-                "#" + recentHashtag,
-                LocalDateTime.now()
+                recentHashtag
         ));
 
         // 자주 착용한 카테고리 - 사용자가 가장 많이 착용한 카테고리 하나 반환
         String frequentCategory = clothRepositoryService.findMostWornCategory(member.getId());
-        recommendList.add(new RecommendationResponseDTO.Recommend(
+        recommendList.add(RecommendationConverter.toRecommendDTO(
                 getHistoryImageUrlByHashtagName(frequentCategory),
                 member.getNickname() + "이 자주 착용한 카테고리",
-                "#" + frequentCategory,
-                LocalDateTime.now()
+                frequentCategory
         ));
 
         return recommendList;
@@ -157,34 +155,7 @@ public class RecommendationServiceImpl implements RecommendationService {
                 ));
 
         // 그룹화된 데이터를 `Closet` DTO로 변환
-        return groupedClothes.entrySet().stream()
-                .map(entry -> {
-                    Member closetOwner = entry.getKey().getFirst(); // 해당 그룹의 멤버
-                    LocalDate date = entry.getKey().getSecond(); // 해당 그룹의 날짜
-                    List<Cloth> groupedClothList = entry.getValue(); // 같은 날짜에 같은 사용자가 올린 옷 리스트
-
-                    //`clothesId`와 `images` 리스트로 묶기
-                    List<Long> clothesIds = groupedClothList.stream()
-                            .map(Cloth::getId)
-                            .collect(Collectors.toList());
-
-                    List<String> images = groupedClothList.stream()
-                            .map(cloth -> Optional.ofNullable(cloth.getImage())
-                                    .map(ClothImage::getImageUrl)
-                                    .orElse(null))
-                            .collect(Collectors.toList());
-
-                    return new RecommendationResponseDTO.Closet(
-                            closetOwner.getId(),
-                            closetOwner.getClokeyId(),
-                            closetOwner.getProfileImageUrl(),
-                            clothesIds,
-                            images,
-                            date.atStartOfDay() // LocalDateTime 변환
-                    );
-                })
-                .sorted(Comparator.comparing(RecommendationResponseDTO.Closet::getDate).reversed()) // 최신순 정렬
-                .collect(Collectors.toList());
+        return RecommendationConverter.toClosetDTO(groupedClothes);
     }
 
 
@@ -199,37 +170,17 @@ public class RecommendationServiceImpl implements RecommendationService {
         List<Long> historyIds = historyList.stream().map(History::getId).toList();
         Map<History, List<String>> historyImageMap = historyImageRepositoryService.findByHistoryIdIn(historyIds)
                 .stream()
-                .collect(Collectors.groupingBy(
-                        HistoryImage::getHistory,
-                        Collectors.mapping(HistoryImage::getImageUrl, Collectors.toList()) // `imageUrl` 리스트 생성
-                ));
+                .collect(Collectors.groupingBy(HistoryImage::getHistory, Collectors.mapping(HistoryImage::getImageUrl, Collectors.toList())));
+
 
         // 날짜별(`LocalDate`)로 그룹화하여 `RecommendationResponseDTO.Event` 리스트 생성
         Map<LocalDate, List<RecommendationResponseDTO.Event>> groupedEvents = historyList.stream()
-                .collect(Collectors.groupingBy(
-                        History::getHistoryDate, // 날짜 기준 그룹화
-                        Collectors.mapping(
-                                history -> {// 이미지 리스트에서 첫 번째 이미지 사용 (없으면 기본 이미지)
-                                    List<String> images = historyImageMap.getOrDefault(history, List.of());
-                                    String imageUrl = images.isEmpty() ? null: images.get(0);
+                .collect(Collectors.groupingBy(History::getHistoryDate,
+                        Collectors.mapping(history -> RecommendationConverter.toEventDTO(history, historyImageMap), Collectors.toList())));
 
-                                    return new RecommendationResponseDTO.Event(
-                                            history.getId(),
-                                            imageUrl
-                                    );
-                                }, Collectors.toList()
-                        )));
 
         // 그룹핑된 데이터를 `CalendarDTO` 리스트로 변환
-        return groupedEvents.entrySet().stream()
-                .map(entry -> new RecommendationResponseDTO.Calendar(
-                        entry.getKey(), // 날짜
-                        member.getId(), // 현재 사용자 ID
-                        member.getClokeyId(), // 닉네임
-                        member.getProfileImageUrl(), // 프로필 이미지
-                        entry.getValue() // 이벤트 리스트
-                ))
-                .collect(Collectors.toList());
+        return RecommendationConverter.toCalendarDTO(groupedEvents, member);
     }
 
 
@@ -246,16 +197,7 @@ public class RecommendationServiceImpl implements RecommendationService {
         List<Member> recommendedMembers = historyRepositoryService.findTop10MembersByHashtagIdsOrderByLikes(hashtagIds, member.getId());
 
         // 중복 제거 및 최대 4명 추천
-        return recommendedMembers.stream()
-                .distinct() // 중복 제거
-                .limit(4) // 최대 4명
-                .map(recommendedMember -> new RecommendationResponseDTO.People(
-                        recommendedMember.getId(),
-                        recommendedMember.getClokeyId(),
-                        recommendedMember.getProfileImageUrl(),
-                        null
-                ))
-                .collect(Collectors.toList());
+        return RecommendationConverter.toPeopleDTO(recommendedMembers);
     }
 
     private Recommendation createDefaultRecommend(Long memberId, NewsType type) {
