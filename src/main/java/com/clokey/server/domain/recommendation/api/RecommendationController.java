@@ -42,8 +42,8 @@ public class RecommendationController {
     })
     public BaseResponse<RecommendationResponseDTO.DailyNewsResult> getNews(@Parameter(name = "user",hidden = true) @AuthUser Member member,
                                                                               @RequestParam @Valid String view,
-                                                                              @RequestParam @Valid String section,
-                                                                              @RequestParam @Valid Integer page) {
+                                                                              @RequestParam(required = false) String section,
+                                                                              @RequestParam(required = false) Integer page) {
         RecommendationResponseDTO.DailyNewsResult response = recommendationService.getIssues(member.getId(), view, section, page);
         return BaseResponse.onSuccess(SuccessStatus.HOME_SUCCESS, response);
     }
