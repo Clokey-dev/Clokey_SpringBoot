@@ -4,11 +4,14 @@ import com.clokey.server.domain.history.domain.entity.Hashtag;
 import com.clokey.server.domain.history.domain.entity.HashtagHistory;
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.history.domain.repository.HashtagHistoryRepository;
+import com.clokey.server.global.error.code.status.ErrorStatus;
+import com.clokey.server.global.error.exception.DatabaseException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
 @Service
@@ -60,5 +63,17 @@ public class HashtagHistoryRepositoryServiceImpl implements HashtagHistoryReposi
     @Override
     public List<Long> findTop3HashtagIdsByMemberIdOrderByHistoryDateDesc(Long memberId) {
         return hashtagHistoryRepository.findTop3HashtagIdsByMemberIdOrderByHistoryDateDesc(memberId);
+    }
+
+    @Override
+    public String findLatestTaggedHashtag(Long memberId) {
+        return hashtagHistoryRepository.findLatestTaggedHashtag(memberId)
+                .orElse(null);
+    }
+
+    @Override
+    public Long findHistoryIdByHashtagName(String hashtagName) {
+        return hashtagHistoryRepository.findHistoryIdByHashtagName(hashtagName)
+                .orElse(null);
     }
 }

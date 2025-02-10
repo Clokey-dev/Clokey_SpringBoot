@@ -68,4 +68,8 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
 
     List<Cloth> findTop6ByMemberInAndVisibilityOrderByCreatedAtDesc(
             List<Member> members, Visibility visibility);
+
+    @Query("SELECT c.category.name FROM Cloth c WHERE c.member.id = :memberId " +
+            "GROUP BY c.category ORDER BY COUNT(c.id) DESC LIMIT 1")
+    Optional<String> findMostWornCategory(@Param("memberId") Long memberId);
 }

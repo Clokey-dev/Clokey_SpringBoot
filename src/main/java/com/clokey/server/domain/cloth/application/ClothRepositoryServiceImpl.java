@@ -19,6 +19,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -86,5 +87,11 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
     @Override
     public List<Cloth> findTop6ByMemberInAndVisibilityOrderByCreatedAtDesc(List<Member> members, Visibility visibility) {
         return clothRepository.findTop6ByMemberInAndVisibilityOrderByCreatedAtDesc(members, visibility);
+    }
+
+    @Override
+    public String findMostWornCategory(Long memberId) {
+        return clothRepository.findMostWornCategory(memberId)
+                .orElse(null);
     }
 }

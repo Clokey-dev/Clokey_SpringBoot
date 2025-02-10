@@ -4,11 +4,13 @@ import com.clokey.server.domain.history.domain.entity.Hashtag;
 import com.clokey.server.domain.history.domain.repository.HashtagRepository;
 import com.clokey.server.domain.history.exception.HashtagException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
+import com.clokey.server.global.error.exception.DatabaseException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
 @Service
@@ -37,5 +39,9 @@ public class HashtagRepositoryServiceImpl implements HashtagRepositoryService{
         return hashtagRepository.findHashtagsByNames(names);
     }
 
-
+    @Override
+    public String findRandomUnusedHashtag(Long memberId) {
+        return hashtagRepository.findRandomUnusedHashtag(memberId)
+                .orElse(null);
+    }
 }

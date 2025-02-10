@@ -5,6 +5,7 @@ import com.clokey.server.domain.history.domain.entity.HashtagHistory;
 import com.clokey.server.domain.history.domain.entity.History;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface HashtagHistoryRepositoryService {
 
@@ -23,4 +24,8 @@ public interface HashtagHistoryRepositoryService {
     List<String> findHashtagNamesByHistoryId(Long historyId);
 
     List<Long> findTop3HashtagIdsByMemberIdOrderByHistoryDateDesc(Long memberId);
+
+    String findLatestTaggedHashtag(Long memberId);
+
+    Long findHistoryIdByHashtagName(String hashtagName);
 }

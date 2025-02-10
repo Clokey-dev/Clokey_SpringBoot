@@ -4,8 +4,10 @@ import com.clokey.server.domain.cloth.application.ClothRepositoryService;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.cloth.domain.entity.ClothImage;
 import com.clokey.server.domain.history.application.HashtagHistoryRepositoryService;
+import com.clokey.server.domain.history.application.HashtagRepositoryService;
 import com.clokey.server.domain.history.application.HistoryImageRepositoryService;
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
+import com.clokey.server.domain.history.domain.entity.HashtagHistory;
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.history.domain.entity.HistoryImage;
 import com.clokey.server.domain.member.application.FollowRepositoryService;
@@ -21,6 +23,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,6 +39,7 @@ public class RecommendationServiceImpl implements RecommendationService {
     private final HistoryImageRepositoryService historyImageRepositoryService;
     private final FollowRepositoryService followRepositoryService;
     private final HashtagHistoryRepositoryService hashtagHistoryRepositoryService;
+    private final HashtagRepositoryService hashtagRepositoryService;
 
 
     @Override
@@ -81,14 +85,14 @@ public class RecommendationServiceImpl implements RecommendationService {
         if ("simple".equals(view)) {
             return RecommendationResponseDTO.DailyNewsResult.builder()
                     .recommend(getRecommendList(member))
-                    .closet(getClosetList(member, false, 0, followingMembers)) // 최신 6개
-                    .calendar(getCalendarList(member, false, 0, followingMembers)) // 최신 6개
+                    .closet(getClosetList(false, 1, followingMembers))
+                    .calendar(getCalendarList(member, false, 1, followingMembers))
                     .people(getHotPeopleList(member))
                     .build();
         } else {
             if ("closet".equals(section)) {
                 return RecommendationResponseDTO.DailyNewsResult.builder()
-                        .closet(getClosetList(member, true, page, followingMembers))
+                        .closet(getClosetList(true, page, followingMembers))
                         .build();
             } else if ("calendar".equals(section)) {
                 return RecommendationResponseDTO.DailyNewsResult.builder()
@@ -96,24 +100,54 @@ public class RecommendationServiceImpl implements RecommendationService {
                         .build();
             }
         }
+
+        recommendationRepositoryService.saveAll(recommendList);
         return null;
     }
 
 
-    // 추천 소식 조회 (최대 6개)
+    // 추천 소식 조회 - 시도하지 않은 스타일, 최근에 태그한 해시태그, 자주 착용한 카테고리
     private List<RecommendationResponseDTO.Recommend> getRecommendList(Member member) {
-        return recommendationRepositoryService.findTop6ByNewsTypeOrderByCreatedAtDesc(NewsType.RECOMMEND)
-                .stream()
-                .map(news -> new RecommendationResponseDTO.Recommend(news.getImageUrl(), news.getSubTitle(), news.getHashtag(), news.getCreatedAt()))
-                .collect(Collectors.toList());
+
+        List<RecommendationResponseDTO.Recommend> recommendList = new ArrayList<>();
+
+        // 시도하지 않은 스타일 - 랜덤 추천 hashtagRepositoryService에서 사용자의 기록들이 가지고 있는 해시태그들을 제외한 다른 해시태그 추천
+        String unusedHashtag = hashtagRepositoryService.findRandomUnusedHashtag(member.getId());
+        recommendList.add(new RecommendationResponseDTO.Recommend(
+                getHistoryImageUrlByHashtagName(unusedHashtag),
+                member.getNickname()+"이 시도하지 않은 스타일",
+                "#" + unusedHashtag,
+                LocalDateTime.now()
+        ));
+
+
+        // 최근에 태그한 해시태그 - 최근에 사용자가 기록에 태그한 해시태그 하나 반환
+        String recentHashtag = hashtagHistoryRepositoryService.findLatestTaggedHashtag(member.getId());
+        recommendList.add(new RecommendationResponseDTO.Recommend(
+                getHistoryImageUrlByHashtagName(recentHashtag),
+                member.getNickname() + "이 최근 태그한 해시태그",
+                "#" + recentHashtag,
+                LocalDateTime.now()
+        ));
+
+        // 자주 착용한 카테고리 - 사용자가 가장 많이 착용한 카테고리 하나 반환
+        String frequentCategory = clothRepositoryService.findMostWornCategory(member.getId());
+        recommendList.add(new RecommendationResponseDTO.Recommend(
+                getHistoryImageUrlByHashtagName(frequentCategory),
+                member.getNickname() + "이 자주 착용한 카테고리",
+                "#" + frequentCategory,
+                LocalDateTime.now()
+        ));
+
+        return recommendList;
     }
 
     // 팔로우 중인 옷장 업데이트 조회
-    private List<RecommendationResponseDTO.Closet> getClosetList(Member member, boolean isFull, int page, List<Member> followingMembers) {
+    private List<RecommendationResponseDTO.Closet> getClosetList(boolean isFull, int page, List<Member> followingMembers) {
 
         // 팔로우한 멤버들의 최신 공개 옷 조회 (최신순 정렬)
         List<Cloth> clothesList = isFull
-                ? clothRepositoryService.findByMemberInAndVisibilityOrderByCreatedAtDesc(followingMembers, Visibility.PUBLIC, PageRequest.of(page, 6)).getContent()
+                ? clothRepositoryService.findByMemberInAndVisibilityOrderByCreatedAtDesc(followingMembers, Visibility.PUBLIC, PageRequest.of(page-1, 6)).getContent()
                 : clothRepositoryService.findTop6ByMemberInAndVisibilityOrderByCreatedAtDesc(followingMembers, Visibility.PUBLIC);
 
         // 같은 날짜 + 같은 사용자가 올린 옷을 그룹화 (Map<Member + 날짜, List<Cloth>>)
@@ -158,7 +192,7 @@ public class RecommendationServiceImpl implements RecommendationService {
     private List<RecommendationResponseDTO.Calendar> getCalendarList(Member member, boolean isFull, int page, List<Member> followedMembers) {
         // 팔로우한 멤버들의 최신 `History` 가져오기 (공개된 것만)
         List<History> historyList = isFull
-                ? historyRepositoryService.findByMemberInAndVisibilityOrderByHistoryDateDesc(followedMembers, Visibility.PUBLIC, PageRequest.of(page, 6))
+                ? historyRepositoryService.findByMemberInAndVisibilityOrderByHistoryDateDesc(followedMembers, Visibility.PUBLIC, PageRequest.of(page-1, 6))
                 : historyRepositoryService.findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(followedMembers, Visibility.PUBLIC);
 
         // `HistoryImage` 조회 (History ID 리스트 기반)
@@ -240,5 +274,20 @@ public class RecommendationServiceImpl implements RecommendationService {
             return List.of(); // 팔로우한 멤버가 없으면 빈 리스트 반환
         }
         return followingMembers;
+    }
+
+    private String getHistoryImageUrlByHashtagName(String hashtagName) {
+        Long historyId = hashtagHistoryRepositoryService.findHistoryIdByHashtagName(hashtagName);
+        if (historyId == null) {
+            return null;
+        } else {
+            List<HistoryImage> images = historyImageRepositoryService.findByHistoryId(historyId);
+            String imageUrl = images.isEmpty() ? null : images.get(0).getImageUrl();
+            if (imageUrl == null) {
+                return null;
+            } else {
+                return imageUrl;
+            }
+        }
     }
 }

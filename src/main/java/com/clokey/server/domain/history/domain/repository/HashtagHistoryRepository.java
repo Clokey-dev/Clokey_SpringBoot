@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface HashtagHistoryRepository extends JpaRepository<HashtagHistory, Long> {
 
@@ -37,4 +38,18 @@ public interface HashtagHistoryRepository extends JpaRepository<HashtagHistory, 
             "ORDER BY h.historyDate DESC " +
             "LIMIT 3")
     List<Long> findTop3HashtagIdsByMemberIdOrderByHistoryDateDesc(@Param("memberId") Long memberId);
+
+
+    @Query("SELECT hh.hashtag.name FROM HashtagHistory hh " +
+            "JOIN hh.history h WHERE h.member.id = :memberId " +
+            "ORDER BY h.historyDate DESC LIMIT 1")
+    Optional<String> findLatestTaggedHashtag(@Param("memberId") Long memberId);
+
+
+    @Query("SELECT hh.history.id FROM HashtagHistory hh " +
+            "JOIN hh.hashtag h " +
+            "WHERE h.name = :hashtagName " +
+            "ORDER BY hh.history.historyDate DESC " + // 최신순 정렬
+            "LIMIT 1")
+    Optional<Long> findHistoryIdByHashtagName(String hashtagName);
 }
