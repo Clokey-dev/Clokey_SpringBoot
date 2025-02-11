@@ -30,7 +30,7 @@ public class ClokeyNotification extends BaseEntity {
 
     //ex) historyId, clokeyId
     @Column(nullable = false)
-    private Object redirectInfo;
+    private String redirectInfo;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

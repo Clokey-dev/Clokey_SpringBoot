@@ -109,7 +109,7 @@ public class NotificationServiceImpl implements NotificationService{
                     .member(historyWriter)
                     .content(content)
                     .notificationImageUrl(likedMemberProfileUrl)
-                    .redirectInfo(historyId)
+                    .redirectInfo(String.valueOf(historyId))
                     .redirectType(RedirectType.HISTORY_REDIRECT)
                     .build();
 
@@ -217,7 +217,7 @@ public class NotificationServiceImpl implements NotificationService{
                     .member(historyWriter)
                     .content(content)
                     .notificationImageUrl(commentWriterProfileUrl)
-                    .redirectInfo(historyId)
+                    .redirectInfo(String.valueOf(historyId))
                     .redirectType(RedirectType.HISTORY_REDIRECT)
                     .build();
 
@@ -285,7 +285,7 @@ public class NotificationServiceImpl implements NotificationService{
                     .member(commentWriter)
                     .content(content)
                     .notificationImageUrl(replyWriterProfileUrl)
-                    .redirectInfo(historyId)
+                    .redirectInfo(String.valueOf(historyId))
                     .redirectType(RedirectType.HISTORY_REDIRECT)
                     .build();
 
