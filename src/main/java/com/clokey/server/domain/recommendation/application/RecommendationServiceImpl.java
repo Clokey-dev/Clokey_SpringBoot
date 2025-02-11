@@ -18,14 +18,18 @@ import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.domain.recommendation.converter.RecommendationConverter;
 import com.clokey.server.domain.recommendation.domain.entity.Recommendation;
 import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -46,6 +50,10 @@ public class RecommendationServiceImpl implements RecommendationService {
     private final HashtagHistoryRepositoryService hashtagHistoryRepositoryService;
     private final HashtagRepositoryService hashtagRepositoryService;
 
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    private final ObjectMapper objectMapper;
+    private static final String REDIS_PREFIX = "dailyNews:";
 
     @Override
     public RecommendationResponseDTO.DailyClothesResult getRecommendClothes(Long memberId, Float nowTemp) {
@@ -59,13 +67,21 @@ public class RecommendationServiceImpl implements RecommendationService {
 
     @Override
     public RecommendationResponseDTO.DailyNewsResult getNews(Long memberId) {
+        String cacheKey = "dailyNews:" + memberId + ":" + LocalDate.now();
+
+        String json = (String) redisTemplate.opsForValue().get(cacheKey);
+        if (json != null) {
+            try {
+                return objectMapper.readValue(json, RecommendationResponseDTO.DailyNewsResult.class);
+            } catch (Exception e) {
+                redisTemplate.delete(cacheKey);
+                e.printStackTrace();
+            }
+        }
 
         List<NewsType> requiredTypes = List.of(NewsType.RECOMMEND, NewsType.CLOSET, NewsType.CALENDAR, NewsType.PEOPLE);
-
-        // 이미 저장된 news 조회 (한 번의 쿼리로 가져옴)
         List<Recommendation> existingNews = recommendationRepositoryService.findByMemberIdAndNewsTypeIn(memberId, requiredTypes);
 
-        // 존재하지 않는 newsType 찾기
         Set<NewsType> existingTypes = existingNews.stream()
                 .map(Recommendation::getNewsType)
                 .collect(Collectors.toSet());
@@ -78,26 +94,42 @@ public class RecommendationServiceImpl implements RecommendationService {
             }
         }
 
-        // 존재하지 않는 타입만 배치 INSERT
         if (!newNewsList.isEmpty()) {
             recommendationRepositoryService.saveAll(newNewsList);
-            existingNews.addAll(newNewsList); // 리스트에 추가
+            existingNews.addAll(newNewsList);
         }
 
-        // 요청된 view 및 section에 따라 변환
-        return mapToResponse(existingNews, memberId);
+        RecommendationResponseDTO.DailyNewsResult result = mapToResponse(existingNews, memberId);
+
+        try {
+            String resultJson = objectMapper.writeValueAsString(result);
+            redisTemplate.opsForValue().set(cacheKey, resultJson, Duration.ofHours(24));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
+
 
     private RecommendationResponseDTO.DailyNewsResult mapToResponse(List<Recommendation> recommendList, Long memberId) {
         Member member = memberRepositoryService.findMemberById(memberId);
 
+        if (!recommendList.isEmpty() && recommendList.get(0).getUpdatedAt().toLocalDate().equals(LocalDate.now())) {
+            String cacheKey = REDIS_PREFIX + memberId + ":" + LocalDate.now();
+            RecommendationResponseDTO.DailyNewsResult cachedData = (RecommendationResponseDTO.DailyNewsResult) redisTemplate.opsForValue().get(cacheKey);
+            if (cachedData != null) {
+                return cachedData;
+            }
+        }
+
         List<Member> followingMembers = getFollowingMembers(member.getId());
-        return RecommendationResponseDTO.DailyNewsResult.builder()
-                .recommend(getRecommendList(member))
-                .closet(getClosetList(followingMembers))
-                .calendar(getCalendarList(followingMembers))
-                .people(getHotPeopleList(member))
-                .build();
+
+        RecommendationResponseDTO.DailyNewsResult result = RecommendationConverter.toDailyNewsResult(getRecommendList(member), getClosetList(followingMembers), getCalendarList(followingMembers), getPeopleList(member));
+
+        redisTemplate.opsForValue().set(REDIS_PREFIX + memberId + ":" + LocalDate.now(), result, Duration.ofHours(24));
+
+        return result;
     }
 
     private RecommendationResponseDTO.DailyNewsAllResult<?> mapToResponse(Long memberId, String section, Integer page) {
@@ -210,7 +242,7 @@ public class RecommendationServiceImpl implements RecommendationService {
     }
 
     // Hot 계정 조회
-    private List<RecommendationResponseDTO.People> getHotPeopleList(Member member) {
+    private List<RecommendationResponseDTO.People> getPeopleList(Member member) {
         //기록 최신 것부터 해시태그를 조회함. 해시태그 아이디를 hashtagHistoryRepository에서 찾아서 그 history의 주인들을 최대 네 명 추천해주는 로직.
         List<Long> hashtagIds = hashtagHistoryRepositoryService.findTop3HashtagIdsByMemberIdOrderByHistoryDateDesc(member.getId());
 

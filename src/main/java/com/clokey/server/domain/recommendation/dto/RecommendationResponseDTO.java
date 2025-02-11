@@ -1,10 +1,13 @@
 package com.clokey.server.domain.recommendation.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,7 +35,9 @@ public class RecommendationResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class DailyNewsResult {
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
+    public static class DailyNewsResult implements Serializable {
+        private static final long serialVersionUID = 1L;
         private List<Recommend> recommend;
         private List<Closet> closet;
         private List<Calendar> calendar;

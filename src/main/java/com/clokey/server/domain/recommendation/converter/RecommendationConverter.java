@@ -49,7 +49,7 @@ public class RecommendationConverter {
                             date.atStartOfDay()
                     );
                 })
-                .sorted((c1, c2) -> c2.getDate().compareTo(c1.getDate())) // 최신순 정렬
+                .sorted((c1, c2) -> c2.getDate().compareTo(c1.getDate()))
                 .collect(Collectors.toList());
     }
 
@@ -116,6 +116,15 @@ public class RecommendationConverter {
                 .totalElements((int) page.getTotalElements())
                 .isFirst(page.isFirst())
                 .isLast(page.isLast())
+                .build();
+    }
+
+    public static RecommendationResponseDTO.DailyNewsResult toDailyNewsResult(List<RecommendationResponseDTO.Recommend> recommendList, List<RecommendationResponseDTO.Closet> closetList, List<RecommendationResponseDTO.Calendar> calendarList, List<RecommendationResponseDTO.People> peopleList) {
+        return RecommendationResponseDTO.DailyNewsResult.builder()
+                .recommend(recommendList)
+                .closet(closetList)
+                .calendar(calendarList)
+                .people(peopleList)
                 .build();
     }
 }
