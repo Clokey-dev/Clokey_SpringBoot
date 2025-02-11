@@ -4,16 +4,18 @@ import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
+import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class RecommendationConverter {
-
     public static RecommendationResponseDTO.Recommend toRecommendDTO(String imageUrl, String subtitle, String hashtag) {
         return new RecommendationResponseDTO.Recommend(
                 imageUrl,
@@ -51,15 +53,36 @@ public class RecommendationConverter {
                 .collect(Collectors.toList());
     }
 
-    public static List<RecommendationResponseDTO.Calendar> toCalendarDTO(Map<LocalDate, List<RecommendationResponseDTO.Event>> groupedEvents, Member member) {
+    public static List<RecommendationResponseDTO.Calendar> toCalendarDTO(Page<History> historyPage, Map<History, List<String>> historyImageMap) {
+        Map<LocalDate, List<RecommendationResponseDTO.Event>> groupedEvents = historyPage.getContent().stream()
+                .collect(Collectors.groupingBy(
+                        History::getHistoryDate,
+                        Collectors.mapping(history -> toEventDTO(history, historyImageMap), Collectors.toList())
+                ));
+
+        // 그룹핑된 데이터를 Calendar DTO 리스트로 변환
         return groupedEvents.entrySet().stream()
-                .map(entry -> new RecommendationResponseDTO.Calendar(
-                        entry.getKey(),
-                        member.getId(),
-                        member.getClokeyId(),
-                        member.getProfileImageUrl(),
-                        entry.getValue()
-                ))
+                .map(entry -> {
+                    History sampleHistory = historyPage.getContent().stream()
+                            .filter(h -> h.getHistoryDate().equals(entry.getKey()))
+                            .findFirst()
+                            .orElse(null);
+
+                    if (sampleHistory == null) {
+                        return null;
+                    }
+
+                    Member historyOwner = sampleHistory.getMember();
+
+                    return new RecommendationResponseDTO.Calendar(
+                            entry.getKey(),
+                            historyOwner.getId(),
+                            historyOwner.getClokeyId(),
+                            historyOwner.getProfileImageUrl(),
+                            entry.getValue()
+                    );
+                })
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
@@ -84,5 +107,15 @@ public class RecommendationConverter {
                         null
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public static <T> RecommendationResponseDTO.DailyNewsAllResult<T> toDailyNewsAllResult(Page<T> page) {
+        return RecommendationResponseDTO.DailyNewsAllResult.<T>builder()
+                .dailyNewsResult(page.getContent())
+                .totalPage(page.getTotalPages())
+                .totalElements((int) page.getTotalElements())
+                .isFirst(page.isFirst())
+                .isLast(page.isLast())
+                .build();
     }
 }

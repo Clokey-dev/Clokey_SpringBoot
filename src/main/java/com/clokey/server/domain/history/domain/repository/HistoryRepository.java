@@ -3,6 +3,7 @@ package com.clokey.server.domain.history.domain.repository;
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.Visibility;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -43,7 +44,7 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
 
     Optional<History> findByHistoryDateAndMember_Id(LocalDate historyDate, Long memberId);
 
-    List<History> findByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> member, Visibility visibility, Pageable pageable);
+    Page<History> findByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> member, Visibility visibility, Pageable pageable);
 
     List<History> findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> member, Visibility visibility);
 

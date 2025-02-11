@@ -19,7 +19,10 @@ import com.clokey.server.domain.recommendation.converter.RecommendationConverter
 import com.clokey.server.domain.recommendation.domain.entity.Recommendation;
 import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
@@ -51,32 +54,6 @@ public class RecommendationServiceImpl implements RecommendationService {
 
     @Override
     public RecommendationResponseDTO.DailyNewsAllResult<?> getNewsAll(Long memberId, String section, Integer page) {
-
-        List<NewsType> requiredTypes = List.of(NewsType.RECOMMEND, NewsType.CLOSET, NewsType.CALENDAR, NewsType.PEOPLE);
-
-        // 이미 저장된 news 조회 (한 번의 쿼리로 가져옴)
-        List<Recommendation> existingNews = recommendationRepositoryService.findByMemberIdAndNewsTypeIn(memberId, requiredTypes);
-
-        // 존재하지 않는 newsType 찾기
-        Set<NewsType> existingTypes = existingNews.stream()
-                .map(Recommendation::getNewsType)
-                .collect(Collectors.toSet());
-
-        List<Recommendation> newNewsList = new ArrayList<>();
-
-        for (NewsType type : requiredTypes) {
-            if (!existingTypes.contains(type)) {
-                newNewsList.add(createDefaultRecommend(memberId, type));
-            }
-        }
-
-        // 존재하지 않는 타입만 배치 INSERT
-        if (!newNewsList.isEmpty()) {
-            recommendationRepositoryService.saveAll(newNewsList);
-            existingNews.addAll(newNewsList); // 리스트에 추가
-        }
-
-        // 요청된 view 및 section에 따라 변환
         return mapToResponse(memberId, section, page);
     }
 
@@ -115,28 +92,26 @@ public class RecommendationServiceImpl implements RecommendationService {
         Member member = memberRepositoryService.findMemberById(memberId);
 
         List<Member> followingMembers = getFollowingMembers(member.getId());
-            return RecommendationResponseDTO.DailyNewsResult.builder()
-                    .recommend(getRecommendList(member))
-                    .closet(getClosetList(false, 1, followingMembers))
-                    .calendar(getCalendarList(member, false, 1, followingMembers))
-                    .people(getHotPeopleList(member))
-                    .build();
+        return RecommendationResponseDTO.DailyNewsResult.builder()
+                .recommend(getRecommendList(member))
+                .closet(getClosetList(followingMembers))
+                .calendar(getCalendarList(followingMembers))
+                .people(getHotPeopleList(member))
+                .build();
     }
 
     private RecommendationResponseDTO.DailyNewsAllResult<?> mapToResponse(Long memberId, String section, Integer page) {
         Member member = memberRepositoryService.findMemberById(memberId);
 
         List<Member> followingMembers = getFollowingMembers(member.getId());
-            if ("closet".equals(section)) {
-                return RecommendationResponseDTO.DailyNewsAllResult.<RecommendationResponseDTO.Closet>builder()
-                        .result(getClosetList(true, page, followingMembers))
-                        .build();
+        if ("closet".equals(section)) {
+            Page<RecommendationResponseDTO.Closet> closetPage = getClosetPage(page, followingMembers);
+            return RecommendationConverter.toDailyNewsAllResult(closetPage);
 
-            } else if ("calendar".equals(section)) {
-                return RecommendationResponseDTO.DailyNewsAllResult.<RecommendationResponseDTO.Calendar>builder()
-                        .result(getCalendarList(member, true, page, followingMembers))
-                        .build();
-            }
+        } else if ("calendar".equals(section)) {
+            Page<RecommendationResponseDTO.Calendar> calendarPage = getCalendarPage(page, followingMembers);
+            return RecommendationConverter.toDailyNewsAllResult(calendarPage);
+        }
         return null;
     }
 
@@ -150,7 +125,7 @@ public class RecommendationServiceImpl implements RecommendationService {
         String unusedHashtag = hashtagRepositoryService.findRandomUnusedHashtag(member.getId());
         recommendList.add(RecommendationConverter.toRecommendDTO(
                 getHistoryImageUrlByHashtagName(unusedHashtag),
-                member.getNickname()+"이 시도하지 않은 스타일",
+                member.getNickname() + "이 시도하지 않은 스타일",
                 unusedHashtag
         ));
 
@@ -175,12 +150,10 @@ public class RecommendationServiceImpl implements RecommendationService {
     }
 
     // 팔로우 중인 옷장 업데이트 조회
-    private List<RecommendationResponseDTO.Closet> getClosetList(boolean isFull, int page, List<Member> followingMembers) {
+    private List<RecommendationResponseDTO.Closet> getClosetList(List<Member> followingMembers) {
 
         // 팔로우한 멤버들의 최신 공개 옷 조회 (최신순 정렬)
-        List<Cloth> clothesList = isFull
-                ? clothRepositoryService.findByMemberInAndVisibilityOrderByCreatedAtDesc(followingMembers, Visibility.PUBLIC, PageRequest.of(page-1, 6)).getContent()
-                : clothRepositoryService.findTop6ByMemberInAndVisibilityOrderByCreatedAtDesc(followingMembers, Visibility.PUBLIC);
+        List<Cloth> clothesList = clothRepositoryService.findTop6ByMemberInAndVisibilityOrderByCreatedAtDesc(followingMembers, Visibility.PUBLIC);
 
         // 같은 날짜 + 같은 사용자가 올린 옷을 그룹화 (Map<Member + 날짜, List<Cloth>>)
         Map<Pair<Member, LocalDate>, List<Cloth>> groupedClothes = clothesList.stream()
@@ -192,31 +165,49 @@ public class RecommendationServiceImpl implements RecommendationService {
         return RecommendationConverter.toClosetDTO(groupedClothes);
     }
 
+    private Page<RecommendationResponseDTO.Closet> getClosetPage(int page, List<Member> followingMembers) {
+        Page<Cloth> clothesPage = clothRepositoryService.findByMemberInAndVisibilityOrderByCreatedAtDesc(
+                followingMembers, Visibility.PUBLIC, PageRequest.of(page - 1, 6));
+
+        List<RecommendationResponseDTO.Closet> closetList = RecommendationConverter.toClosetDTO(
+                clothesPage.getContent().stream()
+                        .collect(Collectors.groupingBy(cloth -> Pair.of(cloth.getMember(), cloth.getCreatedAt().toLocalDate())))
+        );
+
+        return new PageImpl<>(closetList, PageRequest.of(page - 1, 6), closetList.size());
+    }
 
     // 팔로우 중인 캘린더 업데이트 조회
-    private List<RecommendationResponseDTO.Calendar> getCalendarList(Member member, boolean isFull, int page, List<Member> followedMembers) {
-        // 팔로우한 멤버들의 최신 `History` 가져오기 (공개된 것만)
-        List<History> historyList = isFull
-                ? historyRepositoryService.findByMemberInAndVisibilityOrderByHistoryDateDesc(followedMembers, Visibility.PUBLIC, PageRequest.of(page-1, 6))
-                : historyRepositoryService.findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(followedMembers, Visibility.PUBLIC);
+    private List<RecommendationResponseDTO.Calendar> getCalendarList(List<Member> followedMembers) {
+        return fetchCalendarData(null, false, followedMembers);
+    }
 
-        // `HistoryImage` 조회 (History ID 리스트 기반)
-        List<Long> historyIds = historyList.stream().map(History::getId).toList();
+    private Page<RecommendationResponseDTO.Calendar> getCalendarPage(int page, List<Member> followingMembers) {
+        Pageable pageable = PageRequest.of(page - 1, 6);
+        List<RecommendationResponseDTO.Calendar> calendarList = fetchCalendarData(pageable, true, followingMembers);
+
+        return new PageImpl<>(calendarList, PageRequest.of(page - 1, 6), calendarList.size());
+    }
+
+    private List<RecommendationResponseDTO.Calendar> fetchCalendarData(Pageable pageable, boolean isPaging, List<Member> followingMembers) {
+        Page<History> historyPage;
+
+        if (isPaging) {
+            historyPage = historyRepositoryService.findByMemberInAndVisibilityOrderByHistoryDateDesc(
+                    followingMembers, Visibility.PUBLIC, pageable);
+        } else {
+            List<History> historyList = historyRepositoryService.findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(
+                    followingMembers, Visibility.PUBLIC);
+            historyPage = new PageImpl<>(historyList);
+        }
+
+        List<Long> historyIds = historyPage.getContent().stream().map(History::getId).toList();
         Map<History, List<String>> historyImageMap = historyImageRepositoryService.findByHistoryIdIn(historyIds)
                 .stream()
                 .collect(Collectors.groupingBy(HistoryImage::getHistory, Collectors.mapping(HistoryImage::getImageUrl, Collectors.toList())));
 
-
-        // 날짜별(`LocalDate`)로 그룹화하여 `RecommendationResponseDTO.Event` 리스트 생성
-        Map<LocalDate, List<RecommendationResponseDTO.Event>> groupedEvents = historyList.stream()
-                .collect(Collectors.groupingBy(History::getHistoryDate,
-                        Collectors.mapping(history -> RecommendationConverter.toEventDTO(history, historyImageMap), Collectors.toList())));
-
-
-        // 그룹핑된 데이터를 `CalendarDTO` 리스트로 변환
-        return RecommendationConverter.toCalendarDTO(groupedEvents, member);
+        return RecommendationConverter.toCalendarDTO(historyPage, historyImageMap);
     }
-
 
     // Hot 계정 조회
     private List<RecommendationResponseDTO.People> getHotPeopleList(Member member) {

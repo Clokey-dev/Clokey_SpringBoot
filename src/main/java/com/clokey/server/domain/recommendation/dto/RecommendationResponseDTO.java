@@ -44,8 +44,7 @@ public class RecommendationResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DailyNewsAllResult<T> {
-        private List<T> result;
-        private Integer listSize;
+        private List<T> dailyNewsResult;
         private Integer totalPage;
         private Integer totalElements;
         private Boolean isFirst;

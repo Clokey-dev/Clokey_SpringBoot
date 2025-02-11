@@ -7,6 +7,7 @@ import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -76,7 +77,7 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
     }
 
     @Override
-    public List<History> findByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> members, Visibility visibility, Pageable pageable) {
+    public Page<History> findByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> members, Visibility visibility, Pageable pageable) {
         return historyRepository.findByMemberInAndVisibilityOrderByHistoryDateDesc(members, visibility, pageable);
     }
 
