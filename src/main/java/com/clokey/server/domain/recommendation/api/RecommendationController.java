@@ -7,6 +7,7 @@ import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.domain.recommendation.application.RecommendationService;
 import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
+import com.clokey.server.domain.recommendation.exception.annotation.CheckSection;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import com.clokey.server.global.error.exception.annotation.CheckPage;
@@ -52,8 +53,8 @@ public class RecommendationController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HOME_200", description = "성공적으로 조회되었습니다."),
     })
     public BaseResponse<RecommendationResponseDTO.DailyNewsAllResult<?>> getNewsAll(@Parameter(name = "user", hidden = true) @AuthUser Member member,
-                                                                           @RequestParam String section,
-                                                                           @RequestParam Integer page) {
+                                                                           @RequestParam @Valid @CheckSection String section,
+                                                                           @RequestParam @Valid @CheckPage Integer page) {
         RecommendationResponseDTO.DailyNewsAllResult<?> response = recommendationService.getNewsAll(member.getId(), section, page);
         return BaseResponse.onSuccess(SuccessStatus.HOME_SUCCESS, response);
     }
