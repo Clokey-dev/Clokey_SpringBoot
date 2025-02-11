@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class NotificationServiceImpl implements NotificationService{
+public class NotificationServiceImpl implements NotificationService {
 
     private final HistoryLikedValidator historyLikedValidator;
     private final HistoryRepositoryService historyRepositoryService;
@@ -39,7 +39,7 @@ public class NotificationServiceImpl implements NotificationService{
     private static final String HISTORY_COMMENT_NOTIFICATION_CONTENT = "%s님이 회원님의 기록에 댓글을 남겼습니다 : %s";
     private static final String COMMENT_REPLY_CONTENT = "%s님이 회원님의 댓글에 답장을 남겼습니다 : %s";
 
-    private static final String ONE_YEAR_AGO_NOTIFICATION ="1년전 오늘의 기록이 도착했습니다!\n과거의 스타일링을 되돌아보세요";
+    private static final String ONE_YEAR_AGO_NOTIFICATION = "1년전 오늘의 기록이 도착했습니다!\n과거의 스타일링을 되돌아보세요";
     private static final String ONE_YEAR_AGO_NOTIFICATION_IMAGE_URL = "https://clokeybucket.s3.ap-northeast-2.amazonaws.com/clock.png";
 
     private static final String SPRING_SEASON_NOTIFICATION = "봄이 다가오고 있어요!\n얇은 옷들을 꺼낼 시간입니다!";
@@ -64,13 +64,13 @@ public class NotificationServiceImpl implements NotificationService{
     @Override
     @Transactional
     public void readNotification(Long notificationId, Long memberId) {
-        checkMyNotification(notificationId,memberId);
+        checkMyNotification(notificationId, memberId);
         ClokeyNotification notification = notificationRepositoryService.findById(notificationId);
         notification.readNotification();
     }
 
     private void checkMyNotification(Long notificationId, Long memberId) {
-        if(!notificationRepositoryService.findById(notificationId).getMember().getId().equals(memberId)){
+        if (!notificationRepositoryService.findById(notificationId).getMember().getId().equals(memberId)) {
             throw new NotificationException(ErrorStatus.NOT_MY_NOTIFICATION);
         }
     }
@@ -79,15 +79,15 @@ public class NotificationServiceImpl implements NotificationService{
     @Transactional
     public NotificationResponseDTO.HistoryLikeNotificationResult sendHistoryLikeNotification(Long memberId, Long historyId) {
 
-        historyLikedValidator.validateIsLiked(historyId,memberId,true);
+        historyLikedValidator.validateIsLiked(historyId, memberId, true);
 
         Member historyWriter = historyRepositoryService.findById(historyId).getMember();
         Member likedMember = memberRepositoryService.findMemberById(memberId);
 
-        checkSendingNotificationToMySelf(historyWriter,likedMember);
+        checkSendingNotificationToMySelf(historyWriter, likedMember);
 
         //로그아웃 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
-        if(historyWriter.getDeviceToken() != null && historyWriter.getRefreshToken() != null) {
+        if (historyWriter.getDeviceToken() != null && historyWriter.getRefreshToken() != null) {
             String content = String.format(HISTORY_LIKED_NOTIFICATION_CONTENT, likedMember.getNickname());
             String likedMemberProfileUrl = likedMember.getProfileImageUrl();
 
@@ -106,7 +106,6 @@ public class NotificationServiceImpl implements NotificationService{
             } catch (FirebaseMessagingException e) {
                 throw new NotificationException(ErrorStatus.NOTIFICATION_FIREBASE_ERROR);
             }
-
             ClokeyNotification clokeyNotification = ClokeyNotification.builder()
                     .member(historyWriter)
                     .content(content)
@@ -128,7 +127,7 @@ public class NotificationServiceImpl implements NotificationService{
     }
 
     private void checkSendingNotificationToMySelf(Member sendTo, Member sending) {
-        if(sendTo.equals(sending)){
+        if (sendTo.equals(sending)) {
             throw new NotificationException(ErrorStatus.CANNOT_NOTIFY_MY_SELF);
         }
     }
@@ -140,11 +139,11 @@ public class NotificationServiceImpl implements NotificationService{
         Member followedMember = memberRepositoryService.findMemberByClokeyId(followedMemberClokeyId);
         Member followingMember = memberRepositoryService.findMemberById(followingMemberId);
 
-        checkFollowing(followingMemberId,followedMember.getId());
+        checkFollowing(followingMemberId, followedMember.getId());
 
         //로그아웃 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
-        if(followedMember.getDeviceToken() != null && followedMember.getRefreshToken() != null) {
-            String content = String.format(NEW_FOLLOWER_NOTIFICATION_CONTENT,followingMember.getNickname());
+        if (followedMember.getDeviceToken() != null && followedMember.getRefreshToken() != null) {
+            String content = String.format(NEW_FOLLOWER_NOTIFICATION_CONTENT, followingMember.getNickname());
             String followingMemberProfileUrl = followingMember.getProfileImageUrl();
 
             Notification notification = Notification.builder()
@@ -155,7 +154,7 @@ public class NotificationServiceImpl implements NotificationService{
             Message message = Message.builder()
                     .setToken(followedMember.getDeviceToken())
                     .setNotification(notification)
-                    .putData("clokeyID",String.valueOf(followingMember.getClokeyId()))
+                    .putData("clokeyID", String.valueOf(followingMember.getClokeyId()))
                     .build();
 
             try {
@@ -185,8 +184,8 @@ public class NotificationServiceImpl implements NotificationService{
     }
 
 
-    private void checkFollowing(Long followingId, Long followedId){
-        if(!followRepositoryService.existsByFollowing_IdAndFollowed_Id(followingId,followedId)){
+    private void checkFollowing(Long followingId, Long followedId) {
+        if (!followRepositoryService.existsByFollowing_IdAndFollowed_Id(followingId, followedId)) {
             throw new NotificationException(ErrorStatus.NOTIFICATION_NOT_FOLLOWING);
         }
     }
@@ -195,17 +194,17 @@ public class NotificationServiceImpl implements NotificationService{
     @Transactional
     public NotificationResponseDTO.HistoryCommentNotificationResult sendHistoryCommentNotification(Long historyId, Long commentId, Long memberId) {
 
-        checkMyComment(commentId,memberId);
-        checkHistoryComment(commentId,historyId);
+        checkMyComment(commentId, memberId);
+        checkHistoryComment(commentId, historyId);
 
         Member historyWriter = historyRepositoryService.findById(historyId).getMember();
         Member commentWriter = memberRepositoryService.findMemberById(memberId);
-        checkSendingNotificationToMySelf(historyWriter,commentWriter);
+        checkSendingNotificationToMySelf(historyWriter, commentWriter);
         Comment writtenComment = commentRepositoryService.findById(commentId);
 
         //로그아웃 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
-        if(historyWriter.getDeviceToken() != null && historyWriter.getRefreshToken() != null) {
-            String content = String.format(HISTORY_COMMENT_NOTIFICATION_CONTENT,commentWriter.getNickname(),writtenComment.getContent());
+        if (historyWriter.getDeviceToken() != null && historyWriter.getRefreshToken() != null) {
+            String content = String.format(HISTORY_COMMENT_NOTIFICATION_CONTENT, commentWriter.getNickname(), writtenComment.getContent());
             String commentWriterProfileUrl = commentWriter.getProfileImageUrl();
 
             Notification notification = Notification.builder()
@@ -247,14 +246,14 @@ public class NotificationServiceImpl implements NotificationService{
         return null;
     }
 
-    private void checkMyComment(Long commentId, Long memberId){
-        if(!commentRepositoryService.existsByIdAndMemberId(commentId,memberId)){
+    private void checkMyComment(Long commentId, Long memberId) {
+        if (!commentRepositoryService.existsByIdAndMemberId(commentId, memberId)) {
             throw new NotificationException(ErrorStatus.NOTIFICATION_NOT_MY_COMMENT);
         }
     }
 
-    private void checkHistoryComment(Long commentId, Long historyId){
-        if(!commentRepositoryService.existsByIdAndHistoryId(commentId,historyId)){
+    private void checkHistoryComment(Long commentId, Long historyId) {
+        if (!commentRepositoryService.existsByIdAndHistoryId(commentId, historyId)) {
             throw new NotificationException(ErrorStatus.NOTIFICATION_COMMENT_NOT_FROM_HISTORY);
         }
     }
@@ -263,18 +262,18 @@ public class NotificationServiceImpl implements NotificationService{
     @Transactional
     public NotificationResponseDTO.ReplyNotificationResult sendReplyNotification(Long commentId, Long replyId, Long memberId) {
 
-        checkMyComment(replyId,memberId);
-        checkParentComment(commentId,replyId);
+        checkMyComment(replyId, memberId);
+        checkParentComment(commentId, replyId);
 
         Member commentWriter = commentRepositoryService.findById(commentId).getMember();
         Comment writtenReply = commentRepositoryService.findById(replyId);
         Member replyWriter = writtenReply.getMember();
-        checkSendingNotificationToMySelf(commentWriter,replyWriter);
+        checkSendingNotificationToMySelf(commentWriter, replyWriter);
 
 
         //로그아웃 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
-        if(commentWriter.getDeviceToken() != null && commentWriter.getRefreshToken() != null) {
-            String content = String.format(COMMENT_REPLY_CONTENT,replyWriter.getNickname(),writtenReply.getContent());
+        if (commentWriter.getDeviceToken() != null && commentWriter.getRefreshToken() != null) {
+            String content = String.format(COMMENT_REPLY_CONTENT, replyWriter.getNickname(), writtenReply.getContent());
             String replyWriterProfileUrl = replyWriter.getProfileImageUrl();
             Long historyId = commentRepositoryService.findById(commentId).getHistory().getId();
 
@@ -315,9 +314,9 @@ public class NotificationServiceImpl implements NotificationService{
         return null;
     }
 
-    private void checkParentComment(Long commentId, Long replyId){
+    private void checkParentComment(Long commentId, Long replyId) {
         Comment reply = commentRepositoryService.findById(replyId);
-        if(!reply.getComment().getId().equals(commentId)){
+        if (!reply.getComment().getId().equals(commentId)) {
             throw new NotificationException(ErrorStatus.NOTIFICATION_NOT_PARENT_COMMENT_OF_REPLY);
         }
     }
@@ -328,26 +327,26 @@ public class NotificationServiceImpl implements NotificationService{
 
         Member member = memberRepositoryService.findMemberById(memberId);
 
-        if(member.getDeviceToken() != null || member.getRefreshToken() != null) {
-            sendNotifications(ONE_YEAR_AGO_NOTIFICATION,ONE_YEAR_AGO_NOTIFICATION_IMAGE_URL,member.getDeviceToken());
+        if (member.getDeviceToken() != null || member.getRefreshToken() != null) {
+            sendNotifications(ONE_YEAR_AGO_NOTIFICATION, ONE_YEAR_AGO_NOTIFICATION_IMAGE_URL, member.getDeviceToken());
         }
     }
 
     @Override
-    public void sendTodayTemperatureNotification(Integer temperatureDiff , Long memberId) {
+    public void sendTodayTemperatureNotification(Integer temperatureDiff, Long memberId) {
 
         Member member = memberRepositoryService.findMemberById(memberId);
 
-        if(member.getDeviceToken() == null || member.getRefreshToken() == null){
+        if (member.getDeviceToken() == null || member.getRefreshToken() == null) {
             return;
         }
 
-        if(temperatureDiff > 0){
-            sendNotifications(String.format(WARMER_THAN_YESTERDAY_NOTIFICATION,Math.abs(temperatureDiff)),TODAY_TEMPERATURE_NOTIFICATION_URL,member.getDeviceToken());
+        if (temperatureDiff > 0) {
+            sendNotifications(String.format(WARMER_THAN_YESTERDAY_NOTIFICATION, Math.abs(temperatureDiff)), TODAY_TEMPERATURE_NOTIFICATION_URL, member.getDeviceToken());
         } else if (temperatureDiff < 0) {
-            sendNotifications(String.format(COLDER_THAN_YESTERDAY_NOTIFICATION,Math.abs(temperatureDiff)),TODAY_TEMPERATURE_NOTIFICATION_URL,member.getDeviceToken());
+            sendNotifications(String.format(COLDER_THAN_YESTERDAY_NOTIFICATION, Math.abs(temperatureDiff)), TODAY_TEMPERATURE_NOTIFICATION_URL, member.getDeviceToken());
         } else {
-            sendNotifications(SAME_AS_YESTERDAY_NOTIFICATION,TODAY_TEMPERATURE_NOTIFICATION_URL,member.getDeviceToken());
+            sendNotifications(SAME_AS_YESTERDAY_NOTIFICATION, TODAY_TEMPERATURE_NOTIFICATION_URL, member.getDeviceToken());
         }
 
     }
@@ -357,22 +356,22 @@ public class NotificationServiceImpl implements NotificationService{
 
         Member member = memberRepositoryService.findMemberById(memberId);
 
-        if(member.getDeviceToken() == null || member.getRefreshToken() == null){
+        if (member.getDeviceToken() == null || member.getRefreshToken() == null) {
             return;
         }
 
-        if(season.equals(Season.SPRING)){
-            sendNotifications(SPRING_SEASON_NOTIFICATION,SEASON_NOTIFICATION_IMAGE_URL,member.getDeviceToken());
+        if (season.equals(Season.SPRING)) {
+            sendNotifications(SPRING_SEASON_NOTIFICATION, SEASON_NOTIFICATION_IMAGE_URL, member.getDeviceToken());
         } else if (season.equals(Season.SUMMER)) {
-            sendNotifications(SUMMER_SEASON_NOTIFICATION,SEASON_NOTIFICATION_IMAGE_URL,member.getDeviceToken());
-        } else if (season.equals(Season.FALL)){
-            sendNotifications(FALL_SEASON_NOTIFICATION,SEASON_NOTIFICATION_IMAGE_URL,member.getDeviceToken());
+            sendNotifications(SUMMER_SEASON_NOTIFICATION, SEASON_NOTIFICATION_IMAGE_URL, member.getDeviceToken());
+        } else if (season.equals(Season.FALL)) {
+            sendNotifications(FALL_SEASON_NOTIFICATION, SEASON_NOTIFICATION_IMAGE_URL, member.getDeviceToken());
         } else {
-            sendNotifications(WINTER_SEASON_NOTIFICATION,SEASON_NOTIFICATION_IMAGE_URL,member.getDeviceToken());
+            sendNotifications(WINTER_SEASON_NOTIFICATION, SEASON_NOTIFICATION_IMAGE_URL, member.getDeviceToken());
         }
     }
 
-    private void sendNotifications(String content, String imageUrl, String deviceToken){
+    private void sendNotifications(String content, String imageUrl, String deviceToken) {
         Notification notification = Notification.builder()
                 .setBody(content)
                 .setImage(imageUrl)
