@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class NotificationRepositoryServiceImpl implements NotificationRepositoryService{
 
-    private NotificationRepository notificationRepository;
+    private final NotificationRepository notificationRepository;
 
     @Override
     public void save(ClokeyNotification clokeyNotification) {
