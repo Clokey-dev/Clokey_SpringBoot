@@ -84,6 +84,8 @@ public class NotificationServiceImpl implements NotificationService{
         Member historyWriter = historyRepositoryService.findById(historyId).getMember();
         Member likedMember = memberRepositoryService.findMemberById(memberId);
 
+        checkSendingNotificationToMySelf(historyWriter,likedMember);
+
         //로그아웃 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
         if(historyWriter.getDeviceToken() != null && historyWriter.getRefreshToken() != null) {
             String content = String.format(HISTORY_LIKED_NOTIFICATION_CONTENT, likedMember.getNickname());
@@ -123,6 +125,12 @@ public class NotificationServiceImpl implements NotificationService{
                     .build();
         }
         return null;
+    }
+
+    private void checkSendingNotificationToMySelf(Member sendTo, Member sending) {
+        if(sendTo.equals(sending)){
+            throw new NotificationException(ErrorStatus.CANNOT_NOTIFY_MY_SELF);
+        }
     }
 
     @Override
@@ -192,6 +200,7 @@ public class NotificationServiceImpl implements NotificationService{
 
         Member historyWriter = historyRepositoryService.findById(historyId).getMember();
         Member commentWriter = memberRepositoryService.findMemberById(memberId);
+        checkSendingNotificationToMySelf(historyWriter,commentWriter);
         Comment writtenComment = commentRepositoryService.findById(commentId);
 
         //로그아웃 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
@@ -260,6 +269,7 @@ public class NotificationServiceImpl implements NotificationService{
         Member commentWriter = commentRepositoryService.findById(commentId).getMember();
         Comment writtenReply = commentRepositoryService.findById(replyId);
         Member replyWriter = writtenReply.getMember();
+        checkSendingNotificationToMySelf(commentWriter,replyWriter);
 
 
         //로그아웃 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
