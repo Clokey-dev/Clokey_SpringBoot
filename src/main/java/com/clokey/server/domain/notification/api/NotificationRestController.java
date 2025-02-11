@@ -160,7 +160,7 @@ public class NotificationRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTIFICATION_204", description = "알림이 성공적으로 발송되었습니다."),
     })
     @Parameters({
-            @Parameter(name = "seasons", description = "계절에 맞는 알림을 선택합니다.")
+            @Parameter(name = "season", description = "계절에 맞는 알림을 선택합니다.")
     })
     public BaseResponse<Void> sendSeasonsNotification(@Parameter @Valid Season season,
                                                       @Parameter(name = "user",hidden = true) @AuthUser Member member) {

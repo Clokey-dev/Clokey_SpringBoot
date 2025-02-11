@@ -308,7 +308,7 @@ public class NotificationServiceImpl implements NotificationService{
 
         Member member = memberRepositoryService.findMemberById(memberId);
 
-        if(member.getDeviceToken() != null && member.getRefreshToken() != null) {
+        if(member.getDeviceToken() == null || member.getRefreshToken() == null) {
             sendNotifications(ONE_YEAR_AGO_NOTIFICATION,ONE_YEAR_AGO_NOTIFICATION_IMAGE_URL,member.getDeviceToken());
         }
     }
@@ -337,7 +337,7 @@ public class NotificationServiceImpl implements NotificationService{
 
         Member member = memberRepositoryService.findMemberById(memberId);
 
-        if(member.getDeviceToken() != null && member.getRefreshToken() != null){
+        if(member.getDeviceToken() == null || member.getRefreshToken() == null){
             return;
         }
 
