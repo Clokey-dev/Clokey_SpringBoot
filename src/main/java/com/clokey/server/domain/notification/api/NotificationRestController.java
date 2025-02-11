@@ -79,7 +79,7 @@ public class NotificationRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTIFICATION_200", description = "팔로우 알림이 성공적으로 발송되었습니다."),
     })
     @Parameters({
-            @Parameter(name = "memberId", description = "팔로우 API에 들어갔던 팔로우 하고자 하는 대상의 memberId (상대에게 팔로우 했다고 쏴줘야함)")
+            @Parameter(name = "clokeyId", description = "팔로우 API에 들어갔던 팔로우 하고자 하는 대상의 memberId (상대에게 팔로우 했다고 쏴줘야함)")
     })
     public BaseResponse<NotificationResponseDTO.NewFollowerNotificationResult> newFollowerNotification(@Parameter @Valid @IdValid String clokeyId,
                                                                                                        @Parameter(name = "user",hidden = true) @AuthUser Member member) {
@@ -90,7 +90,7 @@ public class NotificationRestController {
     }
 
     @PostMapping("/history-comment")
-    @Operation(summary = "기록에 좋아요를 누른 경우 기록의 주인에게 알림을 보내는 API")
+    @Operation(summary = "기록에 댓글을 남기는 경우 기록의 주인에게 알림을 보내는 API")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTIFICATION_200", description = "팔로우 알림이 성공적으로 발송되었습니다."),
     })

@@ -294,6 +294,12 @@ public class NotificationServiceImpl implements NotificationService{
                     .build();
 
             notificationRepositoryService.save(clokeyNotification);
+
+            return NotificationResponseDTO.ReplyNotificationResult.builder()
+                    .content(content)
+                    .memberProfileUrl(replyWriterProfileUrl)
+                    .historyId(historyId)
+                    .build();
         }
 
         return null;
