@@ -34,23 +34,23 @@ public class NotificationServiceImpl implements NotificationService{
     private final FollowRepositoryService followRepositoryService;
     private final CommentRepositoryService commentRepositoryService;
 
-    private static final String HISTORY_LIKED_NOTIFICATION_CONTENT = "%s님이 나의 기록에 좋아요를 눌렀습니다.";
+    private static final String HISTORY_LIKED_NOTIFICATION_CONTENT = "%s님이 회원님의 기록을 좋아합니다.";
     private static final String NEW_FOLLOWER_NOTIFICATION_CONTENT = "%s님이 회원님의 옷장을 팔로우하기 시작했습니다.";
-    private static final String HISTORY_COMMENT_NOTIFICATION_CONTENT = "%s님이 나의 기록에 댓글을 남겼습니다 : %s";
-    private static final String COMMENT_REPLY_CONTENT = "%s님이 나의 댓글에 답장을 남겼습니다 : %s";
+    private static final String HISTORY_COMMENT_NOTIFICATION_CONTENT = "%s님이 회원님의 기록에 댓글을 남겼습니다 : %s";
+    private static final String COMMENT_REPLY_CONTENT = "%s님이 회원님의 댓글에 답장을 남겼습니다 : %s";
 
-    private static final String ONE_YEAR_AGO_NOTIFICATION ="1년전 오늘의 기록을 확인해보세요.";
+    private static final String ONE_YEAR_AGO_NOTIFICATION ="1년전 오늘의 기록이 도착했습니다!\n과거의 스타일링을 되돌아보세요";
     private static final String ONE_YEAR_AGO_NOTIFICATION_IMAGE_URL = "https://clokeybucket.s3.ap-northeast-2.amazonaws.com/clock.png";
 
-    private static final String SPRING_SEASON_NOTIFICATION = "봄이 다가오고 있어요 얇은 옷들을 꺼낼 시간입니다!";
-    private static final String SUMMER_SEASON_NOTIFICATION = "여름이 다가오고 있어요 시원한 옷들을 꺼낼 시간입니다!";
-    private static final String FALL_SEASON_NOTIFICATION = "가을이 다가오고 있어요 따뜻한 옷들을 꺼낼 시간입니다!";
-    private static final String WINTER_SEASON_NOTIFICATION = "겨울이 다가오고 있어요 두꺼운 옷들을 꺼낼 시간입니다!";
+    private static final String SPRING_SEASON_NOTIFICATION = "봄이 다가오고 있어요!\n얇은 옷들을 꺼낼 시간입니다!";
+    private static final String SUMMER_SEASON_NOTIFICATION = "여름이 다가오고 있어요!\n시원한 옷들을 꺼낼 시간입니다!";
+    private static final String FALL_SEASON_NOTIFICATION = "가을이 다가오고 있어요!\n따뜻한 옷들을 꺼낼 시간입니다!";
+    private static final String WINTER_SEASON_NOTIFICATION = "겨울이 다가오고 있어요!\n두꺼운 옷들을 꺼낼 시간입니다!";
     private static final String SEASON_NOTIFICATION_IMAGE_URL = "https://clokeybucket.s3.ap-northeast-2.amazonaws.com/cloth.png";
 
-    private static final String COLDER_THAN_YESTERDAY_NOTIFICATION = "기온이 어제보다 %d도 낮아요 오늘은 더 두꺼운 옷을 입어볼까요?";
-    private static final String WARMER_THAN_YESTERDAY_NOTIFICATION = "기온이 어제보다 %d도 높아요 오늘은 더 얇은 옷을 입어볼까요?";
-    private static final String SAME_AS_YESTERDAY_NOTIFICATION = "기온이 어제와 동일해요 어제와 비슷하게 입어볼까요?";
+    private static final String COLDER_THAN_YESTERDAY_NOTIFICATION = "기온이 어제보다 %d도 낮아요!\n오늘은 더 두꺼운 옷을 입어볼까요?";
+    private static final String WARMER_THAN_YESTERDAY_NOTIFICATION = "기온이 어제보다 %d도 높아요!\n오늘은 더 얇은 옷을 입어볼까요?";
+    private static final String SAME_AS_YESTERDAY_NOTIFICATION = "기온이 어제와 동일해요!\n어제와 비슷하게 입어볼까요?";
     private static final String TODAY_TEMPERATURE_NOTIFICATION_URL = "https://clokeybucket.s3.ap-northeast-2.amazonaws.com/temperature.png";
 
     @Override
@@ -328,7 +328,7 @@ public class NotificationServiceImpl implements NotificationService{
 
         Member member = memberRepositoryService.findMemberById(memberId);
 
-        if(member.getDeviceToken() == null || member.getRefreshToken() == null) {
+        if(member.getDeviceToken() != null || member.getRefreshToken() != null) {
             sendNotifications(ONE_YEAR_AGO_NOTIFICATION,ONE_YEAR_AGO_NOTIFICATION_IMAGE_URL,member.getDeviceToken());
         }
     }

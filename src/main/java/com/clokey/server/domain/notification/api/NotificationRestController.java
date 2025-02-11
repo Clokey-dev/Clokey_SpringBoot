@@ -47,7 +47,7 @@ public class NotificationRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTIFICATION_204", description = "알림이 성공적으로 읽음 처리되었습니다."),
     })
     @Parameters({
-            @Parameter(name = "historyId", description = "좋아요가 눌러진 기록의 historyId, query parameter입니다.")
+            @Parameter(name = "notificationId", description = "읽음 처리를 하고자 하는 기록의 Id")
     })
     public BaseResponse<Void> readNotification(@PathVariable @Valid @NotificationExist Long notificationId,
                                                @Parameter(name = "user",hidden = true) @AuthUser Member member) {
