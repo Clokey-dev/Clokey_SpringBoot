@@ -111,6 +111,7 @@ public class NotificationServiceImpl implements NotificationService{
                     .notificationImageUrl(likedMemberProfileUrl)
                     .redirectInfo(String.valueOf(historyId))
                     .redirectType(RedirectType.HISTORY_REDIRECT)
+                    .readStatus(ReadStatus.NOT_READ)
                     .build();
 
             notificationRepositoryService.save(clokeyNotification);
@@ -161,6 +162,7 @@ public class NotificationServiceImpl implements NotificationService{
                     .notificationImageUrl(followingMemberProfileUrl)
                     .redirectInfo(followingMember.getClokeyId())
                     .redirectType(RedirectType.MEMBER_REDIRECT)
+                    .readStatus(ReadStatus.NOT_READ)
                     .build();
 
             notificationRepositoryService.save(clokeyNotification);
@@ -219,6 +221,7 @@ public class NotificationServiceImpl implements NotificationService{
                     .notificationImageUrl(commentWriterProfileUrl)
                     .redirectInfo(String.valueOf(historyId))
                     .redirectType(RedirectType.HISTORY_REDIRECT)
+                    .readStatus(ReadStatus.NOT_READ)
                     .build();
 
             notificationRepositoryService.save(clokeyNotification);
@@ -287,6 +290,7 @@ public class NotificationServiceImpl implements NotificationService{
                     .notificationImageUrl(replyWriterProfileUrl)
                     .redirectInfo(String.valueOf(historyId))
                     .redirectType(RedirectType.HISTORY_REDIRECT)
+                    .readStatus(ReadStatus.NOT_READ)
                     .build();
 
             notificationRepositoryService.save(clokeyNotification);
