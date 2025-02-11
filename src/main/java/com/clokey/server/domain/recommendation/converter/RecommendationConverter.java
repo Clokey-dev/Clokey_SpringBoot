@@ -41,7 +41,6 @@ public class RecommendationConverter {
                             .collect(Collectors.toList());
 
                     return new RecommendationResponseDTO.Closet(
-                            closetOwner.getId(),
                             closetOwner.getClokeyId(),
                             closetOwner.getProfileImageUrl(),
                             clothesIds,
@@ -76,7 +75,6 @@ public class RecommendationConverter {
 
                     return new RecommendationResponseDTO.Calendar(
                             entry.getKey(),
-                            historyOwner.getId(),
                             historyOwner.getClokeyId(),
                             historyOwner.getProfileImageUrl(),
                             entry.getValue()
@@ -101,7 +99,6 @@ public class RecommendationConverter {
                 .distinct()
                 .limit(4)
                 .map(recommendedMember -> new RecommendationResponseDTO.People(
-                        recommendedMember.getId(),
                         recommendedMember.getClokeyId(),
                         recommendedMember.getProfileImageUrl(),
                         null
