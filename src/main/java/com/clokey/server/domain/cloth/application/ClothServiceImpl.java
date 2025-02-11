@@ -81,35 +81,20 @@ public class ClothServiceImpl implements ClothService {
         return ClothConverter.toClosetClothPreviewListResult(clothes, clothPreviews);
     }
 
-    // 지난 7일간 평균착용횟수를 통해 카테고리와 카테고리에 해당하는 옷의 PreView 조회 후 스마트 요약 DTO로 변환해서 반환
-    public ClothResponseDTO.SmartSummaryClothPreviewListResult readSmartSummaryByFrequencyType(SummaryFrequency frequencyType, Long memberId) {
+    // 지난 7일간 착용횟수를 통해 카테고리와 카테고리에 해당하는 옷의 PreView 조회 후 스마트 요약 DTO로 변환해서 반환
+    public ClothResponseDTO.SmartSummaryClothPreviewListResult readSmartSummary(Long memberId) {
+        // 지난 7일간의 History 조회
         List<History> histories = historyRepositoryService.findHistoriesByMemberWithinWeek(memberId);
 
-        // 각 History ID에 연결된 모든 Cloth 조회
+        // 각 History에 연결된 모든 Cloth 조회
         List<Cloth> clothes = histories.stream()
                 .flatMap(history -> historyClothRepositoryService.findAllClothByHistoryId(history.getId()).stream())
-                .toList();
+                .collect(Collectors.toList());
 
-        // 카테고리별 개수 집계
+        // 카테고리별 착용 횟수 집계
         Map<Category, Long> categoryCountMap = clothes.stream()
                 .collect(Collectors.groupingBy(Cloth::getCategory, Collectors.counting()));
 
-        // 카테고리 및 평균 착용 횟수 추출
-        Map.Entry<Category, Long> categoryEntry = getCategoryEntry(frequencyType, categoryCountMap);
-        Category category = categoryEntry.getKey();
-        Long count = categoryEntry.getValue();
-        Double averageUsage = calculateAverageUsage(count);
-        averageUsage = Math.round(averageUsage * 100.0) / 100.0;
-
-        // 카테고리별 옷 목록 조회
-        List<Cloth> filteredClothes = clothRepositoryService.findBySmartSummaryFilters(frequencyType, memberId, category.getId());
-        List<ClothResponseDTO.ClothPreview> clothPreviews = ClothConverter.toClothPreviewList(filteredClothes);
-
-        return ClothConverter.toSummaryClothPreviewListResult(frequencyType, category, averageUsage, clothPreviews);
-    }
-
-    // 카테고리와 착용 횟수 구하기
-    private Map.Entry<Category, Long> getCategoryEntry(SummaryFrequency frequencyType, Map<Category, Long> categoryCountMap) {
         // 부모가 존재하는(2차) 카테고리만 필터링
         List<Map.Entry<Category, Long>> filteredEntries = categoryCountMap.entrySet().stream()
                 .filter(entry -> entry.getKey().getParent() != null)
@@ -119,24 +104,33 @@ public class ClothServiceImpl implements ClothService {
             throw new CategoryException(ErrorStatus.CATEGORY_NOT_FOUND_IN_SUMMARY);
         }
 
-        if (frequencyType == SummaryFrequency.FREQUENT) {
-            // 가장 많이 입은 카테고리 선택
-            return filteredEntries.stream()
-                    .max(Map.Entry.comparingByValue())
-                    .orElseThrow(() -> new CategoryException(ErrorStatus.CATEGORY_NOT_FOUND_IN_SUMMARY));
-        } else if (frequencyType == SummaryFrequency.INFREQUENT){
-            // 가장 적게 입은 카테고리 선택
-            return filteredEntries.stream()
-                    .min(Map.Entry.comparingByValue())
-                    .orElseThrow(() -> new CategoryException(ErrorStatus.CATEGORY_NOT_FOUND_IN_SUMMARY));
-        }
-        else
-            throw new CategoryException(ErrorStatus.INVALID_SUMMARY_FREQUENCY_TYPE);
-    }
+        // 자주 입은(가장 많이 착용한) 카테고리 구하기
+        Map.Entry<Category, Long> frequentEntry = filteredEntries.stream()
+                .max(Map.Entry.comparingByValue())
+                .orElseThrow(() -> new CategoryException(ErrorStatus.CATEGORY_NOT_FOUND_IN_SUMMARY));
+        // 덜 입은(가장 적게 착용한) 카테고리 구하기
+        Map.Entry<Category, Long> infrequentEntry = filteredEntries.stream()
+                .min(Map.Entry.comparingByValue())
+                .orElseThrow(() -> new CategoryException(ErrorStatus.CATEGORY_NOT_FOUND_IN_SUMMARY));
 
-    // 평균 착용 횟수 계산
-    private Double calculateAverageUsage(Long count) {
-        return (double) count / 7; // 7일로 나누어 평균 계산
+        // 각 카테고리에 해당하는 옷 목록 조회
+        List<Cloth> frequentClothes = clothRepositoryService.findBySmartSummaryFilters(
+                SummaryFrequency.FREQUENT, memberId, frequentEntry.getKey().getId());
+        List<ClothResponseDTO.ClothPreview> frequentClothPreviews = ClothConverter.toClothPreviewList(frequentClothes);
+
+        List<Cloth> infrequentClothes = clothRepositoryService.findBySmartSummaryFilters(
+                SummaryFrequency.INFREQUENT, memberId, infrequentEntry.getKey().getId());
+        List<ClothResponseDTO.ClothPreview> infrequentClothPreviews = ClothConverter.toClothPreviewList(infrequentClothes);
+
+        // 컨버터 메소드에 두 경우의 데이터를 모두 전달하여 DTO 생성
+        return ClothConverter.toSummaryClothPreviewListResult(
+                frequentEntry.getKey(),           // 자주 입은 카테고리 객체
+                infrequentEntry.getKey(),         // 덜 입은 카테고리 객체
+                frequentEntry.getValue(),         // 자주 입은 카테고리 착용 횟수
+                infrequentEntry.getValue(),       // 덜 입은 카테고리 착용 횟수
+                frequentClothPreviews,            // 자주 입은 카테고리의 Cloth PreView 목록
+                infrequentClothPreviews           // 덜 입은 카테고리의 Cloth PreView 목록
+        );
     }
 
     @Transactional
@@ -166,7 +160,6 @@ public class ClothServiceImpl implements ClothService {
 
     @Transactional
     public void updateClothById(Long clothId,
-                                Long categoryId,
                                 ClothRequestDTO.ClothCreateOrUpdateRequest request,
                                 MultipartFile imageFile){
 
@@ -187,7 +180,7 @@ public class ClothServiceImpl implements ClothService {
                 request.getVisibility(),
                 request.getClothUrl(),
                 request.getBrand(),
-                categoryId,
+                request.getCategoryId(),
                 imageUrl
         );
     }

@@ -15,7 +15,6 @@ import com.clokey.server.domain.member.exception.annotation.IdValid;
 import com.clokey.server.domain.member.exception.validator.MemberAccessibleValidator;
 import com.clokey.server.domain.model.entity.enums.ClothSort;
 import com.clokey.server.domain.model.entity.enums.Season;
-import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import com.clokey.server.global.error.exception.annotation.CheckPage;
@@ -47,18 +46,11 @@ public class ClothRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CLOTH_200", description = "OK, 성공적으로 조회되었습니다."),
     })
-    @Parameters({
-            @Parameter(name = "type", description = "빈도수(SummaryFrequency) ENUM 값 { "+
-                    "//지난 7일간 자주 착용한 옷 FREQUENT,"+
-                    "//지난 7일간 자주 착용하지 않은 옷 INFREQUENT,"+
-                    "}, query string 입니다."),
-    })
     public BaseResponse<ClothResponseDTO.SmartSummaryClothPreviewListResult> getClothPreviewInfoListByCategoryId(
-            @RequestParam SummaryFrequency type,
             @Parameter(name = "user", hidden = true) @AuthUser Member member
     ) {
         // ClothService를 통해 데이터를 가져오고, 결과 반환
-        ClothResponseDTO.SmartSummaryClothPreviewListResult result = clothService.readSmartSummaryByFrequencyType(type, member.getId());
+        ClothResponseDTO.SmartSummaryClothPreviewListResult result = clothService.readSmartSummary(member.getId());
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
     }
@@ -199,26 +191,24 @@ public class ClothRestController {
 
     // 옷 수정 API
     @PatchMapping(value = "/{clothId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "특정 옷을 수정하는 API", description = "path variable로 cloth_id를 넘겨주세요.\nquery string으로 category_id를 넘겨주세요.\nrequest body에 ClothCreateOrUpdateRequestDTO 형식의 데이터를 전달해주세요.")
+    @Operation(summary = "특정 옷을 수정하는 API", description = "path variable로 cloth_id를 넘겨주세요.\nrequest body에 ClothCreateOrUpdateRequestDTO 형식의 데이터를 전달해주세요.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CLOTH_204", description = "OK, 성공적으로 수정되었습니다."),
     })
     @Parameters({
             @Parameter(name = "clothId", description = "옷의 id, path variable 입니다."),
-            @Parameter(name = "categoryId", description = "카테고리의 id, query string 입니다.")
     })
     public BaseResponse<ClothResponseDTO.ClothCreateResult> patchCloth(
             @RequestPart("clothUpdateRequest") @Valid @ClothCreateOrUpdateFormat ClothRequestDTO.ClothCreateOrUpdateRequest clothUpdateRequest,
             @RequestPart(value = "imageFile", required = false) @ClothImageFormat MultipartFile imageFile,
             @PathVariable @ClothExist Long clothId,
-            @RequestParam @CategoryExist Long categoryId,
             @Parameter(name = "user", hidden = true) @AuthUser Member member
     ) {
         // 조회하는 현 유저가 옷에 대해서 수정 권한이 있는지 확인합니다.
         clothAccessibleValidator.validateClothOfMember(clothId, member.getId());
 
         // ClothService를 통해 데이터를 수정
-        clothService.updateClothById(clothId, categoryId, clothUpdateRequest, imageFile);
+        clothService.updateClothById(clothId, clothUpdateRequest, imageFile);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_EDITED, null);
     }
