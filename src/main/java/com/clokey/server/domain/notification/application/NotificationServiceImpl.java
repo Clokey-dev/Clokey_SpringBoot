@@ -318,7 +318,7 @@ public class NotificationServiceImpl implements NotificationService{
 
         Member member = memberRepositoryService.findMemberById(memberId);
 
-        if(member.getDeviceToken() != null && member.getRefreshToken() != null){
+        if(member.getDeviceToken() == null || member.getRefreshToken() == null){
             return;
         }
 
