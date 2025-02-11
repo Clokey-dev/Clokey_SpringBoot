@@ -37,6 +37,14 @@ public class RecommendationResponseDTO {
         private List<Closet> closet;
         private List<Calendar> calendar;
         private List<People> people;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DailyNewsAllResult<T> {
+        private List<T> result;
         private Integer listSize;
         private Integer totalPage;
         private Integer totalElements;

@@ -7,5 +7,6 @@ import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
 
 public interface RecommendationService {
     RecommendationResponseDTO.DailyClothesResult getRecommendClothes(Long memberId, Float nowTemp);
-    RecommendationResponseDTO.DailyNewsResult getIssues(Long memberId, String view, String section, Integer page);
+    RecommendationResponseDTO.DailyNewsResult getNews(Long memberId);
+    RecommendationResponseDTO.DailyNewsAllResult<?> getNewsAll(Long memberId, String section, Integer page);
 }

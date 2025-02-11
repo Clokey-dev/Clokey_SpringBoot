@@ -9,6 +9,7 @@ import com.clokey.server.domain.recommendation.application.RecommendationService
 import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
+import com.clokey.server.global.error.exception.annotation.CheckPage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -40,11 +41,20 @@ public class RecommendationController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HOME_200", description = "성공적으로 조회되었습니다."),
     })
-    public BaseResponse<RecommendationResponseDTO.DailyNewsResult> getNews(@Parameter(name = "user",hidden = true) @AuthUser Member member,
-                                                                              @RequestParam @Valid String view,
-                                                                              @RequestParam(required = false) String section,
-                                                                              @RequestParam(required = false) Integer page) {
-        RecommendationResponseDTO.DailyNewsResult response = recommendationService.getIssues(member.getId(), view, section, page);
+    public BaseResponse<RecommendationResponseDTO.DailyNewsResult> getNews(@Parameter(name = "user", hidden = true) @AuthUser Member member){
+        RecommendationResponseDTO.DailyNewsResult response = recommendationService.getNews(member.getId());
+        return BaseResponse.onSuccess(SuccessStatus.HOME_SUCCESS, response);
+    }
+
+    @Operation(summary = "홈 소식 내용 자세히 보기 API", description = "홈 소식 내용 자세히 보기 API입니다. closet, calendar만 가능합니다.")
+    @GetMapping("/news/all")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HOME_200", description = "성공적으로 조회되었습니다."),
+    })
+    public BaseResponse<RecommendationResponseDTO.DailyNewsAllResult<?>> getNewsAll(@Parameter(name = "user", hidden = true) @AuthUser Member member,
+                                                                           @RequestParam String section,
+                                                                           @RequestParam Integer page) {
+        RecommendationResponseDTO.DailyNewsAllResult<?> response = recommendationService.getNewsAll(member.getId(), section, page);
         return BaseResponse.onSuccess(SuccessStatus.HOME_SUCCESS, response);
     }
 }

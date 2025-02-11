@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -49,7 +50,7 @@ public class RecommendationServiceImpl implements RecommendationService {
     }
 
     @Override
-    public RecommendationResponseDTO.DailyNewsResult getIssues(Long memberId, String view, String section, Integer page) {
+    public RecommendationResponseDTO.DailyNewsAllResult<?> getNewsAll(Long memberId, String section, Integer page) {
 
         List<NewsType> requiredTypes = List.of(NewsType.RECOMMEND, NewsType.CLOSET, NewsType.CALENDAR, NewsType.PEOPLE);
 
@@ -76,33 +77,66 @@ public class RecommendationServiceImpl implements RecommendationService {
         }
 
         // 요청된 view 및 section에 따라 변환
-        return mapToResponse(existingNews, memberId, view, section, page);
+        return mapToResponse(memberId, section, page);
     }
 
-    private RecommendationResponseDTO.DailyNewsResult mapToResponse(List<Recommendation> recommendList, Long memberId, String view, String section, Integer page) {
+    @Override
+    public RecommendationResponseDTO.DailyNewsResult getNews(Long memberId) {
+
+        List<NewsType> requiredTypes = List.of(NewsType.RECOMMEND, NewsType.CLOSET, NewsType.CALENDAR, NewsType.PEOPLE);
+
+        // 이미 저장된 news 조회 (한 번의 쿼리로 가져옴)
+        List<Recommendation> existingNews = recommendationRepositoryService.findByMemberIdAndNewsTypeIn(memberId, requiredTypes);
+
+        // 존재하지 않는 newsType 찾기
+        Set<NewsType> existingTypes = existingNews.stream()
+                .map(Recommendation::getNewsType)
+                .collect(Collectors.toSet());
+
+        List<Recommendation> newNewsList = new ArrayList<>();
+
+        for (NewsType type : requiredTypes) {
+            if (!existingTypes.contains(type)) {
+                newNewsList.add(createDefaultRecommend(memberId, type));
+            }
+        }
+
+        // 존재하지 않는 타입만 배치 INSERT
+        if (!newNewsList.isEmpty()) {
+            recommendationRepositoryService.saveAll(newNewsList);
+            existingNews.addAll(newNewsList); // 리스트에 추가
+        }
+
+        // 요청된 view 및 section에 따라 변환
+        return mapToResponse(existingNews, memberId);
+    }
+
+    private RecommendationResponseDTO.DailyNewsResult mapToResponse(List<Recommendation> recommendList, Long memberId) {
         Member member = memberRepositoryService.findMemberById(memberId);
 
         List<Member> followingMembers = getFollowingMembers(member.getId());
-        if ("simple".equals(view)) {
             return RecommendationResponseDTO.DailyNewsResult.builder()
                     .recommend(getRecommendList(member))
                     .closet(getClosetList(false, 1, followingMembers))
                     .calendar(getCalendarList(member, false, 1, followingMembers))
                     .people(getHotPeopleList(member))
                     .build();
-        } else {
+    }
+
+    private RecommendationResponseDTO.DailyNewsAllResult<?> mapToResponse(Long memberId, String section, Integer page) {
+        Member member = memberRepositoryService.findMemberById(memberId);
+
+        List<Member> followingMembers = getFollowingMembers(member.getId());
             if ("closet".equals(section)) {
-                return RecommendationResponseDTO.DailyNewsResult.builder()
-                        .closet(getClosetList(true, page, followingMembers))
+                return RecommendationResponseDTO.DailyNewsAllResult.<RecommendationResponseDTO.Closet>builder()
+                        .result(getClosetList(true, page, followingMembers))
                         .build();
+
             } else if ("calendar".equals(section)) {
-                return RecommendationResponseDTO.DailyNewsResult.builder()
-                        .calendar(getCalendarList(member, true, page, followingMembers))
+                return RecommendationResponseDTO.DailyNewsAllResult.<RecommendationResponseDTO.Calendar>builder()
+                        .result(getCalendarList(member, true, page, followingMembers))
                         .build();
             }
-        }
-
-        recommendationRepositoryService.saveAll(recommendList);
         return null;
     }
 
