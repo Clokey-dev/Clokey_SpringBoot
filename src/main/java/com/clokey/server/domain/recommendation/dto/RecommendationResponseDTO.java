@@ -72,7 +72,6 @@ public class RecommendationResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Closet {
-        private Long memberId;
         private String clokeyId;
         private String profileImage;
         private List<Long> clothesId;
@@ -86,7 +85,6 @@ public class RecommendationResponseDTO {
     @AllArgsConstructor
     public static class Calendar {
         private LocalDate date;
-        private Long memberId;
         private String clokeyId;
         private String profileImage;
         private List<Event> events;
@@ -106,7 +104,6 @@ public class RecommendationResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class People {
-        private Long memberId;
         private String clokeyId;
         private String profileImage;
         private String imageUrl;

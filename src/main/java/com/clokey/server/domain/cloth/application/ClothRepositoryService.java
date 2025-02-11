@@ -24,18 +24,18 @@ public interface ClothRepositoryService {
     boolean existsById(Long clothId);
 
     Page<Cloth> findByClosetFilters(
-            @Param("clokeyId") String clokeyId,
-            @Param("requesterId") Long requesterId,
-            @Param("categoryId") Long categoryId,
-            @Param("season") Season season,
-            @Param("sort") ClothSort sort,
+            String clokeyId,
+            Long requesterId,
+            Long categoryId,
+            Season season,
+            ClothSort sort,
             Pageable pageable
     );
 
     List<Cloth> findBySmartSummaryFilters(
-            @Param("type") SummaryFrequency type,
-            @Param("memberId") Long memberId,
-            @Param("categoryId") Long categoryId
+            SummaryFrequency type,
+            Long memberId,
+            Long categoryId
     );
 
     List<Cloth> findAllById(List<Long> clothIds);

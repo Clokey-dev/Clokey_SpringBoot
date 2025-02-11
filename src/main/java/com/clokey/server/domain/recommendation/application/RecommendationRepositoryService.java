@@ -24,10 +24,4 @@ public interface RecommendationRepositoryService {
     List<Recommendation> findByMemberIdAndNewsTypeIn(Long memberId, List<NewsType> newsTypes);
 
     void saveAll(List<Recommendation> recommendations);
-
-    List<Recommendation> findTop6ByNewsTypeOrderByCreatedAtDesc(NewsType newsType);
-
-    List<Recommendation> findByMemberIdOrderByCreatedAtDesc(Long memberId);
-
-    Optional<Recommendation> findTop1ByMemberIdAndNewsTypeOrderByCreatedAtDesc(Long memberId, NewsType newsType);
 }

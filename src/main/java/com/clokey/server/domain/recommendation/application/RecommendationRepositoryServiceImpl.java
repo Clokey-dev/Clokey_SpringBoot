@@ -37,7 +37,7 @@ public class RecommendationRepositoryServiceImpl implements RecommendationReposi
     @Override
     @Transactional(readOnly = true)
     public Recommendation findById(Long recommendationId) {
-        return recommendationRepository.findById(recommendationId).orElseThrow(()-> new DatabaseException(ErrorStatus.NO_SUCH_RECOMMEND));
+        return recommendationRepository.findById(recommendationId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_RECOMMEND));
     }
 
     @Override
@@ -59,20 +59,5 @@ public class RecommendationRepositoryServiceImpl implements RecommendationReposi
     @Override
     public void saveAll(List<Recommendation> recommendations) {
         recommendationRepository.saveAll(recommendations);
-    }
-
-    @Override
-    public List<Recommendation> findTop6ByNewsTypeOrderByCreatedAtDesc(NewsType newsType) {
-        return recommendationRepository.findTop6ByNewsTypeOrderByCreatedAtDesc(newsType);
-    }
-
-    @Override
-    public List<Recommendation> findByMemberIdOrderByCreatedAtDesc(Long memberId) {
-        return recommendationRepository.findByMemberIdOrderByCreatedAtDesc(memberId);
-    }
-
-    @Override
-    public Optional<Recommendation> findTop1ByMemberIdAndNewsTypeOrderByCreatedAtDesc(Long memberId, NewsType newsType) {
-        return recommendationRepository.findTop1ByMemberIdAndNewsTypeOrderByCreatedAtDesc(memberId, newsType);
     }
 }
