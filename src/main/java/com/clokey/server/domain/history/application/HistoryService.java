@@ -20,8 +20,6 @@ public interface HistoryService {
 
     HistoryResponseDTO.HistoryCreateResult createHistory(HistoryRequestDTO.HistoryCreate historyCreateRequest, Long memberId, List<MultipartFile> images);
 
-    void updateHistory(HistoryRequestDTO.HistoryUpdate historyUpdate, Long memberId, Long historyId, List<MultipartFile> images);
-
     HistoryResponseDTO.LastYearHistoryResult getLastYearHistory(Long memberId);
 
     void deleteComment(Long commentId,Long memberId);

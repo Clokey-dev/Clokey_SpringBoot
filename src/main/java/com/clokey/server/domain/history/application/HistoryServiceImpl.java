@@ -7,7 +7,6 @@ import com.clokey.server.domain.history.domain.entity.*;
 import com.clokey.server.domain.history.dto.HistoryRequestDTO;
 import com.clokey.server.domain.history.exception.HistoryException;
 import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
-import com.clokey.server.domain.history.exception.validator.HistoryAlreadyExistValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
 import com.clokey.server.domain.member.application.FollowRepositoryService;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
@@ -26,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -38,7 +38,6 @@ public class HistoryServiceImpl implements HistoryService {
 
     private final FollowRepositoryService followRepositoryService;
     private final HistoryLikedValidator historyLikedValidator;
-    private final HistoryAlreadyExistValidator historyAlreadyExistValidator;
     private final HistoryRepositoryService historyRepositoryService;
     private final CommentRepositoryService commentRepositoryService;
     private final MemberRepositoryService memberRepositoryService;
@@ -194,80 +193,75 @@ public class HistoryServiceImpl implements HistoryService {
     @Transactional
     public HistoryResponseDTO.HistoryCreateResult createHistory(HistoryRequestDTO.HistoryCreate historyCreateRequest, Long memberId, List<MultipartFile> imageFiles) {
 
-        //이미 해당 날짜에 기록이 존재하는지 검증합니다.
-        historyAlreadyExistValidator.validate(memberId, historyCreateRequest.getDate());
 
         //모든 옷이 나의 옷이 맞는지 검증합니다.
         clothAccessibleValidator.validateClothOfMember(historyCreateRequest.getClothes(), memberId);
-
-        // History 엔티티 생성 후 요청 정보 반환해서 저장
-        History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));
 
         //이미지는 반드시 첨부해야 합니다.
         if (imageFiles == null || imageFiles.isEmpty()) {
             throw new HistoryException(ErrorStatus.MUST_POST_HISTORY_IMAGE);
         }
 
-        historyImageRepositoryService.save(imageFiles, history);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        boolean historyExist = historyRepositoryService.checkHistoryExistOfDate(LocalDate.parse(historyCreateRequest.getDate(), formatter),memberId);
+
+        if(historyExist){
+            return updateHistory(historyCreateRequest,memberId,historyRepositoryService.getHistoryOfDate(LocalDate.parse(historyCreateRequest.getDate()),memberId).getId(),imageFiles);
+        }else {
+
+            // History 엔티티 생성 후 요청 정보 반환해서 저장
+            History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));
+
+            historyImageRepositoryService.save(imageFiles, history);
 
 
-        List<Cloth> cloths = clothRepositoryService.findAllById(historyCreateRequest.getClothes());
-        List<HistoryCloth> historyCloths = cloths.stream()
-                        .map(cloth -> {
-                            cloth.increaseWearNum();
-                            return HistoryCloth.builder()
-                                    .history(history)
-                                    .cloth(cloth)
-                                    .build();
-                        }).toList();
-        historyClothRepositoryService.saveAll(historyCloths);
-
-        historyCreateRequest.getHashtags()
-                .forEach(hashtagNames -> {
-                    //존재하는 해시태그라면 매핑 테이블에 추가
-                    //아니라면 새로운 해시태그를 만들고 매핑 테이블에 추가
-                    if (hashtagRepositoryService.existByName(hashtagNames)) {
-                        hashtagHistoryRepositoryService.save(HashtagHistory.builder()
+            List<Cloth> cloths = clothRepositoryService.findAllById(historyCreateRequest.getClothes());
+            List<HistoryCloth> historyCloths = cloths.stream()
+                    .map(cloth -> {
+                        cloth.increaseWearNum();
+                        return HistoryCloth.builder()
                                 .history(history)
-                                .hashtag(hashtagRepositoryService.findByName(hashtagNames))
-                                .build()
-                        );
-                    } else {
-                        Hashtag newHashtag = Hashtag.builder()
-                                .name(hashtagNames)
+                                .cloth(cloth)
                                 .build();
-                        hashtagRepositoryService.save(newHashtag);
+                    }).toList();
+            historyClothRepositoryService.saveAll(historyCloths);
 
-                        hashtagHistoryRepositoryService.save(HashtagHistory.builder()
-                                .history(history)
-                                .hashtag(newHashtag)
-                                .build()
-                        );
-                    }
-                });
+            historyCreateRequest.getHashtags()
+                    .forEach(hashtagNames -> {
+                        //존재하는 해시태그라면 매핑 테이블에 추가
+                        //아니라면 새로운 해시태그를 만들고 매핑 테이블에 추가
+                        if (hashtagRepositoryService.existByName(hashtagNames)) {
+                            hashtagHistoryRepositoryService.save(HashtagHistory.builder()
+                                    .history(history)
+                                    .hashtag(hashtagRepositoryService.findByName(hashtagNames))
+                                    .build()
+                            );
+                        } else {
+                            Hashtag newHashtag = Hashtag.builder()
+                                    .name(hashtagNames)
+                                    .build();
+                            hashtagRepositoryService.save(newHashtag);
 
-        return HistoryConverter.toHistoryCreateResult(history);
+                            hashtagHistoryRepositoryService.save(HashtagHistory.builder()
+                                    .history(history)
+                                    .hashtag(newHashtag)
+                                    .build()
+                            );
+                        }
+                    });
+
+            return HistoryConverter.toHistoryCreateResult(history);
+        }
     }
 
-    @Override
-    @Transactional
-    public void updateHistory(HistoryRequestDTO.HistoryUpdate historyUpdate, Long memberId, Long historyId, List<MultipartFile> images) {
+    private HistoryResponseDTO.HistoryCreateResult updateHistory(HistoryRequestDTO.HistoryCreate historyUpdate, Long memberId, Long historyId, List<MultipartFile> images) {
 
         //나의 기록이 맞는지 검증합니다.
         historyAccessibleValidator.validateMyHistory(historyId, memberId);
 
-        //모든 옷이 나의 옷이 맞는지 검증합니다.
-        clothAccessibleValidator.validateClothOfMember(historyUpdate.getClothes(), memberId);
-
         historyImageRepositoryService.deleteAllByHistoryId(historyId);
 
-        //이미지는 반드시 첨부해야 합니다.
-        if (images == null || images.isEmpty()) {
-            throw new HistoryException(ErrorStatus.MUST_POST_HISTORY_IMAGE);
-        }
-
         historyImageRepositoryService.save(images, historyRepositoryService.findById(historyId));
-
 
         updateHistoryClothes(
                 historyUpdate.getClothes(),
@@ -283,6 +277,7 @@ public class HistoryServiceImpl implements HistoryService {
 
         History historyToUpdate = historyRepositoryService.findById(historyId);
         historyToUpdate.updateHistory(historyUpdate.getContent(), historyUpdate.getVisibility());
+        return HistoryConverter.toHistoryCreateResult(historyRepositoryService.findById(historyId));
     }
 
     @Override
