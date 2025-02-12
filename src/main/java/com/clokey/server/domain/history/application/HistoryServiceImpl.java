@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -38,7 +39,6 @@ public class HistoryServiceImpl implements HistoryService {
 
     private final FollowRepositoryService followRepositoryService;
     private final HistoryLikedValidator historyLikedValidator;
-    private final HistoryAlreadyExistValidator historyAlreadyExistValidator;
     private final HistoryRepositoryService historyRepositoryService;
     private final CommentRepositoryService commentRepositoryService;
     private final MemberRepositoryService memberRepositoryService;
@@ -194,19 +194,24 @@ public class HistoryServiceImpl implements HistoryService {
     @Transactional
     public HistoryResponseDTO.HistoryCreateResult createHistory(HistoryRequestDTO.HistoryCreate historyCreateRequest, Long memberId, List<MultipartFile> imageFiles) {
 
-        //이미 해당 날짜에 기록이 존재하는지 검증합니다.
-        historyAlreadyExistValidator.validate(memberId, historyCreateRequest.getDate());
 
         //모든 옷이 나의 옷이 맞는지 검증합니다.
         clothAccessibleValidator.validateClothOfMember(historyCreateRequest.getClothes(), memberId);
-
-        // History 엔티티 생성 후 요청 정보 반환해서 저장
-        History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));
 
         //이미지는 반드시 첨부해야 합니다.
         if (imageFiles == null || imageFiles.isEmpty()) {
             throw new HistoryException(ErrorStatus.MUST_POST_HISTORY_IMAGE);
         }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        boolean historyExist = historyRepositoryService.checkHistoryExistOfDate(LocalDate.parse(historyCreateRequest.getDate(), formatter),memberId);
+
+        if(historyExist){
+            updateHistory(historyCreateRequest,memberId,historyRepositoryService.getHistoryOfDate(LocalDate.parse(historyCreateRequest.getDate()),memberId).getId(),imageFiles);
+        }
+
+        // History 엔티티 생성 후 요청 정보 반환해서 저장
+        History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));
 
         historyImageRepositoryService.save(imageFiles, history);
 
@@ -249,25 +254,14 @@ public class HistoryServiceImpl implements HistoryService {
         return HistoryConverter.toHistoryCreateResult(history);
     }
 
-    @Override
-    @Transactional
-    public void updateHistory(HistoryRequestDTO.HistoryUpdate historyUpdate, Long memberId, Long historyId, List<MultipartFile> images) {
+    private void updateHistory(HistoryRequestDTO.HistoryCreate historyUpdate, Long memberId, Long historyId, List<MultipartFile> images) {
 
         //나의 기록이 맞는지 검증합니다.
         historyAccessibleValidator.validateMyHistory(historyId, memberId);
 
-        //모든 옷이 나의 옷이 맞는지 검증합니다.
-        clothAccessibleValidator.validateClothOfMember(historyUpdate.getClothes(), memberId);
-
         historyImageRepositoryService.deleteAllByHistoryId(historyId);
 
-        //이미지는 반드시 첨부해야 합니다.
-        if (images == null || images.isEmpty()) {
-            throw new HistoryException(ErrorStatus.MUST_POST_HISTORY_IMAGE);
-        }
-
         historyImageRepositoryService.save(images, historyRepositoryService.findById(historyId));
-
 
         updateHistoryClothes(
                 historyUpdate.getClothes(),
