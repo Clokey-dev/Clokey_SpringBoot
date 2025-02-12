@@ -206,54 +206,55 @@ public class HistoryServiceImpl implements HistoryService {
         boolean historyExist = historyRepositoryService.checkHistoryExistOfDate(LocalDate.parse(historyCreateRequest.getDate(), formatter),memberId);
 
         if(historyExist){
-            updateHistory(historyCreateRequest,memberId,historyRepositoryService.getHistoryOfDate(LocalDate.parse(historyCreateRequest.getDate()),memberId).getId(),imageFiles);
-        }
+            return updateHistory(historyCreateRequest,memberId,historyRepositoryService.getHistoryOfDate(LocalDate.parse(historyCreateRequest.getDate()),memberId).getId(),imageFiles);
+        }else {
 
-        // History 엔티티 생성 후 요청 정보 반환해서 저장
-        History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));
+            // History 엔티티 생성 후 요청 정보 반환해서 저장
+            History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));
 
-        historyImageRepositoryService.save(imageFiles, history);
+            historyImageRepositoryService.save(imageFiles, history);
 
 
-        List<Cloth> cloths = clothRepositoryService.findAllById(historyCreateRequest.getClothes());
-        List<HistoryCloth> historyCloths = cloths.stream()
-                        .map(cloth -> {
-                            cloth.increaseWearNum();
-                            return HistoryCloth.builder()
-                                    .history(history)
-                                    .cloth(cloth)
-                                    .build();
-                        }).toList();
-        historyClothRepositoryService.saveAll(historyCloths);
-
-        historyCreateRequest.getHashtags()
-                .forEach(hashtagNames -> {
-                    //존재하는 해시태그라면 매핑 테이블에 추가
-                    //아니라면 새로운 해시태그를 만들고 매핑 테이블에 추가
-                    if (hashtagRepositoryService.existByName(hashtagNames)) {
-                        hashtagHistoryRepositoryService.save(HashtagHistory.builder()
+            List<Cloth> cloths = clothRepositoryService.findAllById(historyCreateRequest.getClothes());
+            List<HistoryCloth> historyCloths = cloths.stream()
+                    .map(cloth -> {
+                        cloth.increaseWearNum();
+                        return HistoryCloth.builder()
                                 .history(history)
-                                .hashtag(hashtagRepositoryService.findByName(hashtagNames))
-                                .build()
-                        );
-                    } else {
-                        Hashtag newHashtag = Hashtag.builder()
-                                .name(hashtagNames)
+                                .cloth(cloth)
                                 .build();
-                        hashtagRepositoryService.save(newHashtag);
+                    }).toList();
+            historyClothRepositoryService.saveAll(historyCloths);
 
-                        hashtagHistoryRepositoryService.save(HashtagHistory.builder()
-                                .history(history)
-                                .hashtag(newHashtag)
-                                .build()
-                        );
-                    }
-                });
+            historyCreateRequest.getHashtags()
+                    .forEach(hashtagNames -> {
+                        //존재하는 해시태그라면 매핑 테이블에 추가
+                        //아니라면 새로운 해시태그를 만들고 매핑 테이블에 추가
+                        if (hashtagRepositoryService.existByName(hashtagNames)) {
+                            hashtagHistoryRepositoryService.save(HashtagHistory.builder()
+                                    .history(history)
+                                    .hashtag(hashtagRepositoryService.findByName(hashtagNames))
+                                    .build()
+                            );
+                        } else {
+                            Hashtag newHashtag = Hashtag.builder()
+                                    .name(hashtagNames)
+                                    .build();
+                            hashtagRepositoryService.save(newHashtag);
 
-        return HistoryConverter.toHistoryCreateResult(history);
+                            hashtagHistoryRepositoryService.save(HashtagHistory.builder()
+                                    .history(history)
+                                    .hashtag(newHashtag)
+                                    .build()
+                            );
+                        }
+                    });
+
+            return HistoryConverter.toHistoryCreateResult(history);
+        }
     }
 
-    private void updateHistory(HistoryRequestDTO.HistoryCreate historyUpdate, Long memberId, Long historyId, List<MultipartFile> images) {
+    private HistoryResponseDTO.HistoryCreateResult updateHistory(HistoryRequestDTO.HistoryCreate historyUpdate, Long memberId, Long historyId, List<MultipartFile> images) {
 
         //나의 기록이 맞는지 검증합니다.
         historyAccessibleValidator.validateMyHistory(historyId, memberId);
@@ -276,6 +277,7 @@ public class HistoryServiceImpl implements HistoryService {
 
         History historyToUpdate = historyRepositoryService.findById(historyId);
         historyToUpdate.updateHistory(historyUpdate.getContent(), historyUpdate.getVisibility());
+        return HistoryConverter.toHistoryCreateResult(historyRepositoryService.findById(historyId));
     }
 
     @Override
