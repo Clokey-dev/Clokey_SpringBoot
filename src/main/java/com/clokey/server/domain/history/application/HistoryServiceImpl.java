@@ -7,7 +7,6 @@ import com.clokey.server.domain.history.domain.entity.*;
 import com.clokey.server.domain.history.dto.HistoryRequestDTO;
 import com.clokey.server.domain.history.exception.HistoryException;
 import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
-import com.clokey.server.domain.history.exception.validator.HistoryAlreadyExistValidator;
 import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
 import com.clokey.server.domain.member.application.FollowRepositoryService;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
