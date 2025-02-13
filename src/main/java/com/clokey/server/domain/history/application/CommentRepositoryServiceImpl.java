@@ -69,7 +69,9 @@ public class CommentRepositoryServiceImpl implements CommentRepositoryService{
     @Override
     public boolean existsByIdAndHistoryId(Long id, Long historyId) {
         return commentRepository.existsByIdAndHistoryId(id, historyId);
-
+    }
+    
+    @Override
     public Long countByHistoryId(Long historyId) {
         return commentRepository.countByHistoryId(historyId);
     }
