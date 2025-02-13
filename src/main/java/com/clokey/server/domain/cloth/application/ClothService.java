@@ -4,6 +4,7 @@ import com.clokey.server.domain.cloth.dto.ClothRequestDTO;
 import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
 import com.clokey.server.domain.model.entity.enums.ClothSort;
 import com.clokey.server.domain.model.entity.enums.Season;
+import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ClothService {
@@ -16,9 +17,11 @@ public interface ClothService {
 
     ClothResponseDTO.CategoryClothPreviewListResult readClothPreviewInfoListByClokeyId(String ownerClokeyId, Long requesterId, Long categoryId, Season season, ClothSort sort, int page, int pageSize);
 
+    ClothResponseDTO.SmartSummaryClothPreviewListResult readSmartSummary(Long memberId);
+
     ClothResponseDTO.ClothCreateResult createCloth(Long memberId, ClothRequestDTO.ClothCreateOrUpdateRequest request, MultipartFile imageFile);
 
-    void updateClothById(Long clothId, Long categoryId, ClothRequestDTO.ClothCreateOrUpdateRequest request, MultipartFile imageFile);
+    void updateClothById(Long clothId, ClothRequestDTO.ClothCreateOrUpdateRequest request, MultipartFile imageFile);
 
     void deleteClothById(Long clothId);
 }

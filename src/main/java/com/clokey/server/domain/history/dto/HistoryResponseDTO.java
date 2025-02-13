@@ -31,6 +31,7 @@ public class HistoryResponseDTO {
         boolean isLiked;
         LocalDate date;
         List<HistoryClothResult> cloths;
+        Long commentCount;
     }
 
     @Builder
@@ -40,6 +41,7 @@ public class HistoryResponseDTO {
     public static class HistoryClothResult {
         Long clothId;
         String clothImageUrl;
+        String clothName;
     }
 
 
@@ -49,6 +51,7 @@ public class HistoryResponseDTO {
     @AllArgsConstructor
     public static class MonthViewResult {
         Long memberId;
+        String nickName;
         List<HistoryResult> histories;
     }
 

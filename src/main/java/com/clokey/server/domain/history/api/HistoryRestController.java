@@ -145,26 +145,6 @@ public class HistoryRestController {
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_CREATED, result);
     }
 
-    @PatchMapping(value = "/{historyId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "기록을 수정하는 API")
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_204", description = "성공적으로 수정되었습니다."),
-    })
-    @Parameters({
-            @Parameter(name = "historyId", description = "수정하고자 하는 기록의 Id입니다.")
-    })
-    public BaseResponse<Void> updateHistory(
-            @RequestPart("historyUpdateRequest") @Valid HistoryRequestDTO.HistoryUpdate historyUpdate,
-            @RequestPart(value = "imageFile") @Valid @HistoryImageQuantityLimit List<MultipartFile> imageFiles,
-            @Parameter(name = "user",hidden = true) @AuthUser Member member,
-            @PathVariable Long historyId
-    ) {
-
-        historyService.updateHistory(historyUpdate, member.getId(), historyId, imageFiles);
-
-        return BaseResponse.onSuccess(SuccessStatus.HISTORY_UPDATED, null);
-    }
-
     @GetMapping(value = "/1-year-ago")
     @Operation(summary = "1년전 나 또는 팔로우의 기록을 확인하는 API")
     @ApiResponses({

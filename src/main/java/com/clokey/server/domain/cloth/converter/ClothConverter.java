@@ -5,6 +5,7 @@ import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
 import com.clokey.server.domain.category.domain.entity.Category;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
 import org.springframework.data.domain.Page;
 
 import java.time.format.TextStyle;
@@ -95,15 +96,47 @@ public class ClothConverter {
                 ).collect(Collectors.toList());
     }
 
-    public static ClothResponseDTO.CategoryClothPreviewListResult toClothPreviewListResult(Page<Cloth> clothes,
-                                                                                           List<ClothResponseDTO.ClothPreview> clothPreviews){
+    public static List<ClothResponseDTO.ClothPreview> toClothPreviewList(List<Cloth> clothes) {
+        return clothes.stream()
+                .map(cloth -> ClothResponseDTO.ClothPreview.builder()
+                        .id(cloth.getId())
+                        .name(cloth.getName())
+                        .imageUrl(cloth.getImage() != null ? cloth.getImage().getImageUrl() : null)
+                        .wearNum(cloth.getWearNum())
+                        .build()
+                ).collect(Collectors.toList());
+    }
+
+    public static ClothResponseDTO.CategoryClothPreviewListResult toClosetClothPreviewListResult(Page<Cloth> clothes,
+                                                                                                 List<ClothResponseDTO.ClothPreview> clothPreviews){
         return ClothResponseDTO.CategoryClothPreviewListResult.builder()
-                .clothes(clothPreviews)
-                .listSize(clothPreviews.size())
+                .clothPreviews(clothPreviews)
                 .totalPage(clothes.getTotalPages())
                 .totalElements(clothes.getTotalElements())
                 .isFirst(clothes.isFirst())
                 .isLast(clothes.isLast())
+                .build();
+    }
+
+    public static ClothResponseDTO.SmartSummaryClothPreviewListResult toSummaryClothPreviewListResult(
+            Category frequentCategory,
+            Category infrequentCategory,
+            Long frequentUsage,
+            Long infrequentUsage,
+            List<ClothResponseDTO.ClothPreview> frequentClothPreviews,
+            List<ClothResponseDTO.ClothPreview> infrequentClothPreviews
+    ) {
+        return ClothResponseDTO.SmartSummaryClothPreviewListResult.builder()
+                .frequentBaseCategoryName(frequentCategory.getParent().getName())
+                .frequentCoreCategoryName(frequentCategory.getName())
+                .frequentCoreCategoryId(frequentCategory.getId())
+                .frequentUsage(frequentUsage)
+                .frequentClothPreviews(frequentClothPreviews)
+                .infrequentBaseCategoryName(infrequentCategory.getParent().getName())
+                .infrequentCoreCategoryName(infrequentCategory.getName())
+                .infrequentCoreCategoryId(infrequentCategory.getId())
+                .infrequentUsage(infrequentUsage)
+                .infrequentClothPreviews(infrequentClothPreviews)
                 .build();
     }
 
