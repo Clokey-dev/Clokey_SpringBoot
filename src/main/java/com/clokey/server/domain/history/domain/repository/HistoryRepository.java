@@ -51,10 +51,13 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
 
     @Query("SELECT DISTINCT h FROM History h " +
             "JOIN HashtagHistory hh ON hh.history.id = h.id " +
+            "LEFT JOIN Follow f ON f.following.id = h.member.id AND f.followed.id = :currentMemberId " +  // follow 관계 조인
             "WHERE hh.hashtag.id IN :hashtagIds " +
             "AND h.member.id <> :currentMemberId " +
-            "ORDER BY h.likes DESC, h.historyDate DESC " +
-            "LIMIT 10")
-    List<History> findTop10MembersByHashtagIdsOrderByLikes(@Param("hashtagIds") List<Long> hashtagIds,
-                                                          @Param("currentMemberId") Long currentMemberId);
+            "AND f.id IS NULL " +  // 팔로우한 사람 제외
+            "ORDER BY h.likes DESC, h.historyDate DESC")
+    List<History> findTop10MembersByHashtagIdsOrderByLikes(
+            @Param("hashtagIds") List<Long> hashtagIds,
+            @Param("currentMemberId") Long currentMemberId,
+            Pageable pageable);
 }
