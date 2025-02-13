@@ -155,7 +155,7 @@ public class HistoryServiceImpl implements HistoryService {
                             .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
                             .findFirst()
                             .map(HistoryImage::getImageUrl)
-                            .orElse("")) // 사진이 없다면 빈칸
+                            .orElse(historyImageRepositoryService.findFirstImagesByHistoryIds(List.of(history.getId())).get(history.getId()))) // 사진이 없다면 첫 옷 사진
                     .collect(Collectors.toList());
             return HistoryConverter.toMonthViewResult(myMemberId, histories, firstImageUrlsOfHistory);
         }
@@ -173,7 +173,7 @@ public class HistoryServiceImpl implements HistoryService {
                         .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
                         .findFirst()
                         .map(HistoryImage::getImageUrl)
-                        .orElse("")) // 사진이 없다면 빈칸
+                        .orElse(historyImageRepositoryService.findFirstImagesByHistoryIds(List.of(history.getId())).get(history.getId()))) // 사진이 없다면 첫 옷 사진
                 .collect(Collectors.toList());
 
         //비공개 게시물을 가려줍니다.
