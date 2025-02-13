@@ -47,7 +47,7 @@ public class FolderRestController {
     }
 
     @Operation(summary = "폴더 이름 수정 API", description = "폴더 이름 수정하는 API입니다.")
-    @PatchMapping("/folders/{folderId}")
+    @PatchMapping("/folders")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_204", description = "성공적으로 수정되었습니다."),
     })

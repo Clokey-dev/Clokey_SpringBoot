@@ -3,6 +3,7 @@ package com.clokey.server.domain.recommendation.api;
 import com.clokey.server.domain.folder.converter.FolderConverter;
 import com.clokey.server.domain.folder.dto.FolderRequestDTO;
 import com.clokey.server.domain.folder.dto.FolderResponseDTO;
+import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.domain.recommendation.application.RecommendationService;
@@ -48,7 +49,7 @@ public class RecommendationController {
     }
 
     @Operation(summary = "홈 소식 내용 자세히 보기 API", description = "홈 소식 내용 자세히 보기 API입니다. closet, calendar만 가능합니다.")
-    @GetMapping("/news/all")
+    @GetMapping("/news/detail")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HOME_200", description = "성공적으로 조회되었습니다."),
     })
@@ -57,5 +58,15 @@ public class RecommendationController {
                                                                            @RequestParam @Valid @CheckPage Integer page) {
         RecommendationResponseDTO.DailyNewsAllResult<?> response = recommendationService.getNewsAll(member.getId(), section, page);
         return BaseResponse.onSuccess(SuccessStatus.HOME_SUCCESS, response);
+    }
+
+    @GetMapping(value = "/1-year-ago")
+    @Operation(summary = "1년전 나 또는 팔로우의 기록을 확인하는 API")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HOME_200", description = "성공적으로 조회되었습니다."),
+    })
+    public BaseResponse<HistoryResponseDTO.LastYearHistoryResult> getLastYearHistory(@Parameter(name = "user", hidden = true) @AuthUser Member member) {
+        HistoryResponseDTO.LastYearHistoryResult result = recommendationService.getLastYearHistory(member.getId());
+        return BaseResponse.onSuccess(SuccessStatus.HOME_SUCCESS, result);
     }
 }

@@ -6,9 +6,11 @@ import com.clokey.server.domain.history.application.HashtagHistoryRepositoryServ
 import com.clokey.server.domain.history.application.HashtagRepositoryService;
 import com.clokey.server.domain.history.application.HistoryImageRepositoryService;
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
+import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.domain.entity.HashtagHistory;
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.history.domain.entity.HistoryImage;
+import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.domain.member.application.FollowRepositoryService;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
@@ -26,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -312,5 +315,62 @@ public class RecommendationServiceImpl implements RecommendationService {
         }
 
         return null;
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public HistoryResponseDTO.LastYearHistoryResult getLastYearHistory(Long memberId) {
+
+        LocalDate today = LocalDate.now();
+        LocalDate oneYearAgo = today.minusYears(1);
+
+        if(historyRepositoryService.checkHistoryExistOfDate(oneYearAgo,memberId)){
+            Long historyOneYearAgoId = historyRepositoryService.getHistoryOfDate(oneYearAgo,memberId).getId();
+            List<String> historyUrls = historyImageRepositoryService.findByHistoryId(historyOneYearAgoId).stream()
+                    .map(HistoryImage::getImageUrl)
+                    .toList();
+            return RecommendationConverter.toLastYearHistoryResult(historyOneYearAgoId,historyUrls,memberRepositoryService.findMemberById(memberId));
+        }
+
+        List<Long> followingMembers = followRepositoryService.findFollowedByFollowingId(memberId).stream()
+                .map(Member::getId)
+                .toList();
+
+        List<Boolean> membersHaveHistoryOneYearAgo = historyRepositoryService.existsByHistoryDateAndMemberIds(oneYearAgo,followingMembers);
+
+        Long memberPicked = getRandomMemberWithHistory(followingMembers,membersHaveHistoryOneYearAgo);
+
+        if(memberPicked != null){
+            Long historyOneYearAgoId = historyRepositoryService.getHistoryOfDate(oneYearAgo,memberPicked).getId();
+            List<String> historyUrls = historyImageRepositoryService.findByHistoryId(historyOneYearAgoId).stream()
+                    .map(HistoryImage::getImageUrl)
+                    .toList();
+            return RecommendationConverter.toLastYearHistoryResult(historyOneYearAgoId,historyUrls,memberRepositoryService.findMemberById(memberPicked));
+        }
+
+        return null;
+    }
+
+    private Long getRandomMemberWithHistory(List<Long> followingMembers, List<Boolean> membersHaveHistoryOneYearAgo) {
+        if (followingMembers == null || membersHaveHistoryOneYearAgo == null) {
+            return null;
+        }
+
+        if (followingMembers.isEmpty() || membersHaveHistoryOneYearAgo.isEmpty()) {
+            return null;
+        }
+
+        List<Long> candidates = new ArrayList<>();
+        for (int i = 0; i < followingMembers.size(); i++) {
+            if (Boolean.TRUE.equals(membersHaveHistoryOneYearAgo.get(i))) { // true인 경우만 추가
+                candidates.add(followingMembers.get(i));
+            }
+        }
+
+        if (candidates.isEmpty()) {
+            return null;
+        }
+
+        return candidates.get(new Random().nextInt(candidates.size()));
     }
 }

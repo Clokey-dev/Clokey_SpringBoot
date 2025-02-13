@@ -2,6 +2,7 @@ package com.clokey.server.domain.recommendation.converter;
 
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
 import org.springframework.data.domain.Page;
@@ -20,7 +21,7 @@ public class RecommendationConverter {
         return new RecommendationResponseDTO.Recommend(
                 imageUrl,
                 subtitle,
-                "#" + hashtag,
+                hashtag,
                 LocalDateTime.now()
         );
     }
@@ -101,7 +102,8 @@ public class RecommendationConverter {
                 .map(recommendedHistory -> new RecommendationResponseDTO.People(
                         recommendedHistory.getMember().getClokeyId(),
                         recommendedHistory.getMember().getProfileImageUrl(),
-                        historyImageMap.get(recommendedHistory.getId())
+                        historyImageMap.get(recommendedHistory.getId()),
+                        recommendedHistory.getId()
                 ))
                 .collect(Collectors.toList());
     }
@@ -122,6 +124,14 @@ public class RecommendationConverter {
                 .closet(closetList)
                 .calendar(calendarList)
                 .people(peopleList)
+                .build();
+    }
+
+    public static HistoryResponseDTO.LastYearHistoryResult toLastYearHistoryResult(Long historyId, List<String> historyImageUrls, Member member) {
+        return HistoryResponseDTO.LastYearHistoryResult.builder()
+                .historyId(historyId)
+                .nickName(member.getNickname())
+                .imageUrls(historyImageUrls)
                 .build();
     }
 }

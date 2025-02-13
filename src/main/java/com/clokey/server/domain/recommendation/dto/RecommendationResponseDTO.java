@@ -107,5 +107,6 @@ public class RecommendationResponseDTO {
         private String clokeyId;
         private String profileImage;
         private String imageUrl;
+        private Long historyId;
     }
 }
