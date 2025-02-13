@@ -3,7 +3,6 @@ package com.clokey.server.domain.member.application;
 import com.clokey.server.domain.cloth.application.ClothImageRepositoryService;
 import com.clokey.server.domain.cloth.application.ClothRepositoryService;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
-import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
 import com.clokey.server.domain.folder.application.ClothFolderRepositoryService;
 import com.clokey.server.domain.folder.application.FolderRepositoryService;
 import com.clokey.server.domain.folder.domain.entity.Folder;
@@ -19,16 +18,12 @@ import com.clokey.server.domain.model.entity.enums.MemberStatus;
 import com.clokey.server.domain.model.entity.enums.SocialType;
 import com.clokey.server.domain.notification.application.NotificationRepositoryService;
 import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
-import com.clokey.server.domain.notification.domain.repository.NotificationRepository;
 import com.clokey.server.domain.term.application.MemberTermRepositoryService;
-import com.clokey.server.domain.term.domain.repository.MemberTermRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import com.clokey.server.global.infra.s3.S3ImageService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +33,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +42,7 @@ import java.net.http.HttpRequest;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class LogoutServiceImpl implements LogoutService {
+public class UnlinkServiceImpl implements UnlinkService {
 
     private final AppleAuthService appleAuthService;
     private final MemberTermRepositoryService memberTermRepositoryService;
@@ -78,22 +72,6 @@ public class LogoutServiceImpl implements LogoutService {
     private String APPLE_CLIENT_ID;
 
 
-    @Transactional
-    @Override
-    public void logout(Long userId, HttpServletRequest request) {
-        // 로그아웃 처리
-
-        if(memberRepositoryService.findMemberById(userId).getSocialType().equals("KAKAO")) {
-            String kakaoId = memberRepositoryService.findMemberById(userId).getKakaoId();
-            if (kakaoId != null) {
-                kakaoLogout(kakaoId);
-            }
-        }
-
-        // 토큰 무효화
-        String result = invalidateToken(userId);
-
-    }
 
     @Transactional
     @Override
@@ -141,37 +119,6 @@ public class LogoutServiceImpl implements LogoutService {
             return null;
     }
 
-
-
-        public void kakaoLogout (String kakaoId){  // String 타입의 kakaoId를 받음
-            String url = "https://kapi.kakao.com/v1/user/logout";
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-            headers.set("Authorization", "KakaoAK " + KAKAO_ADMIN_KEY);  // 어드민 키 입력
-
-            try {
-                Long kakaoUserId = Long.parseLong(kakaoId);  // String → Long 변환
-                String body = "target_id_type=user_id&target_id=" + kakaoUserId;
-
-                HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
-                RestTemplate restTemplate = new RestTemplate();
-                ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
-
-                if (response.getStatusCode() == HttpStatus.OK) {
-                    System.out.println("로그아웃 성공: " + response.getBody().get("id"));
-                } else {
-                    System.out.println("로그아웃 실패: " + response.getStatusCode());
-                }
-
-                // 카카오 응답 전체 출력 (디버깅용)
-                System.out.println("카카오 응답: " + response.getBody());
-
-            } catch (NumberFormatException e) {
-                System.out.println("로그아웃 실패: kakaoId가 올바른 숫자가 아닙니다.");
-            }
-
-        }
 
         public void kakaoUnlink (String kakaoId){
             String url = "https://kapi.kakao.com/v1/user/unlink";

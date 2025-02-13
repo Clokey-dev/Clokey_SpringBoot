@@ -2,31 +2,19 @@ package com.clokey.server.domain.member.api;
 
 import com.clokey.server.domain.member.application.AppleAuthService;
 import com.clokey.server.domain.member.application.AuthService;
-import com.clokey.server.domain.member.application.LogoutService;
+import com.clokey.server.domain.member.application.UnlinkService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.dto.AuthDTO;
-import com.clokey.server.domain.member.dto.MemberDTO;
 import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.domain.member.exception.annotation.AuthUser;
-import com.clokey.server.domain.term.dto.TermRequestDTO;
-import com.clokey.server.domain.term.dto.TermResponseDTO;
-import com.clokey.server.domain.term.exception.annotation.EssentialTermAgree;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.code.status.SuccessStatus;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.models.responses.ApiResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Map;
 
 @RestController
 public class AuthController {
@@ -36,7 +24,7 @@ public class AuthController {
     @Autowired
     private AppleAuthService appleAuthService;
     @Autowired
-    private LogoutService logoutService;
+    private UnlinkService logoutService;
 
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<AuthDTO.TokenResponse>> login(@RequestBody AuthDTO.LoginRequest loginRequest) {
@@ -85,15 +73,6 @@ public class AuthController {
         AuthDTO.TokenResponse response = authService.refreshAccessToken(request.getRefreshToken());
         return BaseResponse.onSuccess(SuccessStatus.LOGIN_UPDATED, response);
 
-    }
-
-    @Operation(summary = "로그아웃 API", description = "로그아웃하는 API입니다.")
-    @PostMapping("/logout")
-    public BaseResponse<Object> logout(
-            @Parameter(name = "user", hidden = true) @AuthUser Member member,
-            HttpServletRequest request) {
-        logoutService.logout(member.getId(),request);
-        return BaseResponse.onSuccess(SuccessStatus.LOGOUT_SUCCESS, null);
     }
 
 
