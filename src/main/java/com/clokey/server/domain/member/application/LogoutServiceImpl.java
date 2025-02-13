@@ -120,6 +120,8 @@ public class LogoutServiceImpl implements LogoutService {
             memberRepositoryService.saveMember(member);
         }
 
+        deleteData(userId);
+
     }
 
     @Transactional
