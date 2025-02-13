@@ -27,5 +27,5 @@ public interface HashtagHistoryRepositoryService {
 
     String findLatestTaggedHashtag(Long memberId);
 
-    Long findHistoryIdByHashtagName(String hashtagName);
+    List<HashtagHistory> findTop5HistoriesByHashtagNameOrderByDateDesc(String hashtagName);
 }

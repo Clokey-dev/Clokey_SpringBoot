@@ -4,6 +4,7 @@ import com.clokey.server.domain.history.domain.entity.Hashtag;
 import com.clokey.server.domain.history.domain.entity.HashtagHistory;
 import com.clokey.server.domain.history.domain.entity.History;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -45,11 +46,7 @@ public interface HashtagHistoryRepository extends JpaRepository<HashtagHistory, 
             "ORDER BY h.historyDate DESC LIMIT 1")
     Optional<String> findLatestTaggedHashtag(@Param("memberId") Long memberId);
 
+    @Query("SELECT hh FROM HashtagHistory hh WHERE hh.hashtag.name = :hashtagName ORDER BY hh.history.createdAt DESC")
+    List<HashtagHistory> findTop5HistoriesByHashtagNameOrderByDateDesc(@Param("hashtagName") String hashtagName, Pageable pageable);
 
-    @Query("SELECT hh.history.id FROM HashtagHistory hh " +
-            "JOIN hh.hashtag h " +
-            "WHERE h.name = :hashtagName " +
-            "ORDER BY hh.history.historyDate DESC " + // 최신순 정렬
-            "LIMIT 1")
-    Optional<Long> findHistoryIdByHashtagName(String hashtagName);
 }

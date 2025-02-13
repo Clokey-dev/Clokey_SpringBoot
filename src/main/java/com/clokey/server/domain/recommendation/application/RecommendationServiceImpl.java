@@ -2,7 +2,6 @@ package com.clokey.server.domain.recommendation.application;
 
 import com.clokey.server.domain.cloth.application.ClothRepositoryService;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
-import com.clokey.server.domain.cloth.domain.entity.ClothImage;
 import com.clokey.server.domain.history.application.HashtagHistoryRepositoryService;
 import com.clokey.server.domain.history.application.HashtagRepositoryService;
 import com.clokey.server.domain.history.application.HistoryImageRepositoryService;
@@ -18,7 +17,6 @@ import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.domain.recommendation.converter.RecommendationConverter;
 import com.clokey.server.domain.recommendation.domain.entity.Recommendation;
 import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -252,16 +250,27 @@ public class RecommendationServiceImpl implements RecommendationService {
         // 해당 해시태그를 사용한 다른 사용자 찾기 (최대 10명) + 좋아요 많은 순
         List<History> recommendedMemberHistories = historyRepositoryService.findTop10MembersByHashtagIdsOrderByLikes(hashtagIds, member.getId());
 
+        // 공개 범위 확인
+        List<History> filteredHistories = recommendedMemberHistories.stream()
+                .filter(history -> history.getMember().getVisibility().equals(Visibility.PUBLIC)) // 공개 계정인지 확인
+                .filter(history -> history.getVisibility().equals(Visibility.PUBLIC)) // 히스토리가 공개 상태인지 확인
+                .limit(4) // 최대 4명까지만 추천
+                .toList();
+
+        if (filteredHistories.isEmpty()) {
+            return List.of(); // 공개 계정 또는 공개 히스토리가 없으면 빈 리스트 반환
+        }
+
         // 히스토리 ID 리스트 추출
-        List<Long> historyIds = recommendedMemberHistories.stream()
+        List<Long> historyIds = filteredHistories.stream()
                 .map(History::getId)
                 .toList();
 
         // 각 히스토리에 대해 첫 번째 이미지를 찾음 (없을 수도 있음)
         Map<Long, String> historyImageMap = historyImageRepositoryService.findFirstImagesByHistoryIds(historyIds);
-        
+
         // 중복 제거 및 최대 4명 추천
-        return RecommendationConverter.toPeopleDTO(recommendedMemberHistories, historyImageMap);
+        return RecommendationConverter.toPeopleDTO(filteredHistories, historyImageMap);
     }
 
     private Recommendation createDefaultRecommend(Long memberId, NewsType type) {
@@ -279,21 +288,29 @@ public class RecommendationServiceImpl implements RecommendationService {
         if (followingMembers.isEmpty()) {
             return List.of(); // 팔로우한 멤버가 없으면 빈 리스트 반환
         }
-        return followingMembers;
+
+        return followingMembers.stream()
+                .filter(filteredmember -> filteredmember.getVisibility().equals(Visibility.PUBLIC))
+                .limit(20)
+                .toList();
     }
 
     private String getHistoryImageUrlByHashtagName(String hashtagName) {
-        Long historyId = hashtagHistoryRepositoryService.findHistoryIdByHashtagName(hashtagName);
-        if (historyId == null) {
+        List<HashtagHistory> histories = hashtagHistoryRepositoryService.findTop5HistoriesByHashtagNameOrderByDateDesc(hashtagName);
+
+        if(histories == null || histories.isEmpty()) {
             return null;
-        } else {
-            List<HistoryImage> images = historyImageRepositoryService.findByHistoryId(historyId);
-            String imageUrl = images.isEmpty() ? null : images.get(0).getImageUrl();
-            if (imageUrl == null) {
-                return null;
-            } else {
-                return imageUrl;
+        }
+
+        for (HashtagHistory history : histories) {
+            if (history.getHistory() != null && history.getHistory().getVisibility() == Visibility.PUBLIC) {
+                List<HistoryImage> images = historyImageRepositoryService.findByHistoryId(history.getHistory().getId());
+                if (!images.isEmpty()) {
+                    return images.get(0).getImageUrl();
+                }
             }
         }
+
+        return null;
     }
 }

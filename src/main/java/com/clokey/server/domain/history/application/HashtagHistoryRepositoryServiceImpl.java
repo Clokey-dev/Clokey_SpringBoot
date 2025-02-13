@@ -8,6 +8,7 @@ import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -72,8 +73,8 @@ public class HashtagHistoryRepositoryServiceImpl implements HashtagHistoryReposi
     }
 
     @Override
-    public Long findHistoryIdByHashtagName(String hashtagName) {
-        return hashtagHistoryRepository.findHistoryIdByHashtagName(hashtagName)
-                .orElse(null);
+    public List<HashtagHistory> findTop5HistoriesByHashtagNameOrderByDateDesc(String hashtagName) {
+        return hashtagHistoryRepository.findTop5HistoriesByHashtagNameOrderByDateDesc(hashtagName, PageRequest.of(0, 5));
     }
+
 }
