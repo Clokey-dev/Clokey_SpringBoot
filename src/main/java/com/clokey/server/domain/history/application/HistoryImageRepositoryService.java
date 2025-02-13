@@ -5,6 +5,7 @@ import com.clokey.server.domain.history.domain.entity.HistoryImage;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 public interface HistoryImageRepositoryService {
 
@@ -17,4 +18,6 @@ public interface HistoryImageRepositoryService {
     void deleteAllByHistoryId(Long historyId);
 
     List<HistoryImage> findByHistoryIdIn(List<Long> historyIds);
+
+    Map<Long, String> findFirstImagesByHistoryIds(List<Long> historyIds);
 }

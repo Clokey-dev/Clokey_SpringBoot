@@ -161,7 +161,6 @@ public class RecommendationServiceImpl implements RecommendationService {
                 unusedHashtag
         ));
 
-
         // 최근에 태그한 해시태그 - 최근에 사용자가 기록에 태그한 해시태그 하나 반환
         String recentHashtag = hashtagHistoryRepositoryService.findLatestTaggedHashtag(member.getId());
         recommendList.add(RecommendationConverter.toRecommendDTO(
@@ -251,10 +250,18 @@ public class RecommendationServiceImpl implements RecommendationService {
         }
 
         // 해당 해시태그를 사용한 다른 사용자 찾기 (최대 10명) + 좋아요 많은 순
-        List<Member> recommendedMembers = historyRepositoryService.findTop10MembersByHashtagIdsOrderByLikes(hashtagIds, member.getId());
+        List<History> recommendedMemberHistories = historyRepositoryService.findTop10MembersByHashtagIdsOrderByLikes(hashtagIds, member.getId());
 
+        // 히스토리 ID 리스트 추출
+        List<Long> historyIds = recommendedMemberHistories.stream()
+                .map(History::getId)
+                .toList();
+
+        // 각 히스토리에 대해 첫 번째 이미지를 찾음 (없을 수도 있음)
+        Map<Long, String> historyImageMap = historyImageRepositoryService.findFirstImagesByHistoryIds(historyIds);
+        
         // 중복 제거 및 최대 4명 추천
-        return RecommendationConverter.toPeopleDTO(recommendedMembers);
+        return RecommendationConverter.toPeopleDTO(recommendedMemberHistories, historyImageMap);
     }
 
     private Recommendation createDefaultRecommend(Long memberId, NewsType type) {

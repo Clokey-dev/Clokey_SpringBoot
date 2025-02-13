@@ -12,7 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -72,5 +75,21 @@ public class HistoryImageRepositoryServiceImpl implements HistoryImageRepository
     @Override
     public List<HistoryImage> findByHistoryIdIn(List<Long> historyIds) {
         return historyImageRepository.findByHistoryIdIn(historyIds);
+    }
+
+    @Override
+    public Map<Long, String> findFirstImagesByHistoryIds(List<Long> historyIds) {
+        if (historyIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        List<HistoryImage> result = historyImageRepository.findByHistoryIdIn(historyIds);
+
+        return result.stream()
+                .collect(Collectors.toMap(
+                        hi -> hi.getHistory().getId(),
+                        HistoryImage::getImageUrl,
+                        (existing, replacement) -> existing
+                ));
     }
 }

@@ -49,12 +49,12 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
     List<History> findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> member, Visibility visibility);
 
 
-    @Query("SELECT DISTINCT h.member FROM History h " +
+    @Query("SELECT DISTINCT h FROM History h " +
             "JOIN HashtagHistory hh ON hh.history.id = h.id " +
             "WHERE hh.hashtag.id IN :hashtagIds " +
             "AND h.member.id <> :currentMemberId " +
             "ORDER BY h.likes DESC, h.historyDate DESC " +
             "LIMIT 10")
-    List<Member> findTop10MembersByHashtagIdsOrderByLikes(@Param("hashtagIds") List<Long> hashtagIds,
+    List<History> findTop10MembersByHashtagIdsOrderByLikes(@Param("hashtagIds") List<Long> hashtagIds,
                                                           @Param("currentMemberId") Long currentMemberId);
 }

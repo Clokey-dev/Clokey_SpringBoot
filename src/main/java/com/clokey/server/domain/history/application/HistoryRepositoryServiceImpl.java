@@ -87,7 +87,7 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
     }
 
     @Override
-    public List<Member> findTop10MembersByHashtagIdsOrderByLikes(List<Long> hashtagIds, Long currentMemberId) {
+    public List<History> findTop10MembersByHashtagIdsOrderByLikes(List<Long> hashtagIds, Long currentMemberId) {
         return historyRepository.findTop10MembersByHashtagIdsOrderByLikes(hashtagIds, currentMemberId);
     }
 

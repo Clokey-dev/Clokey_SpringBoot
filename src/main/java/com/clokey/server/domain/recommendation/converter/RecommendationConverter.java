@@ -94,14 +94,14 @@ public class RecommendationConverter {
         );
     }
 
-    public static List<RecommendationResponseDTO.People> toPeopleDTO(List<Member> recommendedMembers) {
-        return recommendedMembers.stream()
+    public static List<RecommendationResponseDTO.People> toPeopleDTO(List<History> recommendedhistories, Map<Long, String> historyImageMap) {
+        return recommendedhistories.stream()
                 .distinct()
                 .limit(4)
-                .map(recommendedMember -> new RecommendationResponseDTO.People(
-                        recommendedMember.getClokeyId(),
-                        recommendedMember.getProfileImageUrl(),
-                        null
+                .map(recommendedHistory -> new RecommendationResponseDTO.People(
+                        recommendedHistory.getMember().getClokeyId(),
+                        recommendedHistory.getMember().getProfileImageUrl(),
+                        historyImageMap.get(recommendedHistory.getId())
                 ))
                 .collect(Collectors.toList());
     }
