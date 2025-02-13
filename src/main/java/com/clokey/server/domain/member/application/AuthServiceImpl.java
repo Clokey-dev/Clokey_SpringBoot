@@ -102,6 +102,11 @@ public class AuthServiceImpl implements AuthService {
         boolean isNewUser = false;
         if (optionalMember.isPresent()) {
             member = optionalMember.get();  // 기존 사용자
+            if (member.getKakaoId() == null||member.getKakaoId().isBlank()) {
+                // DB에 카카오 ID가 없으면 업데이트
+                member.updateKakaoId(kakaoUser.getId());
+                memberRepositoryService.saveMember(member);
+            }
         } else {
             // DB에 사용자 정보가 없으면 회원가입
             member = Member.builder()

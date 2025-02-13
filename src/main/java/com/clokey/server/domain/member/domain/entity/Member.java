@@ -74,8 +74,14 @@ public class Member extends BaseEntity {
     @Column(nullable = true, unique = true)
     private String accessToken;
 
+    @Column(nullable = true, unique = true)
+    private String deviceToken;
+
     @Column(unique = true)
     private String kakaoId;
+
+    @Column(unique = true)
+    private String appleRefreshToken;
 
 
 
@@ -109,5 +115,17 @@ public class Member extends BaseEntity {
     public void updateToken(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
+    }
+
+    public void updateAppleRefreshToken(String appleRefreshToken) {
+        this.appleRefreshToken = appleRefreshToken;
+    }
+
+    public void updateKakaoId(String kakaoId) {
+        this.kakaoId = kakaoId;
+    }
+
+    public void updateDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
     }
 }
