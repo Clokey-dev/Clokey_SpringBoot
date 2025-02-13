@@ -184,7 +184,7 @@ public class UnlinkServiceImpl implements UnlinkService {
 
         // 멤버텀 삭제
         memberTermRepositoryService.deleteByMemberId(memberId);
-        
+
         //기록 삭제
 
         List<History> histories = memberRepositoryService.findHistoriesByMemberId(memberId);
