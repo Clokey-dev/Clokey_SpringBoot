@@ -14,6 +14,7 @@ import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.history.domain.repository.CommentRepository;
 import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
 import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.domain.model.entity.enums.MemberStatus;
 import com.clokey.server.domain.model.entity.enums.SocialType;
 import com.clokey.server.domain.notification.application.NotificationRepositoryService;
@@ -78,6 +79,8 @@ public class UnlinkServiceImpl implements UnlinkService {
     public void unlink(Long userId) {
         Member member = memberRepositoryService.findMemberById(userId);
 
+        checkActiveMember(member);
+
         if (member != null && SocialType.KAKAO == member.getSocialType()) {
             String kakaoId = member.getKakaoId();
             if (kakaoId != null) {
@@ -92,31 +95,16 @@ public class UnlinkServiceImpl implements UnlinkService {
             }
         }
 
-        String result = invalidateToken(userId);
-
-        if(member.getStatus()== MemberStatus.ACTIVE){
-            member.updateStatus();
-            member.updateInactiveDate(LocalDate.now());
+        if (member != null) {
+            member.updateToken(null, null);
             memberRepositoryService.saveMember(member);
+            // 토큰 무효화 처리
         }
 
-        deleteData(userId);
+        member.updateStatus();
+        member.updateInactiveDate(LocalDate.now());
+        memberRepositoryService.saveMember(member);
 
-    }
-
-    @Transactional
-    public String invalidateToken (Long userId){
-
-        Member member = memberRepositoryService.findMemberById(userId);
-
-            if (member != null) {
-                member.updateToken(null, null);
-                memberRepositoryService.saveMember(member);
-                // 토큰 무효화 처리
-                return "success";
-            }
-
-            return null;
     }
 
 
@@ -274,5 +262,10 @@ public class UnlinkServiceImpl implements UnlinkService {
     }
 
 
+    void checkActiveMember(Member member) {
+        if (member.getStatus() != MemberStatus.ACTIVE) {
+            throw new MemberException(ErrorStatus.INACTIVE_MEMBER);
+        }
+    }
 
 }
