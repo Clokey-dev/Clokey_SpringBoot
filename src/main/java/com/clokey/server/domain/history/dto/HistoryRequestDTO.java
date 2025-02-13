@@ -38,26 +38,6 @@ public class HistoryRequestDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class HistoryUpdate {
-
-        @HistoryContentLength
-        String content;
-
-        @UniqueClothes
-        List<Long> clothes;
-
-        @UniqueHashtags
-        List<String> hashtags;
-
-        Visibility visibility;
-
-    }
-
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class LikeStatusChange {
 
         @HistoryExist

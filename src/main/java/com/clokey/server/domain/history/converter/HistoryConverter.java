@@ -46,7 +46,7 @@ public class HistoryConverter {
                 .build();
     }
 
-    public static HistoryResponseDTO.MonthViewResult toMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
+    public static HistoryResponseDTO.MonthViewResult toMonthViewResult(Long memberId, String nickName, List<History> histories , List<String> historyFirstImageUrls) {
 
         List<HistoryResponseDTO.HistoryResult> HistoryResults = new ArrayList<>();
 
@@ -59,6 +59,7 @@ public class HistoryConverter {
 
         return HistoryResponseDTO.MonthViewResult.builder()
                 .memberId(memberId)
+                .nickName(nickName)
                 .histories(HistoryResults)
                 .build();
     }

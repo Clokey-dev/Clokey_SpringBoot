@@ -33,7 +33,6 @@ public class HistoryRestController {
 
     private final HistoryService historyService;
 
-    //임시로 엔드 포인트 맨 뒤에 멤버 Id를 받도록 했습니다 토큰에서 나의 id를 가져올 수 있도록 수정해야함.
     @GetMapping("/{historyId}")
     @Operation(summary = "특정 유저의 특정 일의 기록을 확인할 수 있는 API")
     @ApiResponses({
@@ -87,9 +86,6 @@ public class HistoryRestController {
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, result);
     }
 
-    ;
-
-    //사용자 토큰 받는 부분 추가해야함.
     @PostMapping("/like")
     @Operation(summary = "특정 기록에 좋아요를 누를 수 있는 API")
     @ApiResponses({
@@ -133,7 +129,6 @@ public class HistoryRestController {
 
     }
 
-    //임시로 토큰을 request param으로 받는중.
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "새로운 기록을 생성하는 API")
     @ApiResponses({
@@ -148,27 +143,6 @@ public class HistoryRestController {
         HistoryResponseDTO.HistoryCreateResult result = historyService.createHistory(historyCreateRequest, member.getId(), imageFiles);
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_CREATED, result);
-    }
-
-    //임시로 토큰을 request param으로 받는중.
-    @PatchMapping(value = "/{historyId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "기록을 수정하는 API")
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_204", description = "성공적으로 수정되었습니다."),
-    })
-    @Parameters({
-            @Parameter(name = "historyId", description = "수정하고자 하는 기록의 Id입니다.")
-    })
-    public BaseResponse<Void> updateHistory(
-            @RequestPart("historyUpdateRequest") @Valid HistoryRequestDTO.HistoryUpdate historyUpdate,
-            @RequestPart(value = "imageFile") @Valid @HistoryImageQuantityLimit List<MultipartFile> imageFiles,
-            @Parameter(name = "user",hidden = true) @AuthUser Member member,
-            @PathVariable Long historyId
-    ) {
-
-        historyService.updateHistory(historyUpdate, member.getId(), historyId, imageFiles);
-
-        return BaseResponse.onSuccess(SuccessStatus.HISTORY_UPDATED, null);
     }
 
     @DeleteMapping(value = "/comments/{commentId}")
@@ -189,7 +163,6 @@ public class HistoryRestController {
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_DELETED, null);
     }
 
-    //임시로 토큰을 request param으로 받는중.
     @PatchMapping(value = "/comments/{commentId}")
     @Operation(summary = "댓글을 수정하는 API")
     @ApiResponses({

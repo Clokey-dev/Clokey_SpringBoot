@@ -17,11 +17,11 @@ public interface ClothService {
 
     ClothResponseDTO.CategoryClothPreviewListResult readClothPreviewInfoListByClokeyId(String ownerClokeyId, Long requesterId, Long categoryId, Season season, ClothSort sort, int page, int pageSize);
 
-    ClothResponseDTO.SmartSummaryClothPreviewListResult readSmartSummaryByFrequencyType(SummaryFrequency frequencyType, Long memberId);
+    ClothResponseDTO.SmartSummaryClothPreviewListResult readSmartSummary(Long memberId);
 
     ClothResponseDTO.ClothCreateResult createCloth(Long memberId, ClothRequestDTO.ClothCreateOrUpdateRequest request, MultipartFile imageFile);
 
-    void updateClothById(Long clothId, Long categoryId, ClothRequestDTO.ClothCreateOrUpdateRequest request, MultipartFile imageFile);
+    void updateClothById(Long clothId, ClothRequestDTO.ClothCreateOrUpdateRequest request, MultipartFile imageFile);
 
     void deleteClothById(Long clothId);
 }
