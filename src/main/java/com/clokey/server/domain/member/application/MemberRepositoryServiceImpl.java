@@ -1,5 +1,9 @@
 package com.clokey.server.domain.member.application;
 
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.folder.domain.entity.Folder;
+import com.clokey.server.domain.history.domain.entity.Comment;
+import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.member.domain.repository.MemberRepository;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.exception.MemberException;
@@ -12,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -86,6 +92,7 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     }
 
 
+    @Override
     public Optional<Member> findMemberByEmail(String email) {
         String jpql = "SELECT m FROM Member m WHERE m.email = :email";
         TypedQuery<Member> query = entityManager.createQuery(jpql, Member.class);
@@ -94,6 +101,34 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
         return query.getResultStream().findFirst(); // Optional<Member> 반환
     }
 
+    @Override
+    public List<Member> findInactiveUsersBefore(LocalDate cutoffDate) {
+        return memberRepository.findInactiveUsersBefore(cutoffDate);
+    }
 
+    @Override
+    public List<History> findHistoriesByMemberId(Long memberId) {
+        return memberRepository.findHistoriesByMemberId(memberId);
+    }
+
+    @Override
+    public List<Cloth> findClothesByMemberId(Long memberId) {
+        return memberRepository.findClothsByMemberId(memberId);
+    }
+
+    @Override
+    public List<Folder> findFoldersByMemberId(Long memberId) {
+        return memberRepository.findFoldersByMemberId(memberId);
+    }
+
+    @Override
+    public void deleteMemberById(Long memberId) {
+        memberRepository.deleteById(memberId);
+    }
+
+    @Override
+    public List<Comment> findCommentsByMemberId(Long memberId) {
+        return memberRepository.findCommentsByMemberId(memberId);
+    }
 
 }

@@ -4,4 +4,8 @@ import com.clokey.server.domain.term.domain.entity.MemberTerm;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MemberTermRepository extends JpaRepository<MemberTerm, Long> {
+
+
+    void deleteByMemberId(Long memberId);
 }
+

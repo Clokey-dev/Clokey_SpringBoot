@@ -3,6 +3,7 @@ package com.clokey.server.domain.member.domain.repository;
 import com.clokey.server.domain.member.domain.entity.Follow;
 import com.clokey.server.domain.member.domain.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -22,4 +23,8 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     @Query("SELECT f.followed FROM Follow f WHERE f.following.id = :followingId")
     List<Member> findFollowedByFollowingId(@Param("followingId") Long followingId);
+
+    @Modifying
+    @Query("DELETE FROM Follow f WHERE f.following.id = :memberId OR f.followed.id = :memberId")
+    void deleteByMemberId(@Param("memberId") Long memberId);
 }

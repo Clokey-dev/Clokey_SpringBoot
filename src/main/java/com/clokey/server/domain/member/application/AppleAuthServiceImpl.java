@@ -4,6 +4,7 @@ package com.clokey.server.domain.member.application;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.dto.AuthDTO;
 import com.clokey.server.domain.member.exception.MemberException;
+import com.clokey.server.domain.model.entity.enums.MemberStatus;
 import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.clokey.server.domain.model.entity.enums.SocialType;
 import com.clokey.server.global.error.code.status.ErrorStatus;
@@ -25,6 +26,7 @@ import org.json.simple.JSONObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -94,6 +96,7 @@ public class AppleAuthServiceImpl implements AppleAuthService {
     //2. 여기까지 주소 가져옴
 
 
+    @Transactional
     public AuthDTO.TokenResponse login(String code, String deviceToken) {
         if (code == null || code.isBlank()) {
             throw new MemberException(ErrorStatus.INVALID_CODE);
@@ -164,6 +167,13 @@ public class AppleAuthServiceImpl implements AppleAuthService {
         boolean isNewUser = false;
         if (optionalMember.isPresent()) {
             member = optionalMember.get();
+
+            if(member.getStatus()== MemberStatus.INACTIVE){
+                member.updateStatus();
+                member.updateInactiveDate(null);
+                memberRepositoryService.saveMember(member);
+            }
+
             if (member.getAppleRefreshToken() == null || member.getAppleRefreshToken().isBlank()) {
                 member.updateAppleRefreshToken(refreshToken);
                 memberRepositoryService.saveMember(member);

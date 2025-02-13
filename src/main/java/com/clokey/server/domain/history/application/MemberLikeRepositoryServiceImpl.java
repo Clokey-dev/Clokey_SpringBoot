@@ -45,4 +45,9 @@ public class MemberLikeRepositoryServiceImpl implements MemberLikeRepositoryServ
     public List<Member> findMembersByHistory(Long historyId) {
         return memberLikeRepository.findMembersByHistoryId(historyId);
     }
+
+    @Override
+    public void deleteAllByMemberId(Long memberId) {
+        memberLikeRepository.deleteAllByMemberId(memberId);
+    }
 }

@@ -1,11 +1,33 @@
 package com.clokey.server.domain.member.application;
 
+import com.clokey.server.domain.cloth.application.ClothImageRepositoryService;
+import com.clokey.server.domain.cloth.application.ClothRepositoryService;
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
+import com.clokey.server.domain.folder.application.ClothFolderRepositoryService;
+import com.clokey.server.domain.folder.application.FolderRepositoryService;
+import com.clokey.server.domain.folder.domain.entity.Folder;
+import com.clokey.server.domain.folder.exception.FolderException;
+import com.clokey.server.domain.folder.exception.validator.FolderAccessibleValidator;
+import com.clokey.server.domain.history.application.*;
+import com.clokey.server.domain.history.domain.entity.Comment;
+import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.history.domain.repository.CommentRepository;
+import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
+import com.clokey.server.domain.history.exception.validator.HistoryAlreadyExistValidator;
+import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
 import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.enums.MemberStatus;
 import com.clokey.server.domain.model.entity.enums.SocialType;
+import com.clokey.server.domain.term.application.MemberTermRepositoryService;
+import com.clokey.server.domain.term.domain.repository.MemberTermRepository;
+import com.clokey.server.global.error.code.status.ErrorStatus;
+import com.clokey.server.global.infra.s3.S3ImageService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,8 +36,10 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.net.http.HttpRequest;
 
@@ -26,6 +50,23 @@ import java.net.http.HttpRequest;
 public class LogoutServiceImpl implements LogoutService {
 
     private final AppleAuthService appleAuthService;
+    private final MemberTermRepositoryService memberTermRepositoryService;
+
+    private final FollowRepositoryService followRepositoryService;
+    private final HistoryRepositoryService historyRepositoryService;
+    private final CommentRepositoryService commentRepositoryService;
+    private final MemberRepositoryService memberRepositoryService;
+    private final MemberLikeRepositoryService memberLikeRepositoryService;
+    private final HistoryImageRepositoryService historyImageRepositoryService;
+    private final HashtagHistoryRepositoryService hashtagHistoryRepositoryService;
+    private final ClothRepositoryService clothRepositoryService;
+    private final HistoryClothRepositoryService historyClothRepositoryService;
+    public final HistoryAccessibleValidator historyAccessibleValidator;
+    private final ClothImageRepositoryService clothImageRepositoryService;
+    private final ClothFolderRepositoryService clothFolderRepositoryService;
+    private final FolderRepositoryService folderRepositoryService;
+    private final FolderAccessibleValidator folderAccessibleValidator;
+    private final CommentRepository commentRepository;
 
 
     @Value("${kakao.admin-key}")
@@ -34,8 +75,8 @@ public class LogoutServiceImpl implements LogoutService {
     @Value("${apple.client-id}")
     private String APPLE_CLIENT_ID;
 
-    private final MemberRepositoryService memberRepositoryService;
 
+    @Transactional
     @Override
     public void logout(Long userId, HttpServletRequest request) {
         // 로그아웃 처리
@@ -52,6 +93,7 @@ public class LogoutServiceImpl implements LogoutService {
 
     }
 
+    @Transactional
     @Override
     public void unlink(Long userId) {
         Member member = memberRepositoryService.findMemberById(userId);
@@ -71,6 +113,13 @@ public class LogoutServiceImpl implements LogoutService {
         }
 
         String result = invalidateToken(userId);
+
+        if(member.getStatus()== MemberStatus.ACTIVE){
+            member.updateStatus();
+            member.updateInactiveDate(LocalDate.now());
+            memberRepositoryService.saveMember(member);
+        }
+
     }
 
     @Transactional
@@ -176,6 +225,96 @@ public class LogoutServiceImpl implements LogoutService {
         }
 
     }
+
+
+    @Transactional
+    public void deleteData(Long memberId) {
+        Member member = memberRepositoryService.findMemberById(memberId);
+
+
+        if (member == null) {
+            log.warn("삭제할 회원이 존재하지 않음: userId={}", memberId);
+            return;
+        }
+
+        LocalDate inactiveDate = member.getInactiveDate();
+        if (inactiveDate == null || inactiveDate.isAfter(LocalDate.now().minusDays(30))) {
+            log.info("삭제 대상이 아님: userId={}, inactiveDate={}", memberId, inactiveDate);
+            return;
+        }
+
+        // 멤버텀 삭제
+        memberTermRepositoryService.deleteByMemberId(memberId);
+
+        //알람 삭제해야됨
+
+        //기록 삭제
+
+        List<History> histories = memberRepositoryService.findHistoriesByMemberId(memberId);
+        for (History history : histories) {
+            // 내 기록 접근을 위한 검증
+            historyAccessibleValidator.validateMyHistory(history.getId(), memberId);
+
+            // 댓글 삭제
+            commentRepositoryService.deleteAllComments(history.getId());
+
+            // 기록에 관련된 옷 삭제 및 옷의 착용 수 감소
+            List<Cloth> cloths = historyClothRepositoryService.findAllClothByHistoryId(history.getId());
+            cloths.forEach(Cloth::decreaseWearNum);
+            historyClothRepositoryService.deleteAllByHistoryId(history.getId());
+
+            // 기록에 관련된 해시태그 삭제
+            hashtagHistoryRepositoryService.deleteAllByHistoryId(history.getId());
+
+            // 좋아요 기록 삭제
+            memberLikeRepositoryService.deleteAllByHistoryId(history.getId());
+
+            // 기록에 관련된 사진 삭제
+            historyImageRepositoryService.deleteAllByHistoryId(history.getId());
+
+            // 기록 자체 삭제
+            historyRepositoryService.deleteById(history.getId());
+        }
+
+        // 팔로우 삭제
+        followRepositoryService.deleteByMemberId(memberId);
+
+        //옷 삭제
+        List<Cloth> clothes = memberRepositoryService.findClothesByMemberId(memberId);
+
+        for (Cloth cloth : clothes) {
+            historyClothRepositoryService.deleteAllByClothId(cloth.getId());
+            clothFolderRepositoryService.deleteAllByClothId(cloth.getId());
+            clothImageRepositoryService.deleteByClothId(cloth.getId());
+            clothRepositoryService.deleteById(cloth.getId());
+        }
+
+        //폴더 삭제
+        List<Folder> folders = memberRepositoryService.findFoldersByMemberId(memberId);
+
+        for(Folder folder : folders){
+            folderAccessibleValidator.validateFolderAccessOfMember(folder.getId(), memberId);
+            try {
+                folderRepositoryService.deleteById(folder.getId());
+            } catch (Exception ex) {
+                throw new FolderException(ErrorStatus.FAILED_TO_DELETE_FOLDER);
+            }
+        }
+
+        //댓글 삭제
+        List<Comment> comments = memberRepositoryService.findCommentsByMemberId(memberId);
+
+        for(Comment comment : comments) {
+            commentRepository.deleteChildren(comment.getId());
+
+            commentRepository.deleteById(comment.getId());
+        }
+
+        memberRepositoryService.deleteMemberById(memberId);  // 최종적으로 회원 삭제
+
+        log.info("회원 및 관련 데이터 삭제 완료: userId={}", memberId);
+    }
+
 
 
 }
