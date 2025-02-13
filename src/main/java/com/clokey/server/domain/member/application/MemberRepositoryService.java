@@ -5,6 +5,7 @@ import com.clokey.server.domain.folder.domain.entity.Folder;
 import com.clokey.server.domain.history.domain.entity.Comment;
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -42,6 +43,8 @@ public interface MemberRepositoryService {
     List<Folder> findFoldersByMemberId(Long memberId);
 
     List<Comment> findCommentsByMemberId(Long memberId);
+
+    List<ClokeyNotification> findNotificationsByMemberId(Long memberId);
 
     void deleteMemberById(Long memberId);
 }

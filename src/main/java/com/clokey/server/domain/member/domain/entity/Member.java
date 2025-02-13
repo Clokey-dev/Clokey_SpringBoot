@@ -85,6 +85,7 @@ public class Member extends BaseEntity {
 
 
 
+
     //필요한 양방향 매핑을 제외하고 삭제해주세요.
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberTerm> memberTermList = new ArrayList<>();

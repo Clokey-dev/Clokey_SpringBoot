@@ -13,4 +13,8 @@ public interface FollowRepositoryService {
     List<Member> findFollowedByFollowingId(Long followingId);
 
     void deleteByMemberId(Long memberId);
+
+    boolean existsByFollowing_IdAndFollowed_Id(Long followingId, Long followedId);
+
+    List<Member> findFollowingByFollowedId(Long followedId);
 }

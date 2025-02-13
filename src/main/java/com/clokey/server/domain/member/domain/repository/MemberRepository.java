@@ -5,6 +5,7 @@ import com.clokey.server.domain.folder.domain.entity.Folder;
 import com.clokey.server.domain.history.domain.entity.Comment;
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -38,4 +39,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("SELECT c FROM Comment c WHERE c.member.id = :memberId")
     List<Comment> findCommentsByMemberId(@Param("memberId") Long memberId);
+
+    @Query("SELECT n FROM ClokeyNotification n WHERE n.member.id = :memberId")
+    List<ClokeyNotification> findNotificationsByMemberId(@Param("memberId") Long memberId);
 }

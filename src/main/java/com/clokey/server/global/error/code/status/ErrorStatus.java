@@ -2,6 +2,7 @@ package com.clokey.server.global.error.code.status;
 
 import com.clokey.server.global.error.code.BaseErrorCode;
 import com.clokey.server.global.error.code.ErrorReasonDTO;
+import com.google.api.Http;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,8 @@ public enum ErrorStatus implements BaseErrorCode {
     CLOTH_INVAID_IMAGE_FORMAT(HttpStatus.BAD_REQUEST,"CLOTH_4009","옷의 사진을 입력하지 않았습니다."),
     NO_CLOTH_IMAGE_INPUT(HttpStatus.BAD_REQUEST,"CLOTH_4010","옷의 사진 형식이 올바르지 않습니다."),
     INVALID_CREATE_OR_UPDATE_CLOTH_FORMAT(HttpStatus.BAD_REQUEST,"CLOTH_4011","옷의 생성 및 수정 형식이 올바르지 않습니다."),
+    CLOTH_NOT_FOUND_IN_SUMMARY(HttpStatus.NOT_FOUND,"CLOTH_4012","스마트 요약에서 옷을 찾지 못했습니다."),
+    INVALID_SUMMARY_FREQUENCY_TYPE(HttpStatus.BAD_REQUEST,"CLOTH_4013","스마트 요약에서 빈도수를 잘못 입력했습니다."),
 
     //폴더 에러
     NO_SUCH_FOLDER(HttpStatus.NOT_FOUND,"FOLDER_4041","존재하지 않는 폴더 ID입니다."),
@@ -53,6 +56,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //카테고리 에러
     NO_SUCH_CATEGORY(HttpStatus.NOT_FOUND,"CATEGORY_4041","존재하지 않는 카테고리 ID입니다."),
+    CATEGORY_NOT_FOUND_IN_SUMMARY(HttpStatus.NOT_FOUND,"CATEGORY_4001","스마트 요약에서 카테고리를 찾지 못했습니다."),
 
     //기록 에러
     DATE_INVALID(HttpStatus.BAD_REQUEST,"HISTORY_4001","잘못된 날짜 형식입니다."),
@@ -80,6 +84,14 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //알림 에러
     NOTIFICATION_TYPE_INVALID(HttpStatus.BAD_REQUEST,"NOTIFICATION_4001","잘못된 알림 Type 입니다."),
+    NOTIFICATION_NOT_FOLLOWING(HttpStatus.BAD_REQUEST,"NOTIFICATION_4002","팔로우 하지 않는 대상에게 팔로우 알림을 보낼 수 없습니다"),
+    NOTIFICATION_NOT_MY_COMMENT(HttpStatus.BAD_REQUEST,"NOTIFICATION_4003","나의 댓글이 아닌 경우 기록에 댓글 작성 알림을 보낼 수 없습니다"),
+    NOTIFICATION_COMMENT_NOT_FROM_HISTORY(HttpStatus.BAD_REQUEST,"NOTIFICATION_4004","댓글이 다른 기록에 작성되어 있는 경우 알림을 보낼 수 없습니다."),
+    NOTIFICATION_NOT_PARENT_COMMENT_OF_REPLY(HttpStatus.BAD_REQUEST,"NOTIFICATION_4005","댓글이 답글의 부모 댓글과 일치하지 않는 경우 알림을 보낼 수 없습니다"),
+    NO_SUCH_NOTIFICATION(HttpStatus.BAD_REQUEST,"NOTIFICATION_4006","존재하지 않는 알림입니다."),
+    NOT_MY_NOTIFICATION(HttpStatus.BAD_REQUEST,"NOTIFICATION_4007","나의 알림이 아닙니다."),
+    CANNOT_NOTIFY_MY_SELF(HttpStatus.BAD_REQUEST,"NOTIFICATION_4008","자신에게 알림을 보낼 수 없습니다."),
+    NOTIFICATION_FIREBASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"NOTIFICATION_5001","Firebase 서버에러 입니다."),
 
     //검색 에러
     NO_SUCH_PARAMETER(HttpStatus.BAD_REQUEST,"SEARCH_4001","검색어는 필수입니다."),

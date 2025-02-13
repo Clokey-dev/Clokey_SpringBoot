@@ -7,6 +7,7 @@ import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.member.domain.repository.MemberRepository;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.exception.MemberException;
+import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
 import jakarta.persistence.EntityManager;
@@ -129,6 +130,11 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     @Override
     public List<Comment> findCommentsByMemberId(Long memberId) {
         return memberRepository.findCommentsByMemberId(memberId);
+    }
+
+    @Override
+    public List<ClokeyNotification> findNotificationsByMemberId(Long memberId) {
+        return memberRepository.findNotificationsByMemberId(memberId);
     }
 
 }

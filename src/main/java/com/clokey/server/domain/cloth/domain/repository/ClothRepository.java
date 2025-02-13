@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ClothRepository extends JpaRepository<Cloth, Long> {
@@ -37,7 +38,7 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
             "CASE WHEN :sort = 'OLDEST' THEN c.createdAt END ASC, " +
             "CASE WHEN :sort = 'LATEST' THEN c.createdAt END DESC"
     )
-    Page<Cloth> findByFilters(
+    Page<Cloth> findByClosetFilters(
             @Param("clokeyId") String clokeyId,
             @Param("memberId") Long memberId,
             @Param("categoryId") Long categoryId,
@@ -45,4 +46,18 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
             @Param("sort") String sort,
             Pageable pageable
     );
+
+
+    @Query("SELECT c FROM Cloth c " +
+            "WHERE c.member.id = :memberId " +
+            "AND c.category.id = :categoryId " +
+            "ORDER BY c.wearNum ASC, c.id ASC LIMIT 3")
+    List<Cloth> findLeastFrequentClothList(@Param("memberId") Long memberId, @Param("categoryId") Long categoryId);
+
+
+    @Query("SELECT c FROM Cloth c " +
+            "WHERE c.member.id = :memberId " +
+            "AND c.category.id = :categoryId " +
+            "ORDER BY c.wearNum DESC, c.id ASC LIMIT 3")
+    List<Cloth> findMostFrequentClothList(@Param("memberId") Long memberId, @Param("categoryId") Long categoryId);
 }

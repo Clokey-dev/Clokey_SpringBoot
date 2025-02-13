@@ -27,4 +27,7 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     @Modifying
     @Query("DELETE FROM Follow f WHERE f.following.id = :memberId OR f.followed.id = :memberId")
     void deleteByMemberId(@Param("memberId") Long memberId);
+
+    @Query("SELECT f.following FROM Follow f WHERE f.followed.id = :followedId")
+    List<Member> findFollowingByFollowedId(@Param("followedId") Long followedId);
 }

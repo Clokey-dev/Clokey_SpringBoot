@@ -35,9 +35,9 @@ public class AuthDTO {
     @Data
     public static class LoginRequest{
         private String type; // 로그인 타입 (ex: "kakao", "apple")
-        private String accessToken;
-        private String authorizationCode;
-        private String deviceToken;
+        private String accessToken=null;
+        private String authorizationCode=null;
+        private String deviceToken=null;
 
     }
 

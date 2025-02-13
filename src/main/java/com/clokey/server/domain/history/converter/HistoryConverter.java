@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
 
 public class HistoryConverter {
 
-    public static HistoryResponseDTO.DailyHistoryResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked, List<Cloth> cloths) {
+    public static HistoryResponseDTO.DailyHistoryResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked, List<Cloth> cloths, Long commentCount) {
         return HistoryResponseDTO.DailyHistoryResult.builder()
                 .memberId(history.getMember().getId())
                 .historyId(history.getId())
@@ -27,6 +27,7 @@ public class HistoryConverter {
                 .hashtags(hashtags)
                 .visibility(history.getVisibility().equals(Visibility.PUBLIC))
                 .likeCount(likeCount)
+                .commentCount(commentCount)
                 .isLiked(isLiked)
                 .date(history.getHistoryDate())
                 .nickName(history.getMember().getNickname())
@@ -41,10 +42,11 @@ public class HistoryConverter {
         return HistoryResponseDTO.HistoryClothResult.builder()
                 .clothId(cloth.getId())
                 .clothImageUrl(cloth.getImage().getImageUrl())
+                .clothName(cloth.getName())
                 .build();
     }
 
-    public static HistoryResponseDTO.MonthViewResult toMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
+    public static HistoryResponseDTO.MonthViewResult toMonthViewResult(Long memberId, String nickName, List<History> histories , List<String> historyFirstImageUrls) {
 
         List<HistoryResponseDTO.HistoryResult> HistoryResults = new ArrayList<>();
 
@@ -57,6 +59,7 @@ public class HistoryConverter {
 
         return HistoryResponseDTO.MonthViewResult.builder()
                 .memberId(memberId)
+                .nickName(nickName)
                 .histories(HistoryResults)
                 .build();
     }

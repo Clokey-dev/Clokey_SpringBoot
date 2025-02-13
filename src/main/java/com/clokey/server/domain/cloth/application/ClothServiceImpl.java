@@ -1,15 +1,21 @@
 package com.clokey.server.domain.cloth.application;
 
+import com.clokey.server.domain.category.application.CategoryRepositoryService;
+import com.clokey.server.domain.category.domain.entity.Category;
+import com.clokey.server.domain.category.exception.CategoryException;
 import com.clokey.server.domain.cloth.converter.ClothConverter;
 import com.clokey.server.domain.cloth.dto.ClothRequestDTO;
 import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
-import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
 import com.clokey.server.domain.cloth.domain.entity.ClothImage;
 import com.clokey.server.domain.folder.application.ClothFolderRepositoryService;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.history.application.HistoryClothRepositoryService;
+import com.clokey.server.domain.history.application.HistoryRepositoryService;
+import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.model.entity.enums.ClothSort;
 import com.clokey.server.domain.model.entity.enums.Season;
+import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.clokey.server.global.infra.s3.S3ImageService;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +37,7 @@ public class ClothServiceImpl implements ClothService {
     private final ClothImageRepositoryService clothImageRepositoryService;
     private final ClothFolderRepositoryService clothFolderRepositoryService;
     private final HistoryClothRepositoryService historyClothRepositoryService;
+    private final HistoryRepositoryService historyRepositoryService;
     private final S3ImageService s3ImageService;
 
     public ClothResponseDTO.ClothPopupViewResult readClothPopupInfoById(Long clothId) {
@@ -58,18 +67,70 @@ public class ClothServiceImpl implements ClothService {
         return ClothConverter.toClothDetailViewResult(cloth);
     }
 
-    // 카테고리ID와 멤버ID로 PreView 조회 후 DTO로 변환해서 반환
+    // 옷장의 옷의 PreView 조회 후 옷장 조회 DTO로 변환해서 반환
     public ClothResponseDTO.CategoryClothPreviewListResult readClothPreviewInfoListByClokeyId(
             String ownerClokeyId, Long requesterId, Long categoryId, Season season, ClothSort sort, int page, int size) {
 
         Pageable pageable = PageRequest.of(page-1, size);
-        Page<Cloth> clothes = clothRepositoryService.findByFilters(ownerClokeyId, requesterId, categoryId, season, sort, pageable);
+        Page<Cloth> clothes = clothRepositoryService.findByClosetFilters(ownerClokeyId, requesterId, categoryId, season, sort, pageable);
 
         // Cloth -> ClothPreview 변환
         List<ClothResponseDTO.ClothPreview> clothPreviews = ClothConverter.toClothPreviewList(clothes);
 
         // 페이징 정보를 담아 DTO 반환
-        return ClothConverter.toClothPreviewListResult(clothes, clothPreviews);
+        return ClothConverter.toClosetClothPreviewListResult(clothes, clothPreviews);
+    }
+
+    // 지난 7일간 착용횟수를 통해 카테고리와 카테고리에 해당하는 옷의 PreView 조회 후 스마트 요약 DTO로 변환해서 반환
+    public ClothResponseDTO.SmartSummaryClothPreviewListResult readSmartSummary(Long memberId) {
+        // 지난 7일간의 History 조회
+        List<History> histories = historyRepositoryService.findHistoriesByMemberWithinWeek(memberId);
+
+        // 각 History에 연결된 모든 Cloth 조회
+        List<Cloth> clothes = histories.stream()
+                .flatMap(history -> historyClothRepositoryService.findAllClothByHistoryId(history.getId()).stream())
+                .collect(Collectors.toList());
+
+        // 카테고리별 착용 횟수 집계
+        Map<Category, Long> categoryCountMap = clothes.stream()
+                .collect(Collectors.groupingBy(Cloth::getCategory, Collectors.counting()));
+
+        // 부모가 존재하는(2차) 카테고리만 필터링
+        List<Map.Entry<Category, Long>> filteredEntries = categoryCountMap.entrySet().stream()
+                .filter(entry -> entry.getKey().getParent() != null)
+                .collect(Collectors.toList());
+
+        if (filteredEntries.isEmpty()) {
+            throw new CategoryException(ErrorStatus.CATEGORY_NOT_FOUND_IN_SUMMARY);
+        }
+
+        // 자주 입은(가장 많이 착용한) 카테고리 구하기
+        Map.Entry<Category, Long> frequentEntry = filteredEntries.stream()
+                .max(Map.Entry.comparingByValue())
+                .orElseThrow(() -> new CategoryException(ErrorStatus.CATEGORY_NOT_FOUND_IN_SUMMARY));
+        // 덜 입은(가장 적게 착용한) 카테고리 구하기
+        Map.Entry<Category, Long> infrequentEntry = filteredEntries.stream()
+                .min(Map.Entry.comparingByValue())
+                .orElseThrow(() -> new CategoryException(ErrorStatus.CATEGORY_NOT_FOUND_IN_SUMMARY));
+
+        // 각 카테고리에 해당하는 옷 목록 조회
+        List<Cloth> frequentClothes = clothRepositoryService.findBySmartSummaryFilters(
+                SummaryFrequency.FREQUENT, memberId, frequentEntry.getKey().getId());
+        List<ClothResponseDTO.ClothPreview> frequentClothPreviews = ClothConverter.toClothPreviewList(frequentClothes);
+
+        List<Cloth> infrequentClothes = clothRepositoryService.findBySmartSummaryFilters(
+                SummaryFrequency.INFREQUENT, memberId, infrequentEntry.getKey().getId());
+        List<ClothResponseDTO.ClothPreview> infrequentClothPreviews = ClothConverter.toClothPreviewList(infrequentClothes);
+
+        // 컨버터 메소드에 두 경우의 데이터를 모두 전달하여 DTO 생성
+        return ClothConverter.toSummaryClothPreviewListResult(
+                frequentEntry.getKey(),           // 자주 입은 카테고리 객체
+                infrequentEntry.getKey(),         // 덜 입은 카테고리 객체
+                frequentEntry.getValue(),         // 자주 입은 카테고리 착용 횟수
+                infrequentEntry.getValue(),       // 덜 입은 카테고리 착용 횟수
+                frequentClothPreviews,            // 자주 입은 카테고리의 Cloth PreView 목록
+                infrequentClothPreviews           // 덜 입은 카테고리의 Cloth PreView 목록
+        );
     }
 
     @Transactional
@@ -99,7 +160,6 @@ public class ClothServiceImpl implements ClothService {
 
     @Transactional
     public void updateClothById(Long clothId,
-                                Long categoryId,
                                 ClothRequestDTO.ClothCreateOrUpdateRequest request,
                                 MultipartFile imageFile){
 
@@ -120,7 +180,7 @@ public class ClothServiceImpl implements ClothService {
                 request.getVisibility(),
                 request.getClothUrl(),
                 request.getBrand(),
-                categoryId,
+                request.getCategoryId(),
                 imageUrl
         );
     }

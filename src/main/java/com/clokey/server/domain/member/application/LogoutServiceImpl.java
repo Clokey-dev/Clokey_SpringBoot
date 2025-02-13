@@ -14,11 +14,12 @@ import com.clokey.server.domain.history.domain.entity.Comment;
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.history.domain.repository.CommentRepository;
 import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
-import com.clokey.server.domain.history.exception.validator.HistoryAlreadyExistValidator;
-import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.MemberStatus;
 import com.clokey.server.domain.model.entity.enums.SocialType;
+import com.clokey.server.domain.notification.application.NotificationRepositoryService;
+import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
+import com.clokey.server.domain.notification.domain.repository.NotificationRepository;
 import com.clokey.server.domain.term.application.MemberTermRepositoryService;
 import com.clokey.server.domain.term.domain.repository.MemberTermRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
@@ -67,6 +68,7 @@ public class LogoutServiceImpl implements LogoutService {
     private final FolderRepositoryService folderRepositoryService;
     private final FolderAccessibleValidator folderAccessibleValidator;
     private final CommentRepository commentRepository;
+    private final NotificationRepositoryService notificationRepositoryService;
 
 
     @Value("${kakao.admin-key}")
@@ -310,6 +312,13 @@ public class LogoutServiceImpl implements LogoutService {
             commentRepository.deleteChildren(comment.getId());
 
             commentRepository.deleteById(comment.getId());
+        }
+
+        //알람 삭제
+        List <ClokeyNotification> clokeyNotifications = memberRepositoryService.findNotificationsByMemberId(memberId);
+
+        for(ClokeyNotification clokeyNotification : clokeyNotifications) {
+            notificationRepositoryService.deleteBymemberId(clokeyNotification.getId());
         }
 
         memberRepositoryService.deleteMemberById(memberId);  // 최종적으로 회원 삭제
