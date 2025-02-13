@@ -1,8 +1,5 @@
 package com.clokey.server.domain.recommendation.application;
 
-import com.clokey.server.domain.folder.domain.entity.Folder;
-import com.clokey.server.domain.folder.dto.FolderRequestDTO;
-import com.clokey.server.domain.folder.dto.FolderResponseDTO;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
 

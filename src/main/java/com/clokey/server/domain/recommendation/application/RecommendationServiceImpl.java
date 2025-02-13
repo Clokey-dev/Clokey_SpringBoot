@@ -6,7 +6,6 @@ import com.clokey.server.domain.history.application.HashtagHistoryRepositoryServ
 import com.clokey.server.domain.history.application.HashtagRepositoryService;
 import com.clokey.server.domain.history.application.HistoryImageRepositoryService;
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
-import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.domain.entity.HashtagHistory;
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.history.domain.entity.HistoryImage;
@@ -32,10 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 @Service
@@ -316,7 +313,7 @@ public class RecommendationServiceImpl implements RecommendationService {
 
         return null;
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public HistoryResponseDTO.LastYearHistoryResult getLastYearHistory(Long memberId) {

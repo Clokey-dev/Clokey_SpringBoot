@@ -7,7 +7,6 @@ import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

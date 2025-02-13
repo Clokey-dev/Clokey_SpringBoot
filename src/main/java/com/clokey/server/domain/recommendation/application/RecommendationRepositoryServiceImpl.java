@@ -1,7 +1,5 @@
 package com.clokey.server.domain.recommendation.application;
 
-import com.clokey.server.domain.folder.domain.entity.Folder;
-import com.clokey.server.domain.folder.domain.repository.FolderRepository;
 import com.clokey.server.domain.model.entity.enums.NewsType;
 import com.clokey.server.domain.recommendation.domain.entity.Recommendation;
 import com.clokey.server.domain.recommendation.domain.repository.RecommendationRepository;
