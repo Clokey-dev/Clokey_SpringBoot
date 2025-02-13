@@ -11,4 +11,6 @@ public interface HistoryImageRepository extends JpaRepository<HistoryImage, Long
 
     List<HistoryImage> findByHistory_Id(Long historyId);
 
+    List<HistoryImage> findByHistoryIdIn(List<Long> historyIds);
+
 }

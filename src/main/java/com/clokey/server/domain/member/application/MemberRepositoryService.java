@@ -8,13 +8,13 @@ import java.util.Optional;
 public interface MemberRepositoryService {
     boolean memberExist(Long memberId);
 
-
     Member findMemberById(Long memberId);
 
     Member saveMember(Member member);
     Optional<Member> getMember(Long memberId);
 
     boolean idExist(String clokeyId);
+
     Member findMemberByClokeyId(String clokeyId);
 
     Member getReferencedById(Long memberId);

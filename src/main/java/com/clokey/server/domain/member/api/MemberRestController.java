@@ -58,7 +58,7 @@ public class MemberRestController {
     @Operation(summary = "회원 조회 API", description = "다른 회원의 프로필을 조회하는 API입니다.")
     @GetMapping("users/{clokey_id}")
     public BaseResponse<Object> getUser(
-            @AuthUser Member currentUser, // 현재 로그인한 사용자 추가
+            @Parameter(name = "user", hidden = true) @AuthUser Member currentUser, // 현재 로그인한 사용자 추가
             @IdValid @PathVariable("clokey_id") String clokeyId) {
 
         MemberDTO.GetUserRP response = getUserQueryService.getUser(clokeyId, currentUser);

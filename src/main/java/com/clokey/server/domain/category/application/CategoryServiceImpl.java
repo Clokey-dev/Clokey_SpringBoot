@@ -4,20 +4,16 @@ import com.clokey.server.domain.category.converter.CategoryConverter;
 import com.clokey.server.domain.category.dto.CategoryResponseDTO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -110,7 +106,6 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     private String chatGPT(String prompt) {
-        System.out.println(url);
         String model = "gpt-3.5-turbo";
 
         RestTemplate restTemplate = new RestTemplate();
