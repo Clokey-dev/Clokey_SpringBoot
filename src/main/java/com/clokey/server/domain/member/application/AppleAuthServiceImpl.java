@@ -86,7 +86,7 @@ public class AppleAuthServiceImpl implements AppleAuthService {
     //2. 여기까지 주소 가져옴
 
 
-    public AuthDTO.TokenResponse login(String code) {
+    public AuthDTO.TokenResponse login(String code, String deviceToken) {
         // code가 null인 경우 처리
         if (code == null || code.isBlank()) {
             throw new MemberException(ErrorStatus.INVALID_CODE);
@@ -157,11 +157,17 @@ public class AppleAuthServiceImpl implements AppleAuthService {
         boolean isNewUser = false;
         if (optionalMember.isPresent()) {
             member = optionalMember.get();  // 기존 사용자
+
+            if(member.getDeviceToken() == null || member.getDeviceToken().isBlank()){
+                member.updateDeviceToken(deviceToken);
+                memberRepositoryService.saveMember(member);
+            }
         } else {
             member = Member.builder()
                     .email(email)
                     .socialType(SocialType.APPLE)
                     .registerStatus(RegisterStatus.NOT_AGREED)
+                    .deviceToken(deviceToken)
                     .build();
             memberRepositoryService.saveMember(member);
             isNewUser = true; // 새로운 사용자
