@@ -46,5 +46,29 @@ public class TermRestController {
         // 성공 응답 반환
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_SUCCESS, terms);
     }
+
+    @Operation(summary = "선택약관 동의 여부 조회 API", description = "선택약관 동의 여부를 조회하는 API입니다.")
+    @GetMapping("/users/terms/optional")
+    public BaseResponse<TermResponseDTO.UserAgreementDTO> getAgreedTerms(
+            @Parameter(name = "user",hidden = true) @AuthUser Member member) {
+        // 선택약관 동의 여부 조회
+        TermResponseDTO.UserAgreementDTO response = termCommandService.getOptionalTerms(member.getId());
+
+        // 성공 응답 반환
+        return BaseResponse.onSuccess(SuccessStatus.MEMBER_SUCCESS, response);
+    }
+
+    @Operation(summary = "선택약관 동의 수정 API", description = "선택약관 동의 여부를 바꾸는 API입니다.")
+    @PostMapping("/users/terms/optional")
+    public BaseResponse<TermResponseDTO.UserAgreementDTO> optionalTermAgree(
+            @Parameter(name = "user",hidden = true) @AuthUser Member member,
+            @RequestBody TermRequestDTO.Join request) {
+
+        // MemberTerm 생성
+        TermResponseDTO.UserAgreementDTO response = termCommandService.optionalTermAgree(member.getId(), request);
+
+        // 성공 응답 반환
+        return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_CREATED, response);
+    }
 }
 

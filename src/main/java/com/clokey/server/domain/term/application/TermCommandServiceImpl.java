@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -87,5 +89,80 @@ public class TermCommandServiceImpl implements TermCommandService {
 
         return termList;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TermResponseDTO.UserAgreementDTO getOptionalTerms(Long userId) {
+        // 사용자 조회
+        Member member = memberRepositoryService.findMemberById(userId);
+
+        // 사용자가 동의한 약관 조회
+        List<MemberTerm> memberTerms = memberTermRepository.findByMember(member);
+
+        // 사용자가 동의한 약관 ID 목록
+        Set<Long> agreedTermIds = memberTerms.stream()
+                .map(memberTerm -> memberTerm.getTerm().getId())
+                .collect(Collectors.toSet());
+
+        // 전체 선택 약관 조회 (optional = true)
+        List<Term> optionalTerms = termRepository.findByOptionalTrue();
+
+        // OptionalTermDTO 리스트 생성
+        List<TermResponseDTO.OptionalTermDTO> termResponses = optionalTerms.stream()
+                .map(term -> TermResponseDTO.OptionalTermDTO.builder()
+                        .termId(term.getId())  // 약관 ID
+                        .title(term.getTitle())  // 약관 제목
+                        .agreed(agreedTermIds.contains(term.getId())) // 사용자가 동의했는지 여부 판단
+                        .build())
+                .collect(Collectors.toList());
+
+        return TermResponseDTO.UserAgreementDTO.builder()
+                .email(member.getEmail()) // 이메일 추가
+                .appVersion("1.0.0") // 앱 버전 추가 (필드 확인 필요)
+                .terms(termResponses)  // OptionalTermDTO 리스트 반환
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public TermResponseDTO.UserAgreementDTO optionalTermAgree(Long userId, TermRequestDTO.Join request) {
+        // 사용자 조회
+        Member member = memberRepositoryService.findMemberById(userId);
+
+
+        // 약관 처리
+        List<TermResponseDTO.OptionalTermDTO> termResponses = new ArrayList<>();
+        for (TermRequestDTO.Join.Term termDto : request.getTerms()) {
+            // 약관 조회 (이미 존재 여부는 확인된 상태)
+            Term term = termRepository.findById(termDto.getTermId()).orElseThrow(() -> new TermException(ErrorStatus.NO_SUCH_TERM));
+
+            // MemberTerm 생성 및 저장
+            MemberTerm memberTerm = MemberTerm.builder()
+                    .member(member)
+                    .term(term)
+                    .build();
+
+            memberTermRepository.save(memberTerm);
+
+            // 응답 데이터에 추가
+            termResponses.add(TermResponseDTO.OptionalTermDTO.builder()
+                    .termId(term.getId())  // 약관 ID
+                    .title(term.getTitle())  // 약관 제목
+                    .agreed(true)  // 동의 처리
+                    .build());
+        }
+
+        // 최종 응답 생성
+        return TermResponseDTO.UserAgreementDTO.builder()
+                .email(member.getEmail()) // 이메일 추가
+                .appVersion("1.0.0") // 앱 버전 추가 (필드 확인 필요)
+                .terms(termResponses)  // OptionalTermDTO 리스트 반환
+                .build();
+    }
+
+
+
+
+
 
 }
