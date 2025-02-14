@@ -106,11 +106,15 @@ public class ClothResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SmartSummaryClothPreviewListResult {
-        private SummaryFrequency type;
-        private String baseCategoryName;
-        private String coreCategoryName;
-        private Long coreCategoryId;
-        private Double averageUsage;
-        private List<ClothPreview> clothPreviews;
+        private String frequentBaseCategoryName;
+        private String frequentCoreCategoryName;
+        private Long frequentCoreCategoryId;
+        private Long frequentUsage;
+        private List<ClothPreview> frequentClothPreviews;
+        private String infrequentBaseCategoryName;
+        private String infrequentCoreCategoryName;
+        private Long infrequentCoreCategoryId;
+        private Long infrequentUsage;
+        private List<ClothPreview> infrequentClothPreviews;
     }
 }

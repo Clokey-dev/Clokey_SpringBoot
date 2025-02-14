@@ -136,18 +136,24 @@ public class ClothConverter {
     }
 
     public static ClothResponseDTO.SmartSummaryClothPreviewListResult toSummaryClothPreviewListResult(
-            SummaryFrequency frequencyType,
-            Category category,
-            Double averageUsage,
-            List<ClothResponseDTO.ClothPreview> clothPreviews
+            Category frequentCategory,
+            Category infrequentCategory,
+            Long frequentUsage,
+            Long infrequentUsage,
+            List<ClothResponseDTO.ClothPreview> frequentClothPreviews,
+            List<ClothResponseDTO.ClothPreview> infrequentClothPreviews
     ) {
         return ClothResponseDTO.SmartSummaryClothPreviewListResult.builder()
-                .type(frequencyType)
-                .baseCategoryName(category.getParent().getName())
-                .coreCategoryName(category.getName())
-                .coreCategoryId(category.getId())
-                .averageUsage(averageUsage)
-                .clothPreviews(clothPreviews)
+                .frequentBaseCategoryName(frequentCategory.getParent().getName())
+                .frequentCoreCategoryName(frequentCategory.getName())
+                .frequentCoreCategoryId(frequentCategory.getId())
+                .frequentUsage(frequentUsage)
+                .frequentClothPreviews(frequentClothPreviews)
+                .infrequentBaseCategoryName(infrequentCategory.getParent().getName())
+                .infrequentCoreCategoryName(infrequentCategory.getName())
+                .infrequentCoreCategoryId(infrequentCategory.getId())
+                .infrequentUsage(infrequentUsage)
+                .infrequentClothPreviews(infrequentClothPreviews)
                 .build();
     }
 

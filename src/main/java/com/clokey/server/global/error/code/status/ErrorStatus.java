@@ -2,6 +2,7 @@ package com.clokey.server.global.error.code.status;
 
 import com.clokey.server.global.error.code.BaseErrorCode;
 import com.clokey.server.global.error.code.ErrorReasonDTO;
+import com.google.api.Http;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -83,18 +84,27 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //알림 에러
     NOTIFICATION_TYPE_INVALID(HttpStatus.BAD_REQUEST,"NOTIFICATION_4001","잘못된 알림 Type 입니다."),
+    NOTIFICATION_NOT_FOLLOWING(HttpStatus.BAD_REQUEST,"NOTIFICATION_4002","팔로우 하지 않는 대상에게 팔로우 알림을 보낼 수 없습니다"),
+    NOTIFICATION_NOT_MY_COMMENT(HttpStatus.BAD_REQUEST,"NOTIFICATION_4003","나의 댓글이 아닌 경우 기록에 댓글 작성 알림을 보낼 수 없습니다"),
+    NOTIFICATION_COMMENT_NOT_FROM_HISTORY(HttpStatus.BAD_REQUEST,"NOTIFICATION_4004","댓글이 다른 기록에 작성되어 있는 경우 알림을 보낼 수 없습니다."),
+    NOTIFICATION_NOT_PARENT_COMMENT_OF_REPLY(HttpStatus.BAD_REQUEST,"NOTIFICATION_4005","댓글이 답글의 부모 댓글과 일치하지 않는 경우 알림을 보낼 수 없습니다"),
+    NO_SUCH_NOTIFICATION(HttpStatus.BAD_REQUEST,"NOTIFICATION_4006","존재하지 않는 알림입니다."),
+    NOT_MY_NOTIFICATION(HttpStatus.BAD_REQUEST,"NOTIFICATION_4007","나의 알림이 아닙니다."),
+    CANNOT_NOTIFY_MY_SELF(HttpStatus.BAD_REQUEST,"NOTIFICATION_4008","자신에게 알림을 보낼 수 없습니다."),
+    NOTIFICATION_FIREBASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"NOTIFICATION_5001","Firebase 서버에러 입니다."),
 
-    //검색 에러
-    NO_SUCH_PARAMETER(HttpStatus.BAD_REQUEST,"SEARCH_4001","검색어는 필수입니다."),
+    
 
     //추천 에러
     NO_TEMP_PARAMETER(HttpStatus.BAD_REQUEST,"RECOMMEND_4001","온도값은 필수입니다."),
+    NO_SUCH_RECOMMEND(HttpStatus.NOT_FOUND,"RECOMMEND_4041","추천 정보가 존재하지 않습니다."),
 
-    // S3 관련
+    //S3 관련
     S3_OBJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "S3_001", "S3 오브젝트를 찾을 수 없습니다."),
     S3_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "S3_002", "S3 업로드 실패"),
     S3_EMPTY_FILE_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "S3_003", "파일이 존재하지 않습니다."),
     S3_DELETE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "S3_004", "S3 삭제 실패"),
+
     //로그인 에러
     INVALID_TOKEN(HttpStatus.BAD_REQUEST,"LOGIN_4001","유효하지 않은 토큰입니다."),
     MISSING_LOGIN_TYPE(HttpStatus.BAD_REQUEST,"LOGIN_4002","로그인 타입이 누락되었습니다."),
@@ -105,14 +115,21 @@ public enum ErrorStatus implements BaseErrorCode {
     NO_RESPONSE(HttpStatus.BAD_REQUEST,"LOGIN_4007","응답이 없습니다."),
     INVALID_RESPONSE(HttpStatus.BAD_REQUEST,"LOGIN_4007","응답이 없습니다."),
 
-    Elastic_Search_Transport_Exception(HttpStatus.BAD_REQUEST,"SEARCH_4001","Elastic Search 연결 에러입니다."),
-    Index_Not_Fount_Exception(HttpStatus.BAD_REQUEST,"SEARCH_4002","Elastic Search에서 지정한 인덱스가 없습니다."),
-    Mapper_Parsing_Exception(HttpStatus.BAD_REQUEST,"SEARCH_4003","Elastic Search 문서 필드의 타입과 정의된 도메인 모델의 필드 타입이 일치하지 않습니다."),
+
+    //검색 에러
+    NO_SUCH_PARAMETER(HttpStatus.BAD_REQUEST,"SEARCH_4001","검색어는 필수입니다."),
+    Elastic_Search_Transport_Exception(HttpStatus.BAD_REQUEST,"SEARCH_4002","Elastic Search 연결 에러입니다."),
+    Index_Not_Fount_Exception(HttpStatus.BAD_REQUEST,"SEARCH_4003","Elastic Search에서 지정한 인덱스가 없습니다."),
+    Mapper_Parsing_Exception(HttpStatus.BAD_REQUEST,"SEARCH_4004","Elastic Search 문서 필드의 타입과 정의된 도메인 모델의 필드 타입이 일치하지 않습니다."),
     SEARCH_CLOTH_ERROR(HttpStatus.BAD_REQUEST,"SEARCH_500","옷 검색 에러입니다."),
     SEARCH_HISTORY_ERROR(HttpStatus.BAD_REQUEST,"SEARCH_500","기록 검색 에러입니다."),
     SEARCH_MEMBER_ERROR(HttpStatus.BAD_REQUEST,"SEARCH_500","유저 검색 에러입니다."),
     SEARCH_FILTER_ERROR(HttpStatus.BAD_REQUEST,"SEARCH_4005","검색 필터가 유효하지 않습니다."),
-    SEARCHING_IOEXCEPION(HttpStatus.BAD_REQUEST,"SEARCH_4005","입출력 오류입니다.")
+    SEARCHING_IOEXCEPION(HttpStatus.BAD_REQUEST,"SEARCH_4006","입출력 오류입니다."),
+
+    //홈 에러
+    NO_SUCH_SECTION(HttpStatus.NOT_FOUND,"HOME_4041","해당 섹션이 존재하지 않습니다.")
+
     ;
 
 

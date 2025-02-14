@@ -46,7 +46,7 @@ public class HistoryConverter {
                 .build();
     }
 
-    public static HistoryResponseDTO.MonthViewResult toMonthViewResult(Long memberId, List<History> histories , List<String> historyFirstImageUrls) {
+    public static HistoryResponseDTO.MonthViewResult toMonthViewResult(Long memberId, String nickName, List<History> histories , List<String> historyFirstImageUrls) {
 
         List<HistoryResponseDTO.HistoryResult> HistoryResults = new ArrayList<>();
 
@@ -59,6 +59,7 @@ public class HistoryConverter {
 
         return HistoryResponseDTO.MonthViewResult.builder()
                 .memberId(memberId)
+                .nickName(nickName)
                 .histories(HistoryResults)
                 .build();
     }
@@ -146,13 +147,6 @@ public class HistoryConverter {
                 .build();
     }
 
-    public static HistoryResponseDTO.LastYearHistoryResult toLastYearHistoryResult(Long historyId, List<String> historyImageUrls, Member member) {
-        return HistoryResponseDTO.LastYearHistoryResult.builder()
-                .historyId(historyId)
-                .nickName(member.getNickname())
-                .imageUrls(historyImageUrls)
-                .build();
-    }
     public static HistoryResponseDTO.LikedUserResults toLikedUserResult(List<Member> members, List<Boolean> followStatus){
         List<HistoryResponseDTO.LikedUserResult> likedUserResults = new ArrayList<>();
         for(int i=0; i<members.size(); i++){

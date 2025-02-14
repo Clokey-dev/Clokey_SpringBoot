@@ -22,4 +22,14 @@ public class FollowRepositoryServiceImpl implements FollowRepositoryService{
     public List<Member> findFollowedByFollowingId(Long followingId) {
         return followRepository.findFollowedByFollowingId(followingId);
     }
+
+    @Override
+    public boolean existsByFollowing_IdAndFollowed_Id(Long followingId, Long followedId) {
+        return followRepository.existsByFollowing_IdAndFollowed_Id(followingId,followedId);
+    }
+
+    @Override
+    public List<Member> findFollowingByFollowedId(Long followedId) {
+        return followRepository.findFollowingByFollowedId(followedId);
+    }
 }

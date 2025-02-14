@@ -11,4 +11,8 @@ public interface FollowRepositoryService {
     List<Boolean> checkFollowingStatus(Long followedId, List<Member> members);
 
     List<Member> findFollowedByFollowingId(Long followingId);
+
+    boolean existsByFollowing_IdAndFollowed_Id(Long followingId, Long followedId);
+
+    List<Member> findFollowingByFollowedId(Long followedId);
 }
