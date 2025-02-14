@@ -6,13 +6,13 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Mapping;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
+@Builder
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @Document(indexName = "history")
 @Mapping(mappingPath = "static/elastic-mapping.json")
 @Setting(settingPath = "static/elastic-token.json")
-@Getter
-@Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class HistoryDocument {
 
     @Id
