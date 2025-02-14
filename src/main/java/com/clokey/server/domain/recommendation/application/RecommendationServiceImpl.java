@@ -56,31 +56,24 @@ public class RecommendationServiceImpl implements RecommendationService {
     private static final String REDIS_PREFIX = "dailyNews:";
 
     @Override
-    public RecommendationResponseDTO.DailyClothesResult getRecommendClothes(Long memberId, Double nowTemp) {
-        // 현재 최저 최고 기온에 해당하는 사용자가 가지고 있는 옷들의 온도 범위에 맞는 옷들을 조회. 알고리즘.. 뭐가 최적화될까?
-        // 카테고리를 상의, 하의, 아우터에서 기본적으로 추천. parentCategory 번호를 이용하기.
-        // 각 카테고리 마다 하나의 옷 추천.
-        // 각 카테고리에 하나의 옷 추천 할 게 없으면 기타에서 추천.
-        // 추천 테이블에 저장
+    public RecommendationResponseDTO.DailyClothesResult getRecommendClothes(Long memberId, Double nowTemp, Double minTemp, Double maxTemp) {
+        // 한 번의 쿼리로 온도 범위에 맞는 모든 옷을 가져오기
+        List<Cloth> suitableClothes = clothRepositoryService.findSuitableClothes(memberId, nowTemp, minTemp, maxTemp);
 
-        Cloth top = clothRepositoryService.findSuitableCloth(memberId, nowTemp, "상의");
-        System.out.println("top : " + top);
-        Cloth bottom = clothRepositoryService.findSuitableCloth(memberId, nowTemp, "하의");
-        System.out.println("bottom : " + bottom);
-        Cloth outer = clothRepositoryService.findSuitableCloth(memberId, nowTemp, "아우터");
-        System.out.println("outer : " + outer);
+        // 카테고리별로 하나씩 선택, parentCategory 이름을 이용하여 필터링
+        Cloth top = suitableClothes.stream().filter(c -> c.getCategory().getParent().getName().equals("상의")).findFirst().orElse(null);
+        Cloth bottom = suitableClothes.stream().filter(c -> c.getCategory().getParent().getName().equals("하의")).findFirst().orElse(null);
+        Cloth outer = suitableClothes.stream().filter(c -> c.getCategory().getParent().getName().equals("아우터")).findFirst().orElse(null);
 
+        // 각 카테고리에서 못 찾으면 "기타"에서 대체
         if (top == null) {
-            top = clothRepositoryService.findSuitableCloth(memberId, nowTemp, "기타");
-            System.out.println("top : " + top);
+            top = suitableClothes.stream().filter(c -> c.getCategory().getParent().getName().equals("기타")).findFirst().orElse(null);
         }
         if (bottom == null) {
-            bottom = clothRepositoryService.findSuitableCloth(memberId, nowTemp, "기타");
-            System.out.println("bottom : " + bottom);
+            bottom = suitableClothes.stream().filter(c -> c.getCategory().getParent().getName().equals("기타")).findFirst().orElse(null);
         }
         if (outer == null) {
-            outer = clothRepositoryService.findSuitableCloth(memberId, nowTemp, "기타");
-            System.out.println("outer : " + outer);
+            outer = suitableClothes.stream().filter(c -> c.getCategory().getParent().getName().equals("기타")).findFirst().orElse(null);
         }
 
         if (top == null && bottom == null && outer == null) {
@@ -88,14 +81,14 @@ public class RecommendationServiceImpl implements RecommendationService {
         }
 
         List<RecommendationResponseDTO.DailyClothResult> recommendedClothes = Stream.of(top, bottom, outer)
-                .filter(Objects::nonNull) // null 값 제거
+                .filter(Objects::nonNull)
                 .map(cloth -> RecommendationResponseDTO.DailyClothResult.builder()
                         .clothId(cloth.getId())
                         .imageUrl(cloth.getImage().getImageUrl())
                         .clothName(cloth.getName())
                         .build())
                 .collect(Collectors.toList());
-
+/* db 저장 로직
         Recommendation recommendation = Recommendation.builder()
                 .newsType(NewsType.WEATHER)
                 .member(memberRepositoryService.findMemberById(memberId))
@@ -103,7 +96,7 @@ public class RecommendationServiceImpl implements RecommendationService {
                 .temperature(nowTemp)
                 .build();
         recommendationRepositoryService.save(recommendation);
-
+ */
         return new RecommendationResponseDTO.DailyClothesResult(recommendedClothes);
     }
 
