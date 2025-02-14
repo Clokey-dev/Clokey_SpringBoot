@@ -6,6 +6,7 @@ import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.domain.recommendation.application.RecommendationService;
 import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
 import com.clokey.server.domain.recommendation.exception.annotation.CheckSection;
+import com.clokey.server.domain.recommendation.exception.annotation.CheckTemperature;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import com.clokey.server.global.error.exception.annotation.CheckPage;
@@ -30,9 +31,9 @@ public class RecommendationController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HOME_200", description = "성공적으로 조회되었습니다."),
     })
     public BaseResponse<RecommendationResponseDTO.DailyClothesResult> recommendClothes(@Parameter(name = "user", hidden = true) @AuthUser Member member,
-                                                                                       @RequestParam @Valid Double nowTemp,
-                                                                                       @RequestParam @Valid Double minTemp,
-                                                                                       @RequestParam @Valid Double maxTemp) {
+                                                                                       @RequestParam @Valid @CheckTemperature Double nowTemp,
+                                                                                       @RequestParam @Valid @CheckTemperature Double minTemp,
+                                                                                       @RequestParam @Valid @CheckTemperature Double maxTemp) {
         RecommendationResponseDTO.DailyClothesResult response = recommendationService.getRecommendClothes(member.getId(), nowTemp, minTemp, maxTemp);
         return BaseResponse.onSuccess(SuccessStatus.HOME_SUCCESS, response);
     }
