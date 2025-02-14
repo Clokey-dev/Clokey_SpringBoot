@@ -1,6 +1,5 @@
 package com.clokey.server.domain.cloth.application;
 
-import com.clokey.server.domain.category.application.CategoryRepositoryService;
 import com.clokey.server.domain.category.domain.entity.Category;
 import com.clokey.server.domain.category.exception.CategoryException;
 import com.clokey.server.domain.cloth.converter.ClothConverter;
@@ -68,7 +67,7 @@ public class ClothServiceImpl implements ClothService {
     }
 
     // 옷장의 옷의 PreView 조회 후 옷장 조회 DTO로 변환해서 반환
-    public ClothResponseDTO.CategoryClothPreviewListResult readClothPreviewInfoListByClokeyId(
+    public ClothResponseDTO.ClothPreviewListResult readClothPreviewInfoListByClokeyId(
             String ownerClokeyId, Long requesterId, Long categoryId, Season season, ClothSort sort, int page, int size) {
 
         Pageable pageable = PageRequest.of(page-1, size);
@@ -78,7 +77,7 @@ public class ClothServiceImpl implements ClothService {
         List<ClothResponseDTO.ClothPreview> clothPreviews = ClothConverter.toClothPreviewList(clothes);
 
         // 페이징 정보를 담아 DTO 반환
-        return ClothConverter.toClosetClothPreviewListResult(clothes, clothPreviews);
+        return ClothConverter.toClothPreviewListResult(clothes, clothPreviews);
     }
 
     // 지난 7일간 착용횟수를 통해 카테고리와 카테고리에 해당하는 옷의 PreView 조회 후 스마트 요약 DTO로 변환해서 반환

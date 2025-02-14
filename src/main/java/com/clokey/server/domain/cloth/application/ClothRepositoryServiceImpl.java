@@ -74,11 +74,17 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
         };
     }
   
+    @Override
     public List<Cloth> findAllById(List<Long> clothIds) {
         return clothRepository.findAllById(clothIds);
 
     }
 
+    @Override
+    public List<Cloth> findAll(){
+        return clothRepository.findAll();
+    }
+  
     @Override
     public Page<Cloth> findByMemberInAndVisibilityOrderByCreatedAtDesc(List<Member> members, Visibility visibility, Pageable pageable) {
         return clothRepository.findByMemberInAndVisibilityOrderByCreatedAtDesc(members, visibility, pageable);
@@ -93,5 +99,10 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
     public String findMostWornCategory(Long memberId) {
         return clothRepository.findMostWornCategory(memberId)
                 .orElse(null);
+    }
+
+    @Override
+    public List<Cloth> findSuitableClothes(Long memberId, Integer nowTemp, Integer minTemp, Integer maxTemp) {
+        return clothRepository.findSuitableClothes(memberId, nowTemp, minTemp, maxTemp);
     }
 }
