@@ -169,6 +169,7 @@ public class HistoryResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class LastYearHistoryResult{
+        Boolean isMine;
         Long historyId;
         String nickName;
         List<String> imageUrls;
