@@ -40,6 +40,8 @@ public interface ClothRepositoryService {
 
     List<Cloth> findAllById(List<Long> clothIds);
 
+    List<Cloth> findAll();
+
     Page<Cloth> findByMemberInAndVisibilityOrderByCreatedAtDesc(
             List<Member> members, Visibility visibility, Pageable pageable);
 
@@ -47,4 +49,6 @@ public interface ClothRepositoryService {
             List<Member> members, Visibility visibility);
 
     String findMostWornCategory(Long memberId);
+    
+    List<Cloth> findSuitableClothes(Long memberId, Integer nowTemp, Integer minTemp, Integer maxTemp);
 }

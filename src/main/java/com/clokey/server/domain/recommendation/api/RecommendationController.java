@@ -6,6 +6,7 @@ import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.domain.recommendation.application.RecommendationService;
 import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
 import com.clokey.server.domain.recommendation.exception.annotation.CheckSection;
+import com.clokey.server.domain.recommendation.exception.annotation.CheckTemperature;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import com.clokey.server.global.error.exception.annotation.CheckPage;
@@ -29,9 +30,11 @@ public class RecommendationController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HOME_200", description = "성공적으로 조회되었습니다."),
     })
-    public BaseResponse<RecommendationResponseDTO.DailyClothesResult> recommendClothes(@Parameter(name = "user",hidden = true) @AuthUser Member member,
-                                                                                   @RequestParam @Valid Float nowTemp) {
-        RecommendationResponseDTO.DailyClothesResult response = recommendationService.getRecommendClothes(member.getId(), nowTemp);
+    public BaseResponse<RecommendationResponseDTO.DailyClothesResult> recommendClothes(@Parameter(name = "user", hidden = true) @AuthUser Member member,
+                                                                                       @RequestParam @Valid @CheckTemperature Integer nowTemp,
+                                                                                       @RequestParam @Valid @CheckTemperature Integer minTemp,
+                                                                                       @RequestParam @Valid @CheckTemperature Integer maxTemp) {
+        RecommendationResponseDTO.DailyClothesResult response = recommendationService.getRecommendClothes(member.getId(), nowTemp, minTemp, maxTemp);
         return BaseResponse.onSuccess(SuccessStatus.HOME_SUCCESS, response);
     }
 
@@ -62,8 +65,8 @@ public class RecommendationController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HOME_200", description = "성공적으로 조회되었습니다."),
     })
-    public BaseResponse<HistoryResponseDTO.LastYearHistoryResult> getLastYearHistory(@Parameter(name = "user", hidden = true) @AuthUser Member member) {
-        HistoryResponseDTO.LastYearHistoryResult result = recommendationService.getLastYearHistory(member.getId());
+    public BaseResponse<RecommendationResponseDTO.LastYearHistoryResult> getLastYearHistory(@Parameter(name = "user", hidden = true) @AuthUser Member member) {
+        RecommendationResponseDTO.LastYearHistoryResult result = recommendationService.getLastYearHistory(member.getId());
         return BaseResponse.onSuccess(SuccessStatus.HOME_SUCCESS, result);
     }
 }
