@@ -1,7 +1,6 @@
 package com.clokey.server.domain.cloth.dto;
 
 import com.clokey.server.domain.model.entity.enums.Season;
-import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
 import com.clokey.server.domain.model.entity.enums.ThicknessLevel;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 import lombok.*;
@@ -97,8 +96,20 @@ public class ClothResponseDTO {
         private List<ClothPreview> clothPreviews;
         private int totalPage;
         private long totalElements;
-        private boolean isFirst;
-        private boolean isLast;
+        private Boolean isFirst;
+        private Boolean isLast;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SmartSummaryClothPreview {
+        private String baseCategoryName;
+        private String coreCategoryName;
+        private Long coreCategoryId;
+        private Long usage;
+        private List<ClothPreview> clothPreviews;
     }
 
     @Builder
@@ -106,15 +117,7 @@ public class ClothResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SmartSummaryClothPreviewListResult {
-        private String frequentBaseCategoryName;
-        private String frequentCoreCategoryName;
-        private Long frequentCoreCategoryId;
-        private Long frequentUsage;
-        private List<ClothPreview> frequentClothPreviews;
-        private String infrequentBaseCategoryName;
-        private String infrequentCoreCategoryName;
-        private Long infrequentCoreCategoryId;
-        private Long infrequentUsage;
-        private List<ClothPreview> infrequentClothPreviews;
+        private SmartSummaryClothPreview frequentResult;
+        private SmartSummaryClothPreview infrequentResult;
     }
 }
