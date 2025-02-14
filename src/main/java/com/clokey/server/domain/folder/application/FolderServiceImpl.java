@@ -46,7 +46,6 @@ public class FolderServiceImpl implements FolderService {
         Member member = memberRepositoryService.findMemberById(memberId);
         //folder 새로 생성 또는 기존 폴더 반환하는 함수
         Folder folder = getFolder(request.getFolderId(), member, request);
-
         //폴더 이름 수정
         folder.rename(request.getFolderName());
         //폴더-옷 테이블에 없으면 추가하고, 폴더-옷테이블에 있는데 request에 없으면 삭제하고. 폴더 아이템 개수 업데이트.
@@ -119,7 +118,7 @@ public class FolderServiceImpl implements FolderService {
                 .map(cf -> cf.getCloth().getId())
                 .toList();
 
-        List<Long> toRemove = existingClothIds.stream()
+        List<Long> toRemove = existingClothIds.stream() // 삭제할 옷 (폴더에 있지만 request에 없는 옷)
                 .filter(id -> !clothIds.contains(id))
                 .toList();
 
@@ -141,6 +140,7 @@ public class FolderServiceImpl implements FolderService {
             clothFolderRepositoryService.saveAll(clothFolders);
         }
 
+        // 폴더 아이템 개수 업데이트
         Long updatedItemCount = clothFolderRepositoryService.countByFolderId(folder.getId());
         folder.setItemCount(updatedItemCount);
         folderRepositoryService.save(folder);
