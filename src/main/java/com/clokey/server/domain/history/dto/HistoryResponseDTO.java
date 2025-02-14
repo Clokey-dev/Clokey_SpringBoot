@@ -160,21 +160,9 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class HistoryCreateResult{
+    public static class HistoryCreateResult {
         Long historyId;
     }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class LastYearHistoryResult{
-        Boolean isMine;
-        Long historyId;
-        String nickName;
-        List<String> imageUrls;
-    }
-
 }
 
 
