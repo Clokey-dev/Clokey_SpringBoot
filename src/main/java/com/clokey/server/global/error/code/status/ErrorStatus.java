@@ -93,8 +93,7 @@ public enum ErrorStatus implements BaseErrorCode {
     CANNOT_NOTIFY_MY_SELF(HttpStatus.BAD_REQUEST,"NOTIFICATION_4008","자신에게 알림을 보낼 수 없습니다."),
     NOTIFICATION_FIREBASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"NOTIFICATION_5001","Firebase 서버에러 입니다."),
 
-    //검색 에러
-    NO_SUCH_PARAMETER(HttpStatus.BAD_REQUEST,"SEARCH_4001","검색어는 필수입니다."),
+    
 
     //추천 에러
     NO_TEMP_PARAMETER(HttpStatus.BAD_REQUEST,"RECOMMEND_4001","온도값은 필수입니다."),
@@ -116,8 +115,21 @@ public enum ErrorStatus implements BaseErrorCode {
     NO_RESPONSE(HttpStatus.BAD_REQUEST,"LOGIN_4007","응답이 없습니다."),
     INVALID_RESPONSE(HttpStatus.BAD_REQUEST,"LOGIN_4007","응답이 없습니다."),
 
+
+    //검색 에러
+    NO_SUCH_PARAMETER(HttpStatus.BAD_REQUEST,"SEARCH_4001","검색어는 필수입니다."),
+    Elastic_Search_Transport_Exception(HttpStatus.BAD_REQUEST,"SEARCH_4002","Elastic Search 연결 에러입니다."),
+    Index_Not_Fount_Exception(HttpStatus.BAD_REQUEST,"SEARCH_4003","Elastic Search에서 지정한 인덱스가 없습니다."),
+    Mapper_Parsing_Exception(HttpStatus.BAD_REQUEST,"SEARCH_4004","Elastic Search 문서 필드의 타입과 정의된 도메인 모델의 필드 타입이 일치하지 않습니다."),
+    SEARCH_CLOTH_ERROR(HttpStatus.BAD_REQUEST,"SEARCH_500","옷 검색 에러입니다."),
+    SEARCH_HISTORY_ERROR(HttpStatus.BAD_REQUEST,"SEARCH_500","기록 검색 에러입니다."),
+    SEARCH_MEMBER_ERROR(HttpStatus.BAD_REQUEST,"SEARCH_500","유저 검색 에러입니다."),
+    SEARCH_FILTER_ERROR(HttpStatus.BAD_REQUEST,"SEARCH_4005","검색 필터가 유효하지 않습니다."),
+    SEARCHING_IOEXCEPION(HttpStatus.BAD_REQUEST,"SEARCH_4006","입출력 오류입니다."),
+
     //홈 에러
-    NO_SUCH_SECTION(HttpStatus.NOT_FOUND,"HOME_4041","해당 섹션이 존재하지 않습니다."),
+    NO_SUCH_SECTION(HttpStatus.NOT_FOUND,"HOME_4041","해당 섹션이 존재하지 않습니다.")
+
     ;
 
 

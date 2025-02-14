@@ -74,11 +74,17 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
         };
     }
   
+    @Override
     public List<Cloth> findAllById(List<Long> clothIds) {
         return clothRepository.findAllById(clothIds);
 
     }
 
+    @Override
+    public List<Cloth> findAll(){
+        return clothRepository.findAll();
+    }
+  
     @Override
     public Page<Cloth> findByMemberInAndVisibilityOrderByCreatedAtDesc(List<Member> members, Visibility visibility, Pageable pageable) {
         return clothRepository.findByMemberInAndVisibilityOrderByCreatedAtDesc(members, visibility, pageable);

@@ -93,12 +93,12 @@ public class ClothResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CategoryClothPreviewListResult {
+    public static class ClothPreviewListResult {
         private List<ClothPreview> clothPreviews;
         private int totalPage;
         private long totalElements;
-        private boolean isFirst;
-        private boolean isLast;
+        private Boolean isFirst;
+        private Boolean isLast;
     }
 
     @Builder
