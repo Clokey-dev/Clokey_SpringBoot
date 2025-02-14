@@ -75,4 +75,8 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
         return clothRepository.findAllById(clothIds);
 
     }
+
+    public List<Cloth> findAll(){
+        return clothRepository.findAll();
+    }
 }
