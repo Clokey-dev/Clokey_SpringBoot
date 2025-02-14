@@ -31,8 +31,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -54,8 +56,55 @@ public class RecommendationServiceImpl implements RecommendationService {
     private static final String REDIS_PREFIX = "dailyNews:";
 
     @Override
-    public RecommendationResponseDTO.DailyClothesResult getRecommendClothes(Long memberId, Float nowTemp) {
-        return null;
+    public RecommendationResponseDTO.DailyClothesResult getRecommendClothes(Long memberId, Double nowTemp) {
+        // 현재 최저 최고 기온에 해당하는 사용자가 가지고 있는 옷들의 온도 범위에 맞는 옷들을 조회. 알고리즘.. 뭐가 최적화될까?
+        // 카테고리를 상의, 하의, 아우터에서 기본적으로 추천. parentCategory 번호를 이용하기.
+        // 각 카테고리 마다 하나의 옷 추천.
+        // 각 카테고리에 하나의 옷 추천 할 게 없으면 기타에서 추천.
+        // 추천 테이블에 저장
+
+        Cloth top = clothRepositoryService.findSuitableCloth(memberId, nowTemp, "상의");
+        System.out.println("top : " + top);
+        Cloth bottom = clothRepositoryService.findSuitableCloth(memberId, nowTemp, "하의");
+        System.out.println("bottom : " + bottom);
+        Cloth outer = clothRepositoryService.findSuitableCloth(memberId, nowTemp, "아우터");
+        System.out.println("outer : " + outer);
+
+        if (top == null) {
+            top = clothRepositoryService.findSuitableCloth(memberId, nowTemp, "기타");
+            System.out.println("top : " + top);
+        }
+        if (bottom == null) {
+            bottom = clothRepositoryService.findSuitableCloth(memberId, nowTemp, "기타");
+            System.out.println("bottom : " + bottom);
+        }
+        if (outer == null) {
+            outer = clothRepositoryService.findSuitableCloth(memberId, nowTemp, "기타");
+            System.out.println("outer : " + outer);
+        }
+
+        if (top == null && bottom == null && outer == null) {
+            return new RecommendationResponseDTO.DailyClothesResult(List.of());
+        }
+
+        List<RecommendationResponseDTO.DailyClothResult> recommendedClothes = Stream.of(top, bottom, outer)
+                .filter(Objects::nonNull) // null 값 제거
+                .map(cloth -> RecommendationResponseDTO.DailyClothResult.builder()
+                        .clothId(cloth.getId())
+                        .imageUrl(cloth.getImage().getImageUrl())
+                        .clothName(cloth.getName())
+                        .build())
+                .collect(Collectors.toList());
+
+        Recommendation recommendation = Recommendation.builder()
+                .newsType(NewsType.WEATHER)
+                .member(memberRepositoryService.findMemberById(memberId))
+                .clothesIds(recommendedClothes.stream().map(RecommendationResponseDTO.DailyClothResult::getClothId).toList().toString())
+                .temperature(nowTemp)
+                .build();
+        recommendationRepositoryService.save(recommendation);
+
+        return new RecommendationResponseDTO.DailyClothesResult(recommendedClothes);
     }
 
     @Override

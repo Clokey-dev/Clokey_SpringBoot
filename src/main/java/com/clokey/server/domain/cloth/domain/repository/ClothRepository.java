@@ -72,4 +72,12 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
     @Query("SELECT c.category.name FROM Cloth c WHERE c.member.id = :memberId " +
             "GROUP BY c.category ORDER BY COUNT(c.id) DESC LIMIT 1")
     Optional<String> findMostWornCategory(@Param("memberId") Long memberId);
+
+    @Query("SELECT c FROM Cloth c WHERE c.member.id = :memberId " +
+            "AND c.category.parent.name = :category " +
+            "AND :nowTemp BETWEEN c.tempLowerBound AND c.tempUpperBound " +
+            "ORDER BY RAND() LIMIT 1")
+    Optional<Cloth> findSuitableCloth(@Param("memberId") Long memberId,
+                                      @Param("nowTemp") Double nowTemp,
+                                      @Param("category") String category);
 }

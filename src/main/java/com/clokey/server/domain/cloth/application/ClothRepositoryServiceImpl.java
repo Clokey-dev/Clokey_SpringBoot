@@ -94,4 +94,10 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
         return clothRepository.findMostWornCategory(memberId)
                 .orElse(null);
     }
+
+    @Override
+    public Cloth findSuitableCloth(Long memberId, Double nowTemp, String category) {
+        return clothRepository.findSuitableCloth(memberId, nowTemp, category)
+                .orElse(null);
+    }
 }
