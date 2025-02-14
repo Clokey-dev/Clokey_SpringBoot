@@ -29,9 +29,9 @@ public class FolderRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_201", description = "성공적으로 생성되었습니다."),
     })
-    public BaseResponse<FolderResponseDTO.FolderIdResult> createFolder(@Parameter(name = "user",hidden = true) @AuthUser Member member,
+    public BaseResponse<FolderResponseDTO.FolderIdResult> createAndUpdateFolder(@Parameter(name = "user",hidden = true) @AuthUser Member member,
                                                                  @RequestBody @Valid FolderRequestDTO.FolderCreateRequest request) {
-        FolderResponseDTO.FolderIdResult response = FolderConverter.toFolderIdDTO(folderService.createFolder(member.getId(), request));
+        FolderResponseDTO.FolderIdResult response = FolderConverter.toFolderIdDTO(folderService.createAndUpdateFolder(member.getId(), request));
         return BaseResponse.onSuccess(SuccessStatus.FOLDER_CREATED, response);
     }
 

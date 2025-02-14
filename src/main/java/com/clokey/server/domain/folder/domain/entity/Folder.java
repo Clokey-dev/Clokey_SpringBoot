@@ -35,4 +35,7 @@ public class Folder extends BaseEntity {
     public void decreaseItemCount() {
         this.itemCount--;
     }
+    public void setItemCount(Long itemCount) {
+        this.itemCount = itemCount;
+    }
 }

@@ -37,4 +37,6 @@ public interface ClothFolderRepository extends JpaRepository<ClothFolder, Long> 
     @Modifying
     void deleteAllByFolderId(@Param("folderId") Long folderId);
 
+    Long countByFolderId(Long folderId);
+
 }
