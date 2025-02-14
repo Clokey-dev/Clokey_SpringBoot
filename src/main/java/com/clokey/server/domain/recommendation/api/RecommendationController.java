@@ -65,8 +65,8 @@ public class RecommendationController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HOME_200", description = "성공적으로 조회되었습니다."),
     })
-    public BaseResponse<HistoryResponseDTO.LastYearHistoryResult> getLastYearHistory(@Parameter(name = "user", hidden = true) @AuthUser Member member) {
-        HistoryResponseDTO.LastYearHistoryResult result = recommendationService.getLastYearHistory(member.getId());
+    public BaseResponse<RecommendationResponseDTO.LastYearHistoryResult> getLastYearHistory(@Parameter(name = "user", hidden = true) @AuthUser Member member) {
+        RecommendationResponseDTO.LastYearHistoryResult result = recommendationService.getLastYearHistory(member.getId());
         return BaseResponse.onSuccess(SuccessStatus.HOME_SUCCESS, result);
     }
 }

@@ -364,8 +364,8 @@ public class RecommendationServiceImpl implements RecommendationService {
 
     @Override
     @Transactional(readOnly = true)
-    public HistoryResponseDTO.LastYearHistoryResult getLastYearHistory(Long memberId) {
-
+    public RecommendationResponseDTO.LastYearHistoryResult getLastYearHistory(Long memberId) {
+        Member member = memberRepositoryService.findMemberById(memberId);
         LocalDate today = LocalDate.now();
         LocalDate oneYearAgo = today.minusYears(1);
 
@@ -374,7 +374,7 @@ public class RecommendationServiceImpl implements RecommendationService {
             List<String> historyUrls = historyImageRepositoryService.findByHistoryId(historyOneYearAgoId).stream()
                     .map(HistoryImage::getImageUrl)
                     .toList();
-            return RecommendationConverter.toLastYearHistoryResult(historyOneYearAgoId,historyUrls,memberRepositoryService.findMemberById(memberId), true);
+            return RecommendationConverter.toLastYearHistoryResult(historyOneYearAgoId, historyUrls, member, true);
         }
 
         List<Long> followingMembers = followRepositoryService.findFollowedByFollowingId(memberId).stream()
@@ -393,7 +393,7 @@ public class RecommendationServiceImpl implements RecommendationService {
             return RecommendationConverter.toLastYearHistoryResult(historyOneYearAgoId,historyUrls,memberRepositoryService.findMemberById(memberPicked), false);
         }
 
-        return null;
+        return RecommendationConverter.toLastYearHistoryResult(null, null, member, true);
     }
 
     private Long getRandomMemberWithHistory(List<Long> followingMembers, List<Boolean> membersHaveHistoryOneYearAgo) {

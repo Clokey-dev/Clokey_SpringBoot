@@ -126,8 +126,8 @@ public class RecommendationConverter {
                 .build();
     }
 
-    public static HistoryResponseDTO.LastYearHistoryResult toLastYearHistoryResult(Long historyId, List<String> historyImageUrls, Member member, Boolean isMine) {
-        return HistoryResponseDTO.LastYearHistoryResult.builder()
+    public static RecommendationResponseDTO.LastYearHistoryResult toLastYearHistoryResult(Long historyId, List<String> historyImageUrls, Member member, Boolean isMine) {
+        return RecommendationResponseDTO.LastYearHistoryResult.builder()
                 .historyId(historyId)
                 .nickName(member.getNickname())
                 .imageUrls(historyImageUrls)
