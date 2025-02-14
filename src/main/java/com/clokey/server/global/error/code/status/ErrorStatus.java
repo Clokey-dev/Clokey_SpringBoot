@@ -2,7 +2,6 @@ package com.clokey.server.global.error.code.status;
 
 import com.clokey.server.global.error.code.BaseErrorCode;
 import com.clokey.server.global.error.code.ErrorReasonDTO;
-import com.google.api.Http;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -53,7 +52,6 @@ public enum ErrorStatus implements BaseErrorCode {
     NO_PERMISSION_TO_ACCESS_FOLDER(HttpStatus.BAD_REQUEST,"FOLDER_4005","폴더에 대한 접근 권한이 없습니다."),
     CLOTH_ALREADY_IN_FOLDER(HttpStatus.BAD_REQUEST,"FOLDER_4006","이미 폴더에 존재하는 옷입니다."),
 
-
     //카테고리 에러
     NO_SUCH_CATEGORY(HttpStatus.NOT_FOUND,"CATEGORY_4041","존재하지 않는 카테고리 ID입니다."),
     CATEGORY_NOT_FOUND_IN_SUMMARY(HttpStatus.NOT_FOUND,"CATEGORY_4001","스마트 요약에서 카테고리를 찾지 못했습니다."),
@@ -75,7 +73,6 @@ public enum ErrorStatus implements BaseErrorCode {
     NOT_MY_HISTORY(HttpStatus.BAD_REQUEST,"HISTORY_4014","사용자의 기록이 아닙니다"),
     NOT_MY_COMMENT(HttpStatus.BAD_REQUEST,"HISTORY_4015","사용자의 댓글이 아닙니다"),
     MUST_POST_HISTORY_IMAGE(HttpStatus.BAD_REQUEST,"HISTORY_4016","기록에는 반드시 사진을 첨부해야합니다"),
-
     NO_HISTORY_FOR_DATE(HttpStatus.BAD_REQUEST,"HISTORY_4016","해당 날짜에 기록이 없습니다"),
 
     //해시태그 에러
@@ -92,8 +89,6 @@ public enum ErrorStatus implements BaseErrorCode {
     NOT_MY_NOTIFICATION(HttpStatus.BAD_REQUEST,"NOTIFICATION_4007","나의 알림이 아닙니다."),
     CANNOT_NOTIFY_MY_SELF(HttpStatus.BAD_REQUEST,"NOTIFICATION_4008","자신에게 알림을 보낼 수 없습니다."),
     NOTIFICATION_FIREBASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"NOTIFICATION_5001","Firebase 서버에러 입니다."),
-
-    
 
     //추천 에러
     NO_TEMP_PARAMETER(HttpStatus.BAD_REQUEST,"RECOMMEND_4001","온도값은 필수입니다."),
@@ -115,7 +110,6 @@ public enum ErrorStatus implements BaseErrorCode {
     NO_RESPONSE(HttpStatus.BAD_REQUEST,"LOGIN_4007","응답이 없습니다."),
     INVALID_RESPONSE(HttpStatus.BAD_REQUEST,"LOGIN_4007","응답이 없습니다."),
 
-
     //검색 에러
     NO_SUCH_PARAMETER(HttpStatus.BAD_REQUEST,"SEARCH_4001","검색어는 필수입니다."),
     Elastic_Search_Transport_Exception(HttpStatus.BAD_REQUEST,"SEARCH_4002","Elastic Search 연결 에러입니다."),
@@ -128,8 +122,8 @@ public enum ErrorStatus implements BaseErrorCode {
     SEARCHING_IOEXCEPION(HttpStatus.BAD_REQUEST,"SEARCH_4006","입출력 오류입니다."),
 
     //홈 에러
-    NO_SUCH_SECTION(HttpStatus.NOT_FOUND,"HOME_4041","해당 섹션이 존재하지 않습니다.")
-
+    NO_SUCH_SECTION(HttpStatus.NOT_FOUND,"HOME_4041","해당 섹션이 존재하지 않습니다."),
+    OUT_OF_RANGE_TEMP(HttpStatus.BAD_REQUEST,"HOME_4002","온도 범위를 벗어났습니다.")
     ;
 
 

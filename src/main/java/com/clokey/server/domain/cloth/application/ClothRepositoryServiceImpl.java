@@ -100,4 +100,9 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
         return clothRepository.findMostWornCategory(memberId)
                 .orElse(null);
     }
+
+    @Override
+    public List<Cloth> findSuitableClothes(Long memberId, Integer nowTemp, Integer minTemp, Integer maxTemp) {
+        return clothRepository.findSuitableClothes(memberId, nowTemp, minTemp, maxTemp);
+    }
 }

@@ -126,11 +126,12 @@ public class RecommendationConverter {
                 .build();
     }
 
-    public static HistoryResponseDTO.LastYearHistoryResult toLastYearHistoryResult(Long historyId, List<String> historyImageUrls, Member member) {
+    public static HistoryResponseDTO.LastYearHistoryResult toLastYearHistoryResult(Long historyId, List<String> historyImageUrls, Member member, Boolean isMine) {
         return HistoryResponseDTO.LastYearHistoryResult.builder()
                 .historyId(historyId)
                 .nickName(member.getNickname())
                 .imageUrls(historyImageUrls)
+                .isMine(isMine)
                 .build();
     }
 }

@@ -18,6 +18,8 @@ import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.domain.recommendation.converter.RecommendationConverter;
 import com.clokey.server.domain.recommendation.domain.entity.Recommendation;
 import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
+import com.clokey.server.domain.recommendation.exception.RecommendException;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +35,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -54,8 +57,53 @@ public class RecommendationServiceImpl implements RecommendationService {
     private static final String REDIS_PREFIX = "dailyNews:";
 
     @Override
-    public RecommendationResponseDTO.DailyClothesResult getRecommendClothes(Long memberId, Float nowTemp) {
-        return null;
+    public RecommendationResponseDTO.DailyClothesResult getRecommendClothes(Long memberId, Integer nowTemp, Integer minTemp, Integer maxTemp) {
+        // 한 번의 쿼리로 온도 범위에 맞는 모든 옷을 가져오기
+        List<Cloth> suitableClothes = clothRepositoryService.findSuitableClothes(memberId, nowTemp, minTemp, maxTemp);
+
+        // 카테고리별로 하나씩 선택, parentCategory 번호를 이용하여 필터링
+        Cloth top = findClothByCategory(suitableClothes, 1L);
+        Cloth bottom = findClothByCategory(suitableClothes, 2L);
+        Cloth outer = findClothByCategory(suitableClothes, 3L);
+
+        // 각 카테고리에서 못 찾으면 "기타"에서 대체
+        if (top == null) {
+            top = findClothByCategory(suitableClothes, 4L);
+        }
+        if (bottom == null) {
+            bottom = findClothByCategory(suitableClothes, 4L);
+        }
+        if (outer == null) {
+            outer = findClothByCategory(suitableClothes, 4L);
+        }
+
+        if (top == null && bottom == null && outer == null) {
+            return new RecommendationResponseDTO.DailyClothesResult(List.of());
+        }
+
+        List<RecommendationResponseDTO.DailyClothResult> recommendedClothes = Stream.of(top, bottom, outer)
+                .filter(Objects::nonNull)
+                .map(cloth -> RecommendationResponseDTO.DailyClothResult.builder()
+                        .clothId(cloth.getId())
+                        .imageUrl(cloth.getImage().getImageUrl())
+                        .clothName(cloth.getName())
+                        .build())
+                .collect(Collectors.toList());
+
+        return new RecommendationResponseDTO.DailyClothesResult(recommendedClothes);
+    }
+
+    private void checkTemp(Integer nowTemp, Integer minTemp, Integer maxTemp) {
+        if(minTemp > maxTemp || nowTemp < minTemp || nowTemp > maxTemp) {
+            throw new RecommendException(ErrorStatus.OUT_OF_RANGE_TEMP);
+        }
+    }
+
+    private Cloth findClothByCategory(List<Cloth> clothes, Long parentCategoryId) {
+        return clothes.stream()
+                .filter(c -> c.getCategory().getParent() != null && c.getCategory().getParent().getId().equals(parentCategoryId))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -326,7 +374,7 @@ public class RecommendationServiceImpl implements RecommendationService {
             List<String> historyUrls = historyImageRepositoryService.findByHistoryId(historyOneYearAgoId).stream()
                     .map(HistoryImage::getImageUrl)
                     .toList();
-            return RecommendationConverter.toLastYearHistoryResult(historyOneYearAgoId,historyUrls,memberRepositoryService.findMemberById(memberId));
+            return RecommendationConverter.toLastYearHistoryResult(historyOneYearAgoId,historyUrls,memberRepositoryService.findMemberById(memberId), true);
         }
 
         List<Long> followingMembers = followRepositoryService.findFollowedByFollowingId(memberId).stream()
@@ -342,7 +390,7 @@ public class RecommendationServiceImpl implements RecommendationService {
             List<String> historyUrls = historyImageRepositoryService.findByHistoryId(historyOneYearAgoId).stream()
                     .map(HistoryImage::getImageUrl)
                     .toList();
-            return RecommendationConverter.toLastYearHistoryResult(historyOneYearAgoId,historyUrls,memberRepositoryService.findMemberById(memberPicked));
+            return RecommendationConverter.toLastYearHistoryResult(historyOneYearAgoId,historyUrls,memberRepositoryService.findMemberById(memberPicked), false);
         }
 
         return null;

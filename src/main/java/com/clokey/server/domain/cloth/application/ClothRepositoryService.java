@@ -49,5 +49,6 @@ public interface ClothRepositoryService {
             List<Member> members, Visibility visibility);
 
     String findMostWornCategory(Long memberId);
-
+    
+    List<Cloth> findSuitableClothes(Long memberId, Integer nowTemp, Integer minTemp, Integer maxTemp);
 }
