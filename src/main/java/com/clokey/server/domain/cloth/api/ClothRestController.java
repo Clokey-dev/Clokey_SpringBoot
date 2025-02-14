@@ -87,7 +87,7 @@ public class ClothRestController {
             @Parameter(name = "page", description = "페이지 값, query string 입니다."),
             @Parameter(name = "size", description = "페이지에 표시할 요소 개수 값, query string 입니다.")
     })
-    public BaseResponse<ClothResponseDTO.CategoryClothPreviewListResult> getClothPreviewInfoListByCategoryId(
+    public BaseResponse<ClothResponseDTO.ClothPreviewListResult> getClothPreviewInfoListByCategoryId(
             @PathVariable @IdValid String clokeyId,
             @RequestParam @CategoryExist Long categoryId,
             @RequestParam Season season,
@@ -100,7 +100,7 @@ public class ClothRestController {
         memberAccessibleValidator.validateClothAccessOfMember(clokeyId, member.getId());
 
         // ClothService를 통해 데이터를 가져오고, 결과 반환
-        ClothResponseDTO.CategoryClothPreviewListResult result = clothService.readClothPreviewInfoListByClokeyId(clokeyId, member.getId(), categoryId, season, sort, page, size);
+        ClothResponseDTO.ClothPreviewListResult result = clothService.readClothPreviewInfoListByClokeyId(clokeyId, member.getId(), categoryId, season, sort, page, size);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
     }
