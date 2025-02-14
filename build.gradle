@@ -59,7 +59,7 @@ dependencies {
 	//elastic search
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch' // elastic search 의존성 추가
     implementation 'co.elastic.clients:elasticsearch-java:8.15.5' // spring core 버전에 따른 ES 버전
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.0'
 }
 
 tasks.named('test') {
