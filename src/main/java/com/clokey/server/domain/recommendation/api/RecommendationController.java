@@ -29,9 +29,11 @@ public class RecommendationController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HOME_200", description = "성공적으로 조회되었습니다."),
     })
-    public BaseResponse<RecommendationResponseDTO.DailyClothesResult> recommendClothes(@Parameter(name = "user",hidden = true) @AuthUser Member member,
-                                                                                   @RequestParam @Valid Double nowTemp) {
-        RecommendationResponseDTO.DailyClothesResult response = recommendationService.getRecommendClothes(member.getId(), nowTemp);
+    public BaseResponse<RecommendationResponseDTO.DailyClothesResult> recommendClothes(@Parameter(name = "user", hidden = true) @AuthUser Member member,
+                                                                                       @RequestParam @Valid Double nowTemp,
+                                                                                       @RequestParam @Valid Double minTemp,
+                                                                                       @RequestParam @Valid Double maxTemp) {
+        RecommendationResponseDTO.DailyClothesResult response = recommendationService.getRecommendClothes(member.getId(), nowTemp, minTemp, maxTemp);
         return BaseResponse.onSuccess(SuccessStatus.HOME_SUCCESS, response);
     }
 
