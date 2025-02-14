@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app_blue:
-    image: yongjun0511/clokey-docker:develop-latest
+    image: yongjun0511/clokey-docker:1.0.0
     container_name: app_blue
     ports:
       - "8080:8080"
@@ -12,7 +12,7 @@ services:
       - app_network
 
   app_green:
-    image: yongjun0511/clokey-docker:develop-latest
+    image: yongjun0511/clokey-docker:1.0.0
     container_name: app_green
     ports:
       - "8081:8080"
