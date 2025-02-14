@@ -18,6 +18,8 @@ import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.domain.recommendation.converter.RecommendationConverter;
 import com.clokey.server.domain.recommendation.domain.entity.Recommendation;
 import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
+import com.clokey.server.domain.recommendation.exception.RecommendException;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -90,6 +91,12 @@ public class RecommendationServiceImpl implements RecommendationService {
                 .collect(Collectors.toList());
 
         return new RecommendationResponseDTO.DailyClothesResult(recommendedClothes);
+    }
+
+    private void checkTemp(Integer nowTemp, Integer minTemp, Integer maxTemp) {
+        if(minTemp > maxTemp || nowTemp < minTemp || nowTemp > maxTemp) {
+            throw new RecommendException(ErrorStatus.OUT_OF_RANGE_TEMP);
+        }
     }
 
     private Cloth findClothByCategory(List<Cloth> clothes, Long parentCategoryId) {

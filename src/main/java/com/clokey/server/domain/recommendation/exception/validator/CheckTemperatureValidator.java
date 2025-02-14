@@ -1,6 +1,5 @@
 package com.clokey.server.domain.recommendation.exception.validator;
 
-import com.clokey.server.domain.recommendation.exception.annotation.CheckSection;
 import com.clokey.server.domain.recommendation.exception.annotation.CheckTemperature;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.validation.ConstraintValidator;
@@ -23,7 +22,7 @@ public class CheckTemperatureValidator implements ConstraintValidator<CheckTempe
 
         if (!isValid) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(ErrorStatus.OUT_OR_RANGE_TEMP.toString()).addConstraintViolation();
+            context.buildConstraintViolationWithTemplate(ErrorStatus.OUT_OF_RANGE_TEMP.toString()).addConstraintViolation();
         }
 
         return isValid;
