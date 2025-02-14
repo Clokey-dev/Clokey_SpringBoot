@@ -1,5 +1,9 @@
 FROM openjdk:17-jdk-slim
 
+# Set the timezone to Asia/Seoul
+ENV TZ=Asia/Seoul
+RUN ln -sf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # Set the working directory
 WORKDIR /app
 
