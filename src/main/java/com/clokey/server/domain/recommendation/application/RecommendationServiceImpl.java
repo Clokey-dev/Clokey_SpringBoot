@@ -60,20 +60,20 @@ public class RecommendationServiceImpl implements RecommendationService {
         // 한 번의 쿼리로 온도 범위에 맞는 모든 옷을 가져오기
         List<Cloth> suitableClothes = clothRepositoryService.findSuitableClothes(memberId, nowTemp, minTemp, maxTemp);
 
-        // 카테고리별로 하나씩 선택, parentCategory 이름을 이용하여 필터링
-        Cloth top = suitableClothes.stream().filter(c -> c.getCategory().getParent().getName().equals("상의")).findFirst().orElse(null);
-        Cloth bottom = suitableClothes.stream().filter(c -> c.getCategory().getParent().getName().equals("하의")).findFirst().orElse(null);
-        Cloth outer = suitableClothes.stream().filter(c -> c.getCategory().getParent().getName().equals("아우터")).findFirst().orElse(null);
+        // 카테고리별로 하나씩 선택, parentCategory 번호를 이용하여 필터링
+        Cloth top = findClothByCategory(suitableClothes, 1L);
+        Cloth bottom = findClothByCategory(suitableClothes, 2L);
+        Cloth outer = findClothByCategory(suitableClothes, 3L);
 
         // 각 카테고리에서 못 찾으면 "기타"에서 대체
         if (top == null) {
-            top = suitableClothes.stream().filter(c -> c.getCategory().getParent().getName().equals("기타")).findFirst().orElse(null);
+            top = findClothByCategory(suitableClothes, 4L);
         }
         if (bottom == null) {
-            bottom = suitableClothes.stream().filter(c -> c.getCategory().getParent().getName().equals("기타")).findFirst().orElse(null);
+            bottom = findClothByCategory(suitableClothes, 4L);
         }
         if (outer == null) {
-            outer = suitableClothes.stream().filter(c -> c.getCategory().getParent().getName().equals("기타")).findFirst().orElse(null);
+            outer = findClothByCategory(suitableClothes, 4L);
         }
 
         if (top == null && bottom == null && outer == null) {
@@ -88,16 +88,15 @@ public class RecommendationServiceImpl implements RecommendationService {
                         .clothName(cloth.getName())
                         .build())
                 .collect(Collectors.toList());
-/* db 저장 로직
-        Recommendation recommendation = Recommendation.builder()
-                .newsType(NewsType.WEATHER)
-                .member(memberRepositoryService.findMemberById(memberId))
-                .clothesIds(recommendedClothes.stream().map(RecommendationResponseDTO.DailyClothResult::getClothId).toList().toString())
-                .temperature(nowTemp)
-                .build();
-        recommendationRepositoryService.save(recommendation);
- */
+
         return new RecommendationResponseDTO.DailyClothesResult(recommendedClothes);
+    }
+
+    private Cloth findClothByCategory(List<Cloth> clothes, Long parentCategoryId) {
+        return clothes.stream()
+                .filter(c -> c.getCategory().getParent() != null && c.getCategory().getParent().getId().equals(parentCategoryId))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
