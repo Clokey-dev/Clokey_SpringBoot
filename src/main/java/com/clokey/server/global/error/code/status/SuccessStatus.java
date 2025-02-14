@@ -64,7 +64,13 @@ public enum SuccessStatus implements BaseCode {
     //로그인 성공
     LOGIN_SUCCESS(HttpStatus.OK, "LOGIN_200", "로그인에 성공하였습니다."),
     LOGIN_CREATED(HttpStatus.CREATED, "LOGIN_201", "회원가입과 로그인에 성공하였습니다."),
-    LOGIN_UPDATED(HttpStatus.NO_CONTENT, "LOGIN_204", "로그인 정보가 성공적으로 수정되었습니다.");
+    LOGIN_UPDATED(HttpStatus.NO_CONTENT, "LOGIN_204", "로그인 정보가 성공적으로 수정되었습니다."),
+
+    //Elastic Search 인덱스 생성 및 동기화 성공
+    CLOTH_SYNC_CREATED(HttpStatus.CREATED, "SEARCH_201", "옷 검색 인덱스가 성공적으로 생성되었습니다."),
+    HISTORY_SYNC_CREATED(HttpStatus.CREATED, "SEARCH_201", "기록 검색 인덱스가 성공적으로 생성되었습니다."),
+    MEMBER_SYNC_CREATED(HttpStatus.CREATED, "SEARCH_201", "유저 검색 인덱스가 성공적으로 생성되었습니다.")
+    ;
 
     private final HttpStatus httpStatus;
     private final String code;

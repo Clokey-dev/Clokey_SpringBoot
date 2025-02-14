@@ -107,7 +107,12 @@ public enum ErrorStatus implements BaseErrorCode {
 
     Elastic_Search_Transport_Exception(HttpStatus.BAD_REQUEST,"SEARCH_4001","Elastic Search 연결 에러입니다."),
     Index_Not_Fount_Exception(HttpStatus.BAD_REQUEST,"SEARCH_4002","Elastic Search에서 지정한 인덱스가 없습니다."),
-    Mapper_Parsing_Exception(HttpStatus.BAD_REQUEST,"SEARCH_4002","Elastic Search 문서 필드의 타입과 정의된 도메인 모델의 필드 타입이 일치하지 않습니다.")
+    Mapper_Parsing_Exception(HttpStatus.BAD_REQUEST,"SEARCH_4003","Elastic Search 문서 필드의 타입과 정의된 도메인 모델의 필드 타입이 일치하지 않습니다."),
+    SEARCH_CLOTH_ERROR(HttpStatus.BAD_REQUEST,"SEARCH_500","옷 검색 에러입니다."),
+    SEARCH_HISTORY_ERROR(HttpStatus.BAD_REQUEST,"SEARCH_500","기록 검색 에러입니다."),
+    SEARCH_MEMBER_ERROR(HttpStatus.BAD_REQUEST,"SEARCH_500","유저 검색 에러입니다."),
+    SEARCH_FILTER_ERROR(HttpStatus.BAD_REQUEST,"SEARCH_4005","검색 필터가 유효하지 않습니다."),
+    SEARCHING_IOEXCEPION(HttpStatus.BAD_REQUEST,"SEARCH_4005","입출력 오류입니다.")
     ;
 
 
