@@ -96,7 +96,7 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
     }
 
     @Override
-    public List<Cloth> findSuitableClothes(Long memberId, Double nowTemp, Double minTemp, Double maxTemp) {
+    public List<Cloth> findSuitableClothes(Long memberId, Integer nowTemp, Integer minTemp, Integer maxTemp) {
         return clothRepository.findSuitableClothes(memberId, nowTemp, minTemp, maxTemp);
     }
 }

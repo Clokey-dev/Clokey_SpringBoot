@@ -56,7 +56,7 @@ public class RecommendationServiceImpl implements RecommendationService {
     private static final String REDIS_PREFIX = "dailyNews:";
 
     @Override
-    public RecommendationResponseDTO.DailyClothesResult getRecommendClothes(Long memberId, Double nowTemp, Double minTemp, Double maxTemp) {
+    public RecommendationResponseDTO.DailyClothesResult getRecommendClothes(Long memberId, Integer nowTemp, Integer minTemp, Integer maxTemp) {
         // 한 번의 쿼리로 온도 범위에 맞는 모든 옷을 가져오기
         List<Cloth> suitableClothes = clothRepositoryService.findSuitableClothes(memberId, nowTemp, minTemp, maxTemp);
 

@@ -31,9 +31,9 @@ public class RecommendationController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HOME_200", description = "성공적으로 조회되었습니다."),
     })
     public BaseResponse<RecommendationResponseDTO.DailyClothesResult> recommendClothes(@Parameter(name = "user", hidden = true) @AuthUser Member member,
-                                                                                       @RequestParam @Valid @CheckTemperature Double nowTemp,
-                                                                                       @RequestParam @Valid @CheckTemperature Double minTemp,
-                                                                                       @RequestParam @Valid @CheckTemperature Double maxTemp) {
+                                                                                       @RequestParam @Valid @CheckTemperature Integer nowTemp,
+                                                                                       @RequestParam @Valid @CheckTemperature Integer minTemp,
+                                                                                       @RequestParam @Valid @CheckTemperature Integer maxTemp) {
         RecommendationResponseDTO.DailyClothesResult response = recommendationService.getRecommendClothes(member.getId(), nowTemp, minTemp, maxTemp);
         return BaseResponse.onSuccess(SuccessStatus.HOME_SUCCESS, response);
     }

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CheckTemperatureValidator implements ConstraintValidator<CheckTemperature, Double> {
+public class CheckTemperatureValidator implements ConstraintValidator<CheckTemperature, Integer> {
 
     @Override
     public void initialize(CheckTemperature constraintAnnotation) {
@@ -18,7 +18,7 @@ public class CheckTemperatureValidator implements ConstraintValidator<CheckTempe
     }
 
     @Override
-    public boolean isValid(Double value, ConstraintValidatorContext context) {
+    public boolean isValid(Integer value, ConstraintValidatorContext context) {
         boolean isValid = value>=-20 && value<=40;
 
         if (!isValid) {

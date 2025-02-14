@@ -78,8 +78,8 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
             "OR (c.tempLowerBound <= :maxTemp AND c.tempUpperBound >= :minTemp)) " + // 2순위: 오늘 기온과 겹치는 옷
             "ORDER BY RAND()")
     List<Cloth> findSuitableClothes(@Param("memberId") Long memberId,
-                                    @Param("nowTemp") Double nowTemp,
-                                    @Param("minTemp") Double minTemp,
-                                    @Param("maxTemp") Double maxTemp);
+                                    @Param("nowTemp") Integer nowTemp,
+                                    @Param("minTemp") Integer minTemp,
+                                    @Param("maxTemp") Integer maxTemp);
 
 }
