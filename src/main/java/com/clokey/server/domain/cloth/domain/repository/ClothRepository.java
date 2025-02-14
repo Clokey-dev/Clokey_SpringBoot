@@ -74,10 +74,12 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
     Optional<String> findMostWornCategory(@Param("memberId") Long memberId);
 
     @Query("SELECT c FROM Cloth c WHERE c.member.id = :memberId " +
-            "AND c.category.parent.name = :category " +
-            "AND :nowTemp BETWEEN c.tempLowerBound AND c.tempUpperBound " +
-            "ORDER BY RAND() LIMIT 1")
-    Optional<Cloth> findSuitableCloth(@Param("memberId") Long memberId,
-                                      @Param("nowTemp") Double nowTemp,
-                                      @Param("category") String category);
+            "AND ((:nowTemp BETWEEN c.tempLowerBound AND c.tempUpperBound) " + // 1순위: 현재 온도가 온도 범위 내
+            "OR (c.tempLowerBound <= :maxTemp AND c.tempUpperBound >= :minTemp)) " + // 2순위: 오늘 기온과 겹치는 옷
+            "ORDER BY RAND()")
+    List<Cloth> findSuitableClothes(@Param("memberId") Long memberId,
+                                    @Param("nowTemp") Double nowTemp,
+                                    @Param("minTemp") Double minTemp,
+                                    @Param("maxTemp") Double maxTemp);
+
 }
