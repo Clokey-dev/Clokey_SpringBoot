@@ -7,8 +7,6 @@ import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.Season;
 import com.clokey.server.domain.model.entity.enums.ThicknessLevel;
 
-import com.clokey.server.domain.cloth.dto.ClothRequestDTO;
-
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;

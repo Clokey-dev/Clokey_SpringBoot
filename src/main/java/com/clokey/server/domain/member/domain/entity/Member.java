@@ -110,4 +110,8 @@ public class Member extends BaseEntity {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
+
+    public void updateDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
+    }
 }

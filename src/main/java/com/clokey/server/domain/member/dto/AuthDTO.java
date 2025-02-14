@@ -37,7 +37,7 @@ public class AuthDTO {
         private String type; // 로그인 타입 (ex: "kakao", "apple")
         private String accessToken=null;
         private String authorizationCode=null;
-
+        private String deviceToken=null;
     }
 
     // KakaoLoginRequest 클래스

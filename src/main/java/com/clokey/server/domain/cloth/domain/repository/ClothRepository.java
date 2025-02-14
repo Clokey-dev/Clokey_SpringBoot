@@ -23,6 +23,8 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
     @EntityGraph(attributePaths = {"image"})
     Optional<Cloth> findById(Long id);
 
+    List<Cloth> findAll();
+
     @Transactional
     @Modifying
     void deleteById(Long id);
