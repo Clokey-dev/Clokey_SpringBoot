@@ -60,7 +60,6 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
     public void validateNoDuplicateClothes(List<Cloth> clothes, Long folderId) {
         List<Long> clothIds = clothes.stream().map(Cloth::getId).collect(Collectors.toList());
         List<ClothFolder> existingClothIds = clothFolderRepository.findByClothIdInAndFolderId(clothIds, folderId);
-
         if (!existingClothIds.isEmpty()) {
             throw new DatabaseException(ErrorStatus.CLOTH_ALREADY_IN_FOLDER);
         }
@@ -92,5 +91,10 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
     @Transactional
     public void deleteAllByFolderId(@Param("folderId") Long folderId){
         clothFolderRepository.deleteAllByFolderId(folderId);
+    }
+
+    @Override
+    public Long countByFolderId(Long folderId) {
+        return clothFolderRepository.countByFolderId(folderId);
     }
 }
