@@ -78,38 +78,6 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    @Transactional
-    public void editFolderName(Long folderId, String newName, Long memberId) {
-        folderAccessibleValidator.validateFolderAccessOfMember(folderId, memberId);
-        Folder folder = folderRepositoryService.findById(folderId);
-        folder.rename(newName);
-        folderRepositoryService.save(folder);
-    }
-
-    @Override
-    @Transactional
-    public void addClothesToFolder(Long folderId, FolderRequestDTO.UpdateClothesInFolderRequest request, Long memberId) {
-        Folder folder = folderAccessibleValidator.validateFolderAccessOfMember(folderId, memberId);
-        updateClothesToFolder(folder, request.getClothIds(), memberId);
-    }
-
-    @Override
-    @Transactional
-    public void deleteClothesFromFolder(Long folderId, FolderRequestDTO.UpdateClothesInFolderRequest request, Long memberId) {
-        Folder folder = folderAccessibleValidator.validateFolderAccessOfMember(folderId, memberId);
-
-        List<Cloth> clothes = validateClothesExistAndAccessible(request.getClothIds(), memberId);
-
-        List<ClothFolder> clothFolders = clothFolderRepositoryService.findAllByClothIdsAndFolderId(
-                clothes.stream().map(Cloth::getId).collect(Collectors.toList()), folder.getId()
-        );
-
-        clothFolderRepositoryService.deleteAllByClothIdIn(clothFolders.stream().map(ClothFolder::getCloth).map(Cloth::getId).collect(Collectors.toList()));
-        folder.decreaseItemCount();
-        folderRepositoryService.save(folder);
-    }
-
-    @Override
     public FolderResponseDTO.FolderClothesResult getClothesFromFolder(Long folderId, Integer page, Long memberId){
         Folder folder = folderAccessibleValidator.validateFolderAccessOfMember(folderId, memberId);
         Pageable pageable = PageRequest.of(page-1, 12);
