@@ -2,6 +2,7 @@ package com.clokey.server.domain.history.application;
 
 import com.clokey.server.domain.cloth.application.ClothRepositoryService;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.cloth.domain.entity.ClothImage;
 import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
 import com.clokey.server.domain.history.domain.entity.*;
 import com.clokey.server.domain.history.dto.HistoryRequestDTO;
@@ -162,7 +163,8 @@ public class HistoryServiceImpl implements HistoryService {
                             .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
                             .findFirst()
                             .map(HistoryImage::getImageUrl)
-                            .orElse(historyImageRepositoryService.findFirstImagesByHistoryIds(List.of(history.getId())).get(history.getId()))) // 사진이 없다면 첫 옷 사진
+                            .orElse(historyClothRepositoryService.findAllClothByHistoryId(history.getId()).stream()
+                                    .findFirst().get().getImage().getImageUrl()))// 사진이 없다면 첫 옷 사진
                     .collect(Collectors.toList());
             String nickName = memberRepositoryService.findMemberById(myMemberId).getNickname();
             return HistoryConverter.toMonthViewResult(myMemberId,nickName, histories, firstImageUrlsOfHistory);
@@ -181,7 +183,8 @@ public class HistoryServiceImpl implements HistoryService {
                         .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
                         .findFirst()
                         .map(HistoryImage::getImageUrl)
-                        .orElse(historyImageRepositoryService.findFirstImagesByHistoryIds(List.of(history.getId())).get(history.getId()))) // 사진이 없다면 첫 옷 사진
+                        .orElse(historyClothRepositoryService.findAllClothByHistoryId(history.getId()).stream()
+                                .findFirst().get().getImage().getImageUrl()))// 사진이 없다면 첫 옷 사진
                 .collect(Collectors.toList());
 
         //비공개 게시물을 가려줍니다.
