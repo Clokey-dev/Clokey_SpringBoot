@@ -1,5 +1,6 @@
 package com.clokey.server.domain.cloth.converter;
 
+import com.clokey.server.domain.cloth.domain.document.ClothDocument;
 import com.clokey.server.domain.cloth.dto.ClothRequestDTO;
 import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
 import com.clokey.server.domain.category.domain.entity.Category;
@@ -7,11 +8,10 @@ import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
 import org.springframework.data.domain.Page;
+import com.clokey.server.domain.cloth.domain.entity.ClothImage;
 
 import java.time.format.TextStyle;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ClothConverter {
@@ -85,17 +85,6 @@ public class ClothConverter {
                 .build();
     }
 
-    public static List<ClothResponseDTO.ClothPreview> toClothPreviewList(Page<Cloth> clothes){
-        return clothes.getContent().stream()
-                .map(cloth -> ClothResponseDTO.ClothPreview.builder()
-                        .id(cloth.getId())
-                        .name(cloth.getName())
-                        .imageUrl(cloth.getImage() != null ? cloth.getImage().getImageUrl() : null)
-                        .wearNum(cloth.getWearNum())
-                        .build()
-                ).collect(Collectors.toList());
-    }
-
     public static List<ClothResponseDTO.ClothPreview> toClothPreviewList(List<Cloth> clothes) {
         return clothes.stream()
                 .map(cloth -> ClothResponseDTO.ClothPreview.builder()
@@ -107,14 +96,42 @@ public class ClothConverter {
                 ).collect(Collectors.toList());
     }
 
-    public static ClothResponseDTO.CategoryClothPreviewListResult toClosetClothPreviewListResult(Page<Cloth> clothes,
-                                                                                                 List<ClothResponseDTO.ClothPreview> clothPreviews){
-        return ClothResponseDTO.CategoryClothPreviewListResult.builder()
+    public static <T> List<ClothResponseDTO.ClothPreview> toClothPreviewList(Page<? extends T> page) {
+        return Optional.ofNullable(page.getContent()).orElse(Collections.emptyList())
+                .stream()
+                .map(item -> {
+                    if (item instanceof Cloth) {
+                        Cloth cloth = (Cloth) item;
+                        return ClothResponseDTO.ClothPreview.builder()
+                                .id(cloth.getId())
+                                .name(cloth.getName())
+                                .imageUrl(Optional.ofNullable(cloth.getImage())
+                                        .map(ClothImage::getImageUrl)
+                                        .orElse(null))
+                                .wearNum(Optional.ofNullable(cloth.getWearNum()).orElse(0))
+                                .build();
+                    } else if (item instanceof ClothDocument) {
+                        ClothDocument doc = (ClothDocument) item;
+                        return ClothResponseDTO.ClothPreview.builder()
+                                .id(doc.getId())
+                                .name(doc.getName())
+                                .imageUrl(Optional.ofNullable(doc.getImageUrl()).orElse(null))
+                                .wearNum(Optional.ofNullable(doc.getWearNum()).orElse(0))
+                                .build();
+                    }
+                    throw new IllegalArgumentException("Unsupported type: " + item.getClass());
+                })
+                .collect(Collectors.toList());
+    }
+
+    public static ClothResponseDTO.ClothPreviewListResult toClothPreviewListResult(Page<?> page,
+                                                                                   List<ClothResponseDTO.ClothPreview> clothPreviews) {
+        return ClothResponseDTO.ClothPreviewListResult.builder()
                 .clothPreviews(clothPreviews)
-                .totalPage(clothes.getTotalPages())
-                .totalElements(clothes.getTotalElements())
-                .isFirst(clothes.isFirst())
-                .isLast(clothes.isLast())
+                .totalPage(page.getTotalPages())
+                .totalElements(page.getTotalElements())
+                .isFirst(page.isFirst())
+                .isLast(page.isLast())
                 .build();
     }
 
@@ -127,16 +144,24 @@ public class ClothConverter {
             List<ClothResponseDTO.ClothPreview> infrequentClothPreviews
     ) {
         return ClothResponseDTO.SmartSummaryClothPreviewListResult.builder()
-                .frequentBaseCategoryName(frequentCategory.getParent().getName())
-                .frequentCoreCategoryName(frequentCategory.getName())
-                .frequentCoreCategoryId(frequentCategory.getId())
-                .frequentUsage(frequentUsage)
-                .frequentClothPreviews(frequentClothPreviews)
-                .infrequentBaseCategoryName(infrequentCategory.getParent().getName())
-                .infrequentCoreCategoryName(infrequentCategory.getName())
-                .infrequentCoreCategoryId(infrequentCategory.getId())
-                .infrequentUsage(infrequentUsage)
-                .infrequentClothPreviews(infrequentClothPreviews)
+                .frequentResult(
+                        ClothResponseDTO.SmartSummaryClothPreview.builder()
+                                .baseCategoryName(frequentCategory.getParent().getName())
+                                .coreCategoryName(frequentCategory.getName())
+                                .coreCategoryId(frequentCategory.getId())
+                                .usage(frequentUsage)
+                                .clothPreviews(frequentClothPreviews)
+                                .build()
+                )
+                .infrequentResult(
+                        ClothResponseDTO.SmartSummaryClothPreview.builder()
+                                .baseCategoryName(infrequentCategory.getParent().getName())
+                                .coreCategoryName(infrequentCategory.getName())
+                                .coreCategoryId(infrequentCategory.getId())
+                                .usage(infrequentUsage)
+                                .clothPreviews(infrequentClothPreviews)
+                                .build()
+                )
                 .build();
     }
 

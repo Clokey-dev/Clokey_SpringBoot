@@ -39,7 +39,6 @@ public class AuthDTO {
         private String authorizationCode=null;
         private String deviceToken=null;
 
-
     }
 
     // KakaoLoginRequest 클래스

@@ -155,7 +155,7 @@ public class HistoryServiceImpl implements HistoryService {
                             .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
                             .findFirst()
                             .map(HistoryImage::getImageUrl)
-                            .orElse("")) // 사진이 없다면 빈칸
+                            .orElse(historyImageRepositoryService.findFirstImagesByHistoryIds(List.of(history.getId())).get(history.getId()))) // 사진이 없다면 첫 옷 사진
                     .collect(Collectors.toList());
             String nickName = memberRepositoryService.findMemberById(myMemberId).getNickname();
             return HistoryConverter.toMonthViewResult(myMemberId,nickName, histories, firstImageUrlsOfHistory);
@@ -174,7 +174,7 @@ public class HistoryServiceImpl implements HistoryService {
                         .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
                         .findFirst()
                         .map(HistoryImage::getImageUrl)
-                        .orElse("")) // 사진이 없다면 빈칸
+                        .orElse(historyImageRepositoryService.findFirstImagesByHistoryIds(List.of(history.getId())).get(history.getId()))) // 사진이 없다면 첫 옷 사진
                 .collect(Collectors.toList());
 
         //비공개 게시물을 가려줍니다.
@@ -340,64 +340,6 @@ public class HistoryServiceImpl implements HistoryService {
             throw new HistoryException(ErrorStatus.NOT_MY_COMMENT);
         }
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public HistoryResponseDTO.LastYearHistoryResult getLastYearHistory(Long memberId) {
-
-        LocalDate today = LocalDate.now();
-        LocalDate oneYearAgo = today.minusYears(1);
-
-        if(historyRepositoryService.checkHistoryExistOfDate(oneYearAgo,memberId)){
-            Long historyOneYearAgoId = historyRepositoryService.getHistoryOfDate(oneYearAgo,memberId).getId();
-            List<String> historyUrls = historyImageRepositoryService.findByHistoryId(historyOneYearAgoId).stream()
-                    .map(HistoryImage::getImageUrl)
-                    .toList();
-            return HistoryConverter.toLastYearHistoryResult(historyOneYearAgoId,historyUrls,memberRepositoryService.findMemberById(memberId));
-        }
-
-        List<Long> followingMembers = followRepositoryService.findFollowedByFollowingId(memberId).stream()
-                .map(Member::getId)
-                .toList();
-
-        List<Boolean> membersHaveHistoryOneYearAgo = historyRepositoryService.existsByHistoryDateAndMemberIds(oneYearAgo,followingMembers);
-
-        Long memberPicked = getRandomMemberWithHistory(followingMembers,membersHaveHistoryOneYearAgo);
-
-        if(memberPicked != null){
-            Long historyOneYearAgoId = historyRepositoryService.getHistoryOfDate(oneYearAgo,memberPicked).getId();
-            List<String> historyUrls = historyImageRepositoryService.findByHistoryId(historyOneYearAgoId).stream()
-                    .map(HistoryImage::getImageUrl)
-                    .toList();
-            return HistoryConverter.toLastYearHistoryResult(historyOneYearAgoId,historyUrls,memberRepositoryService.findMemberById(memberPicked));
-        }
-
-        return null;
-    }
-
-    private Long getRandomMemberWithHistory(List<Long> followingMembers, List<Boolean> membersHaveHistoryOneYearAgo) {
-        if (followingMembers == null || membersHaveHistoryOneYearAgo == null) {
-            return null;
-        }
-
-        if (followingMembers.isEmpty() || membersHaveHistoryOneYearAgo.isEmpty()) {
-            return null;
-        }
-
-        List<Long> candidates = new ArrayList<>();
-        for (int i = 0; i < followingMembers.size(); i++) {
-            if (Boolean.TRUE.equals(membersHaveHistoryOneYearAgo.get(i))) { // true인 경우만 추가
-                candidates.add(followingMembers.get(i));
-            }
-        }
-
-        if (candidates.isEmpty()) {
-            return null;
-        }
-
-        return candidates.get(new Random().nextInt(candidates.size()));
-    }
-
 
     private void updateHistoryClothes(List<Long> updatedClothes, List<Long> savedClothes, History history) {
 
