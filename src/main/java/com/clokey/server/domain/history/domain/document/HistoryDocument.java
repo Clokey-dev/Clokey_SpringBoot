@@ -6,6 +6,8 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Mapping;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
+import java.util.List;
+
 @Builder
 @Getter
 @AllArgsConstructor
@@ -16,9 +18,11 @@ import org.springframework.data.elasticsearch.annotations.Setting;
 public class HistoryDocument {
 
     @Id
-    private Long historyId;  // JPA 엔티티와 동일한 id 사용
+    private Long id;  // JPA 엔티티와 동일한 id 사용
 
-    private Long hashtagId;
+    private List<String> hashtagNames;
 
-    private String hashtagName;
+    private List<String> categoryNames;
+
+    private String imageUrl;
 }
