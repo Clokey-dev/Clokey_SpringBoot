@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -94,6 +95,9 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
         return query.getResultStream().findFirst(); // Optional<Member> 반환
     }
 
-
+    @Override
+    public List<Member> findAll(){
+        return memberRepository.findAll();
+    }
 
 }
