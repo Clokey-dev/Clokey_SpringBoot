@@ -113,6 +113,7 @@ public class TermCommandServiceImpl implements TermCommandService {
                 .collect(Collectors.toList());
 
         return TermResponseDTO.UserAgreementDTO.builder()
+                .socialType(member.getSocialType().toString())  // 소셜 타입 추가
                 .email(member.getEmail()) // 이메일 추가
                 .appVersion("1.0.0") // 앱 버전 추가 (필드 확인 필요)
                 .terms(termResponses)  // OptionalTermDTO 리스트 반환
@@ -153,6 +154,7 @@ public class TermCommandServiceImpl implements TermCommandService {
 
         // 최종 응답 생성
         return TermResponseDTO.UserAgreementDTO.builder()
+                .socialType(member.getSocialType().toString())  // 소셜 타입 추가
                 .email(member.getEmail()) // 이메일 추가
                 .appVersion("1.0.0") // 앱 버전 추가
                 .terms(termResponses)  // OptionalTermDTO 리스트 반환
