@@ -23,7 +23,7 @@ public interface ClothFolderRepository extends JpaRepository<ClothFolder, Long> 
     List<ClothFolder> findByClothIdInAndFolderId(List<Long> clothIds, Long folderId);
 
     @Transactional
-    void deleteAllByClothIdIn(List<Long> clothId);
+    void deleteAllByClothIdInAndFolderId(List<Long> clothId, Long folderId);
 
     Page<ClothFolder> findAllByFolderId(Long folderId, Pageable page);
 

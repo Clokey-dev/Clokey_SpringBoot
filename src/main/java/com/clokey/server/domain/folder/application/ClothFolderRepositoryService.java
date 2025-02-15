@@ -21,7 +21,7 @@ public interface ClothFolderRepositoryService {
 
     List<ClothFolder> findAllByClothIdsAndFolderId(List<Long> clothIds, Long folderId);
 
-    void deleteAllByClothIdIn(List<Long> clothIds);
+    void deleteAllByClothIdInAndFolderId(List<Long> clothIds, Long folderId);
 
     void validateNoDuplicateClothes(List<Cloth> clothes, Long folderId);
 

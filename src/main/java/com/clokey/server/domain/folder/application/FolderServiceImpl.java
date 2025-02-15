@@ -128,7 +128,7 @@ public class FolderServiceImpl implements FolderService {
 
         // 삭제할 옷 제거
         if (!toRemove.isEmpty()) {
-            clothFolderRepositoryService.deleteAllByClothIdIn(toRemove);
+            clothFolderRepositoryService.deleteAllByClothIdInAndFolderId(toRemove, folder.getId());
         }
 
         // 추가할 옷 검증 및 저장
@@ -141,8 +141,7 @@ public class FolderServiceImpl implements FolderService {
         }
 
         // 폴더 아이템 개수 업데이트
-        Long updatedItemCount = clothFolderRepositoryService.countByFolderId(folder.getId());
-        folder.setItemCount(updatedItemCount);
+        folder.setItemCount((long) clothIds.size());
         folderRepositoryService.save(folder);
     }
 }
