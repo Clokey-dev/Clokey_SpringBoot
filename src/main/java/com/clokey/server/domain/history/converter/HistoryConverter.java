@@ -1,6 +1,7 @@
 package com.clokey.server.domain.history.converter;
 
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.history.domain.document.HistoryDocument;
 import com.clokey.server.domain.history.dto.HistoryRequestDTO;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.domain.history.domain.entity.Comment;
@@ -12,10 +13,38 @@ import org.springframework.data.domain.Page;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class HistoryConverter {
+
+    public static <T> List<HistoryResponseDTO.HistoryPreview> toHistoryPreviewList(Page<? extends T> page){
+        return Optional.ofNullable(page.getContent()).orElse(Collections.emptyList())
+                .stream()
+                .map(item -> {
+                            HistoryDocument doc = (HistoryDocument) item;
+                            return HistoryResponseDTO.HistoryPreview.builder()
+                                    .id(doc.getId())
+                                    .imageUrl(doc.getImageUrl())
+                                    .build();
+                        }
+                )
+                .collect(Collectors.toList());
+    }
+
+    public static HistoryResponseDTO.HistoryPreviewListResult toHistoryPreviewListResult(Page<?> page,
+                                                                                         List<HistoryResponseDTO.HistoryPreview> historyPreviews) {
+            return HistoryResponseDTO.HistoryPreviewListResult.builder()
+                    .historyPreviews(historyPreviews)
+                    .totalPage(page.getTotalPages())
+                    .totalElements(page.getTotalElements())
+                    .isFirst(page.isFirst())
+                    .isLast(page.isLast())
+                    .build();
+    }
 
     public static HistoryResponseDTO.DailyHistoryResult toDayViewResult(History history, List<String> imageUrl, List<String> hashtags, int likeCount, boolean isLiked, List<Cloth> cloths, Long commentCount) {
         return HistoryResponseDTO.DailyHistoryResult.builder()
