@@ -40,7 +40,7 @@ public class MemberRestController {
 
         MemberDTO.ProfileRP response = profileCommandService.updateProfile(member.getId(), request, profileImage, profileBackImage);
 
-        return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_SUCCESS, response);
+        return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_EDITED, response);
     }
 
 
@@ -87,7 +87,7 @@ public class MemberRestController {
 
         followCommandService.follow(request);
 
-        return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_SUCCESS, null);
+        return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_EDITED, null);
     }
 
 

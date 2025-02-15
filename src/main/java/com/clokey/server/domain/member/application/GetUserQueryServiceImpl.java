@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -29,8 +31,14 @@ public class GetUserQueryServiceImpl implements GetUserQueryService {
         Long followerCount = countFollowersByMember(member);
         Long followingCount = countFollowingByMember(member);
         Boolean isFollowing = isFollowing(currentUser, member); // 팔로우 여부 체크 추가
+        List<String> topClothImages=getTop3ClothImages(member);
 
-        return GetUserConverter.toGetUserResponseDTO(member, recordCount, followerCount, followingCount, isFollowing);
+        return GetUserConverter.toGetUserResponseDTO(
+                member, recordCount, followerCount, followingCount, isFollowing,
+                topClothImages.size() > 0 ? topClothImages.get(0) : null,
+                topClothImages.size() > 1 ? topClothImages.get(1) : null,
+                topClothImages.size() > 2 ? topClothImages.get(2) : null
+        );
     }
 
     @Transactional(readOnly = true)
@@ -65,6 +73,22 @@ public class GetUserQueryServiceImpl implements GetUserQueryService {
         TypedQuery<Long> query = entityManager.createQuery(jpql, Long.class);
         query.setParameter("member", member);
         return query.getSingleResult();
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> getTop3ClothImages(Member member) {
+        String jpql = """
+        SELECT c.image.imageUrl
+        FROM Cloth c
+        WHERE c.member = :member
+        ORDER BY c.wearNum DESC
+    """;
+
+        TypedQuery<String> query = entityManager.createQuery(jpql, String.class);
+        query.setParameter("member", member);
+        query.setMaxResults(3); // 상위 3개만 가져오기
+
+        return query.getResultList();
     }
 }
 

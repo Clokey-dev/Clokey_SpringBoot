@@ -1,6 +1,7 @@
 package com.clokey.server.domain.term.dto;
 
 import com.clokey.server.domain.term.exception.annotation.EssentialTermAgree;
+import com.clokey.server.domain.term.exception.annotation.InvalidTermId;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,10 +16,12 @@ public class TermRequestDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    @EssentialTermAgree  // 이 애너테이션은 그대로 두고
+    @EssentialTermAgree
+    @InvalidTermId
 
     public static class Join {
 
+        @Valid
         private List<Term> terms;
 
         @Getter
