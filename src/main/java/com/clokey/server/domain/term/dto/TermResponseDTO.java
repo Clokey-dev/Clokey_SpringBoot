@@ -52,6 +52,7 @@ public class TermResponseDTO {
     @AllArgsConstructor
     @Builder
     public static class UserAgreementDTO {
+        private String socialType;
         private String email;         // 사용자 이메일
         private String appVersion;    // 앱 버전
         private List<OptionalTermDTO> terms; // 약관 리스트
