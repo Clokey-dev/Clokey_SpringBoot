@@ -12,4 +12,6 @@ public interface TermRepositoryService {
     Term findById(Long id);
 
     List<Term> findAll();
+
+    boolean existsById(Long id);
 }

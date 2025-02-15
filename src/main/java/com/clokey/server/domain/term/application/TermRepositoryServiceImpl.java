@@ -27,5 +27,10 @@ public class TermRepositoryServiceImpl implements TermRepositoryService {
     public List<Term> findAll() {
         return termRepository.findAll();
     }
+
+    @Override
+    public boolean existsById(Long id) {
+        return termRepository.existsById(id);
+    }
 }
 

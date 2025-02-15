@@ -62,8 +62,10 @@ public enum SuccessStatus implements BaseCode {
     HOME_SUCCESS(HttpStatus.OK, "HOME_200", "성공적으로 조회되었습니다."),
 
     //기타 멤버 관련 성공
-    MEMBER_ACTION_SUCCESS(HttpStatus.OK, "MEMBER_ACTION_200", "멤버 관련 요소가 성공적으로 수정되었습니다."),
+    MEMBER_ACTION_SUCCESS(HttpStatus.OK, "MEMBER_ACTION_200", "멤버 관련 요소가 성공적으로 조회되었습니다."),
     MEMBER_ACTION_CREATED(HttpStatus.CREATED, "MEMBER_ACTION_201", "멤버 관련 요소가 성공적으로 생성되었습니다."),
+    MEMBER_ACTION_EDITED(HttpStatus.OK, "MEMBER_ACTION_204", "멤버 관련 요소가 성공적으로 수정되었습니다."),
+
 
     //아이디 성공
     MEMBER_ID_SUCCESS(HttpStatus.OK, "MEMBER_ID_200", "사용가능한 아이디입니다."),

@@ -41,10 +41,6 @@ public class TermCommandServiceImpl implements TermCommandService {
             // 약관 조회 (이미 존재 여부는 확인된 상태)
             Term term = termRepositoryService.findById(termDto.getTermId());
 
-            // 필수 약관 확인
-            if (!term.getOptional() && !termDto.getAgreed()) {
-                throw new TermException(ErrorStatus.ESSENTIAL_TERM_NOT_AGREED);
-            }
 
             // MemberTerm 생성 및 저장
             MemberTerm memberTerm = MemberTerm.builder()

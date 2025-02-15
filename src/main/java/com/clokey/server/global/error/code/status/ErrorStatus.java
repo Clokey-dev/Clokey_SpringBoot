@@ -29,6 +29,7 @@ public enum ErrorStatus implements BaseErrorCode {
     ESSENTIAL_INPUT_REQUIRED(HttpStatus.BAD_REQUEST,"MEMBER_4006","필수 입력 요소 값이 누락되었습니다."),
     CANNOT_FOLLOW_MYSELF(HttpStatus.BAD_REQUEST,"MEMBER_4007", "팔로우 아이디와 팔로잉 아이디가 같을 수 없습니다."),
     NO_PERMISSION_TO_ACCESS_USER(HttpStatus.BAD_REQUEST,"MEMBER_4008", "유저에 대한 접근 권한이 없습니다."),
+    INVALID_TERM_ID(HttpStatus.BAD_REQUEST,"MEMBER_4009","잘못된 약관 ID입니다."),
 
     //옷 에러
     NO_SUCH_CLOTH(HttpStatus.NOT_FOUND,"CLOTH_4041","존재하지 않는 옷 ID입니다."),
