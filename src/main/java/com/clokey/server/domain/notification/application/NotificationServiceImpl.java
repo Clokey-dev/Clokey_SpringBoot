@@ -10,6 +10,7 @@ import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.RedirectType;
 import com.clokey.server.domain.model.entity.enums.ReadStatus;
 import com.clokey.server.domain.model.entity.enums.Season;
+import com.clokey.server.domain.notification.converter.NotificationConverter;
 import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
 import com.clokey.server.domain.notification.dto.NotificationResponseDTO;
 import com.clokey.server.domain.notification.exception.NotificationException;
@@ -19,8 +20,12 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -369,6 +374,14 @@ public class NotificationServiceImpl implements NotificationService {
         } else {
             sendNotifications(WINTER_SEASON_NOTIFICATION, SEASON_NOTIFICATION_IMAGE_URL, member.getDeviceToken());
         }
+    }
+
+    @Override
+    public NotificationResponseDTO.GetNotificationResult getNotifications(Long memberId, Integer page) {
+        // memberId로 알림을 조회해서 반환
+        Pageable pageable = PageRequest.of(page - 1, 10);
+        List<ClokeyNotification> notificationList = notificationRepositoryService.findNotificationsByMemberId(memberId, pageable);
+        return NotificationConverter.toNotificationResult(notificationList, pageable);
     }
 
     private void sendNotifications(String content, String imageUrl, String deviceToken) {
