@@ -24,12 +24,6 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
 
     private final ClothFolderRepository clothFolderRepository;
 
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existsByClothIdAndFolderId(Long clothId, Long folderId){
-        return clothFolderRepository.existsByClothIdAndFolderId(clothId,folderId);
-    }
-
     @Modifying
     @Transactional
     public void deleteAllByClothId(@Param("clothId") Long clothId){
@@ -42,27 +36,10 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
         clothFolderRepository.saveAll(clothFolder);
     }
 
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ClothFolder> findAllByClothIdsAndFolderId(List<Long> clothIds, Long folderId) {
-        return clothFolderRepository.findByClothIdInAndFolderId(clothIds, folderId);
-    }
-
     @Override
     @Transactional
     public void deleteAllByClothIdInAndFolderId(List<Long> clothIds, Long folderId) {
         clothFolderRepository.deleteAllByClothIdInAndFolderId(clothIds, folderId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public void validateNoDuplicateClothes(List<Cloth> clothes, Long folderId) {
-        List<Long> clothIds = clothes.stream().map(Cloth::getId).collect(Collectors.toList());
-        List<ClothFolder> existingClothIds = clothFolderRepository.findByClothIdInAndFolderId(clothIds, folderId);
-        if (!existingClothIds.isEmpty()) {
-            throw new DatabaseException(ErrorStatus.CLOTH_ALREADY_IN_FOLDER);
-        }
     }
 
     @Override
@@ -79,22 +56,9 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
                 .collect(Collectors.toMap(row -> (Long) row[0], row -> (String) row[1]));
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Map<Long, Long> countClothesByFolderIds(List<Long> folderIds) {
-        List<Object[]> results = clothFolderRepository.countClothesByFolderIds(folderIds);
-        return results.stream()
-                .collect(Collectors.toMap(row -> (Long) row[0], row -> (Long) row[1]));
-    }
-
     @Modifying
     @Transactional
     public void deleteAllByFolderId(@Param("folderId") Long folderId){
         clothFolderRepository.deleteAllByFolderId(folderId);
-    }
-
-    @Override
-    public Long countByFolderId(Long folderId) {
-        return clothFolderRepository.countByFolderId(folderId);
     }
 }

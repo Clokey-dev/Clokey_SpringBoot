@@ -13,14 +13,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface ClothFolderRepository extends JpaRepository<ClothFolder, Long> {
-
-    boolean existsByClothIdAndFolderId(Long clothId, Long folderId);
-
     @Transactional
     @Modifying
     void deleteAllByClothId(@Param("clothId") Long clothId);
-
-    List<ClothFolder> findByClothIdInAndFolderId(List<Long> clothIds, Long folderId);
 
     @Transactional
     void deleteAllByClothIdInAndFolderId(List<Long> clothId, Long folderId);
@@ -29,14 +24,9 @@ public interface ClothFolderRepository extends JpaRepository<ClothFolder, Long> 
 
     @Query("SELECT cf.folder.id, c.image.imageUrl FROM ClothFolder cf JOIN cf.cloth c WHERE cf.folder.id IN :folderIds GROUP BY cf.folder.id")
     List<Object[]> findClothImageUrlsFromFolderIds(@Param("folderIds") List<Long> folderIds);
-
-    @Query("SELECT cf.folder.id, COUNT(cf) FROM ClothFolder cf WHERE cf.folder.id IN :folderIds GROUP BY cf.folder.id")
-    List<Object[]> countClothesByFolderIds(@Param("folderIds") List<Long> folderIds);
-
+    
     @Transactional
     @Modifying
     void deleteAllByFolderId(@Param("folderId") Long folderId);
-
-    Long countByFolderId(Long folderId);
 
 }
