@@ -2,6 +2,7 @@ package com.clokey.server.domain.search.api;
 
 import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
 import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
+import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.dto.MemberDTO;
 import com.clokey.server.domain.member.exception.annotation.AuthUser;
@@ -45,7 +46,8 @@ public class SearchRestController {
 
     // 옷 검색 API
     @GetMapping("/clothes")
-    @Operation(summary = "옷 이름과 브랜드 명으로 옷을 검색하는 API", description = "query string으로 keyword를 넘겨주세요" +
+    @Operation(summary = "옷 이름과 브랜드 명으로 옷을 검색하는 API", description = "query string으로 by를 넘겨주세요" +
+            "query string으로 keyword를 넘겨주세요" +
             "query string으로 by를 넘겨주세요. " +
             "query string으로 page를 넘겨주세요. " +
             "query string으로 pageSize를 넘겨주세요.")
@@ -53,7 +55,7 @@ public class SearchRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "SEARCH_200", description = "OK, 성공적으로 조회되었습니다."),
     })
     @Parameters({
-            @Parameter(name = "by", description = "검색 필터, query string 입니다."),
+            @Parameter(name = "by", description = "검색 필터(name-and-brand), query string 입니다."),
             @Parameter(name = "keyword", description = "검색할 키워드, query string 입니다."),
             @Parameter(name = "page", description = "페이지 값, query string 입니다."),
             @Parameter(name = "size", description = "페이지에 표시할 요소 개수 값, query string 입니다.")
@@ -91,7 +93,8 @@ public class SearchRestController {
 
     // 유저 검색 API
     @GetMapping("/members")
-    @Operation(summary = "유저의 클로키ID와 닉네임으로 유저를 검색하는 API", description = "query string으로 keyword를 넘겨주세요" +
+    @Operation(summary = "유저의 클로키ID와 닉네임으로 유저를 검색하는 API", description = "query string으로 by를 넘겨주세요" +
+            "query string으로 keyword를 넘겨주세요" +
             "query string으로 by를 넘겨주세요. " +
             "query string으로 page를 넘겨주세요. " +
             "query string으로 pageSize를 넘겨주세요.")
@@ -99,7 +102,7 @@ public class SearchRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "SEARCH_200", description = "OK, 성공적으로 조회되었습니다."),
     })
     @Parameters({
-            @Parameter(name = "by", description = "검색 필터, query string 입니다."),
+            @Parameter(name = "by", description = "검색 필터(id-and-nickname), query string 입니다."),
             @Parameter(name = "keyword", description = "검색할 키워드, query string 입니다."),
             @Parameter(name = "page", description = "페이지 값, query string 입니다."),
             @Parameter(name = "size", description = "페이지에 표시할 요소 개수 값, query string 입니다.")
@@ -124,6 +127,51 @@ public class SearchRestController {
             return BaseResponse.onFailure(ErrorStatus.SEARCH_FILTER_ERROR, null);
     }
 
+    // 기록 Elastic Search 동기화 API
+    @PostMapping("/histories/sync")
+    @Operation(summary = "기록 데이터를 Elastic Search에 동기화 시키는 API")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "SEARCH_201", description = "OK, 성공적으로 생성되었습니다."),
+    })
+    public BaseResponse<Void> syncHistoryData() throws IOException {
+        searchService.syncHistoriesDataToElasticsearch();
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_SYNC_CREATED, null);
+    }
 
+    // 기록 검색 API
+    @GetMapping("/histories")
+    @Operation(summary = "기록의 해시태그와 태그된 옷의 카테고리로 유저를 검색하는 API", description = "query string으로 by를 넘겨주세요" +
+            "query string으로 keyword를 넘겨주세요" +
+            "query string으로 by를 넘겨주세요. " +
+            "query string으로 page를 넘겨주세요. " +
+            "query string으로 pageSize를 넘겨주세요.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "SEARCH_200", description = "OK, 성공적으로 조회되었습니다."),
+    })
+    @Parameters({
+            @Parameter(name = "by", description = "검색 필터(hashtag-and-category), query string 입니다."),
+            @Parameter(name = "keyword", description = "검색할 키워드, query string 입니다."),
+            @Parameter(name = "page", description = "페이지 값, query string 입니다."),
+            @Parameter(name = "size", description = "페이지에 표시할 요소 개수 값, query string 입니다.")
+    })
+    public BaseResponse<HistoryResponseDTO.HistoryPreviewListResult> searchHistories(
+            @RequestParam String by,
+            @RequestParam String keyword,
+            @RequestParam @CheckPage int page,
+            @RequestParam @CheckPageSize int size,
+            @Parameter(name = "user", hidden = true) @AuthUser Member member
+    ) {
+        // By Hashtag And Category
+        if("hashtag-and-category".equals(by)) {
+            try {
+                HistoryResponseDTO.HistoryPreviewListResult result = searchService.searchHistoriesByHashtagAndCategory(keyword,page,size);
+                return BaseResponse.onSuccess(SuccessStatus.SEARCH_SUCCESS, result);
+            } catch (IOException e) {
+                return BaseResponse.onFailure(ErrorStatus.SEARCHING_IOEXCEPION, null);
+            }
+        }
+        else
+            return BaseResponse.onFailure(ErrorStatus.SEARCH_FILTER_ERROR, null);
+    }
 
 }
