@@ -61,7 +61,6 @@ public class UnlinkServiceImpl implements UnlinkService {
     private final ClothImageRepositoryService clothImageRepositoryService;
     private final ClothFolderRepositoryService clothFolderRepositoryService;
     private final FolderRepositoryService folderRepositoryService;
-    private final FolderAccessibleValidator folderAccessibleValidator;
     private final CommentRepository commentRepository;
     private final NotificationRepositoryService notificationRepositoryService;
 
@@ -171,11 +170,6 @@ public class UnlinkServiceImpl implements UnlinkService {
         Member member = memberRepositoryService.findMemberById(memberId);
 
 
-        if (member == null) {
-            log.warn("삭제할 회원이 존재하지 않음: userId={}", memberId);
-            return;
-        }
-
         LocalDate inactiveDate = member.getInactiveDate();
         if (inactiveDate == null || inactiveDate.isAfter(LocalDate.now().minusDays(30))) {
             log.info("삭제 대상이 아님: userId={}, inactiveDate={}", memberId, inactiveDate);
@@ -189,15 +183,10 @@ public class UnlinkServiceImpl implements UnlinkService {
 
         List<History> histories = memberRepositoryService.findHistoriesByMemberId(memberId);
         for (History history : histories) {
-            // 내 기록 접근을 위한 검증
-            historyAccessibleValidator.validateMyHistory(history.getId(), memberId);
-
             // 댓글 삭제
             commentRepositoryService.deleteAllComments(history.getId());
 
             // 기록에 관련된 옷 삭제 및 옷의 착용 수 감소
-            List<Cloth> cloths = historyClothRepositoryService.findAllClothByHistoryId(history.getId());
-            cloths.forEach(Cloth::decreaseWearNum);
             historyClothRepositoryService.deleteAllByHistoryId(history.getId());
 
             // 기록에 관련된 해시태그 삭제
@@ -220,7 +209,6 @@ public class UnlinkServiceImpl implements UnlinkService {
         List<Cloth> clothes = memberRepositoryService.findClothesByMemberId(memberId);
 
         for (Cloth cloth : clothes) {
-            historyClothRepositoryService.deleteAllByClothId(cloth.getId());
             clothFolderRepositoryService.deleteAllByClothId(cloth.getId());
             clothImageRepositoryService.deleteByClothId(cloth.getId());
             clothRepositoryService.deleteById(cloth.getId());
@@ -230,7 +218,6 @@ public class UnlinkServiceImpl implements UnlinkService {
         List<Folder> folders = memberRepositoryService.findFoldersByMemberId(memberId);
 
         for(Folder folder : folders){
-            folderAccessibleValidator.validateFolderAccessOfMember(folder.getId(), memberId);
             try {
                 folderRepositoryService.deleteById(folder.getId());
             } catch (Exception ex) {

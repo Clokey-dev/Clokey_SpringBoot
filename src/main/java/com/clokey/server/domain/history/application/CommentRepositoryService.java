@@ -31,4 +31,6 @@ public interface CommentRepositoryService {
 
     Long countByHistoryId(Long historyId);
 
+    void deleteCommentsByHistoryIds(List<Long> historyId);
+
 }
