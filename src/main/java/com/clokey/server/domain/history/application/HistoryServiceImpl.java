@@ -123,10 +123,17 @@ public class HistoryServiceImpl implements HistoryService {
         List<String> hashtags = hashtagHistoryRepositoryService.findHashtagNamesByHistoryId(historyId);
         int likeCount = memberLikeRepositoryService.countByHistory_Id(historyId);
         boolean isLiked = memberLikeRepositoryService.existsByMember_IdAndHistory_Id(memberId, historyId);
-        List<Cloth> cloths = historyClothRepositoryService.findAllClothByHistoryId(historyId);
         Long commentCount = commentRepositoryService.countByHistoryId(historyId);
+        List<Cloth> cloths = historyClothRepositoryService.findAllClothByHistoryId(historyId);
 
-        return HistoryConverter.toDayViewResult(history, imageUrl, hashtags, likeCount, isLiked, cloths, commentCount);
+        if(memberId.equals(history.getMember().getId())){
+            return HistoryConverter.toDayViewResult(history, imageUrl, hashtags, likeCount, isLiked, cloths, commentCount);
+        }else{
+            cloths = cloths.stream()
+                    .filter(cloth -> cloth.getVisibility() == Visibility.PUBLIC)
+                    .collect(Collectors.toList());
+            return HistoryConverter.toDayViewResult(history, imageUrl, hashtags, likeCount, isLiked, cloths, commentCount);
+        }
     }
 
     @Override
