@@ -91,5 +91,8 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
         return historyRepository.findTop10MembersByHashtagIdsOrderByLikes(hashtagIds, currentMemberId, Pageable.ofSize(10));
     }
 
-
+    @Override
+    public List<History> findAll(){
+        return historyRepository.findAll();
+    }
 }

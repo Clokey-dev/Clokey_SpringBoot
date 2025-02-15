@@ -60,4 +60,6 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
             @Param("hashtagIds") List<Long> hashtagIds,
             @Param("currentMemberId") Long currentMemberId,
             Pageable pageable);
+
+    List<History> findAll();
 }

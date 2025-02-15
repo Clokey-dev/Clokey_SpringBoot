@@ -40,4 +40,6 @@ public interface HistoryRepositoryService {
 
     List<History> findTop10MembersByHashtagIdsOrderByLikes(List<Long> hashtagIds, Long currentMemberId);
 
+    List<History> findAll();
+
 }
