@@ -144,16 +144,24 @@ public class ClothConverter {
             List<ClothResponseDTO.ClothPreview> infrequentClothPreviews
     ) {
         return ClothResponseDTO.SmartSummaryClothPreviewListResult.builder()
-                .frequentBaseCategoryName(frequentCategory.getParent().getName())
-                .frequentCoreCategoryName(frequentCategory.getName())
-                .frequentCoreCategoryId(frequentCategory.getId())
-                .frequentUsage(frequentUsage)
-                .frequentClothPreviews(frequentClothPreviews)
-                .infrequentBaseCategoryName(infrequentCategory.getParent().getName())
-                .infrequentCoreCategoryName(infrequentCategory.getName())
-                .infrequentCoreCategoryId(infrequentCategory.getId())
-                .infrequentUsage(infrequentUsage)
-                .infrequentClothPreviews(infrequentClothPreviews)
+                .frequentResult(
+                        ClothResponseDTO.SmartSummaryClothPreview.builder()
+                                .baseCategoryName(frequentCategory.getParent().getName())
+                                .coreCategoryName(frequentCategory.getName())
+                                .coreCategoryId(frequentCategory.getId())
+                                .usage(frequentUsage)
+                                .clothPreviews(frequentClothPreviews)
+                                .build()
+                )
+                .infrequentResult(
+                        ClothResponseDTO.SmartSummaryClothPreview.builder()
+                                .baseCategoryName(infrequentCategory.getParent().getName())
+                                .coreCategoryName(infrequentCategory.getName())
+                                .coreCategoryId(infrequentCategory.getId())
+                                .usage(infrequentUsage)
+                                .clothPreviews(infrequentClothPreviews)
+                                .build()
+                )
                 .build();
     }
 
