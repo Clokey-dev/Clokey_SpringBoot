@@ -3,6 +3,7 @@ package com.clokey.server.domain.member.application;
 import com.clokey.server.domain.member.domain.entity.Member;
 
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepositoryService {
@@ -24,4 +25,6 @@ public interface MemberRepositoryService {
     Member findByClokeyId(String clokeyId);
 
     Optional <Member> findMemberByEmail(String email);
+
+    List<Member> findAll();
 }

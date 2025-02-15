@@ -11,6 +11,11 @@ import com.clokey.server.domain.cloth.converter.ClothConverter;
 import com.clokey.server.domain.cloth.domain.document.ClothDocument;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
+import com.clokey.server.domain.member.application.MemberRepositoryService;
+import com.clokey.server.domain.member.converter.MemberDocumentConverter;
+import com.clokey.server.domain.member.domain.document.MemberDocument;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.member.dto.MemberDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,12 +32,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SearchServiceImpl implements SearchService {
 
-
-
     private final ElasticsearchClient elasticsearchClient;
 
     private final ClothRepositoryService clothRepositoryService;
     private static final String CLOTH_INDEX_NAME = "cloth";
+
+    private final MemberRepositoryService memberRepositoryService;
+    private static final String MEMBER_INDEX_NAME = "user";
 
     // JPA에서 모든 Cloth 데이터 가져와서 Elasticsearch로 저장하는 메서드
     @Transactional
@@ -102,5 +108,78 @@ public class SearchServiceImpl implements SearchService {
 
         // 페이징 정보를 담아 DTO 반환
         return ClothConverter.toClothPreviewListResult(clothDocuments, clothPreviews);
+    }
+
+    // JPA에서 모든 Member 데이터 가져와서 Elasticsearch로 저장하는 메서드
+    @Transactional
+    public void syncMembersDataToElasticsearch() throws IOException {
+        // JPA에서 모든 Member 데이터 조회
+        List<Member> memberList = memberRepositoryService.findAll();
+
+        // Member 데이터를 Elasticsearch 문서로 변환
+        List<BulkOperation> bulkOperations = memberList.stream()
+                .map(member -> BulkOperation.of(op -> op
+                        .index(IndexOperation.of(idx -> idx
+                                .index(MEMBER_INDEX_NAME) // Elasticsearch 인덱스명
+                                .id(member.getId().toString()) // ID 설정
+                                .document(MemberDocument.builder()
+                                        .id(member.getId())
+                                        .nickname(member.getNickname())
+                                        .clokeyId(member.getClokeyId())
+                                        .profileUrl(member.getProfileImageUrl())
+                                        .build())
+                        ))))
+                .collect(Collectors.toList());
+
+        // Bulk 요청 실행
+        if (!bulkOperations.isEmpty()) {
+            BulkResponse bulkResponse = elasticsearchClient.bulk(b -> b
+                    .index(MEMBER_INDEX_NAME)
+                    .operations(bulkOperations)
+            );
+
+            // Bulk 처리 결과 로그 출력
+            if (bulkResponse.errors()) {
+                throw new RuntimeException("Elasticsearch 동기화 중 오류 발생: " + bulkResponse.toString());
+            }
+        }
+    }
+
+    // 유저의 Clokey Id 또는 닉네임으로 검색하는 메서드
+    public MemberDTO.ProfilePreviewListRP searchMembersByClokeyIdOrNickname(String keyword, int page, int size) throws IOException {
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        SearchResponse<MemberDocument> response = elasticsearchClient.search(s -> s
+                        .index(MEMBER_INDEX_NAME)
+                        .query(q -> q.bool(b -> b
+                                .should(m -> m.multiMatch(t -> t
+                                        .query(keyword)
+                                        .fields("clokeyId", "nickname")
+                                        .fuzziness("AUTO")
+                                ))
+                                .should(m -> m.matchBoolPrefix(t -> t
+                                        .field("clokeyId")
+                                        .query(keyword)
+                                ))
+                                .should(m -> m.matchBoolPrefix(t -> t
+                                        .field("nickname")
+                                        .query(keyword)
+                                ))
+                        )),
+                MemberDocument.class
+        );
+
+        List<MemberDocument> results = response.hits().hits().stream()
+                .map(Hit::source)
+                .collect(Collectors.toList());
+
+        Page<MemberDocument> memberDocuments = new PageImpl<>(results, pageable, response.hits().total().value());
+
+        // Cloth Document -> ClothPreview DTO 변환
+        List<MemberDTO.ProfilePreview> memberPreviews = MemberDocumentConverter.toProfilePreviewList(memberDocuments);
+
+        // 페이징 정보를 담아 DTO 반환
+        return MemberDocumentConverter.toProfilePreviewListRP(memberDocuments, memberPreviews);
     }
 }
