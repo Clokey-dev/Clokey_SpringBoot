@@ -42,13 +42,26 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     @Transactional
-    public Folder createFolder(Long memberId, FolderRequestDTO.FolderCreateRequest request) {
+    public Folder createAndUpdateFolder(Long memberId, FolderRequestDTO.FolderCreateRequest request) {
         Member member = memberRepositoryService.findMemberById(memberId);
-        Folder newFolder = FolderConverter.toFolder(request, member);
-        folderRepositoryService.save(newFolder);
-        if(!request.getClothIds().isEmpty())
-            addClothesToFolder(newFolder, request.getClothIds(), memberId);
-        return newFolder;
+        //folder 새로 생성 또는 기존 폴더 반환하는 함수
+        Folder folder = getFolder(request.getFolderId(), member, request);
+        //폴더 이름 수정
+        folder.rename(request.getFolderName());
+        //폴더-옷 테이블에 없으면 추가하고, 폴더-옷테이블에 있는데 request에 없으면 삭제하고. 폴더 아이템 개수 업데이트.
+        updateClothesToFolder(folder, request.getClothIds(), memberId);
+        return folder;
+    }
+
+    private Folder getFolder(Long folderId, Member member, FolderRequestDTO.FolderCreateRequest request){
+        if(folderId == null){
+            Folder newFolder = FolderConverter.toFolder(request, member);
+            folderRepositoryService.save(newFolder);
+            return newFolder;
+        }
+        Folder folder = folderRepositoryService.findById(folderId);
+        folderAccessibleValidator.validateFolderAccessOfMember(folderId, member.getId());
+        return folder;
     }
 
     @Override
@@ -61,38 +74,6 @@ public class FolderServiceImpl implements FolderService {
         } catch (Exception ex) {
             throw new FolderException(ErrorStatus.FAILED_TO_DELETE_FOLDER);
         }
-    }
-
-    @Override
-    @Transactional
-    public void editFolderName(Long folderId, String newName, Long memberId) {
-        folderAccessibleValidator.validateFolderAccessOfMember(folderId, memberId);
-        Folder folder = folderRepositoryService.findById(folderId);
-        folder.rename(newName);
-        folderRepositoryService.save(folder);
-    }
-
-    @Override
-    @Transactional
-    public void addClothesToFolder(Long folderId, FolderRequestDTO.UpdateClothesInFolderRequest request, Long memberId) {
-        Folder folder = folderAccessibleValidator.validateFolderAccessOfMember(folderId, memberId);
-        addClothesToFolder(folder, request.getClothIds(), memberId);
-    }
-
-    @Override
-    @Transactional
-    public void deleteClothesFromFolder(Long folderId, FolderRequestDTO.UpdateClothesInFolderRequest request, Long memberId) {
-        Folder folder = folderAccessibleValidator.validateFolderAccessOfMember(folderId, memberId);
-
-        List<Cloth> clothes = validateClothesExistAndAccessible(request.getClothIds(), memberId);
-
-        List<ClothFolder> clothFolders = clothFolderRepositoryService.findAllByClothIdsAndFolderId(
-                clothes.stream().map(Cloth::getId).collect(Collectors.toList()), folder.getId()
-        );
-
-        clothFolderRepositoryService.deleteAllByClothIdIn(clothFolders.stream().map(ClothFolder::getCloth).map(Cloth::getId).collect(Collectors.toList()));
-        folder.decreaseItemCount();
-        folderRepositoryService.save(folder);
     }
 
     @Override
@@ -130,17 +111,37 @@ public class FolderServiceImpl implements FolderService {
         return clothes;
     }
 
-    private void addClothesToFolder(Folder folder, List<Long> clothIds, Long memberId) {
-        List<Cloth> clothes = validateClothesExistAndAccessible(clothIds, memberId);
+    private void updateClothesToFolder(Folder folder, List<Long> clothIds, Long memberId) {
+        List<ClothFolder> existingClothFolders = clothFolderRepositoryService.findAllByFolderId(folder.getId(), Pageable.unpaged()).toList();
 
-        clothFolderRepositoryService.validateNoDuplicateClothes(clothes, folder.getId());
+        List<Long> existingClothIds = existingClothFolders.stream()
+                .map(cf -> cf.getCloth().getId())
+                .toList();
 
-        List<ClothFolder> clothFolders = clothes.stream()
-                .map(cloth -> new ClothFolder(cloth, folder))
-                .collect(Collectors.toList());
+        List<Long> toRemove = existingClothIds.stream() // 삭제할 옷 (폴더에 있지만 request에 없는 옷)
+                .filter(id -> !clothIds.contains(id))
+                .toList();
 
-        clothFolderRepositoryService.saveAll(clothFolders);
-        folder.increaseItemCount();
+        List<Long> toAdd = clothIds.stream() // 추가할 옷 (request에 있지만 폴더에는 없는 옷)
+                .filter(id -> !existingClothIds.contains(id))
+                .toList();
+
+        // 삭제할 옷 제거
+        if (!toRemove.isEmpty()) {
+            clothFolderRepositoryService.deleteAllByClothIdInAndFolderId(toRemove, folder.getId());
+        }
+
+        // 추가할 옷 검증 및 저장
+        if (!toAdd.isEmpty()) {
+            List<Cloth> clothesToAdd = validateClothesExistAndAccessible(toAdd, memberId);
+            List<ClothFolder> clothFolders = clothesToAdd.stream()
+                    .map(cloth -> new ClothFolder(cloth, folder))
+                    .collect(Collectors.toList());
+            clothFolderRepositoryService.saveAll(clothFolders);
+        }
+
+        // 폴더 아이템 개수 업데이트
+        folder.setItemCount((long) clothIds.size());
         folderRepositoryService.save(folder);
     }
 }
