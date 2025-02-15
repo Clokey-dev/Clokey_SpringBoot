@@ -6,7 +6,10 @@ import com.clokey.server.domain.notification.domain.repository.NotificationRepos
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,4 +42,10 @@ public class NotificationRepositoryServiceImpl implements NotificationRepository
     public void deleteBymemberId(Long memberId) {
         notificationRepository.deleteByMemberId(memberId);
     }
+
+    @Override
+    public void deleteByClokeyNotificationIds(List<Long> clokeyNotificationIds){
+        notificationRepository.deleteByClokeyNotificationIds(clokeyNotificationIds);
+    }
+
 }

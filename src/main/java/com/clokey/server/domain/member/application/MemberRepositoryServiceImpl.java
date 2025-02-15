@@ -113,6 +113,11 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     }
 
     @Override
+    public List<Long> findHistoryIdsByMemberId(Long memberId) {
+        return memberRepository.findHistoryIdsByMemberId(memberId);
+    }
+
+    @Override
     public List<Cloth> findClothesByMemberId(Long memberId) {
         return memberRepository.findClothsByMemberId(memberId);
     }

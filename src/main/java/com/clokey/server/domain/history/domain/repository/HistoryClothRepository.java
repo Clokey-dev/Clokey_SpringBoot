@@ -34,4 +34,9 @@ public interface HistoryClothRepository extends JpaRepository<HistoryCloth, Long
     @Modifying
     @Query("DELETE FROM HistoryCloth hc WHERE hc.history.id = :historyId")
     void deleteAllByHistoryId(@Param("historyId") Long historyId);
+
+    @Modifying
+    @Query("DELETE FROM HistoryCloth hc WHERE hc.history.id IN :historyIds")
+    void deleteAllByHistoryIds(@Param("historyIds") List<Long> historyIds);
+
 }

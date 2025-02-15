@@ -37,4 +37,9 @@ public interface ClothFolderRepository extends JpaRepository<ClothFolder, Long> 
     @Modifying
     void deleteAllByFolderId(@Param("folderId") Long folderId);
 
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM ClothFolder cf WHERE cf.cloth.id IN :clothIds")
+    void deleteAllByClothIds(@Param("clothIds") List<Long> clothIds);
+
 }

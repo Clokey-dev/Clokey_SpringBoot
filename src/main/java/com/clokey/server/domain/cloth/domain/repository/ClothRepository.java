@@ -60,4 +60,8 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
             "AND c.category.id = :categoryId " +
             "ORDER BY c.wearNum DESC, c.id ASC LIMIT 3")
     List<Cloth> findMostFrequentClothList(@Param("memberId") Long memberId, @Param("categoryId") Long categoryId);
+
+    @Modifying
+    @Query("DELETE FROM Cloth c WHERE c.id IN :clothIds")
+    void deleteByClothIds(@Param("clothIds") List<Long> clothIds);
 }

@@ -75,4 +75,9 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
         return clothRepository.findAllById(clothIds);
 
     }
+
+    @Override
+    public void deleteByClothIds(List<Long> clothIds) {
+        clothRepository.deleteByClothIds(clothIds);
+    }
 }

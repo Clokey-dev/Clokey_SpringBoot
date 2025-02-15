@@ -181,65 +181,99 @@ public class UnlinkServiceImpl implements UnlinkService {
 
         //기록 삭제
 
-        List<History> histories = memberRepositoryService.findHistoriesByMemberId(memberId);
-        for (History history : histories) {
-            // 댓글 삭제
-            commentRepositoryService.deleteAllComments(history.getId());
+//        List<History> histories = memberRepositoryService.findHistoriesByMemberId(memberId);
+//        for (History history : histories) {
+//            // 댓글 삭제
+//            commentRepositoryService.deleteAllComments(history.getId());
+//
+//            // 기록에 관련된 옷 삭제 및 옷의 착용 수 감소
+//            historyClothRepositoryService.deleteAllByHistoryId(history.getId());
+//
+//            // 기록에 관련된 해시태그 삭제
+//            hashtagHistoryRepositoryService.deleteAllByHistoryId(history.getId());
+//
+//            // 좋아요 기록 삭제
+//            memberLikeRepositoryService.deleteAllByHistoryId(history.getId());
+//
+//            // 기록에 관련된 사진 삭제
+//            historyImageRepositoryService.deleteAllByHistoryId(history.getId());
+//
+//            // 기록 자체 삭제
+//            historyRepositoryService.deleteById(history.getId());
+//        }
 
-            // 기록에 관련된 옷 삭제 및 옷의 착용 수 감소
-            historyClothRepositoryService.deleteAllByHistoryId(history.getId());
+        List<Long> historyIds = memberRepositoryService.findHistoryIdsByMemberId(memberId);
 
-            // 기록에 관련된 해시태그 삭제
-            hashtagHistoryRepositoryService.deleteAllByHistoryId(history.getId());
+        commentRepositoryService.deleteCommentsByHistoryIds(historyIds);
+        historyClothRepositoryService.deleteAllByHistoryIds(historyIds);
+        hashtagHistoryRepositoryService.deleteAllByHistoryIds(historyIds);
+        memberLikeRepositoryService.deleteAllByHistoryIds(historyIds);
+        historyImageRepositoryService.deleteAllByHistoryIds(historyIds);
+        historyRepositoryService.deleteByHistoryIds(historyIds);
 
-            // 좋아요 기록 삭제
-            memberLikeRepositoryService.deleteAllByHistoryId(history.getId());
-
-            // 기록에 관련된 사진 삭제
-            historyImageRepositoryService.deleteAllByHistoryId(history.getId());
-
-            // 기록 자체 삭제
-            historyRepositoryService.deleteById(history.getId());
-        }
 
         // 팔로우 삭제
         followRepositoryService.deleteByMemberId(memberId);
 
         //옷 삭제
-        List<Cloth> clothes = memberRepositoryService.findClothesByMemberId(memberId);
+//        List<Cloth> clothes = memberRepositoryService.findClothesByMemberId(memberId);
+//
+//        for (Cloth cloth : clothes) {
+//            clothFolderRepositoryService.deleteAllByClothId(cloth.getId());
+//            clothImageRepositoryService.deleteByClothId(cloth.getId());
+//            clothRepositoryService.deleteById(cloth.getId());
+//        }
 
-        for (Cloth cloth : clothes) {
-            clothFolderRepositoryService.deleteAllByClothId(cloth.getId());
-            clothImageRepositoryService.deleteByClothId(cloth.getId());
-            clothRepositoryService.deleteById(cloth.getId());
-        }
+        List<Long> clothIds = memberRepositoryService.findClothIdsByMemberId(memberId);
+
+        clothFolderRepositoryService.deleteAllByClothIds(clothIds);
+        clothImageRepositoryService.deleteAllByClothIds(clothIds);
+        clothRepositoryService.deleteByClothIds(clothIds);
+
+
+
 
         //폴더 삭제
-        List<Folder> folders = memberRepositoryService.findFoldersByMemberId(memberId);
+//        List<Folder> folders = memberRepositoryService.findFoldersByMemberId(memberId);
+//
+//        for(Folder folder : folders){
+//            try {
+//                folderRepositoryService.deleteById(folder.getId());
+//            } catch (Exception ex) {
+//                throw new FolderException(ErrorStatus.FAILED_TO_DELETE_FOLDER);
+//            }
+//        }
 
-        for(Folder folder : folders){
-            try {
-                folderRepositoryService.deleteById(folder.getId());
-            } catch (Exception ex) {
-                throw new FolderException(ErrorStatus.FAILED_TO_DELETE_FOLDER);
-            }
-        }
+        List<Long> folderIds = memberRepositoryService.findFolderIdsByMemberId(memberId);
+        folderRepositoryService.deleteByFolderIds(folderIds);
+
+
 
         //댓글 삭제
-        List<Comment> comments = memberRepositoryService.findCommentsByMemberId(memberId);
+//        List<Comment> comments = memberRepositoryService.findCommentsByMemberId(memberId);
+//
+//        for(Comment comment : comments) {
+//            commentRepository.deleteChildren(comment.getId());
+//
+//            commentRepository.deleteById(comment.getId());
+//        }
 
-        for(Comment comment : comments) {
-            commentRepository.deleteChildren(comment.getId());
+        List<Long> commentIds = memberRepositoryService.findCommentIdsByMemberId(memberId);
 
-            commentRepository.deleteById(comment.getId());
-        }
+        commentRepositoryService.deleteChildrenByCommentIds(commentIds);
+        commentRepositoryService.deleteCommentsByCommentIds(commentIds);
 
         //알람 삭제
-        List <ClokeyNotification> clokeyNotifications = memberRepositoryService.findNotificationsByMemberId(memberId);
+//        List <ClokeyNotification> clokeyNotifications = memberRepositoryService.findNotificationsByMemberId(memberId);
+//
+//        for(ClokeyNotification clokeyNotification : clokeyNotifications) {
+//            notificationRepositoryService.deleteBymemberId(clokeyNotification.getId());
+//        }
 
-        for(ClokeyNotification clokeyNotification : clokeyNotifications) {
-            notificationRepositoryService.deleteBymemberId(clokeyNotification.getId());
-        }
+        List<Long> notificationIds = memberRepositoryService.findNotificationIdsByMemberId(memberId);
+
+        notificationRepositoryService.deleteByClokeyNotificationIds(notificationIds);
+
 
         memberRepositoryService.deleteMemberById(memberId);  // 최종적으로 회원 삭제
 

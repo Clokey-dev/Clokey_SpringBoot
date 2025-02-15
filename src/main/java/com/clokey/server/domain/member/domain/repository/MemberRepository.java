@@ -29,6 +29,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT h FROM History h WHERE h.member.id = :memberId")
     List<History> findHistoriesByMemberId(@Param("memberId") Long memberId);
 
+    @Query("SELECT h.id FROM History h WHERE h.member.id = :memberId")
+    List<Long> findHistoryIdsByMemberId(@Param("memberId") Long memberId);
+
+
     @Query("SELECT c FROM Cloth c WHERE c.member.id = :memberId")
     List<Cloth> findClothsByMemberId(@Param("memberId") Long memberId);
 

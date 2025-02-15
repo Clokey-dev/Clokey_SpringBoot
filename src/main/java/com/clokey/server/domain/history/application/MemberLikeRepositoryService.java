@@ -22,4 +22,6 @@ public interface MemberLikeRepositoryService {
     List<Member> findMembersByHistory(Long historyId);
 
     void deleteAllByMemberId(Long memberId);
+
+    void deleteAllByHistoryIds(List<Long> historyIds);
 }

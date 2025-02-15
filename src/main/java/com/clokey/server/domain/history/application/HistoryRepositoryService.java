@@ -29,4 +29,6 @@ public interface HistoryRepositoryService {
 
     List<Boolean> existsByHistoryDateAndMemberIds(LocalDate historyDate, List<Long> memberIds);
 
+
+    void deleteByHistoryIds(List<Long> historyIds);
 }

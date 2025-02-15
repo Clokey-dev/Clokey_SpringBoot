@@ -36,4 +36,7 @@ public interface ClothRepositoryService {
     );
 
     List<Cloth> findAllById(List<Long> clothIds);
+
+    void deleteByClothIds(List<Long> clothIds);
+
 }

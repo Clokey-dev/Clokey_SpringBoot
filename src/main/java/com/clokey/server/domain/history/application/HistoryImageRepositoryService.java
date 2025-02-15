@@ -15,4 +15,6 @@ public interface HistoryImageRepositoryService {
     void save(List<MultipartFile> historyImages , History history);
 
     void deleteAllByHistoryId(Long historyId);
+
+    void deleteAllByHistoryIds(List<Long> historyIds);
 }

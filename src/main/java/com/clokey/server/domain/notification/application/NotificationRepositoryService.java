@@ -2,6 +2,9 @@ package com.clokey.server.domain.notification.application;
 
 import com.clokey.server.domain.model.entity.enums.ReadStatus;
 import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 public interface NotificationRepositoryService {
 
@@ -14,4 +17,7 @@ public interface NotificationRepositoryService {
     ClokeyNotification findById(Long notificationId);
 
     void deleteBymemberId(Long memberId);
+
+    void deleteByClokeyNotificationIds(List<Long> clokeyNotificationIds);
+
 }

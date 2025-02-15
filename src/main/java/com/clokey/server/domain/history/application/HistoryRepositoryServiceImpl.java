@@ -71,4 +71,9 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
     public List<Boolean> existsByHistoryDateAndMemberIds(LocalDate historyDate, List<Long> memberIds) {
         return historyRepository.existsByHistoryDateAndMemberIds(historyDate,memberIds);
     }
+
+    @Override
+    public void deleteByHistoryIds(List<Long> historyIds) {
+        historyRepository.deleteByHistoryIds(historyIds);
+    }
 }

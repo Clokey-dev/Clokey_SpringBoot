@@ -21,4 +21,6 @@ public interface HashtagHistoryRepositoryService {
     void deleteAllByHistoryId(Long historyId);
 
     List<String> findHashtagNamesByHistoryId(Long historyId);
+
+    void deleteAllByHistoryIds(List<Long> historyIds);
 }

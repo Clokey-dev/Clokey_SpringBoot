@@ -32,4 +32,6 @@ public interface ClothFolderRepositoryService {
     Map<Long, Long> countClothesByFolderIds(List<Long> folderIds);
 
     void deleteAllByFolderId(@Param("folderId") Long folderId);
+
+    void deleteAllByClothIds(List<Long> clothIds);
 }
