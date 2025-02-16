@@ -4,11 +4,16 @@ import com.clokey.server.domain.member.converter.ProfileConverter;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.clokey.server.domain.member.dto.MemberDTO;
+import com.clokey.server.domain.search.application.SearchRepositoryService;
+import com.clokey.server.domain.search.exception.SearchException;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.infra.s3.S3ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +21,7 @@ public class ProfileCommandServiceImpl implements ProfileCommandService {
 
     private final MemberRepositoryService memberRepositoryService;
     private final S3ImageService s3ImageService; // ✅ S3 업로드 서비스 추가
+    private final SearchRepositoryService searchRepositoryService;
 
     @Override
     @Transactional
@@ -37,6 +43,13 @@ public class ProfileCommandServiceImpl implements ProfileCommandService {
 
         // 저장
         Member updatedMember = memberRepositoryService.saveMember(member);
+
+        // ES 동기화
+        try {
+            searchRepositoryService.updateMemberDataToElasticsearch(updatedMember);
+        } catch (IOException e) {
+            throw new SearchException(ErrorStatus.ELASTIC_SEARCH_SYNC_FAULT);
+        }
 
         // 응답 생성
         return ProfileConverter.toProfileRPDTO(updatedMember);

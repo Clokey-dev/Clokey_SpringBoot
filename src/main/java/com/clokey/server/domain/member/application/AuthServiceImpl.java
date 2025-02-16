@@ -5,11 +5,14 @@ import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.clokey.server.domain.model.entity.enums.SocialType;
+import com.clokey.server.domain.search.application.SearchRepositoryService;
+import com.clokey.server.domain.search.exception.SearchException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +24,15 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.security.auth.login.LoginException;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
+
+    private final SearchRepositoryService searchRepositoryService;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -119,6 +126,13 @@ public class AuthServiceImpl implements AuthService {
 
         member.updateToken(accessToken, refreshToken);
         memberRepositoryService.saveMember(member);
+
+        // ES 동기화
+        try {
+            searchRepositoryService.updateMemberDataToElasticsearch(member);
+        } catch (IOException e) {
+            throw new SearchException(ErrorStatus.ELASTIC_SEARCH_SYNC_FAULT);
+        }
 
         // 토큰 반환
         AuthDTO.TokenResponse tokenResponse = new AuthDTO.TokenResponse(
