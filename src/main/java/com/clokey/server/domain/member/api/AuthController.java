@@ -28,11 +28,7 @@ public class AuthController {
     private UnlinkService logoutService;
     @Autowired
     private UnlinkServiceImpl unlinkService;
-
-    @GetMapping("/testDelete")
-    public void test() {
-        unlinkService.deleteData(15L);
-    }
+    
 
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<AuthDTO.TokenResponse>> login(@RequestBody AuthDTO.LoginRequest loginRequest) {

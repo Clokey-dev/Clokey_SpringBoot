@@ -36,7 +36,7 @@ public interface CommentRepositoryService {
 
     void deleteCommentsByHistoryIds(List<Long> historyId);
 
-    void deleteChildrenByHistoryIds(List<Long> commentIds);
+    void deleteChildrenByHistoryIds(List<Long> historyIds);
 
     void deleteChildrenByCommentIds(List<Long> commentIds);
 

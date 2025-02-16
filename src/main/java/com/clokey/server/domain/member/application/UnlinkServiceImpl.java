@@ -202,6 +202,7 @@ public class UnlinkServiceImpl implements UnlinkService {
 //            historyRepositoryService.deleteById(history.getId());
 //        }
 
+
         List<Long> historyIds = memberRepositoryService.findHistoryIdsByMemberId(memberId);
 
         commentRepositoryService.deleteChildrenByHistoryIds(historyIds);
@@ -260,10 +261,12 @@ public class UnlinkServiceImpl implements UnlinkService {
 //            commentRepository.deleteById(comment.getId());
 //        }
 
+
         List<Long> commentIds = memberRepositoryService.findCommentIdsByMemberId(memberId);
 
         commentRepositoryService.deleteChildrenByCommentIds(commentIds);
         commentRepositoryService.deleteCommentsByCommentIds(commentIds);
+
 
         //알람 삭제
 //        List <ClokeyNotification> clokeyNotifications = memberRepositoryService.findNotificationsByMemberId(memberId);
