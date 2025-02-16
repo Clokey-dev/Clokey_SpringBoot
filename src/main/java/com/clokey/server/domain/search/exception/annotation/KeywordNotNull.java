@@ -1,0 +1,17 @@
+package com.clokey.server.domain.search.exception.annotation;
+
+import com.clokey.server.domain.search.exception.validator.KeywordNotNullValidator;
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
+
+import java.lang.annotation.*;
+
+@Documented
+@Constraint(validatedBy = KeywordNotNullValidator.class)
+@Target( { ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface KeywordNotNull {
+    String message() default "검색어는 필수입니다.";
+    Class<?>[] groups() default {};
+    Class<? extends Payload>[] payload() default {};
+}
