@@ -1,10 +1,30 @@
 {
-  "analysis": {
-    "analyzer": {
-      "nori_analyzer": {
-        "type": "custom",
-        "tokenizer": "nori_tokenizer",
-        "filter": ["lowercase"]
+  "settings": {
+    "analysis": {
+      "char_filter": {
+        "remove_special_chars": {
+          "type": "pattern_replace",
+          "pattern": "[._]",
+          "replacement": ""
+        }
+      },
+      "filter": {
+        "nori_readingform_filter": {
+          "type": "nori_readingform"
+        }
+      },
+      "analyzer": {
+        "nori_analyzer": {
+          "type": "custom",
+          "tokenizer": "nori_tokenizer",
+          "filter": ["lowercase"]
+        },
+        "clokeyId_analyzer": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "char_filter": ["remove_special_chars"],
+          "filter": ["lowercase", "nori_readingform_filter"]
+        }
       }
     }
   }
