@@ -8,6 +8,7 @@ import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.domain.member.exception.annotation.NullableClokeyIdExist;
 import com.clokey.server.domain.member.exception.validator.MemberAccessibleValidator;
 import com.clokey.server.domain.search.application.SearchService;
+import com.clokey.server.domain.search.exception.annotation.KeywordNotNull;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.code.status.SuccessStatus;
@@ -34,7 +35,7 @@ public class SearchRestController {
 
     // 옷 Elastic Search 동기화 API
     @PostMapping("/clothes/sync")
-    @Operation(summary = "옷 데이터를 Elastic Search에 동기화 시키는 API")
+    @Operation(summary = "옷 데이터를 Elastic Search에 동기화 시키는 API (관리자용)")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "SEARCH_201", description = "OK, 성공적으로 생성되었습니다."),
     })
@@ -62,7 +63,7 @@ public class SearchRestController {
     public BaseResponse<ClothResponseDTO.ClothPreviewListResult> searchClothes(
             @RequestParam(value = "clokeyId", required = false) @NullableClokeyIdExist String clokeyId,
             @RequestParam String by,
-            @RequestParam String keyword,
+            @RequestParam @KeywordNotNull String keyword,
             @RequestParam @CheckPage int page,
             @RequestParam @CheckPageSize int size,
             @Parameter(name = "user", hidden = true) @AuthUser Member member
@@ -77,7 +78,7 @@ public class SearchRestController {
         // By Name Or Brand
         if("name-and-brand".equals(by)) {
             try {
-                ClothResponseDTO.ClothPreviewListResult result = searchService.searchClothesByNameOrBrand(clokeyId,keyword,page,size);
+                ClothResponseDTO.ClothPreviewListResult result = searchService.searchClothesByNameOrBrand(member.getId(),clokeyId,keyword,page,size);
                 return BaseResponse.onSuccess(SuccessStatus.SEARCH_SUCCESS, result);
             } catch (IOException e) {
                 return BaseResponse.onFailure(ErrorStatus.SEARCHING_IOEXCEPION, null);
@@ -89,7 +90,7 @@ public class SearchRestController {
 
     // 유저 Elastic Search 동기화 API
     @PostMapping("/members/sync")
-    @Operation(summary = "유저 데이터를 Elastic Search에 동기화 시키는 API")
+    @Operation(summary = "유저 데이터를 Elastic Search에 동기화 시키는 API (관리자용)")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "SEARCH_201", description = "OK, 성공적으로 생성되었습니다."),
     })
@@ -116,7 +117,7 @@ public class SearchRestController {
     })
     public BaseResponse<MemberDTO.ProfilePreviewListRP> searchMembers(
             @RequestParam String by,
-            @RequestParam String keyword,
+            @RequestParam @KeywordNotNull String keyword,
             @RequestParam @CheckPage int page,
             @RequestParam @CheckPageSize int size,
             @Parameter(name = "user", hidden = true) @AuthUser Member member
@@ -136,7 +137,7 @@ public class SearchRestController {
 
     // 기록 Elastic Search 동기화 API
     @PostMapping("/histories/sync")
-    @Operation(summary = "기록 데이터를 Elastic Search에 동기화 시키는 API")
+    @Operation(summary = "기록 데이터를 Elastic Search에 동기화 시키는 API (관리자용)")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "SEARCH_201", description = "OK, 성공적으로 생성되었습니다."),
     })
@@ -163,7 +164,7 @@ public class SearchRestController {
     })
     public BaseResponse<HistoryResponseDTO.HistoryPreviewListResult> searchHistories(
             @RequestParam String by,
-            @RequestParam String keyword,
+            @RequestParam @KeywordNotNull String keyword,
             @RequestParam @CheckPage int page,
             @RequestParam @CheckPageSize int size,
             @Parameter(name = "user", hidden = true) @AuthUser Member member
