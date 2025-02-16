@@ -90,10 +90,18 @@ public class SearchServiceImpl implements SearchService {
                                             .query(keyword)
                                             .fuzziness("AUTO")
                                     ))
+                                    .should(ms -> ms.matchPhrasePrefix(mq -> mq
+                                            .field("name")
+                                            .query(keyword)
+                                    ))
                                     .should(ms -> ms.match(mq -> mq
                                             .field("brand")
                                             .query(keyword)
                                             .fuzziness("AUTO")
+                                    ))
+                                    .should(ms -> ms.matchPhrasePrefix(mq -> mq
+                                            .field("brand")
+                                            .query(keyword)
                                     ))
                             ));
                             return b;
@@ -160,6 +168,10 @@ public class SearchServiceImpl implements SearchService {
                             ));
                             // 카테고리 아우터만 검색해도 "아우터/무스탕" 검색되도록 설정
                             b.must(m -> m.matchBoolPrefix(t -> t
+                                    .field("categoryNames")
+                                    .query(keyword)
+                            ));
+                            b.must(m -> m.matchPhrasePrefix(t -> t
                                     .field("categoryNames")
                                     .query(keyword)
                             ));
