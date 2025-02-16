@@ -1,11 +1,11 @@
 package com.clokey.server.domain.search.api;
 
 import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
-import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.dto.MemberDTO;
 import com.clokey.server.domain.member.exception.annotation.AuthUser;
+import com.clokey.server.domain.member.exception.annotation.NullableClokeyIdExist;
 import com.clokey.server.domain.member.exception.validator.MemberAccessibleValidator;
 import com.clokey.server.domain.search.application.SearchService;
 import com.clokey.server.global.common.response.BaseResponse;
@@ -30,7 +30,6 @@ import java.io.IOException;
 public class SearchRestController {
 
     private final SearchService searchService;
-    private final ClothAccessibleValidator clothAccessibleValidator;
     private final MemberAccessibleValidator memberAccessibleValidator;
 
     // 옷 Elastic Search 동기화 API
@@ -61,16 +60,24 @@ public class SearchRestController {
             @Parameter(name = "size", description = "페이지에 표시할 요소 개수 값, query string 입니다.")
     })
     public BaseResponse<ClothResponseDTO.ClothPreviewListResult> searchClothes(
+            @RequestParam(value = "clokeyId", required = false) @NullableClokeyIdExist String clokeyId,
             @RequestParam String by,
             @RequestParam String keyword,
             @RequestParam @CheckPage int page,
             @RequestParam @CheckPageSize int size,
             @Parameter(name = "user", hidden = true) @AuthUser Member member
     ) {
+        if(clokeyId==null || clokeyId.isEmpty()) {
+            clokeyId=member.getClokeyId();
+        }
+        else {
+            // 조회하는 유저와 다른 유저의 옷장이고, 그 유저가 비공개인 유저인지 확인합니다.
+            memberAccessibleValidator.validateClothAccessOfMember(clokeyId, member.getId());
+        }
         // By Name Or Brand
         if("name-and-brand".equals(by)) {
             try {
-                ClothResponseDTO.ClothPreviewListResult result = searchService.searchClothesByNameOrBrand(keyword,page,size);
+                ClothResponseDTO.ClothPreviewListResult result = searchService.searchClothesByNameOrBrand(clokeyId,keyword,page,size);
                 return BaseResponse.onSuccess(SuccessStatus.SEARCH_SUCCESS, result);
             } catch (IOException e) {
                 return BaseResponse.onFailure(ErrorStatus.SEARCHING_IOEXCEPION, null);

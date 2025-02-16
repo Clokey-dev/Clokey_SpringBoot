@@ -74,6 +74,7 @@ public class SearchServiceImpl implements SearchService {
                                         .brand(cloth.getBrand())
                                         .imageUrl(cloth.getImage() != null ? cloth.getImage().getImageUrl() : null)
                                         .wearNum(cloth.getWearNum())
+                                        .memberId(cloth.getMember().getId())
                                         .build())
                         ))))
                 .collect(Collectors.toList());
@@ -93,23 +94,32 @@ public class SearchServiceImpl implements SearchService {
     }
 
     // 옷 이름과 브랜드로 검색하는 메서드
-    public ClothResponseDTO.ClothPreviewListResult searchClothesByNameOrBrand(String keyword, int page, int size) throws IOException {
+    public ClothResponseDTO.ClothPreviewListResult searchClothesByNameOrBrand(String clokeyId, String keyword, int page, int size) throws IOException {
 
         Pageable pageable = PageRequest.of(page-1, size);
+
+        Long memberId = memberRepositoryService.findMemberByClokeyId(clokeyId).getId();
 
         SearchResponse<ClothDocument> response = elasticsearchClient.search(s -> s
                         .index(CLOTH_INDEX_NAME)
                         .query(q -> q.bool(b -> b
-                                .should(m -> m.multiMatch(t -> t
-                                        .query(keyword)
-                                        .fields("name", "brand")
-                                        .fuzziness("AUTO")
+                                .must(m -> m.term(t -> t.field("memberId").value(memberId))) // 특정 멤버의 옷만 필터링
+                                .must(m -> m.bool(bb -> bb
+                                        .should(ms -> ms.match(mq -> mq
+                                                .field("name")
+                                                .query(keyword)
+                                                .fuzziness("AUTO")
+                                        ))
+                                        .should(ms -> ms.match(mq -> mq
+                                                .field("brand")
+                                                .query(keyword)
+                                                .fuzziness("AUTO")
+                                        ))
+                                        .minimumShouldMatch("1") // OR 조건 적용
                                 ))
-                                .should(m -> m.matchBoolPrefix(t -> t
-                                        .field("name")
-                                        .query(keyword)
-                                ))
-                        )),
+                        ))
+                        .from((int) pageable.getOffset())
+                        .size(pageable.getPageSize()),
                 ClothDocument.class
         );
 
