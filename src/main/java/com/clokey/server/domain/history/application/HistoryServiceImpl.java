@@ -2,7 +2,6 @@ package com.clokey.server.domain.history.application;
 
 import com.clokey.server.domain.cloth.application.ClothRepositoryService;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
-import com.clokey.server.domain.cloth.domain.entity.ClothImage;
 import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
 import com.clokey.server.domain.history.domain.entity.*;
 import com.clokey.server.domain.history.dto.HistoryRequestDTO;
