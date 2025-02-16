@@ -180,29 +180,6 @@ public class UnlinkServiceImpl implements UnlinkService {
         memberTermRepositoryService.deleteByMemberId(memberId);
 
         //기록 삭제
-
-//        List<History> histories = memberRepositoryService.findHistoriesByMemberId(memberId);
-//        for (History history : histories) {
-//            // 댓글 삭제
-//            commentRepositoryService.deleteAllComments(history.getId());
-//
-//            // 기록에 관련된 옷 삭제 및 옷의 착용 수 감소
-//            historyClothRepositoryService.deleteAllByHistoryId(history.getId());
-//
-//            // 기록에 관련된 해시태그 삭제
-//            hashtagHistoryRepositoryService.deleteAllByHistoryId(history.getId());
-//
-//            // 좋아요 기록 삭제
-//            memberLikeRepositoryService.deleteAllByHistoryId(history.getId());
-//
-//            // 기록에 관련된 사진 삭제
-//            historyImageRepositoryService.deleteAllByHistoryId(history.getId());
-//
-//            // 기록 자체 삭제
-//            historyRepositoryService.deleteById(history.getId());
-//        }
-
-
         List<Long> historyIds = memberRepositoryService.findHistoryIdsByMemberId(memberId);
 
         commentRepositoryService.deleteChildrenByHistoryIds(historyIds);
@@ -218,14 +195,6 @@ public class UnlinkServiceImpl implements UnlinkService {
         followRepositoryService.deleteByMemberId(memberId);
 
         //옷 삭제
-//        List<Cloth> clothes = memberRepositoryService.findClothesByMemberId(memberId);
-//
-//        for (Cloth cloth : clothes) {
-//            clothFolderRepositoryService.deleteAllByClothId(cloth.getId());
-//            clothImageRepositoryService.deleteByClothId(cloth.getId());
-//            clothRepositoryService.deleteById(cloth.getId());
-//        }
-
         List<Long> clothIds = memberRepositoryService.findClothIdsByMemberId(memberId);
 
         clothFolderRepositoryService.deleteAllByClothIds(clothIds);
@@ -236,16 +205,6 @@ public class UnlinkServiceImpl implements UnlinkService {
 
 
         //폴더 삭제
-//        List<Folder> folders = memberRepositoryService.findFoldersByMemberId(memberId);
-//
-//        for(Folder folder : folders){
-//            try {
-//                folderRepositoryService.deleteById(folder.getId());
-//            } catch (Exception ex) {
-//                throw new FolderException(ErrorStatus.FAILED_TO_DELETE_FOLDER);
-//            }
-//        }
-
         List<Long> folderIds = memberRepositoryService.findFolderIdsByMemberId(memberId);
         clothFolderRepositoryService.deleteAllByFolderIds(folderIds);
         folderRepositoryService.deleteByFolderIds(folderIds);
@@ -253,15 +212,6 @@ public class UnlinkServiceImpl implements UnlinkService {
 
 
         //댓글 삭제
-//        List<Comment> comments = memberRepositoryService.findCommentsByMemberId(memberId);
-//
-//        for(Comment comment : comments) {
-//            commentRepository.deleteChildren(comment.getId());
-//
-//            commentRepository.deleteById(comment.getId());
-//        }
-
-
         List<Long> commentIds = memberRepositoryService.findCommentIdsByMemberId(memberId);
 
         commentRepositoryService.deleteChildrenByCommentIds(commentIds);
@@ -269,12 +219,6 @@ public class UnlinkServiceImpl implements UnlinkService {
 
 
         //알람 삭제
-//        List <ClokeyNotification> clokeyNotifications = memberRepositoryService.findNotificationsByMemberId(memberId);
-//
-//        for(ClokeyNotification clokeyNotification : clokeyNotifications) {
-//            notificationRepositoryService.deleteBymemberId(clokeyNotification.getId());
-//        }
-
         List<Long> notificationIds = memberRepositoryService.findNotificationIdsByMemberId(memberId);
 
         notificationRepositoryService.deleteByClokeyNotificationIds(notificationIds);
