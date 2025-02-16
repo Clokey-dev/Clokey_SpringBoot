@@ -1,6 +1,5 @@
 package com.clokey.server.domain.member.domain.document;
 
-import com.clokey.server.domain.member.domain.entity.Member;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,13 +26,4 @@ public class MemberDocument {
     private String clokeyId;
 
     private String profileUrl;
-
-    public static MemberDocument from(Member member) {
-        return MemberDocument.builder()
-                .id(member.getId())
-                .nickname(member.getNickname())
-                .clokeyId(member.getClokeyId())
-                .profileUrl(member.getProfileImageUrl())
-                .build();
-    }
 }

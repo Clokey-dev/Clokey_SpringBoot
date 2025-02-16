@@ -1,6 +1,8 @@
 package com.clokey.server.domain.search.application;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.query_dsl.TermsQueryField;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
@@ -25,6 +27,7 @@ import com.clokey.server.domain.member.converter.MemberDocumentConverter;
 import com.clokey.server.domain.member.domain.document.MemberDocument;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.dto.MemberDTO;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -75,6 +78,7 @@ public class SearchServiceImpl implements SearchService {
                                         .imageUrl(cloth.getImage() != null ? cloth.getImage().getImageUrl() : null)
                                         .wearNum(cloth.getWearNum())
                                         .memberId(cloth.getMember().getId())
+                                        .visibility(cloth.getVisibility().toString())
                                         .build())
                         ))))
                 .collect(Collectors.toList());
@@ -94,30 +98,40 @@ public class SearchServiceImpl implements SearchService {
     }
 
     // 옷 이름과 브랜드로 검색하는 메서드
-    public ClothResponseDTO.ClothPreviewListResult searchClothesByNameOrBrand(String clokeyId, String keyword, int page, int size) throws IOException {
+    public ClothResponseDTO.ClothPreviewListResult searchClothesByNameOrBrand(Long requestedMemberId, String clokeyId, String keyword, int page, int size) throws IOException {
 
         Pageable pageable = PageRequest.of(page-1, size);
 
         Long memberId = memberRepositoryService.findMemberByClokeyId(clokeyId).getId();
+        boolean isOwner = requestedMemberId.equals(memberId); // 내 계정인지 확인
 
         SearchResponse<ClothDocument> response = elasticsearchClient.search(s -> s
                         .index(CLOTH_INDEX_NAME)
-                        .query(q -> q.bool(b -> b
-                                .must(m -> m.term(t -> t.field("memberId").value(memberId))) // 특정 멤버의 옷만 필터링
-                                .must(m -> m.bool(bb -> bb
-                                        .should(ms -> ms.match(mq -> mq
-                                                .field("name")
-                                                .query(keyword)
-                                                .fuzziness("AUTO")
-                                        ))
-                                        .should(ms -> ms.match(mq -> mq
-                                                .field("brand")
-                                                .query(keyword)
-                                                .fuzziness("AUTO")
-                                        ))
-                                        .minimumShouldMatch("1") // OR 조건 적용
-                                ))
-                        ))
+                        .query(q -> q.bool(b -> {
+                            // 특정 멤버의 옷만 필터링
+                            b.must(m -> m.term(t -> t.field("memberId").value(memberId)));
+
+                            // 내 계정이 아니면 비공개(visibility: PRIVATE) 옷 제외
+                            if (!isOwner) {
+                                b.mustNot(m -> m.term(t -> t.field("visibility.keyword").value("PRIVATE")));
+                            }
+
+                            // 이름 또는 브랜드에서 부분 검색 (OR 조건 적용)
+                            b.must(m -> m.bool(bb -> bb
+                                    .should(ms -> ms.match(mq -> mq
+                                            .field("name")
+                                            .query(keyword)
+                                            .fuzziness("AUTO")
+                                    ))
+                                    .should(ms -> ms.match(mq -> mq
+                                            .field("brand")
+                                            .query(keyword)
+                                            .fuzziness("AUTO")
+                                    ))
+                                    .minimumShouldMatch("1") // OR 조건 적용
+                            ));
+                            return b;
+                        }))
                         .from((int) pageable.getOffset())
                         .size(pageable.getPageSize()),
                 ClothDocument.class
@@ -240,7 +254,11 @@ public class SearchServiceImpl implements SearchService {
 
                     // 첫 번째 이미지 선택 (없다면 대체 이미지 가져오기)
                     String imageUrl = imageUrls.isEmpty()
-                            ? historyImageRepositoryService.findFirstImagesByHistoryIds(List.of(history.getId())).get(history.getId()) // HistoryImage가 없다면 대체 이미지 사용
+                            ? historyClothRepositoryService.findAllClothByHistoryId(history.getId()).stream() // HistoryImage가 없다면 첫 번째 공개된 옷사진으로 대체
+                            .filter(cloth -> !cloth.getVisibility().equals(Visibility.PRIVATE)) // 비공개 옷 제외
+                            .findFirst()  // 첫 번째 공개된 옷의 URL 반환
+                            .map(cloth -> cloth.getImage() != null ? cloth.getImage().getImageUrl() : null) // 이미지 존재 여부 확인
+                            .orElse("null")
                             : imageUrls.get(0); // 존재하면 첫 번째 이미지 사용
 
                     return BulkOperation.of(op -> op
@@ -252,6 +270,8 @@ public class SearchServiceImpl implements SearchService {
                                             .hashtagNames(hashtagNames)
                                             .categoryNames(categoryNames)
                                             .imageUrl(imageUrl)
+                                            .memberVisibility(history.getMember().getVisibility().toString())
+                                            .historyVisibility(history.getVisibility().toString())
                                             .build())
                             )));
                 })
@@ -278,21 +298,29 @@ public class SearchServiceImpl implements SearchService {
 
         SearchResponse<HistoryDocument> response = elasticsearchClient.search(s -> s
                         .index(HISTORY_INDEX_NAME)
-                        .query(q -> q.bool(b -> b
-                                .should(m -> m.multiMatch(t -> t
-                                        .query(keyword)
-                                        .fields("hashtagNames", "categoryNames")
-                                        .fuzziness("AUTO")
-                                ))
-                                .should(m -> m.matchBoolPrefix(t -> t
-                                        .field("hashtagNames")
-                                        .query(keyword)
-                                ))
-                                .should(m -> m.matchBoolPrefix(t -> t
-                                        .field("categoryNames")
-                                        .query(keyword)
-                                ))
-                        )),
+                        .query(q -> q.bool(b -> {
+                            // 비공개 계정의 기록 제외
+                            b.mustNot(m -> m.term(t -> t.field("memberVisibility.keyword").value("PRIVATE")));
+
+                            // 비공개 기록 제외
+                            b.mustNot(m -> m.term(t -> t.field("historyVisibility.keyword").value("PRIVATE")));
+
+                            // 검색시 사진이 없으면 제외; 기록이 공개인데, 옷이 비공개여서 띄워줄 사진이 없는 경우
+                            b.must(m -> m.exists(t -> t.field("imageUrl")));
+                            // 빈 값 또는 "null"이면 제외
+                            b.mustNot(m -> m.terms(t -> t.field("imageUrl.keyword")
+                                    .terms(TermsQueryField.of(f -> f.value(List.of(FieldValue.of(""), FieldValue.of("null")))))));
+
+                            // 해시태그 및 카테고리 검색
+                            b.must(m -> m.multiMatch(t -> t
+                                    .query(keyword)
+                                    .fields("hashtagNames", "categoryNames")
+                                    .fuzziness("AUTO")
+                            ));
+                            return b;
+                        }))
+                        .from((int) pageable.getOffset())
+                        .size(pageable.getPageSize()),
                 HistoryDocument.class
         );
 
