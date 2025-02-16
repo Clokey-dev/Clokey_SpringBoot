@@ -12,6 +12,7 @@ import com.clokey.server.domain.notification.dto.NotificationResponseDTO;
 import com.clokey.server.domain.notification.exception.annotation.NotificationExist;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
+import com.clokey.server.global.error.exception.annotation.CheckPage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -28,6 +29,19 @@ import org.springframework.web.bind.annotation.*;
 public class NotificationRestController {
 
     private final NotificationService notificationService;
+
+    @GetMapping("")
+    @Operation(summary = "알림을 조회하는 API", description = "알림을 조회하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTIFICATION_200", description = "성공적으로 조회되었습니다."),
+    })
+    public BaseResponse<NotificationResponseDTO.GetNotificationResult> getNotifications(@Parameter(name = "user",hidden = true) @AuthUser Member member,
+                                                                                        @RequestParam(value = "page") @CheckPage @Valid Integer page) {
+
+        NotificationResponseDTO.GetNotificationResult result = notificationService.getNotifications(member.getId(), page);
+
+        return BaseResponse.onSuccess(SuccessStatus.NOTIFICATION_SUCCESS, result);
+    }
 
     @GetMapping("/not-read-exist")
     @Operation(summary = "안 읽은 알림 여부를 조회하는 API")

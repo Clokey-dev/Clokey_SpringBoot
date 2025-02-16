@@ -6,7 +6,10 @@ import com.clokey.server.domain.notification.domain.repository.NotificationRepos
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -33,5 +36,10 @@ public class NotificationRepositoryServiceImpl implements NotificationRepository
     public ClokeyNotification findById(Long notificationId) {
         return notificationRepository.findById(notificationId)
                 .orElseThrow(()-> new DatabaseException(ErrorStatus.NO_SUCH_NOTIFICATION));
+    }
+
+    @Override
+    public List<ClokeyNotification> findNotificationsByMemberId(Long memberId, Pageable pageable) {
+        return notificationRepository.findNotificationsByMemberId(memberId, pageable);
     }
 }
