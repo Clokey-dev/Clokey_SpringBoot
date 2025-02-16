@@ -110,10 +110,10 @@ public class RecommendationServiceImpl implements RecommendationService {
 
     @Override
     public RecommendationResponseDTO.DailyNewsResult getNews(Long memberId) {
-        String cacheKeyRecommend = REDIS_PREFIX_RECOMMEND + memberId + ":" + LocalDate.now();
-        String cacheKeyCloset = REDIS_PREFIX_CLOSET + memberId + ":" + LocalDate.now();
-        String cacheKeyCalendar = REDIS_PREFIX_CALENDAR + memberId + ":" + LocalDate.now();
-        String cacheKeyPeople = REDIS_PREFIX_PEOPLE + memberId + ":" + LocalDate.now();
+        String cacheKeyRecommend = REDIS_PREFIX_RECOMMEND + memberId + ":";
+        String cacheKeyCloset = REDIS_PREFIX_CLOSET + memberId + ":";
+        String cacheKeyCalendar = REDIS_PREFIX_CALENDAR + memberId + ":";
+        String cacheKeyPeople = REDIS_PREFIX_PEOPLE + memberId + ":";
 
         RecommendationResponseDTO.DailyResult<?> recommendResult = getFromRedis(cacheKeyRecommend, RecommendationResponseDTO.DailyResult.class);
         RecommendationResponseDTO.DailyResult<?> closetResult = getFromRedis(cacheKeyCloset, RecommendationResponseDTO.DailyResult.class);
