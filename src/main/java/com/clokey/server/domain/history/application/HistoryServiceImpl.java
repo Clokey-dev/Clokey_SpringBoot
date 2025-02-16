@@ -14,6 +14,8 @@ import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.history.converter.HistoryConverter;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.domain.model.entity.enums.Visibility;
+import com.clokey.server.domain.search.application.SearchRepositoryService;
+import com.clokey.server.domain.search.exception.SearchException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -46,6 +49,7 @@ public class HistoryServiceImpl implements HistoryService {
     private final ClothAccessibleValidator clothAccessibleValidator;
     private final HistoryClothRepositoryService historyClothRepositoryService;
     private final HistoryAccessibleValidator historyAccessibleValidator;
+    private final SearchRepositoryService searchRepositoryService;
 
     @Override
     @Transactional
@@ -269,6 +273,13 @@ public class HistoryServiceImpl implements HistoryService {
                         }
                     });
 
+            // ES 동기화
+            try {
+                searchRepositoryService.updateHistoryDataToElasticsearch(history);
+            } catch (IOException e) {
+                throw new SearchException(ErrorStatus.ELASTIC_SEARCH_SYNC_FAULT);
+            }
+
             return HistoryConverter.toHistoryCreateResult(history);
         }
     }
@@ -296,6 +307,14 @@ public class HistoryServiceImpl implements HistoryService {
 
         History historyToUpdate = historyRepositoryService.findById(historyId);
         historyToUpdate.updateHistory(historyUpdate.getContent(), historyUpdate.getVisibility());
+
+        // ES 동기화
+        try {
+            searchRepositoryService.updateHistoryDataToElasticsearch(historyToUpdate);
+        } catch (IOException e) {
+            throw new SearchException(ErrorStatus.ELASTIC_SEARCH_SYNC_FAULT);
+        }
+
         return HistoryConverter.toHistoryCreateResult(historyRepositoryService.findById(historyId));
     }
 
@@ -339,6 +358,13 @@ public class HistoryServiceImpl implements HistoryService {
 
         //기록 삭제
         historyRepositoryService.deleteById(historyId);
+
+        // ES 삭제
+        try {
+            searchRepositoryService.deleteHistoryByIdFromElasticsearch(historyId);
+        } catch (IOException e) {
+            throw new SearchException(ErrorStatus.ELASTIC_SEARCH_DELETE_FAULT);
+        }
     }
 
     @Override

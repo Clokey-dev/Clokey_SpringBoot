@@ -6,6 +6,8 @@ import com.clokey.server.domain.member.dto.AuthDTO;
 import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.clokey.server.domain.model.entity.enums.SocialType;
+import com.clokey.server.domain.search.application.SearchRepositoryService;
+import com.clokey.server.domain.search.exception.SearchException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
@@ -52,6 +54,7 @@ public class AppleAuthServiceImpl implements AppleAuthService {
 
     private final AuthService authService;
 
+    private final SearchRepositoryService searchRepositoryService;
 
     @Value("${apple.team-id}")
     private String APPLE_TEAM_ID;
@@ -179,6 +182,13 @@ public class AppleAuthServiceImpl implements AppleAuthService {
 
         member.updateToken(jwtAccessToken, jwtRefreshToken);
         memberRepositoryService.saveMember(member);
+
+        // ES 동기화
+        try {
+            searchRepositoryService.updateMemberDataToElasticsearch(member);
+        } catch (IOException e) {
+            throw new SearchException(ErrorStatus.ELASTIC_SEARCH_SYNC_FAULT);
+        }
 
         // 응답 반환
         return new AuthDTO.TokenResponse(
