@@ -2,7 +2,6 @@ package com.clokey.server.domain.history.application;
 
 import com.clokey.server.domain.cloth.application.ClothRepositoryService;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
-import com.clokey.server.domain.cloth.domain.entity.ClothImage;
 import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
 import com.clokey.server.domain.history.domain.entity.*;
 import com.clokey.server.domain.history.dto.HistoryRequestDTO;
@@ -27,10 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -157,14 +153,24 @@ public class HistoryServiceImpl implements HistoryService {
         //Clokey ID를 제공하지 않았다면 자기 자신의 기록 확인으로 전부 반환.
         if(clokeyId == null){
             List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(myMemberId,month);
+
+
             List<String> firstImageUrlsOfHistory = histories.stream()
-                    .map(history -> historyImageRepositoryService.findByHistoryId(history.getId())
-                            .stream()
-                            .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
-                            .findFirst()
-                            .map(HistoryImage::getImageUrl)
-                            .orElse(historyClothRepositoryService.findAllClothByHistoryId(history.getId()).stream()
-                                    .findFirst().get().getImage().getImageUrl()))// 사진이 없다면 첫 옷 사진
+                    .map(history -> {
+                                Optional<String> firstImageUrl = historyImageRepositoryService.findByHistoryId(history.getId()).stream()
+                                        .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
+                                        .map(HistoryImage::getImageUrl)
+                                        .findFirst();
+
+                                if (firstImageUrl.isPresent()) {
+                                    return firstImageUrl.get();  // 이미지가 있으면 해당 이미지 URL 반환
+                                } else {
+                                    return historyClothRepositoryService.findAllClothByHistoryId(history.getId())
+                                            .stream()
+                                            .findFirst()  // 첫 번째 옷의 URL 반환
+                                            .map(cloth -> cloth.getImage().getImageUrl())
+                                            .orElse("null");  // 없으면 기본 이미지 URL
+                                }})
                     .collect(Collectors.toList());
             String nickName = memberRepositoryService.findMemberById(myMemberId).getNickname();
             return HistoryConverter.toMonthViewResult(myMemberId,nickName, histories, firstImageUrlsOfHistory);
@@ -178,13 +184,21 @@ public class HistoryServiceImpl implements HistoryService {
 
         List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(memberId,month);
         List<String> firstImageUrlsOfHistory = histories.stream()
-                .map(history -> historyImageRepositoryService.findByHistoryId(history.getId())
-                        .stream()
-                        .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
-                        .findFirst()
-                        .map(HistoryImage::getImageUrl)
-                        .orElse(historyClothRepositoryService.findAllClothByHistoryId(history.getId()).stream()
-                                .findFirst().get().getImage().getImageUrl()))// 사진이 없다면 첫 옷 사진
+                .map(history -> {
+                    Optional<String> firstImageUrl = historyImageRepositoryService.findByHistoryId(history.getId()).stream()
+                            .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
+                            .map(HistoryImage::getImageUrl)
+                            .findFirst();
+
+                    if (firstImageUrl.isPresent()) {
+                        return firstImageUrl.get();  // 이미지가 있으면 해당 이미지 URL 반환
+                    } else {
+                        return historyClothRepositoryService.findAllClothByHistoryId(history.getId())
+                                .stream()
+                                .findFirst()  // 첫 번째 옷의 URL 반환
+                                .map(cloth -> cloth.getImage().getImageUrl())
+                                .orElse("null");  // 없으면 기본 이미지 URL
+                    }})
                 .collect(Collectors.toList());
 
         //비공개 게시물을 가려줍니다.
@@ -207,11 +221,6 @@ public class HistoryServiceImpl implements HistoryService {
         //모든 옷이 나의 옷이 맞는지 검증합니다.
         clothAccessibleValidator.validateClothOfMember(historyCreateRequest.getClothes(), memberId);
 
-        //이미지는 반드시 첨부해야 합니다.
-        if (imageFiles == null || imageFiles.isEmpty()) {
-            throw new HistoryException(ErrorStatus.MUST_POST_HISTORY_IMAGE);
-        }
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         boolean historyExist = historyRepositoryService.checkHistoryExistOfDate(LocalDate.parse(historyCreateRequest.getDate(), formatter),memberId);
 
@@ -221,9 +230,9 @@ public class HistoryServiceImpl implements HistoryService {
 
             // History 엔티티 생성 후 요청 정보 반환해서 저장
             History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));
-
-            historyImageRepositoryService.save(imageFiles, history);
-
+            if(imageFiles!=null){
+                historyImageRepositoryService.save(imageFiles, history);
+            }
 
             List<Cloth> cloths = clothRepositoryService.findAllById(historyCreateRequest.getClothes());
             List<HistoryCloth> historyCloths = cloths.stream()
