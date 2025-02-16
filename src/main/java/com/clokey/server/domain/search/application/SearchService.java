@@ -12,7 +12,7 @@ public interface SearchService {
 
     void syncClothesDataToElasticsearch() throws IOException;
 
-    ClothResponseDTO.ClothPreviewListResult searchClothesByNameOrBrand(String keyword, int page, int size) throws IOException;
+    ClothResponseDTO.ClothPreviewListResult searchClothesByNameOrBrand(String clokeyId, String keyword, int page, int size) throws IOException;
 
     void syncMembersDataToElasticsearch() throws IOException;
 

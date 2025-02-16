@@ -27,6 +27,8 @@ public class ClothDocument {
 
     private int wearNum;
 
+    private Long memberId;
+
     public static ClothDocument from(Cloth cloth) {
         return ClothDocument.builder()
                 .id(cloth.getId())
