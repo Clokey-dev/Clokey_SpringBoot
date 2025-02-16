@@ -171,7 +171,7 @@ public class UnlinkServiceImpl implements UnlinkService {
 
 
         LocalDate inactiveDate = member.getInactiveDate();
-        if (inactiveDate == null || inactiveDate.isAfter(LocalDate.now()/*.minusDays(15)*/)) {
+        if (inactiveDate == null || inactiveDate.isAfter(LocalDate.now().minusDays(15))) {
             log.info("삭제 대상이 아님: userId={}, inactiveDate={}", memberId, inactiveDate);
             return;
         }
