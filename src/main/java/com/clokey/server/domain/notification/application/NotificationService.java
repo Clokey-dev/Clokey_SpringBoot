@@ -22,4 +22,6 @@ public interface NotificationService {
     void sendTodayTemperatureNotification(Integer temperatureDiff, Long memberId);
 
     void sendSeasonsNotification(Season season, Long memberId);
+
+    NotificationResponseDTO.GetNotificationResult getNotifications(Long memberId, Integer page);
 }

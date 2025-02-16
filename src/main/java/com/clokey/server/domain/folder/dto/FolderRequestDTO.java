@@ -11,6 +11,7 @@ import java.util.List;
 public class FolderRequestDTO {
     @Getter
     public static class FolderCreateRequest {
+        Long folderId = null;
         @NotBlank(message = "폴더 이름은 필수 입력 값입니다.")
         String folderName;
         List<Long> clothIds = Collections.emptyList();

@@ -2,6 +2,9 @@ package com.clokey.server.domain.notification.application;
 
 import com.clokey.server.domain.model.entity.enums.ReadStatus;
 import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface NotificationRepositoryService {
 
@@ -12,4 +15,6 @@ public interface NotificationRepositoryService {
     boolean existsById(Long notificationId);
 
     ClokeyNotification findById(Long notificationId);
+
+    List<ClokeyNotification> findNotificationsByMemberId(Long memberId, Pageable pageable);
 }

@@ -22,17 +22,18 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 public class FolderRestController {
+
     private final FolderService folderService;
 
-    @Operation(summary = "폴더 생성 API", description = "폴더 생성하는 API입니다.")
+    @Operation(summary = "폴더 생성 및 수정 API", description = "폴더 생성 및 수정하는 API입니다.")
     @PostMapping("/folders")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_201", description = "성공적으로 생성되었습니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_200", description = "성공적으로 반영되었습니다."),
     })
-    public BaseResponse<FolderResponseDTO.FolderIdResult> createFolder(@Parameter(name = "user",hidden = true) @AuthUser Member member,
+    public BaseResponse<FolderResponseDTO.FolderIdResult> createAndUpdateFolder(@Parameter(name = "user",hidden = true) @AuthUser Member member,
                                                                  @RequestBody @Valid FolderRequestDTO.FolderCreateRequest request) {
-        FolderResponseDTO.FolderIdResult response = FolderConverter.toFolderIdDTO(folderService.createFolder(member.getId(), request));
-        return BaseResponse.onSuccess(SuccessStatus.FOLDER_CREATED, response);
+        FolderResponseDTO.FolderIdResult response = FolderConverter.toFolderIdDTO(folderService.createAndUpdateFolder(member.getId(), request));
+        return BaseResponse.onSuccess(SuccessStatus.FOLDER_CLOTHES_SUCCESS, response);
     }
 
     @Operation(summary = "폴더 삭제 API", description = "폴더 삭제하는 API입니다.")
@@ -44,41 +45,6 @@ public class FolderRestController {
                                              @FolderExist @PathVariable Long folderId) {
         folderService.deleteFolder(folderId, member.getId());
         return BaseResponse.onSuccess(SuccessStatus.FOLDER_DELETED, null);
-    }
-
-    @Operation(summary = "폴더 이름 수정 API", description = "폴더 이름 수정하는 API입니다.")
-    @PatchMapping("/folders")
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_204", description = "성공적으로 수정되었습니다."),
-    })
-    public BaseResponse<String> editFolderName(@Parameter(name = "user",hidden = true) @AuthUser Member member,
-                                               @RequestBody @Valid FolderRequestDTO.FolderEditRequest request) {
-        folderService.editFolderName(request.getFolderId(), request.getNewName(), member.getId());
-        return BaseResponse.onSuccess(SuccessStatus.FOLDER_EDIT_SUCCESS, null);
-    }
-
-    @Operation(summary = "폴더에 옷 추가 API", description = "폴더에 옷 추가하는 API입니다.")
-    @PostMapping("folders/{folderId}/clothes")
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_201", description = "성공적으로 추가되었습니다."),
-    })
-    public BaseResponse<String> addClothesToFolder(@Parameter(name = "user",hidden = true) @AuthUser Member member,
-                                                   @PathVariable @FolderExist Long folderId,
-                                                   @RequestBody @Valid FolderRequestDTO.UpdateClothesInFolderRequest request) {
-        folderService.addClothesToFolder(folderId, request, member.getId());
-        return BaseResponse.onSuccess(SuccessStatus.FOLDER_ADD_CLOTHES_SUCCESS, null);
-    }
-
-    @Operation(summary = "폴더에 옷 삭제 API", description = "폴더에 옷 삭제하는 API입니다.")
-    @DeleteMapping("folders/{folderId}/clothes")
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "FOLDER_204", description = "성공적으로 삭제되었습니다."),
-    })
-    public BaseResponse<String> deleteClothesFromFolder(@Parameter(name = "user",hidden = true) @AuthUser Member member,
-                                                      @PathVariable @FolderExist Long folderId,
-                                                      @RequestBody @Valid FolderRequestDTO.UpdateClothesInFolderRequest request) {
-        folderService.deleteClothesFromFolder(folderId, request, member.getId());
-        return BaseResponse.onSuccess(SuccessStatus.FOLDER_DELETE_CLOTHES_SUCCESS, null);
     }
 
     @Operation(summary = "폴더별 옷 조회 API", description = "폴더별 옷 조회하는 API입니다.")
