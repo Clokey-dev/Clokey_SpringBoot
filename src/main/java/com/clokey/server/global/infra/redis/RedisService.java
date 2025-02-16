@@ -1,4 +1,4 @@
-package com.clokey.server.domain;
+package com.clokey.server.global.infra.redis;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
