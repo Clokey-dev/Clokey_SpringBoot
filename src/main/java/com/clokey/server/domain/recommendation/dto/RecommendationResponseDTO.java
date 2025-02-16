@@ -35,13 +35,20 @@ public class RecommendationResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
-    public static class DailyNewsResult implements Serializable {
+    public static class DailyNewsResult {
+        private DailyResult<?> recommend;
+        private DailyResult<?> closet;
+        private DailyResult<?> calendar;
+        private DailyResult<?> people;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DailyResult<T> implements Serializable {
         private static final long serialVersionUID = 1L;
-        private List<Recommend> recommend;
-        private List<Closet> closet;
-        private List<Calendar> calendar;
-        private List<People> people;
+        private List<T> innerResult;
     }
 
     @Builder

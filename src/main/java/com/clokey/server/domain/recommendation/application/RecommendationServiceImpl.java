@@ -54,7 +54,10 @@ public class RecommendationServiceImpl implements RecommendationService {
     private final RedisTemplate<String, Object> redisTemplate;
 
     private final ObjectMapper objectMapper;
-    private static final String REDIS_PREFIX = "dailyNews:";
+    private static final String REDIS_PREFIX_RECOMMEND = "re:";
+    private static final String REDIS_PREFIX_CLOSET = "cl:";
+    private static final String REDIS_PREFIX_CALENDAR = "ca:";
+    private static final String REDIS_PREFIX_PEOPLE = "pe:";
 
     @Override
     public RecommendationResponseDTO.DailyClothesResult getRecommendClothes(Long memberId, Integer nowTemp, Integer minTemp, Integer maxTemp) {
@@ -93,12 +96,6 @@ public class RecommendationServiceImpl implements RecommendationService {
         return new RecommendationResponseDTO.DailyClothesResult(recommendedClothes);
     }
 
-    private void checkTemp(Integer nowTemp, Integer minTemp, Integer maxTemp) {
-        if(minTemp > maxTemp || nowTemp < minTemp || nowTemp > maxTemp) {
-            throw new RecommendException(ErrorStatus.OUT_OF_RANGE_TEMP);
-        }
-    }
-
     private Cloth findClothByCategory(List<Cloth> clothes, Long parentCategoryId) {
         return clothes.stream()
                 .filter(c -> c.getCategory().getParent() != null && c.getCategory().getParent().getId().equals(parentCategoryId))
@@ -113,69 +110,64 @@ public class RecommendationServiceImpl implements RecommendationService {
 
     @Override
     public RecommendationResponseDTO.DailyNewsResult getNews(Long memberId) {
-        String cacheKey = "dailyNews:" + memberId + ":" + LocalDate.now();
+        String cacheKeyRecommend = REDIS_PREFIX_RECOMMEND + memberId + ":" + LocalDate.now();
+        String cacheKeyCloset = REDIS_PREFIX_CLOSET + memberId + ":" + LocalDate.now();
+        String cacheKeyCalendar = REDIS_PREFIX_CALENDAR + memberId + ":" + LocalDate.now();
+        String cacheKeyPeople = REDIS_PREFIX_PEOPLE + memberId + ":" + LocalDate.now();
 
-        String json = (String) redisTemplate.opsForValue().get(cacheKey);
-        if (json != null) {
-            try {
-                return objectMapper.readValue(json, RecommendationResponseDTO.DailyNewsResult.class);
-            } catch (Exception e) {
-                redisTemplate.delete(cacheKey);
-                e.printStackTrace();
-            }
+        RecommendationResponseDTO.DailyResult<?> recommendResult = getFromRedis(cacheKeyRecommend, RecommendationResponseDTO.DailyResult.class);
+        RecommendationResponseDTO.DailyResult<?> closetResult = getFromRedis(cacheKeyCloset, RecommendationResponseDTO.DailyResult.class);
+        RecommendationResponseDTO.DailyResult<?> calendarResult = getFromRedis(cacheKeyCalendar, RecommendationResponseDTO.DailyResult.class);
+        RecommendationResponseDTO.DailyResult<?> peopleResult = getFromRedis(cacheKeyPeople, RecommendationResponseDTO.DailyResult.class);
+
+        Member member = memberRepositoryService.findMemberById(memberId);
+        List<Member> followingMembers = getFollowingMembers(member.getId());
+
+        //기존 거 가져옴 -> 없어? 만들어.
+        if (recommendResult == null){
+            recommendResult = RecommendationConverter.toDailyResult(getRecommendList(member));
+            saveToRedis(cacheKeyRecommend, recommendResult, Duration.ofHours(24));
+        }
+        if(closetResult == null){
+            closetResult = RecommendationConverter.toDailyResult(getClosetList(followingMembers));
+            saveToRedis(cacheKeyRecommend, closetResult, Duration.ofHours(3));
+        }
+        if(calendarResult == null){
+            calendarResult = RecommendationConverter.toDailyResult(getCalendarList(followingMembers));
+            saveToRedis(cacheKeyRecommend, calendarResult, Duration.ofHours(3));
+        }
+        if(peopleResult == null) {
+            peopleResult = RecommendationConverter.toDailyResult(getPeopleList(member));
+            saveToRedis(cacheKeyRecommend, peopleResult, Duration.ofHours(24));
         }
 
-        List<NewsType> requiredTypes = List.of(NewsType.RECOMMEND, NewsType.CLOSET, NewsType.CALENDAR, NewsType.PEOPLE);
-        List<Recommendation> existingNews = recommendationRepositoryService.findByMemberIdAndNewsTypeIn(memberId, requiredTypes);
+        return RecommendationConverter.toDailyNewsResult(recommendResult, closetResult, calendarResult, peopleResult);
+    }
 
-        Set<NewsType> existingTypes = existingNews.stream()
-                .map(Recommendation::getNewsType)
-                .collect(Collectors.toSet());
-
-        List<Recommendation> newNewsList = new ArrayList<>();
-
-        for (NewsType type : requiredTypes) {
-            if (!existingTypes.contains(type)) {
-                newNewsList.add(createDefaultRecommend(memberId, type));
-            }
-        }
-
-        if (!newNewsList.isEmpty()) {
-            recommendationRepositoryService.saveAll(newNewsList);
-            existingNews.addAll(newNewsList);
-        }
-
-        RecommendationResponseDTO.DailyNewsResult result = mapToResponse(existingNews, memberId);
-
+    // redis 저장 (String, responseDTO, duration)
+    private void saveToRedis(String key, RecommendationResponseDTO.DailyResult<?> value, Duration duration) {
         try {
-            String resultJson = objectMapper.writeValueAsString(result);
-            redisTemplate.opsForValue().set(cacheKey, resultJson, Duration.ofHours(24));
+            redisTemplate.opsForValue().set(key, value, duration);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return result;
     }
 
-
-    private RecommendationResponseDTO.DailyNewsResult mapToResponse(List<Recommendation> recommendList, Long memberId) {
-        Member member = memberRepositoryService.findMemberById(memberId);
-
-        if (!recommendList.isEmpty() && recommendList.get(0).getUpdatedAt().toLocalDate().equals(LocalDate.now())) {
-            String cacheKey = REDIS_PREFIX + memberId + ":" + LocalDate.now();
-            RecommendationResponseDTO.DailyNewsResult cachedData = (RecommendationResponseDTO.DailyNewsResult) redisTemplate.opsForValue().get(cacheKey);
-            if (cachedData != null) {
-                return cachedData;
-            }
+    // redis 가져오기 (String) DTO 반환
+    private <T> T getFromRedis(String key, Class<T> clazz) {
+        Object cachedData = redisTemplate.opsForValue().get(key);
+        if (cachedData == null) {
+            return null;
         }
 
-        List<Member> followingMembers = getFollowingMembers(member.getId());
-
-        RecommendationResponseDTO.DailyNewsResult result = RecommendationConverter.toDailyNewsResult(getRecommendList(member), getClosetList(followingMembers), getCalendarList(followingMembers), getPeopleList(member));
-
-        redisTemplate.opsForValue().set(REDIS_PREFIX + memberId + ":" + LocalDate.now(), result, Duration.ofHours(24));
-
-        return result;
+        try {
+            if (cachedData instanceof String json) {
+                return objectMapper.readValue(json, clazz);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private RecommendationResponseDTO.DailyNewsAllResult<?> mapToResponse(Long memberId, String section, Integer page) {
