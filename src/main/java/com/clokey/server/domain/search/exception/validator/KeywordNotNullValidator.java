@@ -24,8 +24,8 @@ public class KeywordNotNullValidator implements ConstraintValidator<KeywordNotNu
     @Override
     public boolean isValid(String keyword, ConstraintValidatorContext context) {
 
-        //null인 경우 검증 통과
-        if(keyword == null) {
+        //null인 경우 검증 실패
+        if(keyword == null||keyword.isEmpty()) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(ErrorStatus.NO_SUCH_PARAMETER.toString()).addConstraintViolation();
 
