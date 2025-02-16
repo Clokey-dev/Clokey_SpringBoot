@@ -3,6 +3,7 @@ package com.clokey.server.domain.member.api;
 import com.clokey.server.domain.member.application.AppleAuthService;
 import com.clokey.server.domain.member.application.AuthService;
 import com.clokey.server.domain.member.application.UnlinkService;
+import com.clokey.server.domain.member.application.UnlinkServiceImpl;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.dto.AuthDTO;
 import com.clokey.server.domain.member.exception.MemberException;
@@ -25,6 +26,13 @@ public class AuthController {
     private AppleAuthService appleAuthService;
     @Autowired
     private UnlinkService logoutService;
+    @Autowired
+    private UnlinkServiceImpl unlinkService;
+
+    @GetMapping("/testDelete")
+    public void test() {
+        unlinkService.deleteData(15L);
+    }
 
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<AuthDTO.TokenResponse>> login(@RequestBody AuthDTO.LoginRequest loginRequest) {
