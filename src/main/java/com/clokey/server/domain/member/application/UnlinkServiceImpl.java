@@ -171,7 +171,7 @@ public class UnlinkServiceImpl implements UnlinkService {
 
 
         LocalDate inactiveDate = member.getInactiveDate();
-        if (inactiveDate == null || inactiveDate.isAfter(LocalDate.now().minusDays(30))) {
+        if (inactiveDate == null || inactiveDate.isAfter(LocalDate.now()/*.minusDays(15)*/)) {
             log.info("삭제 대상이 아님: userId={}, inactiveDate={}", memberId, inactiveDate);
             return;
         }
@@ -204,6 +204,7 @@ public class UnlinkServiceImpl implements UnlinkService {
 
         List<Long> historyIds = memberRepositoryService.findHistoryIdsByMemberId(memberId);
 
+        commentRepositoryService.deleteChildrenByHistoryIds(historyIds);
         commentRepositoryService.deleteCommentsByHistoryIds(historyIds);
         historyClothRepositoryService.deleteAllByHistoryIds(historyIds);
         hashtagHistoryRepositoryService.deleteAllByHistoryIds(historyIds);
@@ -245,6 +246,7 @@ public class UnlinkServiceImpl implements UnlinkService {
 //        }
 
         List<Long> folderIds = memberRepositoryService.findFolderIdsByMemberId(memberId);
+        clothFolderRepositoryService.deleteAllByFolderIds(folderIds);
         folderRepositoryService.deleteByFolderIds(folderIds);
 
 
@@ -274,6 +276,8 @@ public class UnlinkServiceImpl implements UnlinkService {
 
         notificationRepositoryService.deleteByClokeyNotificationIds(notificationIds);
 
+        //좋아요 삭제
+        memberLikeRepositoryService.deleteAllByMemberId(memberId);
 
         memberRepositoryService.deleteMemberById(memberId);  // 최종적으로 회원 삭제
 

@@ -97,6 +97,12 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
     @Override
     @Transactional
     public void deleteAllByClothIds(List<Long> clothIds) {
-        clothFolderRepository.deleteAllByClothIdIn(clothIds);
+        clothFolderRepository.deleteAllByClothIds(clothIds);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllByFolderIds(List<Long> folderIds) {
+        clothFolderRepository.deleteAllByFolderIds(folderIds);
     }
 }

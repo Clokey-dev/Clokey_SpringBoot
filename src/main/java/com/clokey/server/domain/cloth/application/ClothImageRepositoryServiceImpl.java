@@ -6,6 +6,9 @@ import com.clokey.server.domain.history.domain.entity.HistoryImage;
 import com.clokey.server.global.infra.s3.S3ImageService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,8 +45,9 @@ public class ClothImageRepositoryServiceImpl implements ClothImageRepositoryServ
             // S3에서 이미지 삭제
             s3ImageService.deleteImageFromS3(image.getImageUrl());
 
-            // DB에서 엔티티 삭제
-            clothImageRepository.delete(image);
+            // DB에서 한 번에 삭제
+            clothImageRepository.deleteByClothIds(ClothIds);  // ✅ 직접 삭제하도록 변경
+
         });
     }
 

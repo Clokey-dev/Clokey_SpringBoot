@@ -17,4 +17,8 @@ public interface ClothImageRepository extends JpaRepository<ClothImage, Long> {
     int deleteByClothId(Long clothId);
 
     List<ClothImage> findByCloth_IdIn(List<Long> clothIds);
+
+    @Modifying
+    @Query("DELETE FROM ClothImage c WHERE c.cloth.id IN :clothIds")
+    void deleteByClothIds(@Param("clothIds") List<Long> clothIds);
 }

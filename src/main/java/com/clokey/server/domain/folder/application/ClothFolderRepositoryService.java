@@ -34,4 +34,6 @@ public interface ClothFolderRepositoryService {
     void deleteAllByFolderId(@Param("folderId") Long folderId);
 
     void deleteAllByClothIds(List<Long> clothIds);
+
+    void deleteAllByFolderIds(List<Long> folderIds);
 }

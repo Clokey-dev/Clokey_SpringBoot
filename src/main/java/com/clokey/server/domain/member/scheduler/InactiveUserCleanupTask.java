@@ -19,11 +19,12 @@ public class InactiveUserCleanupTask {
     private final MemberRepositoryService memberRepositoryService;
     private final UnlinkServiceImpl logoutService;
 
-    @Scheduled(cron = "0 0 3 * * ?")  // 매일 새벽 3시에 실행
+//    @Scheduled(cron = "0 0 3 * * ?")  // 매일 새벽 3시에 실행
+    @Scheduled(cron = "0 43 22 * * ?", zone = "Asia/Seoul")  // 매일 오후 9시(한국 시간)
     public void cleanupInactiveUsers() {
         log.info("비활성 회원 데이터 삭제 작업 시작");
 
-        List<Member> inactiveUsers = memberRepositoryService.findInactiveUsersBefore(LocalDate.now().minusDays(30));
+        List<Member> inactiveUsers = memberRepositoryService.findInactiveUsersBefore(LocalDate.now()/*.minusDays(15)*/);
         for (Member member : inactiveUsers) {
             logoutService.deleteData(member.getId());
         }

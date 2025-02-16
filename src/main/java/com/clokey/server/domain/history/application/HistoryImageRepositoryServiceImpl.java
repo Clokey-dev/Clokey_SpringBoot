@@ -78,13 +78,15 @@ public class HistoryImageRepositoryServiceImpl implements HistoryImageRepository
             return;
         }
 
-        // S3 및 데이터베이스에서 이미지 삭제
-        historyImages.forEach(image -> {
-            // S3에서 이미지 삭제
-            s3ImageService.deleteImageFromS3(image.getImageUrl());
 
-            // DB에서 엔티티 삭제
-            historyImageRepository.delete(image);
-        });
+        // S3에서 이미지 삭제
+        historyImages.forEach(image -> s3ImageService.deleteImageFromS3(image.getImageUrl()));
+
+        // DB에서 한 번에 삭제
+        historyImageRepository.deleteByHistoryIds(historyIds);  // ✅ 직접 삭제하도록 변경
+
+
+
+
     }
 }

@@ -142,4 +142,24 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
         return memberRepository.findNotificationsByMemberId(memberId);
     }
 
+    @Override
+    public List<Long> findClothIdsByMemberId(Long memberId) {
+        return memberRepository.findClothIdsByMemberId(memberId);
+    }
+
+    @Override
+    public List<Long> findFolderIdsByMemberId(Long memberId) {
+        return memberRepository.findFolderIdsByMemberId(memberId);
+    }
+
+    @Override
+    public List<Long> findCommentIdsByMemberId(Long memberId) {
+        return memberRepository.findCommentIdsByMemberId(memberId);
+    }
+
+    @Override
+    public List<Long> findNotificationIdsByMemberId(Long memberId) {
+        return memberRepository.findNotificationIdsByMemberId(memberId);
+    }
+
 }
