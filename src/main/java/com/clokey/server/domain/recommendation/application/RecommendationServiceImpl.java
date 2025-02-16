@@ -231,7 +231,10 @@ public class RecommendationServiceImpl implements RecommendationService {
                 ));
 
         // 그룹화된 데이터를 `Closet` DTO로 변환
-        return RecommendationConverter.toClosetDTO(groupedClothes);
+        return groupedClothes.entrySet().stream()
+                .max(Comparator.comparing(entry -> entry.getKey().getSecond()))
+                .map(entry -> RecommendationConverter.toClosetDTO(Map.of(entry.getKey(), entry.getValue())))
+                .orElse(List.of());
     }
 
     private Page<RecommendationResponseDTO.Closet> getClosetPage(int page, List<Member> followingMembers) {
