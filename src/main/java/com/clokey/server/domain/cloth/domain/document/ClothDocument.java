@@ -1,6 +1,5 @@
 package com.clokey.server.domain.cloth.domain.document;
 
-import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import jakarta.persistence.Id;
 import lombok.*;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -29,13 +28,5 @@ public class ClothDocument {
 
     private Long memberId;
 
-    public static ClothDocument from(Cloth cloth) {
-        return ClothDocument.builder()
-                .id(cloth.getId())
-                .name(cloth.getName())
-                .brand(cloth.getBrand())
-                .imageUrl(cloth.getImage().getImageUrl())
-                .wearNum(cloth.getWearNum())
-                .build();
-    }
+    private String visibility;
 }

@@ -25,4 +25,8 @@ public class HistoryDocument {
     private List<String> categoryNames;
 
     private String imageUrl;
+
+    private String memberVisibility;
+
+    private String historyVisibility;
 }
