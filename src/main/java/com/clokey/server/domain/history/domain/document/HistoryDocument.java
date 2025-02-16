@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Document(indexName = "history")
 @Mapping(mappingPath = "static/elastic-mapping.json")
-@Setting(settingPath = "static/elastic-token.json")
+@Setting(settingPath = "static/elastic-setting.json")
 public class HistoryDocument {
 
     @Id

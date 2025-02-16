@@ -1,0 +1,48 @@
+{
+  "properties": {
+    "nickname": {
+      "type": "text",
+      "analyzer": "nori_analyzer"
+    },
+    "clokeyId": {
+      "type": "text",
+      "analyzer": "nori_analyzer"
+    },
+    "name": {
+      "type": "text",
+      "analyzer": "nori_analyzer"
+    },
+    "brand": {
+      "type": "text",
+      "analyzer": "nori_analyzer"
+    },
+    "hashtagNames": {
+      "type": "text",
+      "analyzer": "nori_analyzer"
+    },
+    "categoryNames": {
+      "type": "text",
+      "analyzer": "nori_analyzer"
+    },
+    "imageUrl": {
+      "type": "text",
+      "index": false
+    },
+    "wearNum": {
+      "type": "integer",
+      "index": false
+    },
+    "memberId": {
+      "type": "long"
+    },
+    "visibility": {
+      "type": "keyword"
+    },
+    "memberVisibility": {
+      "type": "keyword"
+    },
+    "historyVisibility": {
+      "type": "keyword"
+    }
+  }
+}

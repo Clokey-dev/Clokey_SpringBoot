@@ -15,7 +15,7 @@ import org.springframework.data.elasticsearch.annotations.Setting;
 @NoArgsConstructor
 @Document(indexName = "user")
 @Mapping(mappingPath = "static/elastic-mapping.json")
-@Setting(settingPath = "static/elastic-token.json")
+@Setting(settingPath = "static/elastic-setting.json")
 public class MemberDocument {
 
     @Id
