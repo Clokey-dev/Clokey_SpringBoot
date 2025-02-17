@@ -46,7 +46,7 @@ public class RecommendationConverter {
                             closetOwner.getProfileImageUrl(),
                             clothesIds,
                             images,
-                            date.atStartOfDay()
+                            date
                     );
                 })
                 .sorted((c1, c2) -> c2.getDate().compareTo(c1.getDate()))

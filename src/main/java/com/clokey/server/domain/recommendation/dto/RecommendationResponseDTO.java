@@ -75,7 +75,7 @@ public class RecommendationResponseDTO {
         private String profileImage;
         private List<Long> clothesId;
         private List<String> images;
-        private LocalDateTime date;
+        private LocalDate date;
     }
 
     @Builder
