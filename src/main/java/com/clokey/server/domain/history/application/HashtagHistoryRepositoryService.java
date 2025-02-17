@@ -23,7 +23,7 @@ public interface HashtagHistoryRepositoryService {
 
     List<String> findHashtagNamesByHistoryId(Long historyId);
 
-    List<Long> findTop3HashtagIdsByMemberIdOrderByHistoryDateDesc(Long memberId);
+    List<Long> findHashtagIdsByMemberIdOrderByHistoryDateDesc(Long memberId);
 
     String findLatestTaggedHashtag(Long memberId);
 

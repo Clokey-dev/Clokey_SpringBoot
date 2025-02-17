@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.checkerframework.checker.units.qual.C;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -35,9 +36,7 @@ public class RecommendationResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
-    public static class DailyNewsResult implements Serializable {
-        private static final long serialVersionUID = 1L;
+    public static class DailyNewsResult {
         private List<Recommend> recommend;
         private List<Closet> closet;
         private List<Calendar> calendar;
@@ -87,14 +86,6 @@ public class RecommendationResponseDTO {
         private LocalDate date;
         private String clokeyId;
         private String profileImage;
-        private List<Event> events;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Event {
         private Long historyId;
         private String imageUrl;
     }

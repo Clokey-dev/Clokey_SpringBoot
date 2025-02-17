@@ -62,8 +62,8 @@ public class HashtagHistoryRepositoryServiceImpl implements HashtagHistoryReposi
     }
 
     @Override
-    public List<Long> findTop3HashtagIdsByMemberIdOrderByHistoryDateDesc(Long memberId) {
-        return hashtagHistoryRepository.findTop3HashtagIdsByMemberIdOrderByHistoryDateDesc(memberId);
+    public List<Long> findHashtagIdsByMemberIdOrderByHistoryDateDesc(Long memberId) {
+        return hashtagHistoryRepository.findHashtagIdsByMemberIdOrderByHistoryDateDesc(memberId);
     }
 
     @Override

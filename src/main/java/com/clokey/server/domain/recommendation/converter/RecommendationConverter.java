@@ -10,6 +10,7 @@ import org.springframework.data.util.Pair;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -53,45 +54,21 @@ public class RecommendationConverter {
     }
 
     public static List<RecommendationResponseDTO.Calendar> toCalendarDTO(Page<History> historyPage, Map<History, List<String>> historyImageMap) {
-        Map<LocalDate, List<RecommendationResponseDTO.Event>> groupedEvents = historyPage.getContent().stream()
-                .collect(Collectors.groupingBy(
-                        History::getHistoryDate,
-                        Collectors.mapping(history -> toEventDTO(history, historyImageMap), Collectors.toList())
-                ));
-
-        // 그룹핑된 데이터를 Calendar DTO 리스트로 변환
-        return groupedEvents.entrySet().stream()
-                .map(entry -> {
-                    History sampleHistory = historyPage.getContent().stream()
-                            .filter(h -> h.getHistoryDate().equals(entry.getKey()))
-                            .findFirst()
-                            .orElse(null);
-
-                    if (sampleHistory == null) {
-                        return null;
-                    }
-
-                    Member historyOwner = sampleHistory.getMember();
+        return historyPage.getContent().stream()
+                .map(history -> {
+                    Member historyOwner = history.getMember();
+                    List<String> imageUrls = historyImageMap.getOrDefault(history, Collections.emptyList());
+                    String imageUrl = imageUrls.isEmpty() ? null : imageUrls.get(0); // 첫 번째 이미지 사용
 
                     return new RecommendationResponseDTO.Calendar(
-                            entry.getKey(),
+                            history.getHistoryDate(),
                             historyOwner.getClokeyId(),
                             historyOwner.getProfileImageUrl(),
-                            entry.getValue()
+                            history.getId(),
+                            imageUrl
                     );
                 })
-                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-    }
-
-    public static RecommendationResponseDTO.Event toEventDTO(History history, Map<History, List<String>> historyImageMap) {
-        List<String> images = historyImageMap.getOrDefault(history, List.of());
-        String imageUrl = images.isEmpty() ? null : images.get(0);
-
-        return new RecommendationResponseDTO.Event(
-                history.getId(),
-                imageUrl
-        );
     }
 
     public static List<RecommendationResponseDTO.People> toPeopleDTO(List<History> recommendedhistories, Map<Long, String> historyImageMap) {
