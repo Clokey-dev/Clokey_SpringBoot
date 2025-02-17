@@ -110,10 +110,10 @@ public class RecommendationServiceImpl implements RecommendationService {
 
     @Override
     public RecommendationResponseDTO.DailyNewsResult getNews(Long memberId) {
-        String cacheKeyRecommend = REDIS_PREFIX_RECOMMEND + memberId + ":";
-        String cacheKeyCloset = REDIS_PREFIX_CLOSET + memberId + ":";
-        String cacheKeyCalendar = REDIS_PREFIX_CALENDAR + memberId + ":";
-        String cacheKeyPeople = REDIS_PREFIX_PEOPLE + memberId + ":";
+        String cacheKeyRecommend = REDIS_PREFIX_RECOMMEND + memberId;
+        String cacheKeyCloset = REDIS_PREFIX_CLOSET + memberId;
+        String cacheKeyCalendar = REDIS_PREFIX_CALENDAR + memberId;
+        String cacheKeyPeople = REDIS_PREFIX_PEOPLE + memberId;
 
         RecommendationResponseDTO.DailyResult<?> recommendResult = getFromRedis(cacheKeyRecommend, RecommendationResponseDTO.DailyResult.class);
         RecommendationResponseDTO.DailyResult<?> closetResult = getFromRedis(cacheKeyCloset, RecommendationResponseDTO.DailyResult.class);
@@ -284,7 +284,7 @@ public class RecommendationServiceImpl implements RecommendationService {
     // Hot 계정 조회
     private List<RecommendationResponseDTO.People> getPeopleList(Member member) {
         //기록 최신 것부터 해시태그를 조회함. 해시태그 아이디를 hashtagHistoryRepository에서 찾아서 그 history의 주인들을 최대 네 명 추천해주는 로직.
-        List<Long> hashtagIds = hashtagHistoryRepositoryService.findTop3HashtagIdsByMemberIdOrderByHistoryDateDesc(member.getId());
+        List<Long> hashtagIds = hashtagHistoryRepositoryService.findHashtagIdsByMemberIdOrderByHistoryDateDesc(member.getId());
 
         if (hashtagIds.isEmpty()) {
             return List.of(); // 해시태그가 없으면 빈 리스트 반환
@@ -314,15 +314,6 @@ public class RecommendationServiceImpl implements RecommendationService {
 
         // 중복 제거 및 최대 4명 추천
         return RecommendationConverter.toPeopleDTO(filteredHistories, historyImageMap);
-    }
-
-    private Recommendation createDefaultRecommend(Long memberId, NewsType type) {
-        Member member = memberRepositoryService.findMemberById(memberId);
-
-        return Recommendation.builder()
-                .newsType(type)
-                .member(member)
-                .build();
     }
 
     private List<Member> getFollowingMembers(Long memberId){

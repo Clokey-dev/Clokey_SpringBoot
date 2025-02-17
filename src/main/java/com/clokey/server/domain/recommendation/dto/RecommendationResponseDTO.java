@@ -94,14 +94,6 @@ public class RecommendationResponseDTO {
         private LocalDate date;
         private String clokeyId;
         private String profileImage;
-        private List<Event> events;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Event {
         private Long historyId;
         private String imageUrl;
     }
