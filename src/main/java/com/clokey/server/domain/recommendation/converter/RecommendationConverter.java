@@ -94,7 +94,7 @@ public class RecommendationConverter {
                 .build();
     }
 
-    public static RecommendationResponseDTO.DailyNewsResult toDailyNewsResult(RecommendationResponseDTO.DailyResult<?> recommendList, RecommendationResponseDTO.DailyResult<?> closetList, RecommendationResponseDTO.DailyResult<?> calendarList, RecommendationResponseDTO.DailyResult<?> peopleList) {
+    public static RecommendationResponseDTO.DailyNewsResult toDailyNewsResult(List<RecommendationResponseDTO.Recommend> recommendList, List<RecommendationResponseDTO.Closet> closetList, List<RecommendationResponseDTO.Calendar> calendarList, List<RecommendationResponseDTO.People> peopleList) {
         return RecommendationResponseDTO.DailyNewsResult.builder()
                 .recommend(recommendList)
                 .closet(closetList)
@@ -109,12 +109,6 @@ public class RecommendationConverter {
                 .nickName(member.getNickname())
                 .imageUrls(historyImageUrls)
                 .isMine(isMine)
-                .build();
-    }
-
-    public static RecommendationResponseDTO.DailyResult<?> toDailyResult(List<?> results){
-        return RecommendationResponseDTO.DailyResult.builder()
-                .innerResult((List<Object>) results)
                 .build();
     }
 }

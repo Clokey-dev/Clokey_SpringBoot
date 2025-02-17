@@ -115,46 +115,49 @@ public class RecommendationServiceImpl implements RecommendationService {
         String cacheKeyCalendar = REDIS_PREFIX_CALENDAR + memberId;
         String cacheKeyPeople = REDIS_PREFIX_PEOPLE + memberId;
 
-        RecommendationResponseDTO.DailyResult<?> recommendResult = getFromRedis(cacheKeyRecommend, RecommendationResponseDTO.DailyResult.class);
-        RecommendationResponseDTO.DailyResult<?> closetResult = getFromRedis(cacheKeyCloset, RecommendationResponseDTO.DailyResult.class);
-        RecommendationResponseDTO.DailyResult<?> calendarResult = getFromRedis(cacheKeyCalendar, RecommendationResponseDTO.DailyResult.class);
-        RecommendationResponseDTO.DailyResult<?> peopleResult = getFromRedis(cacheKeyPeople, RecommendationResponseDTO.DailyResult.class);
+        List<RecommendationResponseDTO.Recommend> recommendResult = getFromRedis(cacheKeyRecommend, RecommendationResponseDTO.Recommend.class);
+        List<RecommendationResponseDTO.Closet> closetResult = getFromRedis(cacheKeyCloset, RecommendationResponseDTO.Closet.class);
+        List<RecommendationResponseDTO.Calendar> calendarResult = getFromRedis(cacheKeyCalendar, RecommendationResponseDTO.Calendar.class);
+        List<RecommendationResponseDTO.People> peopleResult = getFromRedis(cacheKeyPeople, RecommendationResponseDTO.People.class);
 
         Member member = memberRepositoryService.findMemberById(memberId);
         List<Member> followingMembers = getFollowingMembers(member.getId());
 
         //기존 거 가져옴 -> 없어? 만들어.
-        if (recommendResult == null){
-            recommendResult = RecommendationConverter.toDailyResult(getRecommendList(member));
+        if (recommendResult == null) {
+            recommendResult = getRecommendList(member);
             saveToRedis(cacheKeyRecommend, recommendResult, Duration.ofHours(24));
         }
-        if(closetResult == null){
-            closetResult = RecommendationConverter.toDailyResult(getClosetList(followingMembers));
-            saveToRedis(cacheKeyRecommend, closetResult, Duration.ofHours(3));
+        if (closetResult == null) {
+            closetResult = getClosetList(followingMembers);
+            saveToRedis(cacheKeyCloset, closetResult, Duration.ofHours(3));
         }
-        if(calendarResult == null){
-            calendarResult = RecommendationConverter.toDailyResult(getCalendarList(followingMembers));
-            saveToRedis(cacheKeyRecommend, calendarResult, Duration.ofHours(3));
+        if (calendarResult == null) {
+            calendarResult = getCalendarList(followingMembers);
+            saveToRedis(cacheKeyCalendar, calendarResult, Duration.ofHours(3));
         }
-        if(peopleResult == null) {
-            peopleResult = RecommendationConverter.toDailyResult(getPeopleList(member));
-            saveToRedis(cacheKeyRecommend, peopleResult, Duration.ofHours(24));
+        if (peopleResult == null) {
+            peopleResult = getPeopleList(member);
+            saveToRedis(cacheKeyPeople, peopleResult, Duration.ofHours(24));
         }
+
 
         return RecommendationConverter.toDailyNewsResult(recommendResult, closetResult, calendarResult, peopleResult);
     }
 
     // redis 저장 (String, responseDTO, duration)
-    private void saveToRedis(String key, RecommendationResponseDTO.DailyResult<?> value, Duration duration) {
+    // 리스트만 저장하도록 변경
+    private <T> void saveToRedis(String key, List<T> value, Duration duration) {
         try {
-            redisTemplate.opsForValue().set(key, value, duration);
+            redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(value), duration);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+
     // redis 가져오기 (String) DTO 반환
-    private <T> T getFromRedis(String key, Class<T> clazz) {
+    private <T> List<T> getFromRedis(String key, Class<T> clazz) {
         Object cachedData = redisTemplate.opsForValue().get(key);
         if (cachedData == null) {
             return null;
@@ -162,7 +165,7 @@ public class RecommendationServiceImpl implements RecommendationService {
 
         try {
             if (cachedData instanceof String json) {
-                return objectMapper.readValue(json, clazz);
+                return objectMapper.readValue(json, objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
             }
         } catch (Exception e) {
             e.printStackTrace();

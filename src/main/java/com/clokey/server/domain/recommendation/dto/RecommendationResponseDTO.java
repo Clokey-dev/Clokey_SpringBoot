@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.checkerframework.checker.units.qual.C;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -36,19 +37,10 @@ public class RecommendationResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DailyNewsResult {
-        private DailyResult<?> recommend;
-        private DailyResult<?> closet;
-        private DailyResult<?> calendar;
-        private DailyResult<?> people;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class DailyResult<T> implements Serializable {
-        private static final long serialVersionUID = 1L;
-        private List<T> innerResult;
+        private List<Recommend> recommend;
+        private List<Closet> closet;
+        private List<Calendar> calendar;
+        private List<People> people;
     }
 
     @Builder
