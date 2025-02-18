@@ -24,7 +24,9 @@ public class UniqueClothesValidator implements ConstraintValidator<UniqueClothes
     public boolean isValid(List<Long> clothes, ConstraintValidatorContext context) {
 
         if (clothes == null || clothes.isEmpty()) {
-            return true; // 비어있는 경우는 유효하다고 판단
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(ErrorStatus.NO_CLOTH_FOR_HISTORY.toString()).addConstraintViolation();
+            return false; // 비어있는 경우는 유효하다고 판단
         }
 
         Set<Long> uniqueClothes = new HashSet<>(clothes); // Set에 리스트를 추가

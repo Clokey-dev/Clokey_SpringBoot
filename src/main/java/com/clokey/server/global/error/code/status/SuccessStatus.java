@@ -34,6 +34,8 @@ public enum SuccessStatus implements BaseCode {
     FOLDER_EDIT_SUCCESS(HttpStatus.NO_CONTENT, "FOLDER_204", "성공적으로 수정되었습니다."),
     FOLDER_ADD_CLOTHES_SUCCESS(HttpStatus.CREATED, "FOLDER_201", "성공적으로 추가되었습니다."),
     FOLDER_DELETE_CLOTHES_SUCCESS(HttpStatus.NO_CONTENT, "FOLDER_204", "성공적으로 삭제되었습니다."),
+    FOLDER_CLOTHES_SUCCESS(HttpStatus.OK, "FOLDER_200", "성공적으로 반영되었습니다."),
+
     //검색 성공
     SEARCH_SUCCESS(HttpStatus.OK, "SEARCH_200", "성공적으로 조회되었습니다."),
 
@@ -62,8 +64,10 @@ public enum SuccessStatus implements BaseCode {
     HOME_SUCCESS(HttpStatus.OK, "HOME_200", "성공적으로 조회되었습니다."),
 
     //기타 멤버 관련 성공
-    MEMBER_ACTION_SUCCESS(HttpStatus.OK, "MEMBER_ACTION_200", "멤버 관련 요소가 성공적으로 수정되었습니다."),
+    MEMBER_ACTION_SUCCESS(HttpStatus.OK, "MEMBER_ACTION_200", "멤버 관련 요소가 성공적으로 조회되었습니다."),
     MEMBER_ACTION_CREATED(HttpStatus.CREATED, "MEMBER_ACTION_201", "멤버 관련 요소가 성공적으로 생성되었습니다."),
+    MEMBER_ACTION_EDITED(HttpStatus.OK, "MEMBER_ACTION_204", "멤버 관련 요소가 성공적으로 수정되었습니다."),
+
 
     //아이디 성공
     MEMBER_ID_SUCCESS(HttpStatus.OK, "MEMBER_ID_200", "사용가능한 아이디입니다."),
@@ -75,8 +79,13 @@ public enum SuccessStatus implements BaseCode {
 
     //로그아웃 성공
     LOGOUT_SUCCESS(HttpStatus.OK, "LOGOUT_200", "로그아웃에 성공하였습니다."),
-    UNLINK_SUCCESS(HttpStatus.OK, "UNLINK_200", "회원탈퇴에 성공하였습니다.");
+    UNLINK_SUCCESS(HttpStatus.OK, "UNLINK_200", "회원탈퇴에 성공하였습니다."),
 
+    //Elastic Search 인덱스 생성 및 동기화 성공
+    CLOTH_SYNC_CREATED(HttpStatus.CREATED, "SEARCH_201", "옷 검색 인덱스가 성공적으로 생성되었습니다."),
+    HISTORY_SYNC_CREATED(HttpStatus.CREATED, "SEARCH_201", "기록 검색 인덱스가 성공적으로 생성되었습니다."),
+    MEMBER_SYNC_CREATED(HttpStatus.CREATED, "SEARCH_201", "유저 검색 인덱스가 성공적으로 생성되었습니다.")
+    ;
 
     private final HttpStatus httpStatus;
     private final String code;

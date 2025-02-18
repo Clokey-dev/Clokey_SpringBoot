@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class MemberDTO {
 
@@ -27,6 +28,9 @@ public class MemberDTO {
         String bio;
         String profileBackImageUrl;
         String visibility;
+        String clothImage1;
+        String clothImage2;
+        String clothImage3;
         Boolean isFollowing;
     }
 
@@ -66,7 +70,28 @@ public class MemberDTO {
         LocalDateTime updatedAt;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ProfilePreview {
+        Long id;
+        String nickname;
+        String clokeyId;
+        String profileImage;
+    }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ProfilePreviewListRP {
+        private List<ProfilePreview> profilePreviews;
+        private int totalPage;
+        private long totalElements;
+        private Boolean isFirst;
+        private Boolean isLast;
+    }
 
     @Builder
     @Getter

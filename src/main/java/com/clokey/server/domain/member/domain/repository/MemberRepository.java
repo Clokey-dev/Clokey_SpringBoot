@@ -59,4 +59,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("SELECT n.id FROM ClokeyNotification n WHERE n.member.id = :memberId")
     List<Long> findNotificationIdsByMemberId(@Param("memberId") Long memberId);
+
+    List<Member> findAll();
 }

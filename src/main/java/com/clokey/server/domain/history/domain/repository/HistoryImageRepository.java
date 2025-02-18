@@ -25,4 +25,6 @@ public interface HistoryImageRepository extends JpaRepository<HistoryImage, Long
     @Query("DELETE FROM HistoryImage hi WHERE hi.history.id IN :historyIds")
     void deleteByHistoryIds(@Param("historyIds") List<Long> historyIds);
 
+    List<HistoryImage> findByHistoryIdIn(List<Long> historyIds);
+
 }

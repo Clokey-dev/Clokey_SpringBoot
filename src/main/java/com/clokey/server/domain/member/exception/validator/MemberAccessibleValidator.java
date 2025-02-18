@@ -14,7 +14,7 @@ public class MemberAccessibleValidator {
 
     private final MemberRepositoryService memberRepositoryService;
 
-    // 유저가 옷에 대한 접근 권한이 있는지 검증 -> 비공개 옷을 조회하지 못하도록 함
+    // 유저가 옷장에 대한 접근 권한이 있는지 검증 -> 비공개 계정의 옷장을 조회하지 못하도록 함
     public void validateClothAccessOfMember(String ownerClokeyId, Long requesterId) {
         Member member = memberRepositoryService.findByClokeyId(ownerClokeyId);
 

@@ -6,7 +6,7 @@ import com.clokey.server.domain.notification.domain.repository.NotificationRepos
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,4 +48,8 @@ public class NotificationRepositoryServiceImpl implements NotificationRepository
         notificationRepository.deleteByClokeyNotificationIds(clokeyNotificationIds);
     }
 
+    @Override
+    public List<ClokeyNotification> findNotificationsByMemberId(Long memberId, Pageable pageable) {
+        return notificationRepository.findNotificationsByMemberId(memberId, pageable);
+    }
 }

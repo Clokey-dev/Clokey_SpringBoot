@@ -136,7 +136,7 @@ public class HistoryRestController {
     })
     public BaseResponse<HistoryResponseDTO.HistoryCreateResult> createHistory(
             @RequestPart("historyCreateRequest") @Valid HistoryRequestDTO.HistoryCreate historyCreateRequest,
-            @RequestPart(value = "imageFile") @Valid @HistoryImageQuantityLimit List<MultipartFile> imageFiles,
+            @RequestPart(value = "imageFile", required = false) @Valid @HistoryImageQuantityLimit List<MultipartFile> imageFiles,
             @Parameter(name = "user",hidden = true) @AuthUser Member member
     ) {
 
@@ -144,21 +144,6 @@ public class HistoryRestController {
 
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_CREATED, result);
     }
-
-    @GetMapping(value = "/1-year-ago")
-    @Operation(summary = "1년전 나 또는 팔로우의 기록을 확인하는 API")
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "성공적으로 조회되었습니다."),
-    })
-    public BaseResponse<HistoryResponseDTO.LastYearHistoryResult> getLastYearHistory(
-            @Parameter(name = "user",hidden = true) @AuthUser Member member
-    ) {
-
-        HistoryResponseDTO.LastYearHistoryResult result = historyService.getLastYearHistory(member.getId());
-
-        return BaseResponse.onSuccess(SuccessStatus.HISTORY_SUCCESS, result);
-    }
-
 
     @DeleteMapping(value = "/comments/{commentId}")
     @Operation(summary = "댓글을 삭제하는 API")

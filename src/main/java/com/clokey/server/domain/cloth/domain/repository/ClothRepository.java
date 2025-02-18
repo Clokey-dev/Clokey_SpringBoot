@@ -1,6 +1,7 @@
 package com.clokey.server.domain.cloth.domain.repository;
 
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.Season;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +22,8 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
 
     @EntityGraph(attributePaths = {"image"})
     Optional<Cloth> findById(Long id);
+
+    List<Cloth> findAll();
 
     @Transactional
     @Modifying
@@ -65,5 +69,23 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
     @Query("DELETE FROM Cloth c WHERE c.id IN :clothIds")
     void deleteByClothIds(@Param("clothIds") List<Long> clothIds);
 
+    Page<Cloth> findByMemberInAndVisibilityOrderByCreatedAtDesc(
+            List<Member> members, Visibility visibility, Pageable pageable);
+
+    List<Cloth> findTop6ByMemberInAndVisibilityOrderByCreatedAtDesc(
+            List<Member> members, Visibility visibility);
+
+    @Query("SELECT c.category.name FROM Cloth c WHERE c.member.id = :memberId " +
+            "GROUP BY c.category ORDER BY COUNT(c.id) DESC LIMIT 1")
+    Optional<String> findMostWornCategory(@Param("memberId") Long memberId);
+
+    @Query("SELECT c FROM Cloth c WHERE c.member.id = :memberId " +
+            "AND ((:nowTemp BETWEEN c.tempLowerBound AND c.tempUpperBound) " + // 1순위: 현재 온도가 온도 범위 내
+            "OR (c.tempLowerBound <= :maxTemp AND c.tempUpperBound >= :minTemp)) " + // 2순위: 오늘 기온과 겹치는 옷
+            "ORDER BY RAND()")
+    List<Cloth> findSuitableClothes(@Param("memberId") Long memberId,
+                                    @Param("nowTemp") Integer nowTemp,
+                                    @Param("minTemp") Integer minTemp,
+                                    @Param("maxTemp") Integer maxTemp);
 
 }

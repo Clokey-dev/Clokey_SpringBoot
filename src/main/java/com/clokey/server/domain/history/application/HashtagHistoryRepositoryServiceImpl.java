@@ -4,11 +4,15 @@ import com.clokey.server.domain.history.domain.entity.Hashtag;
 import com.clokey.server.domain.history.domain.entity.HashtagHistory;
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.history.domain.repository.HashtagHistoryRepository;
+import com.clokey.server.global.error.code.status.ErrorStatus;
+import com.clokey.server.global.error.exception.DatabaseException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
 @Service
@@ -61,4 +65,20 @@ public class HashtagHistoryRepositoryServiceImpl implements HashtagHistoryReposi
     public void deleteAllByHistoryIds(List<Long> historyIds) {
         hashtagHistoryRepository.deleteAllByHistoryIds(historyIds);
     }
+
+    public List<Long> findHashtagIdsByMemberIdOrderByHistoryDateDesc(Long memberId) {
+        return hashtagHistoryRepository.findHashtagIdsByMemberIdOrderByHistoryDateDesc(memberId);
+    }
+
+    @Override
+    public String findLatestTaggedHashtag(Long memberId) {
+        return hashtagHistoryRepository.findLatestTaggedHashtag(memberId)
+                .orElse(null);
+    }
+
+    @Override
+    public List<HashtagHistory> findTop5HistoriesByHashtagNameOrderByDateDesc(String hashtagName) {
+        return hashtagHistoryRepository.findTop5HistoriesByHashtagNameOrderByDateDesc(hashtagName, PageRequest.of(0, 5));
+    }
+
 }

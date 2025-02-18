@@ -10,6 +10,7 @@ import com.clokey.server.domain.term.exception.TermException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +25,22 @@ public class MemberTermRepositoryServiceImpl implements MemberTermRepositoryServ
         memberTermRepository.deleteByMemberId(memberId); // Repository에서 처리
     }
 
+    @Override
+    public List<MemberTerm> findByMember(Member member) {
+        return memberTermRepository.findByMember(member);
+    }
 
+    @Override
+    public void deleteByMemberIdAndTermId(Long memberId, Long termId) {
+        memberTermRepository.deleteByMemberIdAndTermId(memberId, termId);
+    }
+
+    @Override
+    public MemberTerm save(MemberTerm memberTerm) {
+        return memberTermRepository.save(memberTerm);
+    }
 
 
 }
+
 

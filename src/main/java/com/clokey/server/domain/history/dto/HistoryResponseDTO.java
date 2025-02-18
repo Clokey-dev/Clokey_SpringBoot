@@ -17,6 +17,27 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class HistoryPreview{
+        Long id;
+        String imageUrl;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class HistoryPreviewListResult {
+        private List<HistoryPreview> historyPreviews;
+        private int totalPage;
+        private long totalElements;
+        private Boolean isFirst;
+        private Boolean isLast;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class DailyHistoryResult {
         Long memberId;
         Long historyId;
@@ -160,20 +181,9 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class HistoryCreateResult{
+    public static class HistoryCreateResult {
         Long historyId;
     }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class LastYearHistoryResult{
-        Long historyId;
-        String nickName;
-        List<String> imageUrls;
-    }
-
 }
 
 

@@ -12,4 +12,5 @@ public interface AppleAuthService {
     AuthDTO.TokenResponse login(String code, String deviceToken);
     HttpRequest.BodyPublisher getParamsUrlEncoded(Map<String, String> parameters);
     String createClientSecret();
+
 }

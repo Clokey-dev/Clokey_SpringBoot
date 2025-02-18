@@ -40,7 +40,7 @@ public class MemberRestController {
 
         MemberDTO.ProfileRP response = profileCommandService.updateProfile(member.getId(), request, profileImage, profileBackImage);
 
-        return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_SUCCESS, response);
+        return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_EDITED, response);
     }
 
 
@@ -58,7 +58,7 @@ public class MemberRestController {
     @Operation(summary = "회원 조회 API", description = "다른 회원의 프로필을 조회하는 API입니다.")
     @GetMapping("users/{clokey_id}")
     public BaseResponse<Object> getUser(
-            @AuthUser Member currentUser, // 현재 로그인한 사용자 추가
+            @Parameter(name = "user", hidden = true) @AuthUser Member currentUser, // 현재 로그인한 사용자 추가
             @IdValid @PathVariable("clokey_id") String clokeyId) {
 
         MemberDTO.GetUserRP response = getUserQueryService.getUser(clokeyId, currentUser);
@@ -87,7 +87,7 @@ public class MemberRestController {
 
         followCommandService.follow(request);
 
-        return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_SUCCESS, null);
+        return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_EDITED, null);
     }
 
 

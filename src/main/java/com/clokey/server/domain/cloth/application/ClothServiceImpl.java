@@ -1,6 +1,5 @@
 package com.clokey.server.domain.cloth.application;
 
-import com.clokey.server.domain.category.application.CategoryRepositoryService;
 import com.clokey.server.domain.category.domain.entity.Category;
 import com.clokey.server.domain.category.exception.CategoryException;
 import com.clokey.server.domain.cloth.converter.ClothConverter;
@@ -15,6 +14,8 @@ import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.model.entity.enums.ClothSort;
 import com.clokey.server.domain.model.entity.enums.Season;
 import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
+import com.clokey.server.domain.search.application.SearchRepositoryService;
+import com.clokey.server.domain.search.exception.SearchException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.clokey.server.global.infra.s3.S3ImageService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,6 +41,7 @@ public class ClothServiceImpl implements ClothService {
     private final HistoryClothRepositoryService historyClothRepositoryService;
     private final HistoryRepositoryService historyRepositoryService;
     private final S3ImageService s3ImageService;
+    private final SearchRepositoryService searchRepositoryService;
 
     public ClothResponseDTO.ClothPopupViewResult readClothPopupInfoById(Long clothId) {
 
@@ -68,7 +71,7 @@ public class ClothServiceImpl implements ClothService {
     }
 
     // 옷장의 옷의 PreView 조회 후 옷장 조회 DTO로 변환해서 반환
-    public ClothResponseDTO.CategoryClothPreviewListResult readClothPreviewInfoListByClokeyId(
+    public ClothResponseDTO.ClothPreviewListResult readClothPreviewInfoListByClokeyId(
             String ownerClokeyId, Long requesterId, Long categoryId, Season season, ClothSort sort, int page, int size) {
 
         Pageable pageable = PageRequest.of(page-1, size);
@@ -78,7 +81,7 @@ public class ClothServiceImpl implements ClothService {
         List<ClothResponseDTO.ClothPreview> clothPreviews = ClothConverter.toClothPreviewList(clothes);
 
         // 페이징 정보를 담아 DTO 반환
-        return ClothConverter.toClosetClothPreviewListResult(clothes, clothPreviews);
+        return ClothConverter.toClothPreviewListResult(clothes, clothPreviews);
     }
 
     // 지난 7일간 착용횟수를 통해 카테고리와 카테고리에 해당하는 옷의 PreView 조회 후 스마트 요약 DTO로 변환해서 반환
@@ -153,6 +156,13 @@ public class ClothServiceImpl implements ClothService {
         // ClothImage 저장
         clothImageRepositoryService.save(clothImage);
 
+        // ES 동기화
+        try {
+            searchRepositoryService.updateClothDataToElasticsearch(cloth);
+        } catch (IOException e) {
+            throw new SearchException(ErrorStatus.ELASTIC_SEARCH_SYNC_FAULT);
+        }
+
         // Cloth를 응답형식로 변환하여 반환
         return ClothConverter.toClothCreateResult(cloth);
     }
@@ -183,6 +193,13 @@ public class ClothServiceImpl implements ClothService {
                 request.getCategoryId(),
                 imageUrl
         );
+
+        // ES 동기화
+        try {
+            searchRepositoryService.updateClothDataToElasticsearch(existingCloth);
+        } catch (IOException e) {
+            throw new SearchException(ErrorStatus.ELASTIC_SEARCH_SYNC_FAULT);
+        }
     }
 
     @Transactional
@@ -192,5 +209,12 @@ public class ClothServiceImpl implements ClothService {
         clothFolderRepositoryService.deleteAllByClothId(clothId);
         clothImageRepositoryService.deleteByClothId(clothId);
         clothRepositoryService.deleteById(clothId);
+
+        // ES 삭제
+        try {
+            searchRepositoryService.deleteClothByIdFromElasticsearch(clothId);
+        } catch (IOException e) {
+            throw new SearchException(ErrorStatus.ELASTIC_SEARCH_DELETE_FAULT);
+        }
     }
 }

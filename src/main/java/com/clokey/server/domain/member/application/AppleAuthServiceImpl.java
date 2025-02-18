@@ -7,6 +7,8 @@ import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.domain.model.entity.enums.MemberStatus;
 import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.clokey.server.domain.model.entity.enums.SocialType;
+import com.clokey.server.domain.search.application.SearchRepositoryService;
+import com.clokey.server.domain.search.exception.SearchException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
@@ -62,6 +64,7 @@ public class AppleAuthServiceImpl implements AppleAuthService {
 
     private final AuthService authService;
 
+    private final SearchRepositoryService searchRepositoryService;
 
     @Value("${apple.team-id}")
     private String APPLE_TEAM_ID;
@@ -96,8 +99,9 @@ public class AppleAuthServiceImpl implements AppleAuthService {
     //2. 여기까지 주소 가져옴
 
 
-    @Transactional
+   @Transactional
     public AuthDTO.TokenResponse login(String code, String deviceToken) {
+
         if (code == null || code.isBlank()) {
             throw new MemberException(ErrorStatus.INVALID_CODE);
         }
@@ -178,6 +182,7 @@ public class AppleAuthServiceImpl implements AppleAuthService {
                 member.updateAppleRefreshToken(refreshToken);
                 memberRepositoryService.saveMember(member);
             }
+
             if(member.getDeviceToken() == null || member.getDeviceToken().isBlank()){
                 member.updateDeviceToken(deviceToken);
                 memberRepositoryService.saveMember(member);
@@ -188,6 +193,7 @@ public class AppleAuthServiceImpl implements AppleAuthService {
                     .socialType(SocialType.APPLE)
                     .registerStatus(RegisterStatus.NOT_AGREED)
                     .appleRefreshToken(refreshToken)
+                    .deviceToken(deviceToken)
                     .build();
             memberRepositoryService.saveMember(member);
             isNewUser = true;
@@ -200,6 +206,14 @@ public class AppleAuthServiceImpl implements AppleAuthService {
         member.updateToken(jwtAccessToken, jwtRefreshToken);
         memberRepositoryService.saveMember(member);
 
+        // ES 동기화
+        try {
+            searchRepositoryService.updateMemberDataToElasticsearch(member);
+        } catch (IOException e) {
+            throw new SearchException(ErrorStatus.ELASTIC_SEARCH_SYNC_FAULT);
+        }
+
+        // 응답 반환
         return new AuthDTO.TokenResponse(
                 member.getId(),
                 member.getEmail(),

@@ -142,4 +142,5 @@ public class Member extends BaseEntity {
         this.inactiveDate = date;
     }
 
+
 }

@@ -162,4 +162,9 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
         return memberRepository.findNotificationIdsByMemberId(memberId);
     }
 
+    @Override
+    public List<Member> findAll(){
+        return memberRepository.findAll();
+    }
+
 }
