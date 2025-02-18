@@ -2,6 +2,8 @@ package com.clokey.server.domain.member.domain.repository;
 
 import com.clokey.server.domain.member.domain.entity.Follow;
 import com.clokey.server.domain.member.domain.entity.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,4 +27,10 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     @Query("SELECT f.following FROM Follow f WHERE f.followed.id = :followedId")
     List<Member> findFollowingByFollowedId(@Param("followedId") Long followedId);
+
+    @Query("SELECT f.followed FROM Follow f WHERE f.following.id = :followingId")
+    List<Member> findFollowedByFollowingId(Long followingId, Pageable pageable);
+
+    @Query("SELECT f.following FROM Follow f WHERE f.followed.id = :followedId")
+    List<Member> findFollowingByFollowedId(@Param("followedId") Long followedId, Pageable pageable);
 }
