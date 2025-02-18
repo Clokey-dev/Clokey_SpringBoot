@@ -17,5 +17,5 @@ public interface NotificationRepository extends JpaRepository<ClokeyNotification
     List<ClokeyNotification> findNotificationsByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 
     @Query("UPDATE ClokeyNotification c SET c.readStatus = 'READ' WHERE c.member.id = :memberId AND c.readStatus = 'NOT_READ'")
-    int markAllAsReadByMemberId(@Param("memberId") Long memberId);
+    void readAllByMemberId(@Param("memberId") Long memberId);
 }

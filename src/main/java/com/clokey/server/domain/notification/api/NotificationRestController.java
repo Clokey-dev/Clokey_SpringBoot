@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 public class NotificationRestController {
 
     private final NotificationService notificationService;
+    private final SessionAutoConfiguration.ServletSessionConfiguration.RememberMeServicesConfiguration rememberMeServicesConfiguration;
 
     @GetMapping("")
     @Operation(summary = "알림을 조회하는 API", description = "알림을 조회하는 API입니다.")
@@ -78,7 +80,7 @@ public class NotificationRestController {
     })
     public BaseResponse<Void> readAllNotification(@Parameter(name = "user",hidden = true) @AuthUser Member member) {
 
-
+        notificationService.readAllNotification(member.getId());
 
         return BaseResponse.onSuccess(SuccessStatus.NOTIFICATION_READ, null);
     }

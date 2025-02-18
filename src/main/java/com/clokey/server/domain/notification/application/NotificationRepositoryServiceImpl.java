@@ -42,4 +42,9 @@ public class NotificationRepositoryServiceImpl implements NotificationRepository
     public List<ClokeyNotification> findNotificationsByMemberId(Long memberId, Pageable pageable) {
         return notificationRepository.findNotificationsByMemberId(memberId, pageable);
     }
+
+    @Override
+    public void readAllByMemberId(Long memberId) {
+        notificationRepository.readAllByMemberId(memberId);
+    }
 }

@@ -78,7 +78,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional
     public void readAllNotification(Long memberId) {
-
+        notificationRepositoryService.readAllByMemberId(memberId);
     }
 
     private void checkMyNotification(Long notificationId, Long memberId) {
