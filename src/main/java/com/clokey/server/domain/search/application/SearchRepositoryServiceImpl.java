@@ -191,11 +191,13 @@ public class SearchRepositoryServiceImpl implements SearchRepositoryService {
                 .distinct() // 중복 제거
                 .collect(Collectors.toList());
 
-        // Image URL 가져오기 (공개된 첫 번째 옷 이미지)
+        // Image URL 가져오기
+        // HistoryImage에서 가장 먼저 생성된 이미지 가져오기
         String imageUrl = historyImageRepositoryService.findByHistoryId(history.getId()).stream()
-                .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
+                .sorted(Comparator.comparing(HistoryImage::getCreatedAt)) // 생성일 기준 정렬
                 .map(HistoryImage::getImageUrl)
-                .toList().get(0);
+                .findFirst() // 첫 번째 요소 가져오기
+                .orElse(null); // 비어있으면 null 반환
 
         // Elasticsearch 문서 변환
         BulkOperation bulkOperation = BulkOperation.of(op -> op
@@ -296,19 +298,11 @@ public class SearchRepositoryServiceImpl implements SearchRepositoryService {
 
                     // Image URL 가져오기
                     // HistoryImage에서 가장 먼저 생성된 이미지 가져오기
-                    List<String> imageUrls = historyImageRepositoryService.findByHistoryId(history.getId()).stream()
+                    String imageUrl = historyImageRepositoryService.findByHistoryId(history.getId()).stream()
                             .sorted(Comparator.comparing(HistoryImage::getCreatedAt)) // 생성일 기준 정렬
                             .map(HistoryImage::getImageUrl)
-                            .toList();
-
-                    // 첫 번째 이미지 선택 (없다면 대체 이미지 가져오기)
-                    String imageUrl = imageUrls.isEmpty()
-                            ? historyClothRepositoryService.findAllClothByHistoryId(history.getId()).stream() // HistoryImage가 없다면 첫 번째 공개된 옷사진으로 대체
-                            .filter(cloth -> !cloth.getVisibility().equals(Visibility.PRIVATE)) // 비공개 옷 제외
-                            .findFirst()  // 첫 번째 공개된 옷의 URL 반환
-                            .map(cloth -> cloth.getImage() != null ? cloth.getImage().getImageUrl() : null) // 이미지 존재 여부 확인
-                            .orElse("null")
-                            : imageUrls.get(0); // 존재하면 첫 번째 이미지 사용
+                            .findFirst() // 첫 번째 요소 가져오기
+                            .orElse(null); // 비어있으면 null 반환
 
                     return BulkOperation.of(op -> op
                             .index(IndexOperation.of(idx -> idx

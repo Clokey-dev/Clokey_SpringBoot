@@ -3,6 +3,7 @@ package com.clokey.server.domain.search.application;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.Result;
+import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermsQueryField;
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
@@ -144,42 +145,26 @@ public class SearchServiceImpl implements SearchService {
                             // 비공개 기록 제외
                             b.mustNot(m -> m.term(t -> t.field("historyVisibility.keyword").value("PRIVATE")));
 
-                            // 검색시 사진이 없으면 제외; 기록이 공개인데, 옷이 비공개여서 띄워줄 사진이 없는 경우
-                            b.must(m -> m.exists(t -> t.field("imageUrl")));
-                            // 빈 값 또는 "null"이면 제외
-                            b.mustNot(m -> m.terms(t -> t.field("imageUrl.keyword")
-                                    .terms(TermsQueryField.of(f -> f.value(List.of(FieldValue.of(""), FieldValue.of("null")))))));
-
                             // 해시태그 및 카테고리 검색
                             b.should(m -> m.multiMatch(t -> t
                                     .query(keyword)
                                     .fields("hashtagNames", "categoryNames")
+                                    .operator(Operator.Or) // OR 조건 적용
                                     .fuzziness("AUTO")
                             ));
 
                             // 해시태그 검색
-                            b.should(m -> m.term(t -> t
-                                    .field("hashtagNames.keyword")
-                                    .value(keyword)
-                            ));
-                            b.should(m -> m.matchBoolPrefix(t -> t
-                                    .field("hashtagNames")
-                                    .query(keyword)
-                            ));
-                            b.should(m -> m.matchPhrasePrefix(t -> t
-                                    .field("hashtagNames")
-                                    .query(keyword)
-                            ));
                             b.should(m -> m.wildcard(t -> t
                                     .field("hashtagNames.keyword")
-                                    .value("*" + keyword + "*")
+                                    .value("*" + keyword + "*") // 포함 검색
                             ));
+
                             // 카테고리 검색
-                            b.must(m -> m.matchBoolPrefix(t -> t
+                            b.should(m -> m.matchBoolPrefix(t -> t
                                     .field("categoryNames")
                                     .query(keyword)
                             ));
-                            b.must(m -> m.matchPhrasePrefix(t -> t
+                            b.should(m -> m.matchPhrasePrefix(t -> t
                                     .field("categoryNames")
                                     .query(keyword)
                             ));
