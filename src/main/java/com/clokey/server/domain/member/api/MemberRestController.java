@@ -6,7 +6,6 @@ import com.clokey.server.domain.member.dto.MemberDTO;
 import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.domain.member.exception.annotation.IdExist;
 import com.clokey.server.domain.member.exception.annotation.IdValid;
-import com.clokey.server.domain.member.exception.annotation.NotFollowMyself;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -64,11 +63,12 @@ public class MemberRestController {
 
 
     @Operation(summary = "팔로우 조회 API", description = "내가 다른 사용자를 팔로우하고있는지 확인하는 API입니다.")
-    @PostMapping("users/follow/check")
+    @PostMapping("users/follow/check/{clokey_id}")
     public BaseResponse<MemberDTO.FollowRP> followCheck(
-            @RequestBody @Valid MemberDTO.FollowRQ request){
+            @Parameter(name = "user", hidden = true) @AuthUser Member currentUser,
+            @IdValid @PathVariable("clokey_id") String clokeyId){
 
-        MemberDTO.FollowRP response= memberService.followCheck(request);
+        MemberDTO.FollowRP response= memberService.followCheck(clokeyId, currentUser);
 
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_SUCCESS, response);
     }
@@ -76,14 +76,16 @@ public class MemberRestController {
 
 
     @Operation(summary = "팔로우 API", description = "다른 사용자를 팔로우/언팔로우하는 API입니다. 호출시마다 기존 상태와 반대로 변경됩니다.")
-    @PostMapping("users/follow")
+        @PostMapping("users/follow/{clokey_id}")
     public BaseResponse<Object> follow(
-        @NotFollowMyself @RequestBody @Valid MemberDTO.FollowRQ request) {
+            @Parameter(name = "user", hidden = true) @AuthUser Member currentUser,
+            @IdValid @PathVariable("clokey_id") String clokeyId) {
 
-        memberService.follow(request);
+        memberService.follow(clokeyId, currentUser);
 
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_EDITED, null);
     }
+
 
 
 }

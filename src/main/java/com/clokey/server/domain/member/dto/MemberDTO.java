@@ -100,8 +100,6 @@ public class MemberDTO {
     public static class  FollowRQ{
 
         @IdValid
-        String myClokeyId;
-        @IdValid
         String yourClokeyId;
 
     }

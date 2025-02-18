@@ -77,6 +77,9 @@ public class Member extends BaseEntity {
     @Column(nullable = true, unique = true)
     private String deviceToken;
 
+    @Column(nullable = true, unique = true)
+    private String appleRefreshToken;
+
 
 
     //필요한 양방향 매핑을 제외하고 삭제해주세요.
@@ -113,5 +116,9 @@ public class Member extends BaseEntity {
 
     public void updateDeviceToken(String deviceToken) {
         this.deviceToken = deviceToken;
+    }
+
+    public void updateAppleRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }

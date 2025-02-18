@@ -6,6 +6,7 @@ import com.clokey.server.domain.member.domain.entity.Follow;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.domain.repository.FollowRepository;
 import com.clokey.server.domain.member.dto.MemberDTO;
+import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.clokey.server.domain.search.application.SearchRepositoryService;
 import com.clokey.server.domain.search.exception.SearchException;
@@ -33,9 +34,9 @@ public class MemberServiceImpl implements  MemberService{
     private final SearchRepositoryService searchRepositoryService;
 
     @Override
-    public MemberDTO.FollowRP followCheck(MemberDTO.FollowRQ request) {
-        Long myUserId = memberRepositoryService.findMemberByClokeyId(request.getMyClokeyId()).getId();
-        Long yourUserId = memberRepositoryService.findMemberByClokeyId(request.getYourClokeyId()).getId();
+    public MemberDTO.FollowRP followCheck(String clokeyId, Member currentUser) {
+        Long yourUserId = currentUser.getId();
+        Long myUserId = memberRepositoryService.findMemberByClokeyId(clokeyId).getId();
 
         boolean isFollow = followRepository.existsByFollowing_IdAndFollowed_Id(myUserId, yourUserId);
 
@@ -44,10 +45,14 @@ public class MemberServiceImpl implements  MemberService{
 
     @Override
     @Transactional
-    public void follow(MemberDTO.FollowRQ request) {
+    public void follow(String clokeyId, Member currentUser) {
         // myClokeyId로 사용자 조회
-        Long myUserId = memberRepositoryService.findMemberByClokeyId(request.getMyClokeyId()).getId();
-        Long yourUserId = memberRepositoryService.findMemberByClokeyId(request.getYourClokeyId()).getId();
+        Long yourUserId = currentUser.getId();
+        Long myUserId = memberRepositoryService.findMemberByClokeyId(clokeyId).getId();
+
+        if(myUserId.equals(yourUserId)){
+            throw new MemberException(ErrorStatus.CANNOT_FOLLOW_MYSELF);
+        }
 
         // 팔로우 관계가 존재하는지 확인
         boolean isFollow = followRepository.existsByFollowing_IdAndFollowed_Id(myUserId, yourUserId);
