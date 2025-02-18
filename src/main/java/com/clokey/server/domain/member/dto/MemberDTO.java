@@ -110,11 +110,21 @@ public class MemberDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class GetFollowMemberResult {
-        Boolean isFollow;
-        List<ProfilePreview> members;
+        List<FollowMemberResult> members;
         private int totalPage;
         private long totalElements;
         private Boolean isFirst;
         private Boolean isLast;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class FollowMemberResult {
+        String nickname;
+        String clokeyId;
+        String profileImage;
+        Boolean isFollowed;
     }
 }

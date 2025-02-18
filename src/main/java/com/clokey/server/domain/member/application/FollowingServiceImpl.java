@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,20 +20,24 @@ public class FollowingServiceImpl implements FollowingService {
     private final FollowRepositoryService followRepositoryService;
 
     @Override
-    public MemberDTO.GetFollowMemberResult getFollowPeople(String clokeyId, Integer page, Boolean isFollow) {
+    public MemberDTO.GetFollowMemberResult getFollowPeople(Long memberId, String clokeyId, Integer page, Boolean isFollow) {
         // clokeyId로 계정 공개 여부 가져오기
-        Member member = memberRepositoryService.findByClokeyId(clokeyId);
+        Member findMember = memberRepositoryService.findByClokeyId(clokeyId);
 
         Pageable pageable = PageRequest.of(page-1, 10);
-        if(member.getVisibility()== Visibility.PUBLIC){
+        if(findMember.getVisibility()== Visibility.PUBLIC){
             if(isFollow){
                 // 팔로잉 리스트 가져오기
-                return GetUserConverter.toGetFollowPeopleResultDTO(followRepositoryService.findFollowingByFollowedId(member.getId(), pageable), pageable);
+                List<Member> members = followRepositoryService.findFollowingByFollowedId(findMember.getId(), pageable);
+                List<Boolean> isFollowings = followRepositoryService.checkFollowingStatus(memberId, members);
+                return GetUserConverter.toGetFollowPeopleResultDTO(members, pageable, isFollowings);
             }else{
                 // 팔로워 리스트 가져오기
-                return GetUserConverter.toGetFollowPeopleResultDTO(followRepositoryService.findFollowedByFollowingId(member.getId(), pageable), pageable);
+                List<Member> members = followRepositoryService.findFollowedByFollowingId(findMember.getId(), pageable);
+                List<Boolean> isFollowings = followRepositoryService.checkFollowingStatus(memberId, members);
+                return GetUserConverter.toGetFollowPeopleResultDTO(members, pageable, isFollowings);
             }
         }
-        return GetUserConverter.toGetFollowPeopleResultDTO(new ArrayList<>(), pageable);
+        return GetUserConverter.toGetFollowPeopleResultDTO(new ArrayList<>(), pageable, new ArrayList<>());
     }
 }

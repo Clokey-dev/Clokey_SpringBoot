@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 public class GetUserConverter {
@@ -30,10 +31,10 @@ public class GetUserConverter {
     }
 
     public static MemberDTO.GetFollowMemberResult toGetFollowPeopleResultDTO(
-            List<Member> members, Pageable pageable) {
+            List<Member> members, Pageable pageable, List<Boolean> isFollowings) {
 
-        List<MemberDTO.ProfilePreview> memberResults = members.stream()
-                .map(GetUserConverter::convertToProfilePreviewResult)
+        List<MemberDTO.FollowMemberResult> memberResults =  IntStream.range(0, members.size())
+                .mapToObj(i -> convertToProfilePreviewResult(members.get(i), isFollowings.get(i)))
                 .collect(Collectors.toList());
 
         return MemberDTO.GetFollowMemberResult.builder()
@@ -45,11 +46,12 @@ public class GetUserConverter {
                 .build();
     }
 
-    private static MemberDTO.ProfilePreview convertToProfilePreviewResult(Member member) {
-        return MemberDTO.ProfilePreview.builder()
+    private static MemberDTO.FollowMemberResult convertToProfilePreviewResult(Member member, Boolean isFollowing) {
+        return MemberDTO.FollowMemberResult.builder()
                 .profileImage(member.getProfileImageUrl())
                 .clokeyId(member.getClokeyId())
                 .nickname(member.getNickname())
+                .isFollowed(isFollowing)
                 .build();
     }
 }
