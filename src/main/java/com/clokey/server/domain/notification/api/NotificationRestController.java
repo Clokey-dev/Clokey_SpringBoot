@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.*;
 public class NotificationRestController {
 
     private final NotificationService notificationService;
-    private final SessionAutoConfiguration.ServletSessionConfiguration.RememberMeServicesConfiguration rememberMeServicesConfiguration;
 
     @GetMapping("")
     @Operation(summary = "알림을 조회하는 API", description = "알림을 조회하는 API입니다.")
