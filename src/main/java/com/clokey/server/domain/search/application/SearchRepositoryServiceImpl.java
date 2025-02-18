@@ -20,7 +20,6 @@ import com.clokey.server.domain.history.domain.entity.HistoryImage;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.document.MemberDocument;
 import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.domain.search.exception.SearchException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.transaction.Transactional;
@@ -87,13 +86,10 @@ public class SearchRepositoryServiceImpl implements SearchRepositoryService {
         }
     }
 
-    // 특정 clokeyId를 가진 멤버의 Elasticsearch의 모든 옷 데이터 삭제하는 메서드
+    // 특정 memberId를 가진 멤버의 Elasticsearch의 모든 옷 데이터 삭제하는 메서드
     @Override
     @Transactional
-    public void deleteClothesByClokeyIdFromElasticsearch(String clokeyId) throws IOException {
-        // 클로키 ID로 해당 멤버 찾기
-        Member member = memberRepositoryService.findMemberByClokeyId(clokeyId);
-        Long memberId = member.getId(); // 해당 멤버의 ID 가져오기
+    public void deleteClothesByMemberIdFromElasticsearch(Long memberId) throws IOException {
 
         // Elasticsearch에서 해당 memberId를 가진 모든 Cloth 삭제
         DeleteByQueryResponse deleteResponse = elasticsearchClient.deleteByQuery(d -> d
@@ -106,7 +102,7 @@ public class SearchRepositoryServiceImpl implements SearchRepositoryService {
         // 삭제 처리 결과 로그 출력
         if (deleteResponse.deleted() == 0) {
             // 오류 발생 시 삭제 실패 로그 출력
-            System.err.println("Elasticsearch에서 clokeyId: " + clokeyId + " 에 해당하는 옷 데이터를 찾을 수 없습니다.");
+            System.err.println("Elasticsearch에서 clothId: " + memberId + "을 memberId로 가지는 옷에 해당하는 데이터를 찾을 수 없습니다.");
 
             throw new SearchException(ErrorStatus.ELASTIC_SEARCH_DELETE_FAULT);
         }
@@ -229,13 +225,10 @@ public class SearchRepositoryServiceImpl implements SearchRepositoryService {
         }
     }
 
-    // 특정 clokeyId를 가진 멤버의 Elasticsearch의 모든 기록 데이터 삭제하는 메서드
+    // 특정 memberId를 가진 멤버의 Elasticsearch의 모든 기록 데이터 삭제하는 메서드
     @Override
     @Transactional
-    public void deleteHistoriesByClokeyIdFromElasticsearch(String clokeyId) throws IOException {
-        // 클로키 ID로 해당 멤버 찾기
-        Member member = memberRepositoryService.findMemberByClokeyId(clokeyId);
-        Long memberId = member.getId(); // 해당 멤버의 ID 가져오기
+    public void deleteHistoriesByMemberIdFromElasticsearch(Long memberId) throws IOException {
 
         // Elasticsearch에서 해당 memberId를 가진 모든 History 삭제
         DeleteByQueryResponse deleteResponse = elasticsearchClient.deleteByQuery(d -> d
@@ -248,7 +241,7 @@ public class SearchRepositoryServiceImpl implements SearchRepositoryService {
         // 삭제 처리 결과 로그 출력
         if (deleteResponse.deleted() == 0) {
             // 오류 발생 시 삭제 실패 로그 출력
-            System.err.println("Elasticsearch에서 clokeyId: " + clokeyId + " 에 해당하는 옷 데이터를 찾을 수 없습니다.");
+            System.err.println("Elasticsearch에서 clothId: " + memberId + "을 memberId로 가지는 기록에 해당하는 데이터를 찾을 수 없습니다.");
 
             throw new SearchException(ErrorStatus.ELASTIC_SEARCH_DELETE_FAULT);
         }
@@ -371,13 +364,10 @@ public class SearchRepositoryServiceImpl implements SearchRepositoryService {
         }
     }
 
-    // 특정 clokeyId를 가진 멤버의 Elasticsearch의 유저 데이터 삭제하는 메서드
+    // 특정 memberId를 가진 멤버의 Elasticsearch의 유저 데이터 삭제하는 메서드
     @Override
     @Transactional
-    public void deleteMemberByClokeyIdFromElasticsearch(String clokeyId) throws IOException {
-        // 클로키 ID로 해당 멤버 찾기
-        Member member = memberRepositoryService.findMemberByClokeyId(clokeyId);
-        Long memberId = member.getId(); // 해당 멤버의 ID 가져오기
+    public void deleteMemberByMemberIdFromElasticsearch(Long memberId) throws IOException {
 
         // Elasticsearch에서 해당 memberId에 해당하는 문서 삭제
         DeleteResponse deleteResponse = elasticsearchClient.delete(d -> d
@@ -388,7 +378,7 @@ public class SearchRepositoryServiceImpl implements SearchRepositoryService {
         // 삭제 처리 결과 로그 출력
         if (!deleteResponse.result().equals(Result.Deleted)) {
             // 오류 발생 시 삭제 실패 로그 출력
-            System.err.println("Elasticsearch에서 clothId: " + clokeyId + " 에 해당하는 데이터를 찾을 수 없습니다.");
+            System.err.println("Elasticsearch에서 clothId: " + memberId + "을 memberId로 가지는 멤버에 해당하는 데이터를 찾을 수 없습니다.");
 
             throw new SearchException(ErrorStatus.ELASTIC_SEARCH_DELETE_FAULT);
         }

@@ -2,15 +2,9 @@ package com.clokey.server.domain.member.application;
 
 import com.clokey.server.domain.cloth.application.ClothImageRepositoryService;
 import com.clokey.server.domain.cloth.application.ClothRepositoryService;
-import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.folder.application.ClothFolderRepositoryService;
 import com.clokey.server.domain.folder.application.FolderRepositoryService;
-import com.clokey.server.domain.folder.domain.entity.Folder;
-import com.clokey.server.domain.folder.exception.FolderException;
-import com.clokey.server.domain.folder.exception.validator.FolderAccessibleValidator;
 import com.clokey.server.domain.history.application.*;
-import com.clokey.server.domain.history.domain.entity.Comment;
-import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.history.domain.repository.CommentRepository;
 import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
 import com.clokey.server.domain.member.domain.entity.Member;
@@ -18,10 +12,10 @@ import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.domain.model.entity.enums.MemberStatus;
 import com.clokey.server.domain.model.entity.enums.SocialType;
 import com.clokey.server.domain.notification.application.NotificationRepositoryService;
-import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
+import com.clokey.server.domain.search.application.SearchRepositoryService;
+import com.clokey.server.domain.search.exception.SearchException;
 import com.clokey.server.domain.term.application.MemberTermRepositoryService;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
@@ -63,6 +58,7 @@ public class UnlinkServiceImpl implements UnlinkService {
     private final FolderRepositoryService folderRepositoryService;
     private final CommentRepository commentRepository;
     private final NotificationRepositoryService notificationRepositoryService;
+    private final SearchRepositoryService searchRepositoryService;
 
 
     @Value("${kakao.admin-key}")
@@ -70,7 +66,6 @@ public class UnlinkServiceImpl implements UnlinkService {
 
     @Value("${apple.client-id}")
     private String APPLE_CLIENT_ID;
-
 
 
     @Transactional
@@ -107,35 +102,35 @@ public class UnlinkServiceImpl implements UnlinkService {
     }
 
 
-        public void kakaoUnlink (String kakaoId){
-            String url = "https://kapi.kakao.com/v1/user/unlink";
+    public void kakaoUnlink(String kakaoId) {
+        String url = "https://kapi.kakao.com/v1/user/unlink";
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-            headers.set("Authorization", "KakaoAK " + KAKAO_ADMIN_KEY);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.set("Authorization", "KakaoAK " + KAKAO_ADMIN_KEY);
 
-            try {
-                Long kakaoUserId = Long.parseLong(kakaoId);
-                String body = "target_id_type=user_id&target_id=" + kakaoUserId;
+        try {
+            Long kakaoUserId = Long.parseLong(kakaoId);
+            String body = "target_id_type=user_id&target_id=" + kakaoUserId;
 
-                HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
-                RestTemplate restTemplate = new RestTemplate();
-                ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
+            HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
 
-                if (response.getStatusCode() == HttpStatus.OK) {
-                    log.info("✅ 카카오 연동 해제 성공: {}", response.getBody());
-                    System.out.println("✅ 해제 성공: " + response.getBody());
-                } else {
-                    log.warn("⚠️ 카카오 연동 해제 실패: HTTP {}", response.getStatusCode());
-                    System.out.println("⚠️ 해제 실패: " + response.getStatusCode());
-                }
-            } catch (NumberFormatException e) {
-                log.error("카카오 연동 해제 실패: kakaoId 변환 오류", e);
-                System.out.println("해제 실패");
+            if (response.getStatusCode() == HttpStatus.OK) {
+                log.info("✅ 카카오 연동 해제 성공: {}", response.getBody());
+                System.out.println("✅ 해제 성공: " + response.getBody());
+            } else {
+                log.warn("⚠️ 카카오 연동 해제 실패: HTTP {}", response.getStatusCode());
+                System.out.println("⚠️ 해제 실패: " + response.getStatusCode());
             }
+        } catch (NumberFormatException e) {
+            log.error("카카오 연동 해제 실패: kakaoId 변환 오류", e);
+            System.out.println("해제 실패");
         }
+    }
 
-    public void appleUnlink (String clientSecret, String refreshToken){
+    public void appleUnlink(String clientSecret, String refreshToken) {
 
         String uriStr = "https://appleid.apple.com/auth/revoke";
 
@@ -169,6 +164,13 @@ public class UnlinkServiceImpl implements UnlinkService {
     public void deleteData(Long memberId) {
         Member member = memberRepositoryService.findMemberById(memberId);
 
+        try {
+            searchRepositoryService.deleteClothesByMemberIdFromElasticsearch(memberId);
+            searchRepositoryService.deleteHistoriesByMemberIdFromElasticsearch(memberId);
+            searchRepositoryService.deleteMemberByMemberIdFromElasticsearch(memberId);
+        } catch (IOException e) {
+            throw new SearchException(ErrorStatus.ELASTIC_SEARCH_DELETE_FAULT);
+        }
 
         LocalDate inactiveDate = member.getInactiveDate();
         if (inactiveDate == null || inactiveDate.isAfter(LocalDate.now().minusDays(15))) {
@@ -202,13 +204,10 @@ public class UnlinkServiceImpl implements UnlinkService {
         clothRepositoryService.deleteByClothIds(clothIds);
 
 
-
-
         //폴더 삭제
         List<Long> folderIds = memberRepositoryService.findFolderIdsByMemberId(memberId);
         clothFolderRepositoryService.deleteAllByFolderIds(folderIds);
         folderRepositoryService.deleteByFolderIds(folderIds);
-
 
 
         //댓글 삭제

@@ -12,7 +12,7 @@ public interface SearchRepositoryService {
 
     void updateClothDataToElasticsearch(Cloth cloth) throws IOException;
 
-    void deleteClothesByClokeyIdFromElasticsearch(String clokeyId) throws IOException;
+    void deleteClothesByMemberIdFromElasticsearch(Long memberId) throws IOException;
 
     void deleteClothByIdFromElasticsearch(Long clothId) throws IOException;
 
@@ -22,7 +22,7 @@ public interface SearchRepositoryService {
 
     void updateHistoryDataToElasticsearch(History history) throws IOException;
 
-    void deleteHistoriesByClokeyIdFromElasticsearch(String clokeyId) throws IOException;
+    void deleteHistoriesByMemberIdFromElasticsearch(Long memberId) throws IOException;
 
     void deleteHistoryByIdFromElasticsearch(Long historyId) throws IOException;
 
@@ -32,7 +32,7 @@ public interface SearchRepositoryService {
 
     void updateMemberDataToElasticsearch(Member member) throws IOException;
 
-    void deleteMemberByClokeyIdFromElasticsearch(String clokeyId) throws IOException;
+    void deleteMemberByMemberIdFromElasticsearch(Long memberId) throws IOException;
 
     void syncAllMembersDataToElasticsearch() throws IOException;
 
