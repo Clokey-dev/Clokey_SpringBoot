@@ -71,6 +71,18 @@ public class NotificationRestController {
         return BaseResponse.onSuccess(SuccessStatus.NOTIFICATION_READ, null);
     }
 
+    @PatchMapping
+    @Operation(summary = "모든 알림을 읽음 처리 할 수 있는 API")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTIFICATION_204", description = "알림이 성공적으로 읽음 처리되었습니다."),
+    })
+    public BaseResponse<Void> readAllNotification(@Parameter(name = "user",hidden = true) @AuthUser Member member) {
+
+
+
+        return BaseResponse.onSuccess(SuccessStatus.NOTIFICATION_READ, null);
+    }
+
     @PostMapping("/history-like")
     @Operation(summary = "기록에 좋아요를 누를 경우 상대방에개 알림을 보내는 API")
     @ApiResponses({

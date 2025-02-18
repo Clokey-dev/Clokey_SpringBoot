@@ -75,6 +75,12 @@ public class NotificationServiceImpl implements NotificationService {
         notification.readNotification();
     }
 
+    @Override
+    @Transactional
+    public void readAllNotification(Long memberId) {
+
+    }
+
     private void checkMyNotification(Long notificationId, Long memberId) {
         if (!notificationRepositoryService.findById(notificationId).getMember().getId().equals(memberId)) {
             throw new NotificationException(ErrorStatus.NOT_MY_NOTIFICATION);
