@@ -19,7 +19,6 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
