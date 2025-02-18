@@ -17,11 +17,11 @@ public class Follow {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "following_user_id", nullable = false)
-    private Member following;
+    private Member following; // 팔로우 당하는 사람
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "followed_user_id", nullable = false)
-    private Member followed;
+    private Member followed;  // 팔로우 하는 사람
 
 }
 

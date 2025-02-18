@@ -2,6 +2,11 @@ package com.clokey.server.domain.member.converter;
 
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.dto.MemberDTO;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 public class GetUserConverter {
@@ -22,6 +27,31 @@ public class GetUserConverter {
                 .clothImage1(clothImage1)
                 .clothImage2(clothImage2)
                 .clothImage3(clothImage3)
+                .build();
+    }
+
+    public static MemberDTO.GetFollowMemberResult toGetFollowPeopleResultDTO(
+            List<Member> members, Pageable pageable, List<Boolean> isFollowings) {
+
+        List<MemberDTO.FollowMemberResult> memberResults =  IntStream.range(0, members.size())
+                .mapToObj(i -> convertToProfilePreviewResult(members.get(i), isFollowings.get(i)))
+                .collect(Collectors.toList());
+
+        return MemberDTO.GetFollowMemberResult.builder()
+                .members(memberResults)
+                .totalPage(pageable.getPageNumber() + 1)
+                .totalElements(memberResults.size())
+                .isFirst(pageable.getPageNumber() == 0)
+                .isLast(memberResults.size() < pageable.getPageSize())
+                .build();
+    }
+
+    private static MemberDTO.FollowMemberResult convertToProfilePreviewResult(Member member, Boolean isFollowing) {
+        return MemberDTO.FollowMemberResult.builder()
+                .profileImage(member.getProfileImageUrl())
+                .clokeyId(member.getClokeyId())
+                .nickname(member.getNickname())
+                .isFollowed(isFollowing)
                 .build();
     }
 }

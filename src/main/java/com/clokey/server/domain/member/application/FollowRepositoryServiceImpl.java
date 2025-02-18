@@ -3,6 +3,8 @@ package com.clokey.server.domain.member.application;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.domain.repository.FollowRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,5 +36,15 @@ public class FollowRepositoryServiceImpl implements FollowRepositoryService{
     @Override
     public List<Member> findFollowingByFollowedId(Long followedId) {
         return followRepository.findFollowingByFollowedId(followedId);
+    }
+
+    @Override
+    public List<Member> findFollowedByFollowingId(Long followingId, Pageable pageable) {
+        return followRepository.findFollowedByFollowingId(followingId, pageable);
+    }
+
+    @Override
+    public List<Member> findFollowingByFollowedId(Long followedId, Pageable pageable) {
+        return followRepository.findFollowingByFollowedId(followedId, pageable);
     }
 }
