@@ -1,34 +1,22 @@
 package com.clokey.server.domain.member.api;
 
-import com.clokey.server.domain.member.application.AppleAuthService;
 import com.clokey.server.domain.member.application.AuthService;
 import com.clokey.server.domain.member.dto.AuthDTO;
-import com.clokey.server.domain.member.dto.MemberDTO;
 import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.code.status.SuccessStatus;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.oas.models.responses.ApiResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Map;
 
 @RestController
 public class AuthController {
 
     @Autowired
     private AuthService authService;
-    @Autowired
-    private AppleAuthService appleAuthService;
 
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<AuthDTO.TokenResponse>> login(@RequestBody AuthDTO.LoginRequest loginRequest) {
@@ -48,7 +36,7 @@ public class AuthController {
             //애플 로그인
             else if (loginType.equalsIgnoreCase("apple") && loginRequest.getAuthorizationCode() != null) {
                 // Apple 로그인 처리
-                AuthDTO.TokenResponse tokenResponse = appleAuthService.login(loginRequest.getAuthorizationCode(), loginRequest.getDeviceToken());
+                AuthDTO.TokenResponse tokenResponse = authService.appleLogin(loginRequest.getAuthorizationCode(), loginRequest.getDeviceToken());
                 responseEntity = ResponseEntity.status(HttpStatus.OK).body(tokenResponse);
             }
             //로그인 타입이 잘못된 경우

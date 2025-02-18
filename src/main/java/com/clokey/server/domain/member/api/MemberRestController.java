@@ -1,10 +1,8 @@
 package com.clokey.server.domain.member.api;
 
-import com.clokey.server.domain.member.application.FollowCommandService;
-import com.clokey.server.domain.member.application.GetUserQueryService;
+import com.clokey.server.domain.member.application.MemberService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.dto.MemberDTO;
-import com.clokey.server.domain.member.application.ProfileCommandService;
 import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.domain.member.exception.annotation.IdExist;
 import com.clokey.server.domain.member.exception.annotation.IdValid;
@@ -13,7 +11,6 @@ import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -26,9 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class MemberRestController {
 
-    private final ProfileCommandService profileCommandService;
-    private final GetUserQueryService getUserQueryService;
-    private final FollowCommandService followCommandService;
+    private final MemberService memberService;
 
     @Operation(summary = "프로필 수정 API", description = "사용자의 프로필 정보를 수정하는 API입니다.")
     @PatchMapping(value = "users/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -38,7 +33,7 @@ public class MemberRestController {
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
             @RequestPart(value = "profileBackImage", required = false) MultipartFile profileBackImage) {
 
-        MemberDTO.ProfileRP response = profileCommandService.updateProfile(member.getId(), request, profileImage, profileBackImage);
+        MemberDTO.ProfileRP response = memberService.updateProfile(member.getId(), request, profileImage, profileBackImage);
 
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_EDITED, response);
     }
@@ -61,7 +56,7 @@ public class MemberRestController {
             @Parameter(name = "user", hidden = true) @AuthUser Member currentUser, // 현재 로그인한 사용자 추가
             @IdValid @PathVariable("clokey_id") String clokeyId) {
 
-        MemberDTO.GetUserRP response = getUserQueryService.getUser(clokeyId, currentUser);
+        MemberDTO.GetUserRP response = memberService.getUser(clokeyId, currentUser);
 
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_SUCCESS, response);
     }
@@ -73,7 +68,7 @@ public class MemberRestController {
     public BaseResponse<MemberDTO.FollowRP> followCheck(
             @RequestBody @Valid MemberDTO.FollowRQ request){
 
-        MemberDTO.FollowRP response= followCommandService.followCheck(request);
+        MemberDTO.FollowRP response= memberService.followCheck(request);
 
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_SUCCESS, response);
     }
@@ -85,7 +80,7 @@ public class MemberRestController {
     public BaseResponse<Object> follow(
         @NotFollowMyself @RequestBody @Valid MemberDTO.FollowRQ request) {
 
-        followCommandService.follow(request);
+        memberService.follow(request);
 
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_EDITED, null);
     }

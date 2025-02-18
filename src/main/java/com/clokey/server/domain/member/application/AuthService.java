@@ -17,4 +17,8 @@ public interface AuthService {
     AuthDTO.KakaoUserResponse getUserInfoFromKakao(String kakaoAccessToken);
 
     public AuthDTO.TokenResponse refreshAccessToken(String refreshToken);
+
+
+    AuthDTO.TokenResponse appleLogin(String code, String deviceToken);
+
 }
