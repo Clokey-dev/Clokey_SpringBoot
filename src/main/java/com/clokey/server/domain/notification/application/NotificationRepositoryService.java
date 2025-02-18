@@ -21,4 +21,6 @@ public interface NotificationRepositoryService {
     void deleteByClokeyNotificationIds(List<Long> clokeyNotificationIds);
 
     List<ClokeyNotification> findNotificationsByMemberId(Long memberId, Pageable pageable);
+
+    void readAllByMemberId(Long memberId);
 }
