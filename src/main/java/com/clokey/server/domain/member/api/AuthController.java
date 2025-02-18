@@ -36,7 +36,7 @@ public class AuthController {
             //애플 로그인
             else if (loginType.equalsIgnoreCase("apple") && loginRequest.getAuthorizationCode() != null) {
                 // Apple 로그인 처리
-                AuthDTO.TokenResponse tokenResponse = authService.appleLogin(loginRequest.getAuthorizationCode(), loginRequest.getDeviceToken(), loginRequest.getRefreshToken());
+                AuthDTO.TokenResponse tokenResponse = authService.appleLogin(loginRequest.getAuthorizationCode(), loginRequest.getDeviceToken());
                 responseEntity = ResponseEntity.status(HttpStatus.OK).body(tokenResponse);
             }
             //로그인 타입이 잘못된 경우

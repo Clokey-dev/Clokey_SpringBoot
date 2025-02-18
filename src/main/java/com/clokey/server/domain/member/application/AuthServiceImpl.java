@@ -311,7 +311,7 @@ public class AuthServiceImpl implements AuthService {
     //2. 여기까지 주소 가져옴
 
 
-    public AuthDTO.TokenResponse appleLogin(String code, String deviceToken, String refreshToken) {
+    public AuthDTO.TokenResponse appleLogin(String code, String deviceToken) {
         // code가 null인 경우 처리
         if (code == null || code.isBlank()) {
             throw new MemberException(ErrorStatus.INVALID_CODE);
@@ -385,12 +385,6 @@ public class AuthServiceImpl implements AuthService {
 
                 member.updateDeviceToken(deviceToken);
                 memberRepositoryService.saveMember(member);
-
-                if(member.getAppleRefreshToken()==null || !member.getAppleRefreshToken().equals(refreshToken)){
-                    member.updateAppleRefreshToken(refreshToken);
-                    memberRepositoryService.saveMember(member);
-                }
-
 
 
         } else {

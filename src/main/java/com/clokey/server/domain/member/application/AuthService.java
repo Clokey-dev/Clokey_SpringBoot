@@ -19,6 +19,6 @@ public interface AuthService {
     public AuthDTO.TokenResponse refreshAccessToken(String refreshToken);
 
 
-    AuthDTO.TokenResponse appleLogin(String code, String deviceToken, String refreshToken);
+    AuthDTO.TokenResponse appleLogin(String code, String deviceToken);
 
 }
