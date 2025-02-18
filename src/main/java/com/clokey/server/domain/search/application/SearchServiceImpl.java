@@ -85,6 +85,11 @@ public class SearchServiceImpl implements SearchService {
 
                             // 이름 또는 브랜드에서 부분 검색 (OR 조건 적용)
                             b.must(m -> m.bool(bb -> bb
+                                    .should(ms -> ms.match(mq -> mq
+                                            .field("name")
+                                            .query(keyword)
+                                            .fuzziness("AUTO")
+                                    ))
                                     .should(ms -> ms.matchBoolPrefix(mq -> mq
                                             .field("name")
                                             .query(keyword)
@@ -146,27 +151,30 @@ public class SearchServiceImpl implements SearchService {
                                     .terms(TermsQueryField.of(f -> f.value(List.of(FieldValue.of(""), FieldValue.of("null")))))));
 
                             // 해시태그 및 카테고리 검색
-                            b.must(m -> m.multiMatch(t -> t
+                            b.should(m -> m.multiMatch(t -> t
                                     .query(keyword)
                                     .fields("hashtagNames", "categoryNames")
                                     .fuzziness("AUTO")
                             ));
-                            // 해시태그 포함만 하면 검색되도록 설정)
+
+                            // 해시태그 검색
+                            b.should(m -> m.term(t -> t
+                                    .field("hashtagNames.keyword")
+                                    .value(keyword)
+                            ));
                             b.should(m -> m.matchBoolPrefix(t -> t
                                     .field("hashtagNames")
                                     .query(keyword)
                             ));
-                            // 해시태그 검색어로 시작하면 검색되도록 설정)
                             b.should(m -> m.matchPhrasePrefix(t -> t
                                     .field("hashtagNames")
                                     .query(keyword)
                             ));
-                            // 추가적으로 wildcard 검색을 적용하여 유연한 검색 제공
                             b.should(m -> m.wildcard(t -> t
                                     .field("hashtagNames.keyword")
                                     .value("*" + keyword + "*")
                             ));
-                            // 카테고리 아우터만 검색해도 "아우터/무스탕" 검색되도록 설정
+                            // 카테고리 검색
                             b.must(m -> m.matchBoolPrefix(t -> t
                                     .field("categoryNames")
                                     .query(keyword)
@@ -207,13 +215,13 @@ public class SearchServiceImpl implements SearchService {
                                 .should(m -> m.multiMatch(t -> t
                                         .query(keyword)
                                         .fields("nickname", "clokeyId")
-                                        .fuzziness("AUTO") // 오타 허용
+                                        .fuzziness("AUTO")
                                 ))
                                 .should(m -> m.multiMatch(t -> t
                                         .query(keyword)
                                         .fields("nickname")
-                                        .type(TextQueryType.BoolPrefix) // 닉네임에서 포함된 모든 데이터 검색
-                                        .fuzziness("AUTO") // 오타 허용
+                                        .type(TextQueryType.BoolPrefix)
+                                        .fuzziness("AUTO")
                                 ))
                                 .should(m -> m.wildcard(t -> t
                                         .field("nickname")
@@ -221,7 +229,7 @@ public class SearchServiceImpl implements SearchService {
                                 ))
                                 .should(m -> m.matchPhrasePrefix(t -> t
                                         .field("clokeyId")
-                                        .query(keyword) // 클로키 ID는 접두어 일치 검색
+                                        .query(keyword)
                                 ))
                         )),
                 MemberDocument.class

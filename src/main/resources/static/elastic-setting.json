@@ -17,13 +17,20 @@
         "nori_analyzer": {
           "type": "custom",
           "tokenizer": "nori_tokenizer",
-          "filter": ["lowercase"]
+          "filter": [
+            "lowercase"
+          ]
         },
         "clokeyId_analyzer": {
           "type": "custom",
           "tokenizer": "standard",
-          "char_filter": ["remove_special_chars"],
-          "filter": ["lowercase", "nori_readingform_filter"]
+          "char_filter": [
+            "remove_special_chars"
+          ],
+          "filter": [
+            "lowercase",
+            "nori_readingform_filter"
+          ]
         }
       }
     }

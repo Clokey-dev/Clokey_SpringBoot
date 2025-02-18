@@ -192,19 +192,10 @@ public class SearchRepositoryServiceImpl implements SearchRepositoryService {
                 .collect(Collectors.toList());
 
         // Image URL 가져오기 (공개된 첫 번째 옷 이미지)
-        List<String> imageUrls = historyImageRepositoryService.findByHistoryId(history.getId()).stream()
+        String imageUrl = historyImageRepositoryService.findByHistoryId(history.getId()).stream()
                 .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
                 .map(HistoryImage::getImageUrl)
-                .toList();
-
-        // 첫 번째 이미지 선택 (없다면 대체 이미지 가져오기)
-        String imageUrl = imageUrls.isEmpty()
-                ? historyClothRepositoryService.findAllClothByHistoryId(history.getId()).stream()
-                .filter(cloth -> !cloth.getVisibility().equals(Visibility.PRIVATE))
-                .findFirst()
-                .map(cloth -> cloth.getImage() != null ? cloth.getImage().getImageUrl() : null)
-                .orElse("null")
-                : imageUrls.get(0);
+                .toList().get(0);
 
         // Elasticsearch 문서 변환
         BulkOperation bulkOperation = BulkOperation.of(op -> op
