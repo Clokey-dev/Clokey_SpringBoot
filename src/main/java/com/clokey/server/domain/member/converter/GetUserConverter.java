@@ -2,6 +2,10 @@ package com.clokey.server.domain.member.converter;
 
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.dto.MemberDTO;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class GetUserConverter {
@@ -22,6 +26,30 @@ public class GetUserConverter {
                 .clothImage1(clothImage1)
                 .clothImage2(clothImage2)
                 .clothImage3(clothImage3)
+                .build();
+    }
+
+    public static MemberDTO.GetFollowMemberResult toGetFollowPeopleResultDTO(
+            List<Member> members, Pageable pageable) {
+
+        List<MemberDTO.ProfilePreview> memberResults = members.stream()
+                .map(GetUserConverter::convertToProfilePreviewResult)
+                .collect(Collectors.toList());
+
+        return MemberDTO.GetFollowMemberResult.builder()
+                .members(memberResults)
+                .totalPage(pageable.getPageNumber() + 1)
+                .totalElements(memberResults.size())
+                .isFirst(pageable.getPageNumber() == 0)
+                .isLast(memberResults.size() < pageable.getPageSize())
+                .build();
+    }
+
+    private static MemberDTO.ProfilePreview convertToProfilePreviewResult(Member member) {
+        return MemberDTO.ProfilePreview.builder()
+                .profileImage(member.getProfileImageUrl())
+                .clokeyId(member.getClokeyId())
+                .nickname(member.getNickname())
                 .build();
     }
 }

@@ -111,7 +111,7 @@ public class MemberDTO {
     @AllArgsConstructor
     public static class GetFollowMemberResult {
         Boolean isFollow;
-        List<ProfilePreview> peoples;
+        List<ProfilePreview> members;
         private int totalPage;
         private long totalElements;
         private Boolean isFirst;
