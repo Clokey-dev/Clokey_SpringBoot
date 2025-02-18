@@ -17,6 +17,8 @@ public interface HistoryImageRepositoryService {
 
     void deleteAllByHistoryId(Long historyId);
 
+    void deleteAllByHistoryIds(List<Long> historyIds);
+
     List<HistoryImage> findByHistoryIdIn(List<Long> historyIds);
 
     Map<Long, String> findFirstImagesByHistoryIds(List<Long> historyIds);

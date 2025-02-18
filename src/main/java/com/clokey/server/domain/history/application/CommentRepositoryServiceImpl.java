@@ -9,6 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -76,4 +79,27 @@ public class CommentRepositoryServiceImpl implements CommentRepositoryService{
         return commentRepository.countByHistoryId(historyId);
     }
 
+    @Override
+    public void deleteCommentsByHistoryIds(List<Long> historyId) {
+        commentRepository.deleteCommentsByHistoryIds(historyId);
+    }
+
+    @Override
+    public void deleteChildrenByHistoryIds(List<Long> historyIds) {
+
+        List<Long>commentIds=commentRepository.selectCommentsByHistoryIds(historyIds);
+
+        commentRepository.deleteChildrenByHistoryIds(commentIds);
+    }
+
+
+    @Override
+    public void deleteChildrenByCommentIds(List<Long> commentIds) {
+        commentRepository.deleteChildrenByCommentIds(commentIds);
+    }
+
+    @Override
+    public void deleteCommentsByCommentIds(List<Long> commentIds) {
+        commentRepository.deleteCommentsByCommentIds(commentIds);
+    }
 }

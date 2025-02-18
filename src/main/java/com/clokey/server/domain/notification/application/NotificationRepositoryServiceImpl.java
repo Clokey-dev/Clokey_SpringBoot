@@ -39,6 +39,16 @@ public class NotificationRepositoryServiceImpl implements NotificationRepository
     }
 
     @Override
+    public void deleteBymemberId(Long memberId) {
+        notificationRepository.deleteByMemberId(memberId);
+    }
+
+    @Override
+    public void deleteByClokeyNotificationIds(List<Long> clokeyNotificationIds){
+        notificationRepository.deleteByClokeyNotificationIds(clokeyNotificationIds);
+    }
+
+    @Override
     public List<ClokeyNotification> findNotificationsByMemberId(Long memberId, Pageable pageable) {
         return notificationRepository.findNotificationsByMemberId(memberId, pageable);
     }

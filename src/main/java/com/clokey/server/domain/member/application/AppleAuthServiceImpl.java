@@ -4,6 +4,7 @@ package com.clokey.server.domain.member.application;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.dto.AuthDTO;
 import com.clokey.server.domain.member.exception.MemberException;
+import com.clokey.server.domain.model.entity.enums.MemberStatus;
 import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.clokey.server.domain.model.entity.enums.SocialType;
 import com.clokey.server.domain.search.application.SearchRepositoryService;
@@ -27,23 +28,32 @@ import org.json.simple.JSONObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
+import java.net.URI;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Base64;
-import java.util.Map;
-import java.util.Date;
+import java.util.*;
+
 import com.nimbusds.jose.crypto.ECDSASigner;
 
-import java.util.Optional;
+import java.util.stream.Collectors;
+import java.net.http.HttpRequest;
+import java.net.http.HttpClient;
+
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -89,8 +99,9 @@ public class AppleAuthServiceImpl implements AppleAuthService {
     //2. 여기까지 주소 가져옴
 
 
+   @Transactional
     public AuthDTO.TokenResponse login(String code, String deviceToken) {
-        // code가 null인 경우 처리
+
         if (code == null || code.isBlank()) {
             throw new MemberException(ErrorStatus.INVALID_CODE);
         }
@@ -99,6 +110,7 @@ public class AppleAuthServiceImpl implements AppleAuthService {
         String userId = "";
         String email = "";
         String accessToken = "";
+        String refreshToken = "";
 
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -122,7 +134,6 @@ public class AppleAuthServiceImpl implements AppleAuthService {
                     String.class
             );
 
-            // 응답 상태 코드 체크
             if (!response.getStatusCode().equals(HttpStatus.OK)) {
                 throw new MemberException(ErrorStatus.NO_RESPONSE);
             }
@@ -131,14 +142,14 @@ public class AppleAuthServiceImpl implements AppleAuthService {
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObj = (JSONObject) jsonParser.parse(response.getBody());
 
-            // access_token 및 id_token 유효성 확인
             if (!jsonObj.containsKey("access_token") || !jsonObj.containsKey("id_token")) {
                 throw new MemberException(ErrorStatus.INVALID_RESPONSE);
             }
 
             accessToken = String.valueOf(jsonObj.get("access_token"));
+            refreshToken = jsonObj.containsKey("refresh_token") ? String.valueOf(jsonObj.get("refresh_token")) : "";
 
-            // JWT 토큰 파싱
+            // JWT 파싱
             SignedJWT signedJWT = SignedJWT.parse(String.valueOf(jsonObj.get("id_token")));
             JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
 
@@ -159,7 +170,18 @@ public class AppleAuthServiceImpl implements AppleAuthService {
         Member member;
         boolean isNewUser = false;
         if (optionalMember.isPresent()) {
-            member = optionalMember.get();  // 기존 사용자
+            member = optionalMember.get();
+
+            if(member.getStatus()== MemberStatus.INACTIVE){
+                member.updateStatus();
+                member.updateInactiveDate(null);
+                memberRepositoryService.saveMember(member);
+            }
+
+            if (member.getAppleRefreshToken() == null || member.getAppleRefreshToken().isBlank()) {
+                member.updateAppleRefreshToken(refreshToken);
+                memberRepositoryService.saveMember(member);
+            }
 
             if(member.getDeviceToken() == null || member.getDeviceToken().isBlank()){
                 member.updateDeviceToken(deviceToken);
@@ -170,13 +192,14 @@ public class AppleAuthServiceImpl implements AppleAuthService {
                     .email(email)
                     .socialType(SocialType.APPLE)
                     .registerStatus(RegisterStatus.NOT_AGREED)
+                    .appleRefreshToken(refreshToken)
                     .deviceToken(deviceToken)
                     .build();
             memberRepositoryService.saveMember(member);
-            isNewUser = true; // 새로운 사용자
+            isNewUser = true;
         }
 
-        // 토큰 생성
+        // JWT 토큰 생성
         String jwtAccessToken = authService.generateAccessToken(member.getId(), member.getEmail());
         String jwtRefreshToken = authService.generateRefreshToken(member.getId());
 
@@ -201,7 +224,8 @@ public class AppleAuthServiceImpl implements AppleAuthService {
         );
     }
 
-    private String createClientSecret() {
+
+    public String createClientSecret() {
         JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.ES256)
                 .keyID(APPLE_LOGIN_KEY)
                 .build();
@@ -261,10 +285,62 @@ public class AppleAuthServiceImpl implements AppleAuthService {
             throw new MemberException(ErrorStatus.LOGIN_FAILED);
         }
     }
+        //5. 여기까지 프라이빗 키 가져오기
 
 
 
 
-    //5. 여기까지 프라이빗 키 가져오기
+
+    public String getRefreshToken(String clientSecret, String authCode) {
+        String refreshToken = "";
+
+        String uriStr = "https://appleid.apple.com/auth/token";
+
+        Map<String, String> params = new HashMap<>();
+        params.put("client_secret", clientSecret); // 생성한 clientSecret
+        params.put("code", authCode); // 애플 로그인 시 받은 authorizationCode
+        params.put("grant_type", "authorization_code");
+        params.put("client_id", APPLE_CLIENT_ID); // app bundle id
+
+        try {
+            HttpRequest getRequest = HttpRequest.newBuilder()
+                    .uri(new URI(uriStr))
+                    .POST(getParamsUrlEncoded(params))
+                    .headers("Content-Type", "application/x-www-form-urlencoded")
+                    .build();
+
+            HttpClient httpClient = HttpClient.newHttpClient();
+            HttpResponse<String> getResponse = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
+
+            // 응답을 JSON으로 파싱
+            JSONParser parser = new JSONParser();
+            JSONObject parseData = (JSONObject) parser.parse(getResponse.body());
+
+            // "refresh_token"이 존재하면 값 가져오기
+            if (parseData.containsKey("refresh_token")) {
+                refreshToken = parseData.get("refresh_token").toString();
+            } else {
+                System.out.println("refresh_token 키가 응답에 없음. 응답: " + getResponse.body());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (refreshToken == null || refreshToken.isBlank()) {
+            System.out.println("refreshToken 생성 실패");
+        }
+        System.out.println("refresh is this: " + refreshToken);
+        return refreshToken;
+    }
+
+
+    public HttpRequest.BodyPublisher getParamsUrlEncoded(Map<String, String> parameters) {
+        String urlEncoded = parameters.entrySet()
+                .stream()
+                .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
+                .collect(Collectors.joining("&"));
+        return HttpRequest.BodyPublishers.ofString(urlEncoded);
+    }
 
 }

@@ -15,7 +15,7 @@ public class AuthDTO {
     @Data
     public static class KakaoUserResponse {
 
-        private Long id; // 사용자 고유 ID
+        private String id; // 사용자 고유 ID
 
         @JsonProperty("kakao_account")
         private KakaoAccount kakaoAccount;
@@ -41,19 +41,6 @@ public class AuthDTO {
 
     }
 
-    // KakaoLoginRequest 클래스
-    @Data
-    public static class KakaoLoginRequest {
-        private String type; // 로그인 타입 (ex: "kakao", "apple")
-        private String accessToken;
-    }
-
-    // AppleLoginRequest 클래스
-    @Data
-    public static class AppleLoginRequest {
-        private String type; // 로그인 타입 (ex: "kakao", "apple")
-        private String authorizationCode;
-    }
 
     @Data
     @AllArgsConstructor

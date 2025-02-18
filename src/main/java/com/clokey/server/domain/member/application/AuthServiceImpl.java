@@ -3,6 +3,7 @@ package com.clokey.server.domain.member.application;
 import com.clokey.server.domain.member.dto.AuthDTO;
 import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.enums.MemberStatus;
 import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.clokey.server.domain.model.entity.enums.SocialType;
 import com.clokey.server.domain.search.application.SearchRepositoryService;
@@ -109,9 +110,20 @@ public class AuthServiceImpl implements AuthService {
         boolean isNewUser = false;
         if (optionalMember.isPresent()) {
             member = optionalMember.get();  // 기존 사용자
+            if (member.getKakaoId() == null||member.getKakaoId().isBlank()) {
+                if(member.getStatus()== MemberStatus.INACTIVE){
+                    member.updateStatus();
+                    member.updateInactiveDate(null);
+                    memberRepositoryService.saveMember(member);
+                }
+                // DB에 카카오 ID가 없으면 업데이트
+                member.updateKakaoId(kakaoUser.getId());
+                memberRepositoryService.saveMember(member);
+            }
         } else {
             // DB에 사용자 정보가 없으면 회원가입
             member = Member.builder()
+                    .kakaoId(kakaoUser.getId())
                     .nickname(kakaoUser.getKakaoAccount().getProfile().getNickname())
                     .email(kakaoUser.getKakaoAccount().getEmail())
                     .registerStatus(RegisterStatus.NOT_AGREED)

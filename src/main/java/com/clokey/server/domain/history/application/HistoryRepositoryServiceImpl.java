@@ -77,6 +77,10 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
     }
 
     @Override
+    public void deleteByHistoryIds(List<Long> historyIds) {
+        historyRepository.deleteByHistoryIds(historyIds);
+    }
+
     public Page<History> findByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> members, Visibility visibility, Pageable pageable) {
         return historyRepository.findByMemberInAndVisibilityOrderByHistoryDateDesc(members, visibility, pageable);
     }

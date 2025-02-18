@@ -23,9 +23,12 @@ public interface HashtagHistoryRepositoryService {
 
     List<String> findHashtagNamesByHistoryId(Long historyId);
 
+    void deleteAllByHistoryIds(List<Long> historyIds);
+
     List<Long> findHashtagIdsByMemberIdOrderByHistoryDateDesc(Long memberId);
 
     String findLatestTaggedHashtag(Long memberId);
 
     List<HashtagHistory> findTop5HistoriesByHashtagNameOrderByDateDesc(String hashtagName);
+
 }

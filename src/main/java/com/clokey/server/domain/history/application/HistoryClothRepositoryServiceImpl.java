@@ -55,4 +55,9 @@ public class HistoryClothRepositoryServiceImpl implements HistoryClothRepository
     public void saveAll(List<HistoryCloth> historyCloths) {
         historyClothRepository.saveAll(historyCloths);
     }
+
+    @Override
+    public void deleteAllByHistoryIds(List<Long> historyIds) {
+        historyClothRepository.deleteAllByHistoryIds(historyIds);
+    }
 }

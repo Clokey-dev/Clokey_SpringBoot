@@ -109,7 +109,8 @@ public enum ErrorStatus implements BaseErrorCode {
     EXPIRED_REFRESH_TOKEN(HttpStatus.BAD_REQUEST,"LOGIN_4005","리프레시 토큰이 만료되었습니다. 다시 로그인 하세요."),
     INVALID_CODE(HttpStatus.BAD_REQUEST,"LOGIN_4006","유효하지 않은 코드입니다."),
     NO_RESPONSE(HttpStatus.BAD_REQUEST,"LOGIN_4007","응답이 없습니다."),
-    INVALID_RESPONSE(HttpStatus.BAD_REQUEST,"LOGIN_4007","응답이 없습니다."),
+    INVALID_RESPONSE(HttpStatus.BAD_REQUEST,"LOGIN_4008","응답이 없습니다."),
+    INACTIVE_MEMBER(HttpStatus.BAD_REQUEST,"LOGIN_4009","비활성화된 사용자입니다."),
 
     //검색 에러
     NO_SUCH_PARAMETER(HttpStatus.BAD_REQUEST,"SEARCH_4001","검색어는 필수입니다."),

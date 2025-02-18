@@ -1,8 +1,13 @@
 package com.clokey.server.domain.member.application;
 
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.folder.domain.entity.Folder;
+import com.clokey.server.domain.history.domain.entity.Comment;
+import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.member.domain.repository.MemberRepository;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.exception.MemberException;
+import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
 import jakarta.persistence.EntityManager;
@@ -12,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -87,12 +93,73 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     }
 
 
+    @Override
     public Optional<Member> findMemberByEmail(String email) {
         String jpql = "SELECT m FROM Member m WHERE m.email = :email";
         TypedQuery<Member> query = entityManager.createQuery(jpql, Member.class);
         query.setParameter("email", email);
 
         return query.getResultStream().findFirst(); // Optional<Member> 반환
+    }
+
+    @Override
+    public List<Member> findInactiveUsersBefore(LocalDate cutoffDate) {
+        return memberRepository.findInactiveUsersBefore(cutoffDate);
+    }
+
+    @Override
+    public List<History> findHistoriesByMemberId(Long memberId) {
+        return memberRepository.findHistoriesByMemberId(memberId);
+    }
+
+    @Override
+    public List<Long> findHistoryIdsByMemberId(Long memberId) {
+        return memberRepository.findHistoryIdsByMemberId(memberId);
+    }
+
+    @Override
+    public List<Cloth> findClothesByMemberId(Long memberId) {
+        return memberRepository.findClothsByMemberId(memberId);
+    }
+
+    @Override
+    public List<Folder> findFoldersByMemberId(Long memberId) {
+        return memberRepository.findFoldersByMemberId(memberId);
+    }
+
+    @Override
+    public void deleteMemberById(Long memberId) {
+        memberRepository.deleteById(memberId);
+    }
+
+    @Override
+    public List<Comment> findCommentsByMemberId(Long memberId) {
+        return memberRepository.findCommentsByMemberId(memberId);
+    }
+
+    @Override
+    public List<ClokeyNotification> findNotificationsByMemberId(Long memberId) {
+        return memberRepository.findNotificationsByMemberId(memberId);
+    }
+
+    @Override
+    public List<Long> findClothIdsByMemberId(Long memberId) {
+        return memberRepository.findClothIdsByMemberId(memberId);
+    }
+
+    @Override
+    public List<Long> findFolderIdsByMemberId(Long memberId) {
+        return memberRepository.findFolderIdsByMemberId(memberId);
+    }
+
+    @Override
+    public List<Long> findCommentIdsByMemberId(Long memberId) {
+        return memberRepository.findCommentIdsByMemberId(memberId);
+    }
+
+    @Override
+    public List<Long> findNotificationIdsByMemberId(Long memberId) {
+        return memberRepository.findNotificationIdsByMemberId(memberId);
     }
 
     @Override

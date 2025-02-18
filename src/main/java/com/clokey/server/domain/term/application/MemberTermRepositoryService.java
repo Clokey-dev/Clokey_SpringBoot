@@ -2,10 +2,13 @@ package com.clokey.server.domain.term.application;
 
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.term.domain.entity.MemberTerm;
-
 import java.util.List;
 
+
 public interface MemberTermRepositoryService {
+
+    void deleteByMemberId(Long memberId);
+
 
     List<MemberTerm> findByMember(Member member); // 특정 사용자의 동의한 약관 조회
 

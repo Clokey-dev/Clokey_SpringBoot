@@ -2,25 +2,20 @@ package com.clokey.server.domain.member.api;
 
 import com.clokey.server.domain.member.application.AppleAuthService;
 import com.clokey.server.domain.member.application.AuthService;
+import com.clokey.server.domain.member.application.UnlinkService;
+import com.clokey.server.domain.member.application.UnlinkServiceImpl;
+import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.dto.AuthDTO;
-import com.clokey.server.domain.member.dto.MemberDTO;
 import com.clokey.server.domain.member.exception.MemberException;
+import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.code.status.SuccessStatus;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.oas.models.responses.ApiResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AuthController {
@@ -29,6 +24,11 @@ public class AuthController {
     private AuthService authService;
     @Autowired
     private AppleAuthService appleAuthService;
+    @Autowired
+    private UnlinkService logoutService;
+    @Autowired
+    private UnlinkServiceImpl unlinkService;
+
 
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<AuthDTO.TokenResponse>> login(@RequestBody AuthDTO.LoginRequest loginRequest) {
@@ -70,6 +70,7 @@ public class AuthController {
     }
 
 
+    @Operation(summary = "토큰 재발급 API", description = "액세스 토큰을 재발급하는 API입니다.")
     @PostMapping("/reissue-token")
     public BaseResponse<AuthDTO.TokenResponse> reissueToken(@RequestBody AuthDTO.RefreshTokenRequest request) {
 
@@ -77,6 +78,18 @@ public class AuthController {
         return BaseResponse.onSuccess(SuccessStatus.LOGIN_UPDATED, response);
 
     }
+
+
+    @Operation(summary = "회원탈퇴 API", description = "회원탈퇴하는 API입니다.")
+    @DeleteMapping("/unlink")
+    public BaseResponse<Object> unlink(
+            @Parameter(name = "user", hidden = true) @AuthUser Member member) {
+        System.out.println("memberId : "+member.getId());
+        logoutService.unlink(member.getId());
+        return BaseResponse.onSuccess(SuccessStatus.UNLINK_SUCCESS, null);
+    }
+
+
 }
 
 

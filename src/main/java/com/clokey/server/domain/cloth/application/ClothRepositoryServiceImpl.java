@@ -81,6 +81,10 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
     }
 
     @Override
+    public void deleteByClothIds(List<Long> clothIds) {
+        clothRepository.deleteByClothIds(clothIds);
+    }
+
     public List<Cloth> findAll(){
         return clothRepository.findAll();
     }
