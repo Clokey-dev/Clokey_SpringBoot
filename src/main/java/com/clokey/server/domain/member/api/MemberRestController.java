@@ -54,10 +54,10 @@ public class MemberRestController {
 
 
     @Operation(summary = "회원 조회 API", description = "다른 회원의 프로필을 조회하는 API입니다.")
-    @GetMapping("users/{clokey_id}")
+    @GetMapping("users")
     public BaseResponse<Object> getUser(
             @Parameter(name = "user", hidden = true) @AuthUser Member currentUser, // 현재 로그인한 사용자 추가
-            @NullableClokeyIdExist @PathVariable(value = "clokey_id", required = false) String clokeyId) {
+            @NullableClokeyIdExist @RequestParam(value = "clokey_id", required = false) String clokeyId) {
 
         MemberDTO.GetUserRP response = getUserQueryService.getUser(clokeyId, currentUser);
 
