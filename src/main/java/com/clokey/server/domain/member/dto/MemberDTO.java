@@ -39,17 +39,12 @@ public class MemberDTO {
     @AllArgsConstructor
     @Builder
     public static class ProfileRQ {
-
         @EssentialFieldNotNull
         String nickname;
-
         @EssentialFieldNotNull
         String clokeyId;
-
         private String bio;
-
         Visibility visibility;
-
     }
 
 
@@ -58,7 +53,6 @@ public class MemberDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ProfileRP {
-
         Long id;
         String bio;
         String email;
@@ -93,25 +87,12 @@ public class MemberDTO {
         private Boolean isLast;
     }
 
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class  FollowRQ{
-
-        @IdValid
-        String yourClokeyId;
-
-    }
-
 
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class  FollowRP{
-
         Boolean isFollow;
-
     }
 }

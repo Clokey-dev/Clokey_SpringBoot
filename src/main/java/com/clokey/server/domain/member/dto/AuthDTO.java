@@ -39,13 +39,11 @@ public class AuthDTO {
         private String authorizationCode=null;
         private String deviceToken=null;
         private String refreshToken=null;
-
     }
 
     @Data
     @AllArgsConstructor
     public static class TokenResponse {
-
         Long id;
         String email;
         String nickname;
