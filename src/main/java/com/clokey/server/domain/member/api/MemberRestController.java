@@ -6,10 +6,7 @@ import com.clokey.server.domain.member.application.GetUserQueryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.dto.MemberDTO;
 import com.clokey.server.domain.member.application.ProfileCommandService;
-import com.clokey.server.domain.member.exception.annotation.AuthUser;
-import com.clokey.server.domain.member.exception.annotation.IdExist;
-import com.clokey.server.domain.member.exception.annotation.IdValid;
-import com.clokey.server.domain.member.exception.annotation.NotFollowMyself;
+import com.clokey.server.domain.member.exception.annotation.*;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -60,7 +57,7 @@ public class MemberRestController {
     @GetMapping("users/{clokey_id}")
     public BaseResponse<Object> getUser(
             @Parameter(name = "user", hidden = true) @AuthUser Member currentUser, // 현재 로그인한 사용자 추가
-            @IdValid @PathVariable("clokey_id") String clokeyId) {
+            @NullableClokeyIdExist @PathVariable(value = "clokey_id", required = false) String clokeyId) {
 
         MemberDTO.GetUserRP response = getUserQueryService.getUser(clokeyId, currentUser);
 
