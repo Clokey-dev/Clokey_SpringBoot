@@ -164,6 +164,7 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
         return memberRepository.findAll();
     }
 
+    @Override
     public Map<Long, Member> findMembersByIds(Set<Long> memberIds) {
         List<Member> members = memberRepository.findByIdIn(memberIds);
         return members.stream().collect(Collectors.toMap(Member::getId, member -> member));
