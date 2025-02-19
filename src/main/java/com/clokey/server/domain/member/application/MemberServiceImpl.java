@@ -200,7 +200,7 @@ public class MemberServiceImpl implements  MemberService{
                 List<Member> members = followRepositoryService.findFollowingByFollowedId(findMember.getId(), pageable);
                 List<Boolean> isFollowings = followRepositoryService.checkFollowingStatus(memberId, members);
                 List<Boolean> isMySelf = members.stream()
-                        .map(member -> member.equals(findMember))
+                        .map(member -> member.getId().equals(memberId))
                         .toList();
                 return GetUserConverter.toGetFollowPeopleResultDTO(members, pageable, isFollowings,isMySelf);
             }else{
@@ -208,7 +208,7 @@ public class MemberServiceImpl implements  MemberService{
                 List<Member> members = followRepositoryService.findFollowedByFollowingId(findMember.getId(), pageable);
                 List<Boolean> isFollowings = followRepositoryService.checkFollowedStatus(memberId, members);
                 List<Boolean> isMySelf = members.stream()
-                        .map(member -> member.equals(findMember))
+                        .map(member -> member.getId().equals(memberId))
                         .toList();
                 return GetUserConverter.toGetFollowPeopleResultDTO(members, pageable, isFollowings,isMySelf);
             }
