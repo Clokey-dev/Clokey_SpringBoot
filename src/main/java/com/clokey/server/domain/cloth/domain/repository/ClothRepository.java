@@ -84,5 +84,5 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
         ORDER BY c.wearNum DESC
         LIMIT 3
     """)
-    List<Cloth> getTop3ClothIds(@Param("member") Member member);
+    List<Cloth> getTop3Cloths(@Param("member") Member member);
 }
