@@ -14,6 +14,8 @@ public interface MemberService {
     MemberDTO.ProfileRP updateProfile(Long userId, MemberDTO.ProfileRQ request,
                                       MultipartFile profileImage, MultipartFile profileBackImage);
 
+    void logout(Long userId);
+
     void clokeyIdUsingCheck(String clokeyId, Member currentUser);
 
     MemberDTO.GetFollowMemberResult getFollowPeople(Long memberId, String clokeyId, Integer page, Boolean isFollow);

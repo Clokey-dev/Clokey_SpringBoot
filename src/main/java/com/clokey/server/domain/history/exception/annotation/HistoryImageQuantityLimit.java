@@ -8,11 +8,13 @@ import java.lang.annotation.*;
 
 @Documented
 @Constraint(validatedBy = HistoryImageQuantityLimitValidator.class)
-@Target( { ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER })
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HistoryImageQuantityLimit{
+public @interface HistoryImageQuantityLimit {
 
     String message() default "기록 사진을 10개 이상 등록할 수 없습니다.";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

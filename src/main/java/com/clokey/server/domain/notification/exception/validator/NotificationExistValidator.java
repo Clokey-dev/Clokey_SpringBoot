@@ -1,9 +1,6 @@
 package com.clokey.server.domain.notification.exception.validator;
 
-import com.clokey.server.domain.history.application.CommentRepositoryService;
-import com.clokey.server.domain.history.exception.annotation.CommentExist;
 import com.clokey.server.domain.notification.application.NotificationRepositoryService;
-import com.clokey.server.domain.notification.domain.repository.NotificationRepository;
 import com.clokey.server.domain.notification.exception.annotation.NotificationExist;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.validation.ConstraintValidator;

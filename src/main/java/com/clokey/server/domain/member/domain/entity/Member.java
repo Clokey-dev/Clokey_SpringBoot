@@ -109,6 +109,11 @@ public class Member extends BaseEntity {
         this.visibility = request.getVisibility();
     }
 
+    public void deleteAccessRefreshToken(){
+        this.refreshToken = null;
+        this.accessToken = null;
+    }
+
     public void updateRegisterStatus(RegisterStatus registerStatus) {
         this.registerStatus = registerStatus;
     }

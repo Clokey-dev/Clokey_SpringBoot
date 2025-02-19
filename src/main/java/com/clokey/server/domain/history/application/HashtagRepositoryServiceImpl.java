@@ -4,18 +4,16 @@ import com.clokey.server.domain.history.domain.entity.Hashtag;
 import com.clokey.server.domain.history.domain.repository.HashtagRepository;
 import com.clokey.server.domain.history.exception.HashtagException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import com.clokey.server.global.error.exception.DatabaseException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Transactional
 @Service
 @RequiredArgsConstructor
-public class HashtagRepositoryServiceImpl implements HashtagRepositoryService{
+public class HashtagRepositoryServiceImpl implements HashtagRepositoryService {
 
     private final HashtagRepository hashtagRepository;
 
@@ -26,7 +24,7 @@ public class HashtagRepositoryServiceImpl implements HashtagRepositoryService{
 
     @Override
     public Hashtag findByName(String name) {
-        return hashtagRepository.findByName(name).orElseThrow(()-> new HashtagException(ErrorStatus.NO_SUCH_HASHTAG_NAME));
+        return hashtagRepository.findByName(name).orElseThrow(() -> new HashtagException(ErrorStatus.NO_SUCH_HASHTAG_NAME));
     }
 
     @Override

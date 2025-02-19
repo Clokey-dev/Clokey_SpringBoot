@@ -10,8 +10,6 @@ import java.util.List;
 
 public interface HistoryImageRepository extends JpaRepository<HistoryImage, Long> {
 
-    boolean existsByHistory_Id(Long historyId);
-
     List<HistoryImage> findByHistory_Id(Long historyId);
 
     List<HistoryImage> findByHistory_IdIn(List<Long> historyIds);
