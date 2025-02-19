@@ -49,7 +49,6 @@ public class ClothRestController {
     public BaseResponse<ClothResponseDTO.SmartSummaryClothPreviewListResult> getClothPreviewInfoListByCategoryId(
             @Parameter(name = "user", hidden = true) @AuthUser Member member
     ) {
-        // ClothService를 통해 데이터를 가져오고, 결과 반환
         ClothResponseDTO.SmartSummaryClothPreviewListResult result = clothService.readSmartSummary(member.getId());
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
@@ -92,7 +91,6 @@ public class ClothRestController {
             // 조회하는 유저와 다른 유저의 옷장이고, 그 유저가 비공개인 유저인지 확인합니다.
             memberAccessibleValidator.validateClothAccessOfMember(clokeyId, member.getId());
         }
-        // ClothService를 통해 데이터를 가져오고, 결과 반환
         ClothResponseDTO.ClothPreviewListResult result = clothService.readClothPreviewInfoListByClokeyId(clokeyId, member.getId(), categoryId, season, sort, page, size);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
@@ -117,7 +115,6 @@ public class ClothRestController {
         // 조회하는 유저와 다른 유저의 옷이고, 그 유저가 비공개인 유저인지 확인합니다.
         clothAccessibleValidator.validateMemberAccessOfMemberByCloth(clothId, member.getId());
 
-        // ClothService를 통해 데이터를 가져오고, 결과 반환
         ClothResponseDTO.ClothPopupViewResult result = clothService.readClothPopupInfoById(clothId);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
@@ -142,7 +139,6 @@ public class ClothRestController {
         // 조회하는 유저와 다른 유저의 옷이고, 그 유저가 비공개인 유저인지 확인합니다.
         clothAccessibleValidator.validateMemberAccessOfMemberByCloth(clothId, member.getId());
 
-        // ClothService를 통해 데이터를 가져오고, 결과 반환
         ClothResponseDTO.ClothEditViewResult result = clothService.readClothEditInfoById(clothId);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
@@ -167,7 +163,6 @@ public class ClothRestController {
         // 조회하는 유저와 다른 유저의 옷이고, 그 유저가 비공개인 유저인지 확인합니다.
         clothAccessibleValidator.validateMemberAccessOfMemberByCloth(clothId, member.getId());
 
-        // ClothService를 통해 데이터를 가져오고, 결과 반환
         ClothResponseDTO.ClothDetailViewResult result = clothService.readClothDetailInfoById(clothId);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_SUCCESS, result);
@@ -184,7 +179,6 @@ public class ClothRestController {
             @RequestPart("imageFile") @ClothImagePresence @ClothImageFormat MultipartFile imageFile,
             @Parameter(name = "user", hidden = true) @AuthUser Member member
     ) {
-        // ClothService를 통해 데이터를 생성하고, 결과 반환
         ClothResponseDTO.ClothCreateResult result =clothService.createCloth(member.getId(), clothCreateRequest, imageFile);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_CREATED, result);
@@ -208,7 +202,6 @@ public class ClothRestController {
         // 조회하는 현 유저가 옷에 대해서 수정 권한이 있는지 확인합니다.
         clothAccessibleValidator.validateClothOfMember(clothId, member.getId());
 
-        // ClothService를 통해 데이터를 수정
         clothService.updateClothById(clothId, clothUpdateRequest, imageFile);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_EDITED, null);
@@ -230,7 +223,6 @@ public class ClothRestController {
         // 조회하는 현 유저가 옷에 대해서 수정 권한이 있는지 확인합니다.
         clothAccessibleValidator.validateClothOfMember(clothId, member.getId());
 
-        // ClothService를 통해 데이터를 삭제
         clothService.deleteClothById(clothId);
 
         return BaseResponse.onSuccess(SuccessStatus.CLOTH_DELETED, null);

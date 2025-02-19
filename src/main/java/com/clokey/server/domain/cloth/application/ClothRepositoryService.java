@@ -8,10 +8,8 @@ import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ClothRepositoryService {
 
@@ -52,7 +50,8 @@ public interface ClothRepositoryService {
 
     String findMostWornCategory(Long memberId);
     
-    List<Cloth> findSuitableClothes(Long memberId, Integer nowTemp, Integer minTemp, Integer maxTemp);
+    List<Cloth> findBySuitableClothFilters(Long memberId, Integer nowTemp, Integer minTemp, Integer maxTemp);
 
     List<String> getTop3ClothImages(Member member, Pageable pageable);
+
 }

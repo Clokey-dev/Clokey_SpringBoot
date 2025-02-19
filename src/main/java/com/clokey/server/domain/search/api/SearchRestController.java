@@ -35,6 +35,10 @@ public class SearchRestController {
     private final SearchRepositoryService searchRepositoryService;
     private final MemberAccessibleValidator memberAccessibleValidator;
 
+    private final String CLOTH_SEARCH_FILTER_BY_NAME_AND_BRAND= "name-and-brand";
+    private final String HISTORY_SEARCH_FILTER_BY_HASHTAG_AND_CATEGORY= "hashtag-and-category";
+    private final String USER_SEARCH_FILTER_BY_ID_AND_NICKNAME= "id-and-nickname";
+
     /****************************************Sync****************************************/
 
     // 옷 Elastic Search 동기화 API
@@ -103,8 +107,7 @@ public class SearchRestController {
             // 조회하는 유저와 다른 유저의 옷장이고, 그 유저가 비공개인 유저인지 확인합니다.
             memberAccessibleValidator.validateClothAccessOfMember(clokeyId, member.getId());
         }
-        // By Name Or Brand
-        if("name-and-brand".equals(by)) {
+        if(CLOTH_SEARCH_FILTER_BY_NAME_AND_BRAND.equals(by)) {
             try {
                 ClothResponseDTO.ClothPreviewListResult result = searchService.searchClothesByNameOrBrand(member.getId(),clokeyId,keyword,page,size);
                 return BaseResponse.onSuccess(SuccessStatus.SEARCH_SUCCESS, result);
@@ -139,8 +142,7 @@ public class SearchRestController {
             @RequestParam @CheckPageSize int size,
             @Parameter(name = "user", hidden = true) @AuthUser Member member
     ) {
-        // By Hashtag And Category
-        if("hashtag-and-category".equals(by)) {
+        if(HISTORY_SEARCH_FILTER_BY_HASHTAG_AND_CATEGORY.equals(by)) {
             try {
                 HistoryResponseDTO.HistoryPreviewListResult result = searchService.searchHistoriesByHashtagAndCategory(keyword,page,size);
                 return BaseResponse.onSuccess(SuccessStatus.SEARCH_SUCCESS, result);
@@ -175,8 +177,7 @@ public class SearchRestController {
             @RequestParam @CheckPageSize int size,
             @Parameter(name = "user", hidden = true) @AuthUser Member member
     ) {
-        // By Id And Nickname
-        if("id-and-nickname".equals(by)) {
+        if(USER_SEARCH_FILTER_BY_ID_AND_NICKNAME.equals(by)) {
             try {
                 MemberDTO.ProfilePreviewListRP result = searchService.searchMembersByClokeyIdOrNickname(keyword,page,size);
                 return BaseResponse.onSuccess(SuccessStatus.SEARCH_SUCCESS, result);
