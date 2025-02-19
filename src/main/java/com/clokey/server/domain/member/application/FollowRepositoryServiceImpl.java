@@ -1,5 +1,6 @@
 package com.clokey.server.domain.member.application;
 
+import com.clokey.server.domain.member.domain.entity.Follow;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.domain.repository.FollowRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +38,36 @@ public class FollowRepositoryServiceImpl implements FollowRepositoryService{
     @Override
     public List<Member> findFollowingByFollowedId(Long followedId) {
         return followRepository.findFollowingByFollowedId(followedId);
+    }
+
+    @Override
+    public Optional<Follow> findByFollowing_IdAndFollowed_Id(Long followingId, Long followedId){
+        return followRepository.findByFollowing_IdAndFollowed_Id(followingId,followedId);
+    }
+
+    @Override
+    public void delete(Follow follow){
+        followRepository.delete(follow);
+    }
+
+    @Override
+    public void save(Follow follow){
+        followRepository.save(follow);
+    }
+
+    @Override
+    public boolean isFollowing(Member currentUser, Member targetUser){
+        return followRepository.isFollowing(currentUser,targetUser);
+    }
+
+    @Override
+    public Long countFollowersByMember(Member member){
+        return followRepository.countFollowersByMember(member);
+    }
+
+    @Override
+    public Long countFollowingByMember(Member member){
+        return followRepository.countFollowingByMember(member);
     }
 
     @Override

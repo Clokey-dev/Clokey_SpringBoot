@@ -53,4 +53,6 @@ public interface ClothRepositoryService {
     String findMostWornCategory(Long memberId);
     
     List<Cloth> findSuitableClothes(Long memberId, Integer nowTemp, Integer minTemp, Integer maxTemp);
+
+    List<String> getTop3ClothImages(Member member, Pageable pageable);
 }

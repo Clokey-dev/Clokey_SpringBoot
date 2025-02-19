@@ -109,4 +109,10 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
     public List<Cloth> findSuitableClothes(Long memberId, Integer nowTemp, Integer minTemp, Integer maxTemp) {
         return clothRepository.findSuitableClothes(memberId, nowTemp, minTemp, maxTemp);
     }
+
+    @Override
+    public List<String> getTop3ClothImages(Member member, Pageable pageable){
+        return clothRepository.getTop3ClothImages(member, pageable);
+    }
+
 }

@@ -99,4 +99,11 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
     public List<History> findAll(){
         return historyRepository.findAll();
     }
+
+    @Override
+    public Long countHistoryByMember(Member member){
+        return historyRepository.countHistoryByMember(member);
+    }
+
+
 }
