@@ -362,8 +362,12 @@ public class HistoryServiceImpl implements HistoryService {
 
         List<Member> likedMembers = memberLikeRepositoryService.findMembersByHistory(historyId);
         List<Boolean> followStatus = followRepositoryService.checkFollowingStatus(memberId, likedMembers);
+        List<Boolean> isMySelf = likedMembers.stream()
+                .map(Member::getId)
+                .map(likedMemberId -> likedMemberId.equals(memberId))
+                .toList();
 
-        return HistoryConverter.toLikedUserResult(likedMembers, followStatus);
+        return HistoryConverter.toLikedUserResult(likedMembers, followStatus,isMySelf);
     }
 
     private void validateMyComment(Long commentId, Long memberId) {

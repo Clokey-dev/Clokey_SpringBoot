@@ -177,7 +177,7 @@ public class HistoryConverter {
                 .build();
     }
 
-    public static HistoryResponseDTO.LikedUserResults toLikedUserResult(List<Member> members, List<Boolean> followStatus) {
+    public static HistoryResponseDTO.LikedUserResults toLikedUserResult(List<Member> members, List<Boolean> followStatus, List<Boolean> isMySelf) {
         List<HistoryResponseDTO.LikedUserResult> likedUserResults = new ArrayList<>();
         for (int i = 0; i < members.size(); i++) {
             Member member = members.get(i);
@@ -187,6 +187,7 @@ public class HistoryConverter {
                     .followStatus(followStatus.get(i))
                     .memberId(member.getId())
                     .nickname(member.getNickname())
+                    .isMe(isMySelf.get(i))
                     .build());
         }
         return HistoryResponseDTO.LikedUserResults.builder()

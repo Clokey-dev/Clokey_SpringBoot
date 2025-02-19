@@ -168,6 +168,7 @@ public class HistoryResponseDTO {
         String imageUrl;
         String nickname;
         boolean followStatus;
+        boolean isMe;
     }
 
     @Builder

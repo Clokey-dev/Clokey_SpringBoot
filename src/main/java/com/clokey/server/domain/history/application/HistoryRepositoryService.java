@@ -33,7 +33,6 @@ public interface HistoryRepositoryService {
 
     List<Boolean> existsByHistoryDateAndMemberIds(LocalDate historyDate, List<Long> memberIds);
 
-
     void deleteByHistoryIds(List<Long> historyIds);
 
     Page<History> findByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> members, Visibility visibility, Pageable pageable);

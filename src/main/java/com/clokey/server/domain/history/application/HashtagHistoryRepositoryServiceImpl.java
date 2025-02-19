@@ -18,12 +18,6 @@ public class HashtagHistoryRepositoryServiceImpl implements HashtagHistoryReposi
 
     private final HashtagHistoryRepository hashtagHistoryRepository;
 
-
-    @Override
-    public boolean existsByHistory_Id(Long historyId) {
-        return hashtagHistoryRepository.existsByHistory_Id(historyId);
-    }
-
     @Override
     public List<HashtagHistory> findByHistory_Id(Long historyId) {
         return hashtagHistoryRepository.findByHistory_Id(historyId);
