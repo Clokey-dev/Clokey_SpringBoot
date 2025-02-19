@@ -87,4 +87,14 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
         LIMIT 3
     """)
     List<Cloth> getTop3Cloths(@Param("member") Member member);
+
+    @Query("""
+    SELECT c
+    FROM Cloth c
+    WHERE c.member = :member
+      AND c.visibility = 'PUBLIC'
+    ORDER BY c.wearNum DESC
+    LIMIT 3
+""")
+    List<Cloth> getTop3PublicCloths(@Param("member") Member member);
 }

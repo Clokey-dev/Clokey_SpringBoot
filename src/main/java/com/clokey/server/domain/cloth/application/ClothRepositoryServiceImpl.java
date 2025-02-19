@@ -116,4 +116,13 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
         return cloths;
     }
 
+    @Override
+    public List<Cloth> getTop3PublicCloths(Member member) {
+        List<Cloth> cloths = clothRepository.getTop3PublicCloths(member);
+        while (cloths.size() < 3) {
+            cloths.add(null);
+        }
+        return cloths;
+    }
+
 }

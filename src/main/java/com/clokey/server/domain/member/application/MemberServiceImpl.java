@@ -89,19 +89,25 @@ public class MemberServiceImpl implements  MemberService{
     public MemberDTO.GetUserRP getUser(String clokeyId, Member currentUser) {
         Member member;
         Boolean isFollowing;
+        List<Cloth> topCloths;
 
         if(clokeyId == null){
             member = currentUser;
             isFollowing = null;
+            topCloths = clothRepositoryService.getTop3Cloths(member);
         } else {
             member = memberRepositoryService.findMemberByClokeyId(clokeyId);
             isFollowing = followRepositoryService.isFollowing(currentUser, member);
+            if(member.getVisibility().equals(Visibility.PUBLIC)){
+                topCloths = clothRepositoryService.getTop3PublicCloths(member);
+            } else{
+                topCloths = List.of(null,null,null);
+            }
         }
 
         Long recordCount = historyRepositoryService.countHistoryByMember(member);
         Long followerCount = followRepositoryService.countFollowersByMember(member);
         Long followingCount = followRepositoryService.countFollowingByMember(member);
-        List<Cloth> topCloths = clothRepositoryService.getTop3Cloths(member);
 
         return GetUserConverter.toGetUserResponseDTO(
                 member, recordCount, followerCount, followingCount, isFollowing, topCloths
