@@ -24,6 +24,16 @@ public class MemberRestController {
 
     private final MemberService memberService;
 
+    @Operation(summary = "로그아웃 API", description = "사용자의 access token과 refresh token을 날려줍니다.")
+    @PostMapping(value = "users/logout")
+    public BaseResponse<Void> logout(
+            @Parameter(name = "user", hidden = true) @AuthUser Member member){
+
+        memberService.logout(member.getId());
+
+        return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_EDITED, null);
+    }
+
     @Operation(summary = "프로필 수정 API", description = "사용자의 프로필 정보를 수정하는 API입니다.")
     @PatchMapping(value = "users/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<MemberDTO.ProfileRP> updateProfile(
@@ -36,8 +46,6 @@ public class MemberRestController {
 
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_EDITED, response);
     }
-
-
 
 
     @Operation(summary = "아이디 중복 조회 API", description = "사용자의 클로키 아이디가 이미 사용 중인지 조회하는 API입니다.")

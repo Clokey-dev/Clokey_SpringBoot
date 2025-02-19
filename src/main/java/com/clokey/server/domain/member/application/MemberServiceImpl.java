@@ -157,6 +157,13 @@ public class MemberServiceImpl implements  MemberService{
     }
 
     @Override
+    @Transactional
+    public void logout(Long userId) {
+        Member member = memberRepositoryService.findMemberById(userId);
+        member.deleteAccessRefreshToken();
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public void clokeyIdUsingCheck(String clokeyId, Member currentUser) {
         // 현재 로그인한 사용자의 clokeyId 가져오기
