@@ -9,35 +9,24 @@ import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class ClothRepositoryServiceImpl implements ClothRepositoryService{
 
     private final ClothRepository clothRepository;
 
     @Override
-    @EntityGraph(attributePaths = {"images"})
-    public Cloth findById(Long id){
-        return clothRepository.findById(id).orElseThrow(()->new DatabaseException(ErrorStatus.NO_SUCH_CLOTH));
-    }
-
-    @Override
-    @Modifying
-    public void deleteById(Long id){
-        clothRepository.deleteById(id);
+    public boolean existsById(Long clothId) {
+        return clothRepository.existsById(clothId);
     }
 
     @Override
@@ -46,8 +35,19 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
     }
 
     @Override
-    public boolean existsById(Long clothId) {
-        return clothRepository.existsById(clothId);
+    @EntityGraph(attributePaths = {"images"})
+    public Cloth findById(Long id){
+        return clothRepository.findById(id).orElseThrow(()->new DatabaseException(ErrorStatus.NO_SUCH_CLOTH));
+    }
+
+    @Override
+    public List<Cloth> findAll(){
+        return clothRepository.findAll();
+    }
+
+    @Override
+    public List<Cloth> findAllById(List<Long> clothIds) {
+        return clothRepository.findAllById(clothIds);
     }
 
     @Override
@@ -73,22 +73,7 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
             case INFREQUENT -> clothRepository.findLeastFrequentClothList(memberId,categoryId);
         };
     }
-  
-    @Override
-    public List<Cloth> findAllById(List<Long> clothIds) {
-        return clothRepository.findAllById(clothIds);
 
-    }
-
-    @Override
-    public void deleteByClothIds(List<Long> clothIds) {
-        clothRepository.deleteByClothIds(clothIds);
-    }
-
-    public List<Cloth> findAll(){
-        return clothRepository.findAll();
-    }
-  
     @Override
     public Page<Cloth> findByMemberInAndVisibilityOrderByCreatedAtDesc(List<Member> members, Visibility visibility, Pageable pageable) {
         return clothRepository.findByMemberInAndVisibilityOrderByCreatedAtDesc(members, visibility, pageable);
@@ -106,7 +91,17 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
     }
 
     @Override
-    public List<Cloth> findSuitableClothes(Long memberId, Integer nowTemp, Integer minTemp, Integer maxTemp) {
-        return clothRepository.findSuitableClothes(memberId, nowTemp, minTemp, maxTemp);
+    public List<Cloth> findBySuitableClothFilters(Long memberId, Integer nowTemp, Integer minTemp, Integer maxTemp) {
+        return clothRepository.findBySuitableClothFilters(memberId, nowTemp, minTemp, maxTemp);
+    }
+
+    @Override
+    public void deleteById(Long id){
+        clothRepository.deleteById(id);
+    }
+
+    @Override
+    public void deleteByClothIds(List<Long> clothIds) {
+        clothRepository.deleteByClothIds(clothIds);
     }
 }

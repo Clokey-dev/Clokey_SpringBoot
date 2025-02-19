@@ -2,13 +2,9 @@ package com.clokey.server.domain.cloth.application;
 
 import com.clokey.server.domain.cloth.domain.entity.ClothImage;
 import com.clokey.server.domain.cloth.domain.repository.ClothImageRepository;
-import com.clokey.server.domain.history.domain.entity.HistoryImage;
 import com.clokey.server.global.infra.s3.S3ImageService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
