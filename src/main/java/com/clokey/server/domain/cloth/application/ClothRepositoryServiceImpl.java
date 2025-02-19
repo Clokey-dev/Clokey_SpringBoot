@@ -17,6 +17,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -82,7 +83,7 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
 
     @Override
     public List<Cloth> findTop6ByMemberInAndVisibilityOrderByCreatedAtDesc(List<Member> members, Visibility visibility) {
-        return clothRepository.findTop6ByMemberInAndVisibilityAndCreatedAtBetweenOrderByCreatedAtDesc(members, visibility, LocalDate.now().minusWeeks(2), LocalDate.now());
+        return clothRepository.findTop6ByMemberInAndVisibilityAndCreatedAtBetweenOrderByCreatedAtDesc(members, visibility, LocalDateTime.now().minusWeeks(2), LocalDateTime.now());
     }
 
     @Override
