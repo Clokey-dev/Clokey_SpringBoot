@@ -3,7 +3,6 @@ package com.clokey.server.domain.cloth.domain.repository;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.Season;
-import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -19,16 +18,8 @@ import java.util.Optional;
 
 public interface ClothRepository extends JpaRepository<Cloth, Long> {
 
-    boolean existsById(Long id);
-
     @EntityGraph(attributePaths = {"image"})
     Optional<Cloth> findById(Long id);
-
-    List<Cloth> findAll();
-
-    @Transactional
-    @Modifying
-    void deleteById(Long id);
 
     @Query("SELECT c FROM Cloth c " +
             "JOIN c.member m " +
@@ -52,23 +43,17 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
             Pageable pageable
     );
 
-
     @Query("SELECT c FROM Cloth c " +
             "WHERE c.member.id = :memberId " +
             "AND c.category.id = :categoryId " +
             "ORDER BY c.wearNum ASC, c.id ASC LIMIT 3")
     List<Cloth> findLeastFrequentClothList(@Param("memberId") Long memberId, @Param("categoryId") Long categoryId);
 
-
     @Query("SELECT c FROM Cloth c " +
             "WHERE c.member.id = :memberId " +
             "AND c.category.id = :categoryId " +
             "ORDER BY c.wearNum DESC, c.id ASC LIMIT 3")
     List<Cloth> findMostFrequentClothList(@Param("memberId") Long memberId, @Param("categoryId") Long categoryId);
-
-    @Modifying
-    @Query("DELETE FROM Cloth c WHERE c.id IN :clothIds")
-    void deleteByClothIds(@Param("clothIds") List<Long> clothIds);
 
     Page<Cloth> findByMemberInAndVisibilityOrderByCreatedAtDesc(
             List<Member> members, Visibility visibility, Pageable pageable);
@@ -84,10 +69,13 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
             "AND ((:nowTemp BETWEEN c.tempLowerBound AND c.tempUpperBound) " + // 1순위: 현재 온도가 온도 범위 내
             "OR (c.tempLowerBound <= :maxTemp AND c.tempUpperBound >= :minTemp)) " + // 2순위: 오늘 기온과 겹치는 옷
             "ORDER BY RAND()")
-    List<Cloth> findSuitableClothes(@Param("memberId") Long memberId,
-                                    @Param("nowTemp") Integer nowTemp,
-                                    @Param("minTemp") Integer minTemp,
-                                    @Param("maxTemp") Integer maxTemp);
+    List<Cloth> findBySuitableClothFilters (@Param("memberId") Long memberId,
+                                           @Param("nowTemp") Integer nowTemp,
+                                           @Param("minTemp") Integer minTemp,
+                                           @Param("maxTemp") Integer maxTemp);
+    @Modifying
+    @Query("DELETE FROM Cloth c WHERE c.id IN :clothIds")
+    void deleteByClothIds(@Param("clothIds") List<Long> clothIds);
 
     @Query("""
         SELECT c

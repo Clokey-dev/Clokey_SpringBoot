@@ -96,7 +96,7 @@ public class NotificationServiceImpl implements NotificationService {
         Member historyWriter = historyRepositoryService.findById(historyId).getMember();
         Member likedMember = memberRepositoryService.findMemberById(memberId);
 
-        if(memberId.equals(historyId)){
+        if (memberId.equals(historyId)) {
             return null;
         }
 
@@ -203,13 +203,12 @@ public class NotificationServiceImpl implements NotificationService {
     public NotificationResponseDTO.HistoryCommentNotificationResult sendHistoryCommentNotification(Long historyId, Long commentId, Long memberId) {
 
 
-
         checkMyComment(commentId, memberId);
         checkHistoryComment(commentId, historyId);
 
         Member historyWriter = historyRepositoryService.findById(historyId).getMember();
         Member commentWriter = memberRepositoryService.findMemberById(memberId);
-        if(historyWriter.equals(commentWriter)){
+        if (historyWriter.equals(commentWriter)) {
             return null;
         }
         Comment writtenComment = commentRepositoryService.findById(commentId);
@@ -280,7 +279,7 @@ public class NotificationServiceImpl implements NotificationService {
         Member commentWriter = commentRepositoryService.findById(commentId).getMember();
         Comment writtenReply = commentRepositoryService.findById(replyId);
         Member replyWriter = writtenReply.getMember();
-        if(commentWriter.equals(replyWriter)){
+        if (commentWriter.equals(replyWriter)) {
             return null;
         }
 
@@ -410,7 +409,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    private boolean ableToSendNotification(Member member){
+    private boolean ableToSendNotification(Member member) {
         return member.getStatus() != MemberStatus.INACTIVE && member.getDeviceToken() != null && member.getRefreshToken() != null;
     }
 }

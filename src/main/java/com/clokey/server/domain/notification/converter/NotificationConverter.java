@@ -1,6 +1,5 @@
 package com.clokey.server.domain.notification.converter;
 
-
 import com.clokey.server.domain.model.entity.enums.ReadStatus;
 import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
 import com.clokey.server.domain.notification.dto.NotificationResponseDTO;

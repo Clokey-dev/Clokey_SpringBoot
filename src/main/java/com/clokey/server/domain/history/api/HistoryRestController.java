@@ -42,7 +42,7 @@ public class HistoryRestController {
             @Parameter(name = "historyId", description = "기록의 id, path variable 입니다.")
     })
     public BaseResponse<HistoryResponseDTO.DailyHistoryResult> getDailyHistory(@PathVariable @Valid @HistoryExist Long historyId,
-                                                                               @Parameter(name = "user",hidden = true) @AuthUser Member member) {
+                                                                               @Parameter(name = "user", hidden = true) @AuthUser Member member) {
 
         HistoryResponseDTO.DailyHistoryResult result = historyService.getDaily(historyId, member.getId());
 
@@ -58,7 +58,7 @@ public class HistoryRestController {
             @Parameter(name = "clokeyId", description = "조회하고자 하는 clokeyId, 빈칸 입력시 현재 유저를 기준으로 합니다."),
             @Parameter(name = "month", description = "조회하고자 하는 월입니다. YYYY-MM 형식으로 입력해주세요. ex)2025-01")
     })
-    public BaseResponse<HistoryResponseDTO.MonthViewResult> getMonthlyHistories(@Parameter(name = "user",hidden = true) @AuthUser Member member,
+    public BaseResponse<HistoryResponseDTO.MonthViewResult> getMonthlyHistories(@Parameter(name = "user", hidden = true) @AuthUser Member member,
                                                                                 @RequestParam(value = "clokeyId", required = false) @Valid @NullableClokeyIdExist String clokeyId,
                                                                                 @RequestParam(value = "month") @Valid @MonthFormat String month) {
 
@@ -91,7 +91,7 @@ public class HistoryRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "좋아요 상태가 성공적으로 변경되었습니다."),
     })
-    public BaseResponse<HistoryResponseDTO.LikeResult> like(@Parameter(name = "user",hidden = true) @AuthUser Member member,
+    public BaseResponse<HistoryResponseDTO.LikeResult> like(@Parameter(name = "user", hidden = true) @AuthUser Member member,
                                                             @RequestBody @Valid HistoryRequestDTO.LikeStatusChange request) {
 
         //isLiked의 상태에 따라서 좋아요 -> 취소 , 좋아요가 없는 상태 -> 좋아요 로 바꿔주게 됩니다.
@@ -106,7 +106,7 @@ public class HistoryRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "기록의 좋아요를 누른 유저 정보를 성공적으로 조회했습니다."),
     })
     public BaseResponse<HistoryResponseDTO.LikedUserResults> getLikedUsers(@PathVariable @HistoryExist Long historyId,
-                                                                           @Parameter(name = "user",hidden = true) @AuthUser Member member) {
+                                                                           @Parameter(name = "user", hidden = true) @AuthUser Member member) {
 
         HistoryResponseDTO.LikedUserResults result = historyService.getLikedUser(member.getId(), historyId);
 
@@ -123,7 +123,7 @@ public class HistoryRestController {
             @Parameter(name = "historyId", description = "댓글을 남기고자 하는 기록의 ID")
     })
     public BaseResponse<HistoryResponseDTO.CommentWriteResult> writeComments(@PathVariable @Valid @HistoryExist Long historyId,
-                                                                             @Parameter(name = "user",hidden = true) @AuthUser Member member,
+                                                                             @Parameter(name = "user", hidden = true) @AuthUser Member member,
                                                                              @RequestBody @Valid HistoryRequestDTO.CommentWrite request) {
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_CREATED, historyService.writeComment(historyId, request.getCommentId(), member.getId(), request.getContent()));
 
@@ -137,7 +137,7 @@ public class HistoryRestController {
     public BaseResponse<HistoryResponseDTO.HistoryCreateResult> createHistory(
             @RequestPart("historyCreateRequest") @Valid HistoryRequestDTO.HistoryCreate historyCreateRequest,
             @RequestPart(value = "imageFile") @Valid @HistoryImageQuantityLimit List<MultipartFile> imageFiles,
-            @Parameter(name = "user",hidden = true) @AuthUser Member member
+            @Parameter(name = "user", hidden = true) @AuthUser Member member
     ) {
 
         HistoryResponseDTO.HistoryCreateResult result = historyService.createHistory(historyCreateRequest, member.getId(), imageFiles);
@@ -154,7 +154,7 @@ public class HistoryRestController {
             @Parameter(name = "commentId", description = "삭제하고자 하는 댓글의 ID")
     })
     public BaseResponse<Void> deleteComment(
-            @Parameter(name = "user",hidden = true) @AuthUser Member member,
+            @Parameter(name = "user", hidden = true) @AuthUser Member member,
             @PathVariable Long commentId
     ) {
 
@@ -173,7 +173,7 @@ public class HistoryRestController {
     })
     public BaseResponse<Void> updateComment(
             @RequestBody @Valid HistoryRequestDTO.UpdateComment updateCommentRequest,
-            @Parameter(name = "user",hidden = true) @AuthUser Member member,
+            @Parameter(name = "user", hidden = true) @AuthUser Member member,
             @PathVariable Long commentId
     ) {
 

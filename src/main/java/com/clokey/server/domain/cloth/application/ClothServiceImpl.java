@@ -17,7 +17,7 @@ import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
 import com.clokey.server.domain.search.application.SearchRepositoryService;
 import com.clokey.server.domain.search.exception.SearchException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,62 +43,55 @@ public class ClothServiceImpl implements ClothService {
     private final S3ImageService s3ImageService;
     private final SearchRepositoryService searchRepositoryService;
 
+    @Transactional(readOnly = true)
     public ClothResponseDTO.ClothPopupViewResult readClothPopupInfoById(Long clothId) {
 
-        // Cloth 레포지토리 조회
         Cloth cloth = clothRepositoryService.findById(clothId);
 
-        // Cloth를 응답형식로 변환하여 반환
         return ClothConverter.toClothPopupViewResult(cloth);
     }
 
+    @Transactional(readOnly = true)
     public ClothResponseDTO.ClothEditViewResult readClothEditInfoById(Long clothId){
 
-        // Cloth 레포지토리 조회
         Cloth cloth = clothRepositoryService.findById(clothId);
 
-        // Cloth를 응답형식로 변환하여 반환
         return ClothConverter.toClothEditViewResult(cloth);
     }
 
+    @Transactional(readOnly = true)
     public ClothResponseDTO.ClothDetailViewResult readClothDetailInfoById(Long clothId){
 
-        // Cloth 레포지토리 조회
         Cloth cloth = clothRepositoryService.findById(clothId);
 
-        // Cloth를 응답형식로 변환하여 반환
         return ClothConverter.toClothDetailViewResult(cloth);
     }
 
     // 옷장의 옷의 PreView 조회 후 옷장 조회 DTO로 변환해서 반환
+    @Transactional(readOnly = true)
     public ClothResponseDTO.ClothPreviewListResult readClothPreviewInfoListByClokeyId(
             String ownerClokeyId, Long requesterId, Long categoryId, Season season, ClothSort sort, int page, int size) {
 
         Pageable pageable = PageRequest.of(page-1, size);
         Page<Cloth> clothes = clothRepositoryService.findByClosetFilters(ownerClokeyId, requesterId, categoryId, season, sort, pageable);
 
-        // Cloth -> ClothPreview 변환
         List<ClothResponseDTO.ClothPreview> clothPreviews = ClothConverter.toClothPreviewList(clothes);
 
-        // 페이징 정보를 담아 DTO 반환
         return ClothConverter.toClothPreviewListResult(clothes, clothPreviews);
     }
 
     // 지난 7일간 착용횟수를 통해 카테고리와 카테고리에 해당하는 옷의 PreView 조회 후 스마트 요약 DTO로 변환해서 반환
+    @Transactional(readOnly = true)
     public ClothResponseDTO.SmartSummaryClothPreviewListResult readSmartSummary(Long memberId) {
-        // 지난 7일간의 History 조회
         List<History> histories = historyRepositoryService.findHistoriesByMemberWithinWeek(memberId);
 
-        // 각 History에 연결된 모든 Cloth 조회
         List<Cloth> clothes = histories.stream()
                 .flatMap(history -> historyClothRepositoryService.findAllClothByHistoryId(history.getId()).stream())
                 .collect(Collectors.toList());
 
-        // 카테고리별 착용 횟수 집계
         Map<Category, Long> categoryCountMap = clothes.stream()
                 .collect(Collectors.groupingBy(Cloth::getCategory, Collectors.counting()));
 
-        // 부모가 존재하는(2차) 카테고리만 필터링
         List<Map.Entry<Category, Long>> filteredEntries = categoryCountMap.entrySet().stream()
                 .filter(entry -> entry.getKey().getParent() != null)
                 .collect(Collectors.toList());
@@ -107,16 +100,13 @@ public class ClothServiceImpl implements ClothService {
             throw new CategoryException(ErrorStatus.CATEGORY_NOT_FOUND_IN_SUMMARY);
         }
 
-        // 자주 입은(가장 많이 착용한) 카테고리 구하기
         Map.Entry<Category, Long> frequentEntry = filteredEntries.stream()
                 .max(Map.Entry.comparingByValue())
                 .orElseThrow(() -> new CategoryException(ErrorStatus.CATEGORY_NOT_FOUND_IN_SUMMARY));
-        // 덜 입은(가장 적게 착용한) 카테고리 구하기
         Map.Entry<Category, Long> infrequentEntry = filteredEntries.stream()
                 .min(Map.Entry.comparingByValue())
                 .orElseThrow(() -> new CategoryException(ErrorStatus.CATEGORY_NOT_FOUND_IN_SUMMARY));
 
-        // 각 카테고리에 해당하는 옷 목록 조회
         List<Cloth> frequentClothes = clothRepositoryService.findBySmartSummaryFilters(
                 SummaryFrequency.FREQUENT, memberId, frequentEntry.getKey().getId());
         List<ClothResponseDTO.ClothPreview> frequentClothPreviews = ClothConverter.toClothPreviewList(frequentClothes);
@@ -125,7 +115,6 @@ public class ClothServiceImpl implements ClothService {
                 SummaryFrequency.INFREQUENT, memberId, infrequentEntry.getKey().getId());
         List<ClothResponseDTO.ClothPreview> infrequentClothPreviews = ClothConverter.toClothPreviewList(infrequentClothes);
 
-        // 컨버터 메소드에 두 경우의 데이터를 모두 전달하여 DTO 생성
         return ClothConverter.toSummaryClothPreviewListResult(
                 frequentEntry.getKey(),           // 자주 입은 카테고리 객체
                 infrequentEntry.getKey(),         // 덜 입은 카테고리 객체
@@ -141,46 +130,35 @@ public class ClothServiceImpl implements ClothService {
                                                           ClothRequestDTO.ClothCreateOrUpdateRequest request,
                                                           MultipartFile imageFile) {
 
-        // Cloth 엔티티 생성 후 요청 정보 반환해서 저장
         Cloth cloth = clothRepositoryService.save(ClothConverter.toCloth(memberId, request));
 
-        // 이미지 업로드 후 URL 반환
         String imageUrl = (imageFile != null) ? s3ImageService.upload(imageFile) : null;
 
-        // ClothImage 엔티티 생성 & URL 저장
         ClothImage clothImage = ClothImage.builder()
                 .imageUrl(imageUrl)
                 .cloth(cloth)
                 .build();
 
-        // ClothImage 저장
         clothImageRepositoryService.save(clothImage);
 
-        // ES 동기화
         try {
             searchRepositoryService.updateClothDataToElasticsearch(cloth);
         } catch (IOException e) {
             throw new SearchException(ErrorStatus.ELASTIC_SEARCH_SYNC_FAULT);
         }
 
-        // Cloth를 응답형식로 변환하여 반환
         return ClothConverter.toClothCreateResult(cloth);
     }
-
 
     @Transactional
     public void updateClothById(Long clothId,
                                 ClothRequestDTO.ClothCreateOrUpdateRequest request,
                                 MultipartFile imageFile){
 
-        // 기존 Cloth 조회
         Cloth existingCloth = clothRepositoryService.findById(clothId);
 
-        // 이미지 업로드 처리
         String imageUrl = (imageFile != null) ? s3ImageService.upload(imageFile) : null;
 
-        // 엔티티의 업데이트 메서드 호출
-        // DTO에서 필요한 값을 꺼내서 업데이트 메서드에 전달
         existingCloth.updateCloth(
                 request.getName(),
                 request.getSeasons(),
@@ -204,13 +182,11 @@ public class ClothServiceImpl implements ClothService {
 
     @Transactional
     public void deleteClothById(Long clothId){
-        //Cloth 연관 엔티티 우선 삭제
         historyClothRepositoryService.deleteAllByClothId(clothId);
         clothFolderRepositoryService.deleteAllByClothId(clothId);
         clothImageRepositoryService.deleteByClothId(clothId);
         clothRepositoryService.deleteById(clothId);
 
-        // ES 삭제
         try {
             searchRepositoryService.deleteClothByIdFromElasticsearch(clothId);
         } catch (IOException e) {

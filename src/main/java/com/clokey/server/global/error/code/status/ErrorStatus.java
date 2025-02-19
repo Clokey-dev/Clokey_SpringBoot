@@ -120,8 +120,8 @@ public enum ErrorStatus implements BaseErrorCode {
     SEARCH_MEMBER_ERROR(HttpStatus.BAD_REQUEST,"SEARCH_500","유저 검색 에러입니다."),
     SEARCH_FILTER_ERROR(HttpStatus.BAD_REQUEST,"SEARCH_4002","검색 필터가 유효하지 않습니다."),
     SEARCHING_IOEXCEPION(HttpStatus.BAD_REQUEST,"SEARCH_4003","입출력 오류입니다."),
-    ELASTIC_SEARCH_SYNC_FAULT(HttpStatus.BAD_REQUEST,"SEARCH_4004","엘라스틱 서치 동기화 오류입니다."),
-    ELASTIC_SEARCH_DELETE_FAULT(HttpStatus.BAD_REQUEST,"SEARCH_4005","엘라스틱 서치 삭제 오류입니다."),
+    ELASTIC_SEARCH_SYNC_FAULT(HttpStatus.BAD_REQUEST,"SEARCH_4004","엘라스틱 서치 동기화 오류입니다. 재시도 해주세요."),
+    ELASTIC_SEARCH_DELETE_FAULT(HttpStatus.BAD_REQUEST,"SEARCH_4005","엘라스틱 서치 삭제 오류입니다. 재시도 해주세요."),
 
     //홈 에러
     NO_SUCH_SECTION(HttpStatus.NOT_FOUND,"HOME_4041","해당 섹션이 존재하지 않습니다."),

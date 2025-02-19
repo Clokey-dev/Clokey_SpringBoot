@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class NotificationRepositoryServiceImpl implements NotificationRepositoryService{
+public class NotificationRepositoryServiceImpl implements NotificationRepositoryService {
 
     private final NotificationRepository notificationRepository;
 
@@ -24,7 +24,7 @@ public class NotificationRepositoryServiceImpl implements NotificationRepository
 
     @Override
     public boolean existsByMemberIdAndReadStatus(Long memberId, ReadStatus readStatus) {
-        return notificationRepository.existsByMemberIdAndReadStatus(memberId,readStatus);
+        return notificationRepository.existsByMemberIdAndReadStatus(memberId, readStatus);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class NotificationRepositoryServiceImpl implements NotificationRepository
     @Override
     public ClokeyNotification findById(Long notificationId) {
         return notificationRepository.findById(notificationId)
-                .orElseThrow(()-> new DatabaseException(ErrorStatus.NO_SUCH_NOTIFICATION));
+                .orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_NOTIFICATION));
     }
 
     @Override
@@ -44,7 +44,7 @@ public class NotificationRepositoryServiceImpl implements NotificationRepository
     }
 
     @Override
-    public void deleteByClokeyNotificationIds(List<Long> clokeyNotificationIds){
+    public void deleteByClokeyNotificationIds(List<Long> clokeyNotificationIds) {
         notificationRepository.deleteByClokeyNotificationIds(clokeyNotificationIds);
     }
 

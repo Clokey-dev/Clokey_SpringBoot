@@ -37,7 +37,7 @@ public class ClokeyNotification extends BaseEntity {
     private RedirectType redirectType;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'NOT_READ'",nullable = false)
+    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'NOT_READ'", nullable = false)
     private ReadStatus readStatus;
 
     public void readNotification() {
