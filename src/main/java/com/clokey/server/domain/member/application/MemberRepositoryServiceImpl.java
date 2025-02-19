@@ -19,7 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -165,6 +168,11 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     @Override
     public List<Member> findAll(){
         return memberRepository.findAll();
+    }
+
+    public Map<Long, Member> findMembersByIds(Set<Long> memberIds) {
+        List<Member> members = memberRepository.findByIdIn(memberIds);
+        return members.stream().collect(Collectors.toMap(Member::getId, member -> member));
     }
 
 }
