@@ -12,6 +12,8 @@ public interface FollowRepositoryService {
 
     List<Boolean> checkFollowingStatus(Long followedId, List<Member> members);
 
+    List<Boolean> checkFollowedStatus(Long followedId, List<Member> members);
+
     List<Member> findFollowedByFollowingId(Long followingId);
 
     void deleteByMemberId(Long memberId);

@@ -122,5 +122,6 @@ public class MemberDTO {
         String clokeyId;
         String profileImage;
         Boolean isFollowed;
+        Boolean isMe;
     }
 }

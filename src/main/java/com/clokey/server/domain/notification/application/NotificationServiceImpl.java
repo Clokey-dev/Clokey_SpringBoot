@@ -96,7 +96,7 @@ public class NotificationServiceImpl implements NotificationService {
         Member historyWriter = historyRepositoryService.findById(historyId).getMember();
         Member likedMember = memberRepositoryService.findMemberById(memberId);
 
-        if (memberId.equals(historyId)) {
+        if (historyWriter.equals(likedMember)) {
             return null;
         }
 
@@ -387,7 +387,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationResponseDTO.GetNotificationResult getNotifications(Long memberId, Integer page) {
         // memberId로 알림을 조회해서 반환
-        Pageable pageable = PageRequest.of(page - 1, 10);
+        Pageable pageable = PageRequest.of(page - 1, 30);
         List<ClokeyNotification> notificationList = notificationRepositoryService.findNotificationsByMemberId(memberId, pageable);
         return NotificationConverter.toNotificationResult(notificationList, pageable);
     }
