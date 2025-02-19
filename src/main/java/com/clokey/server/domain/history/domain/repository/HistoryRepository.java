@@ -50,8 +50,8 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
 
     Page<History> findByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> member, Visibility visibility, Pageable pageable);
 
-    List<History> findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> member, Visibility visibility);
-
+    List<History> findTop6ByMemberInAndVisibilityAndHistoryDateAfterOrderByHistoryDateDesc(
+            List<Member> members, Visibility visibility, LocalDate startDate);
 
     @Query("SELECT DISTINCT h FROM History h " +
             "JOIN HashtagHistory hh ON hh.history.id = h.id " +

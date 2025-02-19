@@ -12,7 +12,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public interface MemberRepositoryService {
     boolean memberExist(Long memberId);
@@ -20,6 +22,7 @@ public interface MemberRepositoryService {
     Member findMemberById(Long memberId);
 
     Member saveMember(Member member);
+
     Optional<Member> getMember(Long memberId);
 
     boolean idExist(String clokeyId);
@@ -58,4 +61,6 @@ public interface MemberRepositoryService {
     void deleteMemberById(Long memberId);
 
     List<Member> findAll();
+
+    Map<Long, Member> findMembersByIds(Set<Long> memberIds);
 }

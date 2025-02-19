@@ -27,10 +27,17 @@ public class MemberDTO {
         String bio;
         String profileBackImageUrl;
         String visibility;
-        String clothImage1;
-        String clothImage2;
-        String clothImage3;
+        List<GetUserClothResult> clothResults;
         Boolean isFollowing;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetUserClothResult {
+        Long clothId;
+        String clothImage;
     }
 
     @Getter
