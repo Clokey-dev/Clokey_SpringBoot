@@ -13,31 +13,32 @@ import java.util.List;
 @Transactional
 @Service
 @RequiredArgsConstructor
-public class HistoryClothRepositoryServiceImpl implements HistoryClothRepositoryService{
+public class HistoryClothRepositoryServiceImpl implements HistoryClothRepositoryService {
 
     private final HistoryClothRepository historyClothRepository;
+
     @Override
-    public void save(History history , Cloth cloth) {
+    public void save(History history, Cloth cloth) {
         cloth.increaseWearNum();
         historyClothRepository.save(HistoryCloth.builder()
-                        .history(history)
-                        .cloth(cloth)
-                        .build());
+                .history(history)
+                .cloth(cloth)
+                .build());
     }
 
     @Override
     public void delete(History history, Cloth cloth) {
         cloth.decreaseWearNum();
-        historyClothRepository.deleteByHistoryAndCloth(history,cloth);
+        historyClothRepository.deleteByHistoryAndCloth(history, cloth);
     }
 
     @Override
-    public List<Long> findClothIdsByHistoryId(Long historyId){
+    public List<Long> findClothIdsByHistoryId(Long historyId) {
         return historyClothRepository.findClothIdsByHistoryId(historyId);
     }
 
     @Override
-    public void deleteAllByClothId(Long clothId){
+    public void deleteAllByClothId(Long clothId) {
         historyClothRepository.deleteAllByClothId(clothId);
     }
 

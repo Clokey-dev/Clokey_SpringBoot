@@ -23,7 +23,7 @@ public class HistoryDateFormatValidator implements ConstraintValidator<HistoryDa
     public boolean isValid(String value, ConstraintValidatorContext context) {
 
         //null이나 빈값이 아니며 YYYY-MM 형태를 만족해야 한다.
-        boolean isValid = value!=null && !value.isEmpty() && value.matches(DATE_PATTERN);
+        boolean isValid = value != null && !value.isEmpty() && value.matches(DATE_PATTERN);
 
         if (!isValid) {
             context.disableDefaultConstraintViolation();

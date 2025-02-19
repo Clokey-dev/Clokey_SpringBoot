@@ -17,7 +17,7 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class HistoryPreview{
+    public static class HistoryPreview {
         Long id;
         String imageUrl;
     }
@@ -118,8 +118,8 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    @JsonPropertyOrder({"commentId", "memberId","nickName","userImageUrl", "content", "replyResults"})
-    public static class CommentResult{
+    @JsonPropertyOrder({"commentId", "memberId", "nickName", "userImageUrl", "content", "replyResults"})
+    public static class CommentResult {
         Long commentId;
         Long memberId;
         String nickName;
@@ -132,18 +132,19 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ReplyResult{
+    public static class ReplyResult {
         Long commentId;
         Long MemberId;
         String nickName;
         String userImageUrl;
         String content;
     }
+
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class LikeResult{
+    public static class LikeResult {
         Long historyId;
         boolean isLiked;
         int likeCount;
@@ -153,7 +154,7 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class LikedUserResults{
+    public static class LikedUserResults {
         List<LikedUserResult> likedUsers;
     }
 
@@ -161,7 +162,7 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class LikedUserResult{
+    public static class LikedUserResult {
         Long memberId;
         String clokeyId;
         String imageUrl;
@@ -173,7 +174,7 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CommentWriteResult{
+    public static class CommentWriteResult {
         Long commentId;
     }
 

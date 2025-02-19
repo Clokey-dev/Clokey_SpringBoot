@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Transactional
 @Service
 @RequiredArgsConstructor
-public class HistoryImageRepositoryServiceImpl implements HistoryImageRepositoryService{
+public class HistoryImageRepositoryServiceImpl implements HistoryImageRepositoryService {
 
     private final HistoryImageRepository historyImageRepository;
     private final S3ImageService s3ImageService;
@@ -32,24 +32,24 @@ public class HistoryImageRepositoryServiceImpl implements HistoryImageRepository
 
     @Override
     public void save(MultipartFile image, History history) {
-        if(image == null || image.isEmpty()){
+        if (image == null || image.isEmpty()) {
             throw new DatabaseException(ErrorStatus.S3_EMPTY_FILE_EXCEPTION);
         }
         String url = s3ImageService.upload(image);
 
         historyImageRepository.save(HistoryImage.builder()
-                        .imageUrl(url)
-                        .history(history)
-                        .build());
+                .imageUrl(url)
+                .history(history)
+                .build());
     }
 
     @Override
     public void save(List<MultipartFile> images, History history) {
-        if (images == null || images.isEmpty()){
+        if (images == null || images.isEmpty()) {
             throw new DatabaseException(ErrorStatus.S3_EMPTY_FILE_EXCEPTION);
         }
 
-        images.forEach(image->save(image,history));
+        images.forEach(image -> save(image, history));
 
     }
 
@@ -58,7 +58,7 @@ public class HistoryImageRepositoryServiceImpl implements HistoryImageRepository
         // 특정 historyId에 해당하는 모든 이미지를 조회
         List<HistoryImage> historyImages = historyImageRepository.findByHistory_Id(historyId);
 
-        if(historyImages == null || historyImages.isEmpty()) {
+        if (historyImages == null || historyImages.isEmpty()) {
             return;
         }
 

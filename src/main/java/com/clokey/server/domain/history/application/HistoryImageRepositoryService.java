@@ -13,7 +13,7 @@ public interface HistoryImageRepositoryService {
 
     void save(MultipartFile historyImage, History history);
 
-    void save(List<MultipartFile> historyImages , History history);
+    void save(List<MultipartFile> historyImages, History history);
 
     void deleteAllByHistoryId(Long historyId);
 

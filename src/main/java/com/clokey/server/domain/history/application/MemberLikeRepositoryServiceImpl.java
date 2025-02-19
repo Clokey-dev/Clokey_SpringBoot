@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class MemberLikeRepositoryServiceImpl implements MemberLikeRepositoryService{
+public class MemberLikeRepositoryServiceImpl implements MemberLikeRepositoryService {
 
     private final MemberLikeRepository memberLikeRepository;
 
@@ -23,12 +23,12 @@ public class MemberLikeRepositoryServiceImpl implements MemberLikeRepositoryServ
 
     @Override
     public boolean existsByMember_IdAndHistory_Id(Long memberId, Long historyId) {
-        return memberLikeRepository.existsByMember_IdAndHistory_Id(memberId,historyId);
+        return memberLikeRepository.existsByMember_IdAndHistory_Id(memberId, historyId);
     }
 
     @Override
     public void deleteByMember_IdAndHistory_Id(Long memberId, Long historyId) {
-        memberLikeRepository.deleteByMember_IdAndHistory_Id(memberId,historyId);
+        memberLikeRepository.deleteByMember_IdAndHistory_Id(memberId, historyId);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.clokey.server.domain.history.exception.validator;
 
-import com.clokey.server.domain.history.exception.annotation.CommentContentLength;
 import com.clokey.server.domain.history.exception.annotation.HistoryContentLength;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.validation.ConstraintValidator;
