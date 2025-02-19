@@ -1,6 +1,7 @@
 package com.clokey.server.domain.member.application;
 
 import com.clokey.server.domain.cloth.application.ClothRepositoryService;
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
 import com.clokey.server.domain.member.converter.GetUserConverter;
 import com.clokey.server.domain.member.converter.ProfileConverter;
@@ -85,7 +86,7 @@ public class MemberServiceImpl implements  MemberService{
 
     @Override
     @Transactional(readOnly = true)
-    public MemberDTO.GetUserRP getUser(String clokeyId, Member currentUser) { // 현재 사용자 추가
+    public MemberDTO.GetUserRP getUser(String clokeyId, Member currentUser) {
         Member member;
         Boolean isFollowing;
 
@@ -94,19 +95,16 @@ public class MemberServiceImpl implements  MemberService{
             isFollowing = null;
         } else {
             member = memberRepositoryService.findMemberByClokeyId(clokeyId);
-            isFollowing = followRepositoryService.isFollowing(currentUser, member); // 팔로우 여부 체크 추가
+            isFollowing = followRepositoryService.isFollowing(currentUser, member);
         }
 
         Long recordCount = historyRepositoryService.countHistoryByMember(member);
         Long followerCount = followRepositoryService.countFollowersByMember(member);
         Long followingCount = followRepositoryService.countFollowingByMember(member);
-        List<String> topClothImages= clothRepositoryService.getTop3ClothImages(member, PageRequest.of(0, 3));
+        List<Cloth> topCloths = clothRepositoryService.getTop3Cloths(member);
 
         return GetUserConverter.toGetUserResponseDTO(
-                member, recordCount, followerCount, followingCount, isFollowing,
-                topClothImages.size() > 0 ? topClothImages.get(0) : null,
-                topClothImages.size() > 1 ? topClothImages.get(1) : null,
-                topClothImages.size() > 2 ? topClothImages.get(2) : null
+                member, recordCount, followerCount, followingCount, isFollowing, topCloths
         );
     }
 
