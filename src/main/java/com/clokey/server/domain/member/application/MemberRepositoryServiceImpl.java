@@ -95,11 +95,7 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
 
     @Override
     public Optional<Member> findMemberByEmail(String email) {
-        String jpql = "SELECT m FROM Member m WHERE m.email = :email";
-        TypedQuery<Member> query = entityManager.createQuery(jpql, Member.class);
-        query.setParameter("email", email);
-
-        return query.getResultStream().findFirst(); // Optional<Member> 반환
+        return memberRepository.findMemberByEmail(email); // Optional<Member> 반환
     }
 
     @Override
@@ -165,6 +161,16 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     @Override
     public List<Member> findAll(){
         return memberRepository.findAll();
+    }
+
+    @Override
+    public boolean existsByEmail(String email){
+        return memberRepository.existsByEmail(email);
+    }
+
+    @Override
+    public Member getMemberByEmail(String email){
+        return memberRepository.getMemberByEmail(email);
     }
 
 }

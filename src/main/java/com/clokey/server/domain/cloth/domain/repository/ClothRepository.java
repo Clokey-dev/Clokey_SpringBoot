@@ -84,4 +84,13 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
     @Modifying
     @Query("DELETE FROM Cloth c WHERE c.id IN :clothIds")
     void deleteByClothIds(@Param("clothIds") List<Long> clothIds);
+
+    @Query("""
+        SELECT c.image.imageUrl
+        FROM Cloth c
+        WHERE c.member = :member
+        ORDER BY c.wearNum DESC
+    """)
+    List<String> getTop3ClothImages(@Param("member") Member member, Pageable pageable);
+
 }

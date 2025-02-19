@@ -77,11 +77,11 @@ public class Member extends BaseEntity {
     @Column(nullable = true, unique = true)
     private String deviceToken;
 
-    @Column(unique = true)
-    private String kakaoId;
+    @Column(nullable = true, unique = true)
+    private String appleRefreshToken;
 
     @Column(unique = true)
-    private String appleRefreshToken;
+    private String kakaoId;
 
 
 

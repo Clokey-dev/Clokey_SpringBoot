@@ -96,7 +96,9 @@ public class NotificationServiceImpl implements NotificationService {
         Member historyWriter = historyRepositoryService.findById(historyId).getMember();
         Member likedMember = memberRepositoryService.findMemberById(memberId);
 
-        checkSendingNotificationToMySelf(historyWriter, likedMember);
+        if(memberId.equals(historyId)){
+            return null;
+        }
 
         //로그아웃이거나 비활성화 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
         if (ableToSendNotification(historyWriter)) {
@@ -136,12 +138,6 @@ public class NotificationServiceImpl implements NotificationService {
                     .build();
         }
         return null;
-    }
-
-    private void checkSendingNotificationToMySelf(Member sendTo, Member sending) {
-        if (sendTo.equals(sending)) {
-            throw new NotificationException(ErrorStatus.CANNOT_NOTIFY_MY_SELF);
-        }
     }
 
     @Override
@@ -206,12 +202,16 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     public NotificationResponseDTO.HistoryCommentNotificationResult sendHistoryCommentNotification(Long historyId, Long commentId, Long memberId) {
 
+
+
         checkMyComment(commentId, memberId);
         checkHistoryComment(commentId, historyId);
 
         Member historyWriter = historyRepositoryService.findById(historyId).getMember();
         Member commentWriter = memberRepositoryService.findMemberById(memberId);
-        checkSendingNotificationToMySelf(historyWriter, commentWriter);
+        if(historyWriter.equals(commentWriter)){
+            return null;
+        }
         Comment writtenComment = commentRepositoryService.findById(commentId);
 
         //로그아웃이거나 비활성화 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
@@ -280,7 +280,9 @@ public class NotificationServiceImpl implements NotificationService {
         Member commentWriter = commentRepositoryService.findById(commentId).getMember();
         Comment writtenReply = commentRepositoryService.findById(replyId);
         Member replyWriter = writtenReply.getMember();
-        checkSendingNotificationToMySelf(commentWriter, replyWriter);
+        if(commentWriter.equals(replyWriter)){
+            return null;
+        }
 
 
         //로그아웃이거나 비활성화 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.

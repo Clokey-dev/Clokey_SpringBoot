@@ -104,4 +104,10 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
     public void deleteByClothIds(List<Long> clothIds) {
         clothRepository.deleteByClothIds(clothIds);
     }
+
+    @Override
+    public List<String> getTop3ClothImages(Member member, Pageable pageable){
+        return clothRepository.getTop3ClothImages(member, pageable);
+    }
+
 }

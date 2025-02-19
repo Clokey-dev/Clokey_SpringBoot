@@ -1,6 +1,5 @@
 package com.clokey.server.domain.member.api;
 
-import com.clokey.server.domain.member.application.AppleAuthService;
 import com.clokey.server.domain.member.application.AuthService;
 import com.clokey.server.domain.member.application.UnlinkService;
 import com.clokey.server.domain.member.application.UnlinkServiceImpl;
@@ -11,9 +10,13 @@ import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.code.status.SuccessStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,11 +26,7 @@ public class AuthController {
     @Autowired
     private AuthService authService;
     @Autowired
-    private AppleAuthService appleAuthService;
-    @Autowired
     private UnlinkService logoutService;
-    @Autowired
-    private UnlinkServiceImpl unlinkService;
 
 
     @PostMapping("/login")
@@ -43,12 +42,12 @@ public class AuthController {
 
             //카카오 로그인
             if (loginType.equalsIgnoreCase("kakao") && loginRequest.getAccessToken() != null) {
-                responseEntity = authService.authenticateKakaoUser(loginRequest.getAccessToken());
+                responseEntity = authService.authenticateKakaoUser(loginRequest.getAccessToken(), loginRequest.getDeviceToken());
             }
             //애플 로그인
             else if (loginType.equalsIgnoreCase("apple") && loginRequest.getAuthorizationCode() != null) {
                 // Apple 로그인 처리
-                AuthDTO.TokenResponse tokenResponse = appleAuthService.login(loginRequest.getAuthorizationCode(), loginRequest.getDeviceToken());
+                AuthDTO.TokenResponse tokenResponse = authService.appleLogin(loginRequest.getAuthorizationCode(), loginRequest.getDeviceToken());
                 responseEntity = ResponseEntity.status(HttpStatus.OK).body(tokenResponse);
             }
             //로그인 타입이 잘못된 경우
