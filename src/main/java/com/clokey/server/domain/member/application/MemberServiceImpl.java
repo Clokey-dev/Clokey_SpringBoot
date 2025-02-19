@@ -1,10 +1,11 @@
 package com.clokey.server.domain.member.application;
 
+import com.clokey.server.domain.cloth.application.ClothRepositoryService;
+import com.clokey.server.domain.history.application.HistoryRepositoryService;
 import com.clokey.server.domain.member.converter.GetUserConverter;
 import com.clokey.server.domain.member.converter.ProfileConverter;
 import com.clokey.server.domain.member.domain.entity.Follow;
 import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.member.domain.repository.FollowRepository;
 import com.clokey.server.domain.member.dto.MemberDTO;
 import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.domain.model.entity.enums.RegisterStatus;
@@ -12,10 +13,8 @@ import com.clokey.server.domain.search.application.SearchRepositoryService;
 import com.clokey.server.domain.search.exception.SearchException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.infra.s3.S3ImageService;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,7 +27,9 @@ import java.util.List;
 public class MemberServiceImpl implements  MemberService{
 
     private final MemberRepositoryService memberRepositoryService;
-    private final FollowRepository followRepository;
+    private final FollowRepositoryService followRepositoryService;
+    private final HistoryRepositoryService historyRepositoryService;
+    private final ClothRepositoryService clothRepositoryService;
 
     private final S3ImageService s3ImageService; // ✅ S3 업로드 서비스 추가
     private final SearchRepositoryService searchRepositoryService;
@@ -38,7 +39,8 @@ public class MemberServiceImpl implements  MemberService{
         Long yourUserId = currentUser.getId();
         Long myUserId = memberRepositoryService.findMemberByClokeyId(clokeyId).getId();
 
-        boolean isFollow = followRepository.existsByFollowing_IdAndFollowed_Id(myUserId, yourUserId);
+        FollowRepositoryServiceImpl followRepository;
+        boolean isFollow = followRepositoryService.existsByFollowing_IdAndFollowed_Id(myUserId, yourUserId);
 
         return new MemberDTO.FollowRP(isFollow);
     }
@@ -55,15 +57,15 @@ public class MemberServiceImpl implements  MemberService{
         }
 
         // 팔로우 관계가 존재하는지 확인
-        boolean isFollow = followRepository.existsByFollowing_IdAndFollowed_Id(myUserId, yourUserId);
+        boolean isFollow = followRepositoryService.existsByFollowing_IdAndFollowed_Id(myUserId, yourUserId);
 
         if (isFollow) {
             // 팔로우가 이미 존재하면 언팔로우 처리
-            Follow follow = followRepository.findByFollowing_IdAndFollowed_Id(myUserId, yourUserId)
-                    .orElseThrow(() -> new IllegalStateException("팔로우 관계가 존재하지 않습니다."));
+            Follow follow = followRepositoryService.findByFollowing_IdAndFollowed_Id(myUserId, yourUserId)
+                    .orElseThrow(() -> new MemberException(ErrorStatus.NO_SUCH_FOLLOWER));
 
             // 팔로우 삭제 (언팔로우)
-            followRepository.delete(follow);
+            followRepositoryService.delete(follow);
         } else {
             // 팔로우가 존재하지 않으면 팔로우 처리
             Follow follow = Follow.builder()
@@ -72,26 +74,22 @@ public class MemberServiceImpl implements  MemberService{
                     .build();
 
             // 팔로우 저장
-            followRepository.save(follow);
+            followRepositoryService.save(follow);
         }
     }
 
 
-
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
     @Override
     @Transactional(readOnly = true)
     public MemberDTO.GetUserRP getUser(String clokeyId, Member currentUser) { // 현재 사용자 추가
         Member member = memberRepositoryService.findMemberByClokeyId(clokeyId);
 
-        Long recordCount = countHistoryByMember(member);
-        Long followerCount = countFollowersByMember(member);
-        Long followingCount = countFollowingByMember(member);
-        Boolean isFollowing = isFollowing(currentUser, member); // 팔로우 여부 체크 추가
-        List<String> topClothImages=getTop3ClothImages(member);
+        Long recordCount = historyRepositoryService.countHistoryByMember(member);
+        Long followerCount = followRepositoryService.countFollowersByMember(member);
+        Long followingCount = followRepositoryService.countFollowingByMember(member);
+        Boolean isFollowing = followRepositoryService.isFollowing(currentUser, member); // 팔로우 여부 체크 추가
+        List<String> topClothImages= clothRepositoryService.getTop3ClothImages(member, PageRequest.of(0, 3));
 
         return GetUserConverter.toGetUserResponseDTO(
                 member, recordCount, followerCount, followingCount, isFollowing,
@@ -99,56 +97,6 @@ public class MemberServiceImpl implements  MemberService{
                 topClothImages.size() > 1 ? topClothImages.get(1) : null,
                 topClothImages.size() > 2 ? topClothImages.get(2) : null
         );
-    }
-
-    @Transactional(readOnly = true)
-    public Boolean isFollowing(Member currentUser, Member targetUser) {
-        String jpql = "SELECT COUNT(f) FROM Follow f WHERE f.following = :currentUser AND f.followed = :targetUser";
-        TypedQuery<Long> query = entityManager.createQuery(jpql, Long.class);
-        query.setParameter("currentUser", currentUser);
-        query.setParameter("targetUser", targetUser);
-        return query.getSingleResult() > 0;
-    }
-
-
-    @Transactional(readOnly = true) // 트랜잭션 읽기 전용으로 설정
-    public Long countHistoryByMember(Member member) {
-        String jpql = "SELECT COUNT(h) FROM History h WHERE h.member = :member";
-        TypedQuery<Long> query = entityManager.createQuery(jpql, Long.class);
-        query.setParameter("member", member);
-        return query.getSingleResult();
-    }
-
-    @Transactional(readOnly = true) // 트랜잭션 읽기 전용으로 설정
-    public Long countFollowersByMember(Member member) {
-        String jpql = "SELECT COUNT(f) FROM Follow f WHERE f.followed = :member";
-        TypedQuery<Long> query = entityManager.createQuery(jpql, Long.class);
-        query.setParameter("member", member);
-        return query.getSingleResult();
-    }
-
-    @Transactional(readOnly = true) // 트랜잭션 읽기 전용으로 설정
-    public Long countFollowingByMember(Member member) {
-        String jpql = "SELECT COUNT(f) FROM Follow f WHERE f.following = :member";
-        TypedQuery<Long> query = entityManager.createQuery(jpql, Long.class);
-        query.setParameter("member", member);
-        return query.getSingleResult();
-    }
-
-    @Transactional(readOnly = true)
-    public List<String> getTop3ClothImages(Member member) {
-        String jpql = """
-        SELECT c.image.imageUrl
-        FROM Cloth c
-        WHERE c.member = :member
-        ORDER BY c.wearNum DESC
-    """;
-
-        TypedQuery<String> query = entityManager.createQuery(jpql, String.class);
-        query.setParameter("member", member);
-        query.setMaxResults(3); // 상위 3개만 가져오기
-
-        return query.getResultList();
     }
 
 

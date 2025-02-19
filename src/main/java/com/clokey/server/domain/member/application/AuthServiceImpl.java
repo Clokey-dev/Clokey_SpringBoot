@@ -376,12 +376,11 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 회원 조회 또는 신규 등록
-        Optional<Member> optionalMember = memberRepositoryService.findMemberByEmail(email);
+        boolean MemberExist = memberRepositoryService.existsByEmail(email);
 
         Member member;
-        boolean isNewUser = false;
-        if (optionalMember.isPresent()) {
-            member = optionalMember.get();  // 기존 사용자
+        if (MemberExist) {
+            member = memberRepositoryService.getMemberByEmail(email);  // 기존 사용자
 
                 member.updateDeviceToken(deviceToken);
                 memberRepositoryService.saveMember(member);
@@ -395,7 +394,6 @@ public class AuthServiceImpl implements AuthService {
                     .deviceToken(deviceToken)
                     .build();
             memberRepositoryService.saveMember(member);
-            isNewUser = true; // 새로운 사용자
         }
 
         // 토큰 생성
@@ -413,14 +411,15 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 응답 반환
-        return new AuthDTO.TokenResponse(
-                member.getId(),
-                member.getEmail(),
-                member.getNickname(),
-                member.getAccessToken(),
-                member.getRefreshToken(),
-                member.getRegisterStatus()
-        );
+        return AuthDTO.TokenResponse.builder()
+                .id(member.getId())
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .accessToken(member.getAccessToken())
+                .refreshToken(member.getRefreshToken())
+                .registerStatus(member.getRegisterStatus())
+                .build();
+
     }
 
     private String createClientSecret() {

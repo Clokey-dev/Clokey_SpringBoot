@@ -84,4 +84,12 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
                                     @Param("minTemp") Integer minTemp,
                                     @Param("maxTemp") Integer maxTemp);
 
+
+    @Query("""
+        SELECT c.image.imageUrl
+        FROM Cloth c
+        WHERE c.member = :member
+        ORDER BY c.wearNum DESC
+    """)
+    List<String> getTop3ClothImages(@Param("member") Member member, Pageable pageable);
 }

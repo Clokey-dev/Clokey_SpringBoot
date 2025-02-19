@@ -62,4 +62,7 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
             Pageable pageable);
 
     List<History> findAll();
+
+    @Query("SELECT COUNT(h) FROM History h WHERE h.member = :member")
+    Long countHistoryByMember(@Param("member") Member member);
 }

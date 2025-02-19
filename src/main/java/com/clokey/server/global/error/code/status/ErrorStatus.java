@@ -29,6 +29,7 @@ public enum ErrorStatus implements BaseErrorCode {
     CANNOT_FOLLOW_MYSELF(HttpStatus.BAD_REQUEST,"MEMBER_4007", "팔로우 아이디와 팔로잉 아이디가 같을 수 없습니다."),
     NO_PERMISSION_TO_ACCESS_USER(HttpStatus.BAD_REQUEST,"MEMBER_4008", "유저에 대한 접근 권한이 없습니다."),
     INVALID_TERM_ID(HttpStatus.BAD_REQUEST,"MEMBER_4009","잘못된 약관 ID입니다."),
+    NO_SUCH_FOLLOWER(HttpStatus.NOT_FOUND,"MEMBER_4010","존재하지 않는 팔로워 ID입니다."),
 
     //옷 에러
     NO_SUCH_CLOTH(HttpStatus.NOT_FOUND,"CLOTH_4041","존재하지 않는 옷 ID입니다."),

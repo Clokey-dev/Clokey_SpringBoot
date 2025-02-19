@@ -3,9 +3,9 @@ package com.clokey.server.domain.history.application;
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.Visibility;
-import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -41,5 +41,8 @@ public interface HistoryRepositoryService {
     List<History> findTop10MembersByHashtagIdsOrderByLikes(List<Long> hashtagIds, Long currentMemberId);
 
     List<History> findAll();
+
+    Long countHistoryByMember(Member member);
+
 
 }

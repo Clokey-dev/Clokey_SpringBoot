@@ -26,5 +26,9 @@ public interface MemberRepositoryService {
 
     Optional <Member> findMemberByEmail(String email);
 
+    Member getMemberByEmail(String email);
+
+    boolean existsByEmail(String email);
+
     List<Member> findAll();
 }

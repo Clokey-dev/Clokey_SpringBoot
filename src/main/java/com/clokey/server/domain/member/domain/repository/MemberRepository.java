@@ -16,4 +16,11 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByClokeyId(String clokeyId);
 
     List<Member> findAll();
+
+    boolean existsByEmail(String email);
+
+    Member getMemberByEmail(String email);
+
+    Optional<Member> findMemberByEmail(String email);
+
 }

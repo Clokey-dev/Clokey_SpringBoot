@@ -43,6 +43,7 @@ public class AuthDTO {
 
     @Data
     @AllArgsConstructor
+    @Builder
     public static class TokenResponse {
         Long id;
         String email;
