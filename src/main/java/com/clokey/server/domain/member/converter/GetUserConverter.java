@@ -31,10 +31,20 @@ public class GetUserConverter {
 
     public static List<MemberDTO.GetUserClothResult> toGetUserClothResultDTO(List<Cloth> cloths) {
         return cloths.stream()
-                .map(cloth -> MemberDTO.GetUserClothResult.builder()
-                        .clothId(cloth.getId())
-                        .clothImage(cloth.getImage().getImageUrl())
-                        .build())
+                .map(cloth ->{
+                    if(cloth!=null){
+                        return MemberDTO.GetUserClothResult.builder()
+                                .clothId(cloth.getId())
+                                .clothImage(cloth.getImage().getImageUrl())
+                                .build();
+                    } else{
+                        return MemberDTO.GetUserClothResult.builder()
+                                .clothId(null)
+                                .clothImage(null)
+                                .build();
+                    }
+
+                })
                 .collect(Collectors.toList());
     }
 

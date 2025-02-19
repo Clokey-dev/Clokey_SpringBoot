@@ -99,9 +99,9 @@ public class MemberServiceImpl implements  MemberService{
             member = memberRepositoryService.findMemberByClokeyId(clokeyId);
             isFollowing = followRepositoryService.isFollowing(currentUser, member);
             if(member.getVisibility().equals(Visibility.PUBLIC)){
-                topCloths = clothRepositoryService.getTop3Cloths(member);
-            } else{
                 topCloths = clothRepositoryService.getTop3PublicCloths(member);
+            } else{
+                topCloths = List.of(null,null,null);
             }
         }
 
