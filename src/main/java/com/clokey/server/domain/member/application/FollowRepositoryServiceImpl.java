@@ -23,6 +23,11 @@ public class FollowRepositoryServiceImpl implements FollowRepositoryService{
     }
 
     @Override
+    public List<Boolean> checkFollowedStatus(Long followingId, List<Member> members) {
+        return followRepository.checkFollowedStatus(followingId ,members);
+    }
+
+    @Override
     public List<Member> findFollowedByFollowingId(Long followingId) {
         return followRepository.findFollowedByFollowingId(followingId);
     }

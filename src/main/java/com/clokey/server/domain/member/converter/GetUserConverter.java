@@ -49,10 +49,10 @@ public class GetUserConverter {
     }
 
     public static MemberDTO.GetFollowMemberResult toGetFollowPeopleResultDTO(
-            List<Member> members, Pageable pageable, List<Boolean> isFollowings) {
+            List<Member> members, Pageable pageable, List<Boolean> isFollowings, List<Boolean> isMySelf) {
 
         List<MemberDTO.FollowMemberResult> memberResults =  IntStream.range(0, members.size())
-                .mapToObj(i -> convertToProfilePreviewResult(members.get(i), isFollowings.get(i)))
+                .mapToObj(i -> convertToProfilePreviewResult(members.get(i), isFollowings.get(i), isMySelf.get(i)))
                 .collect(Collectors.toList());
 
         return MemberDTO.GetFollowMemberResult.builder()
@@ -64,12 +64,13 @@ public class GetUserConverter {
                 .build();
     }
 
-    private static MemberDTO.FollowMemberResult convertToProfilePreviewResult(Member member, Boolean isFollowing) {
+    private static MemberDTO.FollowMemberResult convertToProfilePreviewResult(Member member, Boolean isFollowing, Boolean isMySelf) {
         return MemberDTO.FollowMemberResult.builder()
                 .profileImage(member.getProfileImageUrl())
                 .clokeyId(member.getClokeyId())
                 .nickname(member.getNickname())
                 .isFollowed(isFollowing)
+                .isMe(isMySelf)
                 .build();
     }
 }
