@@ -34,6 +34,10 @@ public interface MemberRepositoryService {
 
     Optional <Member> findMemberByEmail(String email);
 
+    Member getMemberByEmail(String email);
+
+    boolean existsByEmail(String email);
+
     List<Member> findInactiveUsersBefore(LocalDate cutoffDate);
 
     List<History> findHistoriesByMemberId(Long memberId);

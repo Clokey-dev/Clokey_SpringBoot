@@ -85,17 +85,6 @@ public class MemberDTO {
         private Boolean isLast;
     }
 
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class FollowRQ{
-        @IdValid
-        String myClokeyId;
-        @IdValid
-        String yourClokeyId;
-    }
-
 
     @Builder
     @Getter

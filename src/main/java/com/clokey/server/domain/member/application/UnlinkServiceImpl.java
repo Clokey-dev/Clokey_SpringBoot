@@ -45,7 +45,6 @@ import java.net.http.HttpRequest;
 @Service
 public class UnlinkServiceImpl implements UnlinkService {
 
-    private final AppleAuthService appleAuthService;
     private final MemberTermRepositoryService memberTermRepositoryService;
 
     private final FollowRepositoryService followRepositoryService;
@@ -63,6 +62,7 @@ public class UnlinkServiceImpl implements UnlinkService {
     private final FolderRepositoryService folderRepositoryService;
     private final CommentRepository commentRepository;
     private final NotificationRepositoryService notificationRepositoryService;
+    private final AuthService authService;
 
 
     @Value("${kakao.admin-key}")
@@ -80,6 +80,7 @@ public class UnlinkServiceImpl implements UnlinkService {
 
         checkActiveMember(member);
 
+
         if (member != null && SocialType.KAKAO == member.getSocialType()) {
             String kakaoId = member.getKakaoId();
             if (kakaoId != null) {
@@ -87,7 +88,7 @@ public class UnlinkServiceImpl implements UnlinkService {
             }
         } else if (member != null && SocialType.APPLE == member.getSocialType()) {
             System.out.println("🍏 애플 연동 해제 실행됨");
-            String clientSecret = appleAuthService.createClientSecret();  // ✅ 새로 생성
+            String clientSecret = authService.createClientSecret();  // ✅ 새로 생성
             String refreshToken = member.getAppleRefreshToken();
             if (clientSecret != null && refreshToken != null) {
                 appleUnlink(clientSecret, refreshToken);
@@ -147,7 +148,7 @@ public class UnlinkServiceImpl implements UnlinkService {
         try {
             HttpRequest getRequest = HttpRequest.newBuilder()
                     .uri(new URI(uriStr))
-                    .POST(appleAuthService.getParamsUrlEncoded(params))
+                    .POST(authService.getParamsUrlEncoded(params))
                     .headers("Content-Type", "application/x-www-form-urlencoded")
                     .build();
 

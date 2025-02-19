@@ -61,4 +61,11 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Long> findNotificationIdsByMemberId(@Param("memberId") Long memberId);
 
     List<Member> findAll();
+
+    boolean existsByEmail(String email);
+
+    Member getMemberByEmail(String email);
+
+    Optional<Member> findMemberByEmail(String email);
+
 }

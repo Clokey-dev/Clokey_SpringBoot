@@ -38,14 +38,13 @@ public class AuthDTO {
         private String accessToken=null;
         private String authorizationCode=null;
         private String deviceToken=null;
-
     }
 
 
     @Data
     @AllArgsConstructor
+    @Builder
     public static class TokenResponse {
-
         Long id;
         String email;
         String nickname;
