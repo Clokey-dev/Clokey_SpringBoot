@@ -26,8 +26,6 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
 
     List<Cloth> findAll();
 
-    List<Cloth> findAllById(List<Long> clothIds);
-
     @Query("SELECT c FROM Cloth c " +
             "JOIN c.member m " +
             "JOIN c.category cat " +
