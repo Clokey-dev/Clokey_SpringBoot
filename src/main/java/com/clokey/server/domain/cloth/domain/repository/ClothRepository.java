@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,8 +73,8 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
     Page<Cloth> findByMemberInAndVisibilityOrderByCreatedAtDesc(
             List<Member> members, Visibility visibility, Pageable pageable);
 
-    List<Cloth> findTop6ByMemberInAndVisibilityOrderByCreatedAtDesc(
-            List<Member> members, Visibility visibility);
+    List<Cloth> findTop6ByMemberInAndVisibilityAndCreatedAtBetweenOrderByCreatedAtDesc(
+            List<Member> members, Visibility visibility, LocalDate startDate, LocalDate endDate);
 
     @Query("SELECT c.category.name FROM Cloth c WHERE c.member.id = :memberId " +
             "GROUP BY c.category ORDER BY COUNT(c.id) DESC LIMIT 1")
@@ -88,12 +89,12 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
                                     @Param("minTemp") Integer minTemp,
                                     @Param("maxTemp") Integer maxTemp);
 
-
     @Query("""
-        SELECT c.image.imageUrl
+        SELECT c
         FROM Cloth c
         WHERE c.member = :member
         ORDER BY c.wearNum DESC
+        LIMIT 3
     """)
-    List<String> getTop3ClothImages(@Param("member") Member member, Pageable pageable);
+    List<Cloth> getTop3ClothIds(@Param("member") Member member);
 }

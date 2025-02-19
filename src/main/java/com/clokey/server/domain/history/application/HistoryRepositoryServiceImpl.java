@@ -87,7 +87,7 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
 
     @Override
     public List<History> findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> member, Visibility visibility) {
-        return historyRepository.findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(member, visibility);
+        return historyRepository.findTop6ByMemberInAndVisibilityAndHistoryDateAfterOrderByHistoryDateDesc(member, visibility, LocalDate.now().minusWeeks(2));
     }
 
     @Override
