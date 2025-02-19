@@ -162,10 +162,19 @@ public class MemberServiceImpl implements  MemberService{
         // 현재 로그인한 사용자의 clokeyId 가져오기
         String myClokeyId = currentUser.getClokeyId();
 
-        // 내 아이디가 아니라면 중복 체크 수행
-        if (!myClokeyId.equals(clokeyId) && memberRepositoryService.existsByClokeyId(clokeyId)) {
+        // 1️⃣ 내 아이디가 없으면 입력한 아이디가 중복인지 검사
+        if (myClokeyId == null) {
+            if (memberRepositoryService.existsByClokeyId(clokeyId)) {
+                throw new MemberException(ErrorStatus.DUPLICATE_CLOKEY_ID);
+            }
+            return;
+        }
+
+        // 2️⃣ 내 아이디가 존재하면, 내가 입력한 아이디가 기존 내 아이디와 다를 때만 중복 검사
+        if (!clokeyId.equals(myClokeyId) && memberRepositoryService.existsByClokeyId(clokeyId)) {
             throw new MemberException(ErrorStatus.DUPLICATE_CLOKEY_ID);
         }
+
     }
 
     @Override
