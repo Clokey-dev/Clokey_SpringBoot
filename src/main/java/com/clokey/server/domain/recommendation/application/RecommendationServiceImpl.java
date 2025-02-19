@@ -115,34 +115,46 @@ public class RecommendationServiceImpl implements RecommendationService {
         String cacheKeyCalendar = REDIS_PREFIX_CALENDAR + memberId;
         String cacheKeyPeople = REDIS_PREFIX_PEOPLE + memberId;
 
-        List<RecommendationResponseDTO.Recommend> recommendResult = getFromRedis(cacheKeyRecommend, RecommendationResponseDTO.Recommend.class);
-        List<RecommendationResponseDTO.Closet> closetResult = getFromRedis(cacheKeyCloset, RecommendationResponseDTO.Closet.class);
-        List<RecommendationResponseDTO.Calendar> calendarResult = getFromRedis(cacheKeyCalendar, RecommendationResponseDTO.Calendar.class);
-        List<RecommendationResponseDTO.People> peopleResult = getFromRedis(cacheKeyPeople, RecommendationResponseDTO.People.class);
+        List<RecommendationResponseDTO.RecommendCacheResult> cachedRecommends = getFromRedis(cacheKeyRecommend, RecommendationResponseDTO.RecommendCacheResult.class);
+        List<RecommendationResponseDTO.ClosetCacheResult> cachedClosets = getFromRedis(cacheKeyCloset, RecommendationResponseDTO.ClosetCacheResult.class);
+        List<RecommendationResponseDTO.CalendarCacheResult> cachedCalendars = getFromRedis(cacheKeyCalendar, RecommendationResponseDTO.CalendarCacheResult.class);
+        List<RecommendationResponseDTO.PeopleCacheResult> cachedPeople = getFromRedis(cacheKeyPeople, RecommendationResponseDTO.PeopleCacheResult.class);
 
         Member member = memberRepositoryService.findMemberById(memberId);
         List<Member> followingMembers = getFollowingMembers(member.getId());
 
         //기존 거 가져옴 -> 없어? 만들어.
-        if (recommendResult == null) {
-            recommendResult = getRecommendList(member);
-            saveToRedis(cacheKeyRecommend, recommendResult, Duration.ofHours(24));
+        if (cachedRecommends == null) {
+            cachedRecommends = getRecommendList(member);
+            saveToRedis(cacheKeyRecommend, cachedRecommends, Duration.ofHours(24));
         }
-        if (closetResult == null) {
-            closetResult = getClosetList(followingMembers);
-            saveToRedis(cacheKeyCloset, closetResult, Duration.ofHours(3));
+        if (cachedClosets == null) {
+            cachedClosets = getClosetList(followingMembers);
+            saveToRedis(cacheKeyCloset, cachedClosets, Duration.ofHours(3));
         }
-        if (calendarResult == null) {
-            calendarResult = getCalendarList(followingMembers);
-            saveToRedis(cacheKeyCalendar, calendarResult, Duration.ofHours(3));
+        if (cachedCalendars == null) {
+            cachedCalendars = getCalendarList(followingMembers);
+            saveToRedis(cacheKeyCalendar, cachedCalendars, Duration.ofHours(3));
         }
-        if (peopleResult == null) {
-            peopleResult = getPeopleList(member);
-            saveToRedis(cacheKeyPeople, peopleResult, Duration.ofHours(24));
+        if (cachedPeople == null) {
+            cachedPeople = getPeopleList(member);
+            saveToRedis(cacheKeyPeople, cachedPeople, Duration.ofHours(24));
         }
 
+        Set<Long> memberIds = new HashSet<>();
+        cachedRecommends.forEach(r -> memberIds.add(r.getMemberId()));
+        cachedClosets.forEach(c -> memberIds.add(c.getMemberId()));
+        cachedCalendars.forEach(c -> memberIds.add(c.getMemberId()));
+        cachedPeople.forEach(p -> memberIds.add(p.getMemberId()));
 
-        return RecommendationConverter.toDailyNewsResult(recommendResult, closetResult, calendarResult, peopleResult);
+        Map<Long, Member> memberMap = memberRepositoryService.findMembersByIds(memberIds);
+
+        List<RecommendationResponseDTO.RecommendResult> recommendResponseList = RecommendationConverter.convertRecommendToResponseDTO(cachedRecommends, memberMap);
+        List<RecommendationResponseDTO.ClosetResult> closetResponseList = RecommendationConverter.convertClosetToResponseDTO(cachedClosets, memberMap);
+        List<RecommendationResponseDTO.CalendarResult> calendarResponseList = RecommendationConverter.convertCalendarToResponseDTO(cachedCalendars, memberMap);
+        List<RecommendationResponseDTO.PeopleResult> peopleResponseList = RecommendationConverter.convertPeopleToResponseDTO(cachedPeople, memberMap);
+
+        return RecommendationConverter.toDailyNewsResult(recommendResponseList, closetResponseList, calendarResponseList, peopleResponseList);
     }
 
     // redis 저장 (String, responseDTO, duration)
@@ -178,11 +190,11 @@ public class RecommendationServiceImpl implements RecommendationService {
 
         List<Member> followingMembers = getFollowingMembers(member.getId());
         if ("closet".equals(section)) {
-            Page<RecommendationResponseDTO.Closet> closetPage = getClosetPage(page, followingMembers);
+            Page<RecommendationResponseDTO.ClosetResult> closetPage = getClosetPage(page, followingMembers);
             return RecommendationConverter.toDailyNewsAllResult(closetPage);
 
         } else if ("calendar".equals(section)) {
-            Page<RecommendationResponseDTO.Calendar> calendarPage = getCalendarPage(page, followingMembers);
+            Page<RecommendationResponseDTO.CalendarResult> calendarPage = getCalendarPage(page, followingMembers);
             return RecommendationConverter.toDailyNewsAllResult(calendarPage);
         }
         return null;
@@ -190,31 +202,34 @@ public class RecommendationServiceImpl implements RecommendationService {
 
 
     // 추천 소식 조회 - 시도하지 않은 스타일, 최근에 태그한 해시태그, 자주 착용한 카테고리
-    private List<RecommendationResponseDTO.Recommend> getRecommendList(Member member) {
+    private List<RecommendationResponseDTO.RecommendCacheResult> getRecommendList(Member member) {
 
-        List<RecommendationResponseDTO.Recommend> recommendList = new ArrayList<>();
+        List<RecommendationResponseDTO.RecommendCacheResult> recommendList = new ArrayList<>();
 
         // 시도하지 않은 스타일 - 랜덤 추천 hashtagRepositoryService에서 사용자의 기록들이 가지고 있는 해시태그들을 제외한 다른 해시태그 추천
         String unusedHashtag = hashtagRepositoryService.findRandomUnusedHashtag(member.getId());
-        recommendList.add(RecommendationConverter.toRecommendDTO(
+        recommendList.add(RecommendationConverter.toRecommendCacheDTO(
                 getHistoryImageUrlByHashtagName(unusedHashtag),
-                member.getNickname() + "이 시도하지 않은 스타일",
+                member.getId(),
+                "님이 시도하지 않은 스타일",
                 unusedHashtag
         ));
 
         // 최근에 태그한 해시태그 - 최근에 사용자가 기록에 태그한 해시태그 하나 반환
         String recentHashtag = hashtagHistoryRepositoryService.findLatestTaggedHashtag(member.getId());
-        recommendList.add(RecommendationConverter.toRecommendDTO(
+        recommendList.add(RecommendationConverter.toRecommendCacheDTO(
                 getHistoryImageUrlByHashtagName(recentHashtag),
-                member.getNickname() + "이 최근 태그한 해시태그",
+                member.getId(),
+                "님이 최근 태그한 해시태그",
                 recentHashtag
         ));
 
         // 자주 착용한 카테고리 - 사용자가 가장 많이 착용한 카테고리 하나 반환
         String frequentCategory = clothRepositoryService.findMostWornCategory(member.getId());
-        recommendList.add(RecommendationConverter.toRecommendDTO(
+        recommendList.add(RecommendationConverter.toRecommendCacheDTO(
                 getHistoryImageUrlByHashtagName(frequentCategory),
-                member.getNickname() + "이 자주 착용한 카테고리",
+                member.getId(),
+                "님이 자주 착용한 카테고리",
                 frequentCategory
         ));
 
@@ -222,7 +237,7 @@ public class RecommendationServiceImpl implements RecommendationService {
     }
 
     // 팔로우 중인 옷장 업데이트 조회
-    private List<RecommendationResponseDTO.Closet> getClosetList(List<Member> followingMembers) {
+    private List<RecommendationResponseDTO.ClosetCacheResult> getClosetList(List<Member> followingMembers) {
 
         // 팔로우한 멤버들의 최신 공개 옷 조회 (최신순 정렬)
         List<Cloth> clothesList = clothRepositoryService.findTop6ByMemberInAndVisibilityOrderByCreatedAtDesc(followingMembers, Visibility.PUBLIC);
@@ -236,15 +251,15 @@ public class RecommendationServiceImpl implements RecommendationService {
         // 그룹화된 데이터를 `Closet` DTO로 변환
         return groupedClothes.entrySet().stream()
                 .max(Comparator.comparing(entry -> entry.getKey().getSecond()))
-                .map(entry -> RecommendationConverter.toClosetDTO(Map.of(entry.getKey(), entry.getValue())))
+                .map(entry -> RecommendationConverter.toClosetCacheDTO(Map.of(entry.getKey(), entry.getValue())))
                 .orElse(List.of());
     }
 
-    private Page<RecommendationResponseDTO.Closet> getClosetPage(int page, List<Member> followingMembers) {
+    private Page<RecommendationResponseDTO.ClosetResult> getClosetPage(int page, List<Member> followingMembers) {
         Page<Cloth> clothesPage = clothRepositoryService.findByMemberInAndVisibilityOrderByCreatedAtDesc(
                 followingMembers, Visibility.PUBLIC, PageRequest.of(page - 1, 6));
 
-        List<RecommendationResponseDTO.Closet> closetList = RecommendationConverter.toClosetDTO(
+        List<RecommendationResponseDTO.ClosetResult> closetList = RecommendationConverter.toClosetDTO(
                 clothesPage.getContent().stream()
                         .collect(Collectors.groupingBy(cloth -> Pair.of(cloth.getMember(), cloth.getCreatedAt().toLocalDate())))
         );
@@ -253,39 +268,34 @@ public class RecommendationServiceImpl implements RecommendationService {
     }
 
     // 팔로우 중인 캘린더 업데이트 조회
-    private List<RecommendationResponseDTO.Calendar> getCalendarList(List<Member> followedMembers) {
-        return fetchCalendarData(null, false, followedMembers);
+    private List<RecommendationResponseDTO.CalendarCacheResult> getCalendarList(List<Member> followingMembers) {
+        List<History> historyList = historyRepositoryService.findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(
+                followingMembers, Visibility.PUBLIC);
+        List<Long> historyIds = historyList.stream().map(History::getId).toList();
+        Map<History, List<String>> historyImageMap = historyImageRepositoryService.findByHistoryIdIn(historyIds)
+                .stream()
+                .collect(Collectors.groupingBy(HistoryImage::getHistory, Collectors.mapping(HistoryImage::getImageUrl, Collectors.toList())));
+
+        return RecommendationConverter.toCalendarCacheDTO(historyList, historyImageMap);
     }
 
-    private Page<RecommendationResponseDTO.Calendar> getCalendarPage(int page, List<Member> followingMembers) {
+    private Page<RecommendationResponseDTO.CalendarResult> getCalendarPage(int page, List<Member> followingMembers) {
         Pageable pageable = PageRequest.of(page - 1, 6);
-        List<RecommendationResponseDTO.Calendar> calendarList = fetchCalendarData(pageable, true, followingMembers);
-
-        return new PageImpl<>(calendarList, PageRequest.of(page - 1, 6), calendarList.size());
-    }
-
-    private List<RecommendationResponseDTO.Calendar> fetchCalendarData(Pageable pageable, boolean isPaging, List<Member> followingMembers) {
-        Page<History> historyPage;
-
-        if (isPaging) {
-            historyPage = historyRepositoryService.findByMemberInAndVisibilityOrderByHistoryDateDesc(
-                    followingMembers, Visibility.PUBLIC, pageable);
-        } else {
-            List<History> historyList = historyRepositoryService.findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(
-                    followingMembers, Visibility.PUBLIC);
-            historyPage = new PageImpl<>(historyList);
-        }
+        Page<History> historyPage = historyRepositoryService.findByMemberInAndVisibilityOrderByHistoryDateDesc(
+                followingMembers, Visibility.PUBLIC, pageable);
 
         List<Long> historyIds = historyPage.getContent().stream().map(History::getId).toList();
         Map<History, List<String>> historyImageMap = historyImageRepositoryService.findByHistoryIdIn(historyIds)
                 .stream()
                 .collect(Collectors.groupingBy(HistoryImage::getHistory, Collectors.mapping(HistoryImage::getImageUrl, Collectors.toList())));
 
-        return RecommendationConverter.toCalendarDTO(historyPage, historyImageMap);
+        List<RecommendationResponseDTO.CalendarResult> calendarList = RecommendationConverter.toCalendarDTO(historyPage, historyImageMap);
+
+        return new PageImpl<>(calendarList, PageRequest.of(page - 1, 6), calendarList.size());
     }
 
     // Hot 계정 조회
-    private List<RecommendationResponseDTO.People> getPeopleList(Member member) {
+    private List<RecommendationResponseDTO.PeopleCacheResult> getPeopleList(Member member) {
         //기록 최신 것부터 해시태그를 조회함. 해시태그 아이디를 hashtagHistoryRepository에서 찾아서 그 history의 주인들을 최대 네 명 추천해주는 로직.
         List<Long> hashtagIds = hashtagHistoryRepositoryService.findHashtagIdsByMemberIdOrderByHistoryDateDesc(member.getId());
 
@@ -316,7 +326,7 @@ public class RecommendationServiceImpl implements RecommendationService {
         Map<Long, String> historyImageMap = historyImageRepositoryService.findFirstImagesByHistoryIds(historyIds);
 
         // 중복 제거 및 최대 4명 추천
-        return RecommendationConverter.toPeopleDTO(filteredHistories, historyImageMap);
+        return RecommendationConverter.toPeopleCacheDTO(filteredHistories, historyImageMap);
     }
 
     private List<Member> getFollowingMembers(Long memberId){
