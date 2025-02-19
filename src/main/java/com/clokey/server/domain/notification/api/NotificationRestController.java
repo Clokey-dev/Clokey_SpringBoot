@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/notification")
+@RequestMapping("/notifications")
 @Validated
 public class NotificationRestController {
 
@@ -67,6 +67,18 @@ public class NotificationRestController {
                                                @Parameter(name = "user",hidden = true) @AuthUser Member member) {
 
         notificationService.readNotification(notificationId, member.getId());
+
+        return BaseResponse.onSuccess(SuccessStatus.NOTIFICATION_READ, null);
+    }
+
+    @PatchMapping
+    @Operation(summary = "모든 알림을 읽음 처리 할 수 있는 API")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTIFICATION_204", description = "알림이 성공적으로 읽음 처리되었습니다."),
+    })
+    public BaseResponse<Void> readAllNotification(@Parameter(name = "user",hidden = true) @AuthUser Member member) {
+
+        notificationService.readAllNotification(member.getId());
 
         return BaseResponse.onSuccess(SuccessStatus.NOTIFICATION_READ, null);
     }

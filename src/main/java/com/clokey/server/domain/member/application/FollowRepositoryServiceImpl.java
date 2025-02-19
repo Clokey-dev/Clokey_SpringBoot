@@ -4,6 +4,8 @@ import com.clokey.server.domain.member.domain.entity.Follow;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.domain.repository.FollowRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +28,9 @@ public class FollowRepositoryServiceImpl implements FollowRepositoryService{
     }
 
     @Override
+    public void deleteByMemberId(Long memberId) {
+        followRepository.deleteByMemberId(memberId);
+    }
     public boolean existsByFollowing_IdAndFollowed_Id(Long followingId, Long followedId) {
         return followRepository.existsByFollowing_IdAndFollowed_Id(followingId,followedId);
     }
@@ -63,5 +68,15 @@ public class FollowRepositoryServiceImpl implements FollowRepositoryService{
     @Override
     public Long countFollowingByMember(Member member){
         return followRepository.countFollowingByMember(member);
+    }
+
+    @Override
+    public List<Member> findFollowedByFollowingId(Long followingId, Pageable pageable) {
+        return followRepository.findFollowedByFollowingId(followingId, pageable);
+    }
+
+    @Override
+    public List<Member> findFollowingByFollowedId(Long followedId, Pageable pageable) {
+        return followRepository.findFollowingByFollowedId(followedId, pageable);
     }
 }

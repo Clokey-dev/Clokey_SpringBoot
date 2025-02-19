@@ -140,7 +140,7 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     @Transactional(readOnly = true)
     public HistoryResponseDTO.HistoryCommentResult getComments(Long historyId, int page) {
-        Page<Comment> comments = commentRepositoryService.findByHistoryIdAndCommentIsNull(historyId, PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdAt")));
+        Page<Comment> comments = commentRepositoryService.findByHistoryIdAndCommentIsNull(historyId, PageRequest.of(page, 20, Sort.by(Sort.Direction.DESC, "createdAt")));
         List<List<Comment>> repliesForEachComment = comments.stream()
                 .map(comment -> commentRepositoryService.findByCommentId(comment.getId()).stream()
                         .sorted(Comparator.comparing(Comment::getCreatedAt).reversed()) // 최신 순 정렬
@@ -166,15 +166,9 @@ public class HistoryServiceImpl implements HistoryService {
                                         .map(HistoryImage::getImageUrl)
                                         .findFirst();
 
-                                if (firstImageUrl.isPresent()) {
-                                    return firstImageUrl.get();  // 이미지가 있으면 해당 이미지 URL 반환
-                                } else {
-                                    return historyClothRepositoryService.findAllClothByHistoryId(history.getId())
-                                            .stream()
-                                            .findFirst()  // 첫 번째 옷의 URL 반환
-                                            .map(cloth -> cloth.getImage().getImageUrl())
-                                            .orElse("null");  // 없으면 기본 이미지 URL
-                                }})
+                       //이미지가 없다면 null을 반환하지만 버그 데이터 입니다..
+                        return firstImageUrl.orElse(null);
+                    })
                     .collect(Collectors.toList());
             String nickName = memberRepositoryService.findMemberById(myMemberId).getNickname();
             return HistoryConverter.toMonthViewResult(myMemberId,nickName, histories, firstImageUrlsOfHistory);
@@ -194,15 +188,9 @@ public class HistoryServiceImpl implements HistoryService {
                             .map(HistoryImage::getImageUrl)
                             .findFirst();
 
-                    if (firstImageUrl.isPresent()) {
-                        return firstImageUrl.get();  // 이미지가 있으면 해당 이미지 URL 반환
-                    } else {
-                        return historyClothRepositoryService.findAllClothByHistoryId(history.getId())
-                                .stream()
-                                .findFirst()  // 첫 번째 옷의 URL 반환
-                                .map(cloth -> cloth.getImage().getImageUrl())
-                                .orElse("null");  // 없으면 기본 이미지 URL
-                    }})
+                    //이미지가 없다면 null을 반환하지만 버그 데이터 입니다..
+                    return firstImageUrl.orElse(null);
+                })
                 .collect(Collectors.toList());
 
         //비공개 게시물을 가려줍니다.
@@ -234,9 +222,8 @@ public class HistoryServiceImpl implements HistoryService {
 
             // History 엔티티 생성 후 요청 정보 반환해서 저장
             History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));
-            if(imageFiles!=null){
-                historyImageRepositoryService.save(imageFiles, history);
-            }
+            historyImageRepositoryService.save(imageFiles, history);
+
 
             List<Cloth> cloths = clothRepositoryService.findAllById(historyCreateRequest.getClothes());
             List<HistoryCloth> historyCloths = cloths.stream()

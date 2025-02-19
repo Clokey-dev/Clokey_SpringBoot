@@ -4,8 +4,8 @@ import com.clokey.server.domain.member.application.MemberService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.dto.MemberDTO;
 import com.clokey.server.domain.member.exception.annotation.AuthUser;
-import com.clokey.server.domain.member.exception.annotation.IdExist;
 import com.clokey.server.domain.member.exception.annotation.IdValid;
+import com.clokey.server.domain.member.exception.annotation.*;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,10 +53,11 @@ public class MemberRestController {
 
 
     @Operation(summary = "회원 조회 API", description = "다른 회원의 프로필을 조회하는 API입니다.")
-    @GetMapping("users/{clokey_id}")
+    @GetMapping("users")
     public BaseResponse<Object> getUser(
             @Parameter(name = "user", hidden = true) @AuthUser Member currentUser, // 현재 로그인한 사용자 추가
-            @IdValid @PathVariable("clokey_id") String clokeyId) {
+            @NullableClokeyIdExist @RequestParam(value = "clokey_id", required = false) String clokeyId) {
+
 
         MemberDTO.GetUserRP response = memberService.getUser(clokeyId, currentUser);
 
@@ -90,6 +91,14 @@ public class MemberRestController {
     }
 
 
-
+    @Operation(summary = "팔로잉/팔로워 목록 조회 API", description = "팔로잉/팔로워 목록을 조회하는 api입니다.")
+    @GetMapping("users/{clokeyId}/follow")
+    public BaseResponse<MemberDTO.GetFollowMemberResult> getFollowMembers(@Parameter(name = "user", hidden = true) @AuthUser Member member,
+                                                                          @PathVariable("clokeyId") String clokeyId,
+                                                                          @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                                                          @RequestParam(value = "isFollowing", defaultValue = "true") Boolean isFollowing){
+        MemberDTO.GetFollowMemberResult response = memberService.getFollowPeople(member.getId(), clokeyId, page, isFollowing);
+        return BaseResponse.onSuccess(SuccessStatus.MEMBER_SUCCESS, response);
+    }
 }
 

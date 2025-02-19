@@ -16,5 +16,11 @@ public interface NotificationRepositoryService {
 
     ClokeyNotification findById(Long notificationId);
 
+    void deleteBymemberId(Long memberId);
+
+    void deleteByClokeyNotificationIds(List<Long> clokeyNotificationIds);
+
     List<ClokeyNotification> findNotificationsByMemberId(Long memberId, Pageable pageable);
+
+    void readAllByMemberId(Long memberId);
 }

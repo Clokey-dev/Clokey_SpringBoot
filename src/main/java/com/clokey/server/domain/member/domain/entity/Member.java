@@ -80,6 +80,10 @@ public class Member extends BaseEntity {
     @Column(nullable = true, unique = true)
     private String appleRefreshToken;
 
+    @Column(unique = true)
+    private String kakaoId;
+
+
 
 
     //필요한 양방향 매핑을 제외하고 삭제해주세요.
@@ -114,11 +118,29 @@ public class Member extends BaseEntity {
         this.refreshToken = refreshToken;
     }
 
+    public void updateAppleRefreshToken(String appleRefreshToken) {
+        this.appleRefreshToken = appleRefreshToken;
+    }
+
+    public void updateKakaoId(String kakaoId) {
+        this.kakaoId = kakaoId;
+    }
+
     public void updateDeviceToken(String deviceToken) {
         this.deviceToken = deviceToken;
     }
 
-    public void updateAppleRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
+    public void updateStatus(){
+        if(this.status == MemberStatus.ACTIVE){
+            this.status = MemberStatus.INACTIVE;
+        }else{
+            this.status = MemberStatus.ACTIVE;
+        }
     }
+
+    public void updateInactiveDate(LocalDate date) {
+        this.inactiveDate = date;
+    }
+
+
 }

@@ -24,4 +24,6 @@ public interface HistoryClothRepositoryService {
     void deleteAllByHistoryId(Long historyId);
 
     void saveAll(List<HistoryCloth> historyCloths);
+
+    void deleteAllByHistoryIds(List<Long> historyIds);
 }

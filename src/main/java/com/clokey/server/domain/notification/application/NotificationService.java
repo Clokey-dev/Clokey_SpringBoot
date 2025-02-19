@@ -24,4 +24,6 @@ public interface NotificationService {
     void sendSeasonsNotification(Season season, Long memberId);
 
     NotificationResponseDTO.GetNotificationResult getNotifications(Long memberId, Integer page);
+
+    void readAllNotification(Long memberId);
 }

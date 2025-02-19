@@ -71,7 +71,7 @@ public enum ErrorStatus implements BaseErrorCode {
     HISTORY_CONTENT_OUT_OF_RANGE(HttpStatus.BAD_REQUEST,"HISTORY_4010","기록의 내용은 200자 이하여야 합니다."),
     DUPLICATE_CLOTHES_FOR_HISTORY(HttpStatus.BAD_REQUEST,"HISTORY_4011","기록에 중복된 옷을 등록할 수 없습니다"),
     HISTORY_ALREADY_EXIST_FOR_DATE(HttpStatus.BAD_REQUEST,"HISTORY_4012","이미 기록이 존재하는 날짜입니다."),
-    IMAGE_QUANTITY_OVER_HISTORY_IMAGE_LIMIT(HttpStatus.BAD_REQUEST,"HISTORY_4013","사진을 10개 넘게 업로드 할 수 없습니다."),
+    IMAGE_QUANTITY_OVER_HISTORY_IMAGE_LIMIT(HttpStatus.BAD_REQUEST,"HISTORY_4013","사진을 최소 1개 업로드 해야 하며 10개 넘게 업로드 할 수 없습니다."),
     NOT_MY_HISTORY(HttpStatus.BAD_REQUEST,"HISTORY_4014","사용자의 기록이 아닙니다"),
     NOT_MY_COMMENT(HttpStatus.BAD_REQUEST,"HISTORY_4015","사용자의 댓글이 아닙니다"),
     NO_HISTORY_FOR_DATE(HttpStatus.BAD_REQUEST,"HISTORY_4016","해당 날짜에 기록이 없습니다"),
@@ -110,7 +110,8 @@ public enum ErrorStatus implements BaseErrorCode {
     EXPIRED_REFRESH_TOKEN(HttpStatus.BAD_REQUEST,"LOGIN_4005","리프레시 토큰이 만료되었습니다. 다시 로그인 하세요."),
     INVALID_CODE(HttpStatus.BAD_REQUEST,"LOGIN_4006","유효하지 않은 코드입니다."),
     NO_RESPONSE(HttpStatus.BAD_REQUEST,"LOGIN_4007","응답이 없습니다."),
-    INVALID_RESPONSE(HttpStatus.BAD_REQUEST,"LOGIN_4007","응답이 없습니다."),
+    INVALID_RESPONSE(HttpStatus.BAD_REQUEST,"LOGIN_4008","응답이 없습니다."),
+    INACTIVE_MEMBER(HttpStatus.BAD_REQUEST,"LOGIN_4009","비활성화된 사용자입니다."),
 
     //검색 에러
     NO_SUCH_PARAMETER(HttpStatus.BAD_REQUEST,"SEARCH_4001","검색어는 필수입니다."),

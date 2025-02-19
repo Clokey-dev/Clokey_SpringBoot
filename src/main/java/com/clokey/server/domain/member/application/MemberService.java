@@ -15,4 +15,7 @@ public interface MemberService {
                                       MultipartFile profileImage, MultipartFile profileBackImage);
 
     void clokeyIdUsingCheck(String clokeyId, Member currentUser);
+
+    MemberDTO.GetFollowMemberResult getFollowPeople(Long memberId, String clokeyId, Integer page, Boolean isFollow);
+
 }

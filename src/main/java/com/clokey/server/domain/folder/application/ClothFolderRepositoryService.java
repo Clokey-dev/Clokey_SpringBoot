@@ -24,4 +24,8 @@ public interface ClothFolderRepositoryService {
     Map<Long, String> findClothImageUrlsFromFolderIds(List<Long> folderIds);
 
     void deleteAllByFolderId(@Param("folderId") Long folderId);
+
+    void deleteAllByClothIds(List<Long> clothIds);
+
+    void deleteAllByFolderIds(List<Long> folderIds);
 }

@@ -17,7 +17,6 @@ public class MemberDocumentConverter {
                 .map(item -> {
                     MemberDocument doc = (MemberDocument) item;
                     return MemberDTO.ProfilePreview.builder()
-                            .id(doc.getId())
                             .nickname(doc.getNickname())
                             .clokeyId(doc.getClokeyId())
                             .profileImage(doc.getProfileUrl())

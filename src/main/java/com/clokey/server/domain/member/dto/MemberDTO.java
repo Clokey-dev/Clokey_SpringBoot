@@ -18,7 +18,6 @@ public class MemberDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class GetUserRP {
-
         String clokeyId;
         String profileImageUrl;
         Long recordCount;
@@ -69,7 +68,6 @@ public class MemberDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ProfilePreview {
-        Long id;
         String nickname;
         String clokeyId;
         String profileImage;
@@ -92,7 +90,30 @@ public class MemberDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class  FollowRP{
+    public static class FollowRP{
         Boolean isFollow;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetFollowMemberResult {
+        List<FollowMemberResult> members;
+        private int totalPage;
+        private long totalElements;
+        private Boolean isFirst;
+        private Boolean isLast;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class FollowMemberResult {
+        String nickname;
+        String clokeyId;
+        String profileImage;
+        Boolean isFollowed;
     }
 }

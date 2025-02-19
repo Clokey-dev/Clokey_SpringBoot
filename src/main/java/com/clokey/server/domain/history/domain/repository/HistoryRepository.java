@@ -44,6 +44,10 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
 
     Optional<History> findByHistoryDateAndMember_Id(LocalDate historyDate, Long memberId);
 
+    @Modifying
+    @Query("DELETE FROM History h WHERE h.id IN :historyIds")
+    void deleteByHistoryIds(@Param("historyIds") List<Long> historyIds);
+
     Page<History> findByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> member, Visibility visibility, Pageable pageable);
 
     List<History> findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> member, Visibility visibility);

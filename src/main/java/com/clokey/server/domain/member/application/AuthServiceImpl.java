@@ -3,6 +3,7 @@ package com.clokey.server.domain.member.application;
 import com.clokey.server.domain.member.dto.AuthDTO;
 import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.enums.MemberStatus;
 import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.clokey.server.domain.model.entity.enums.SocialType;
 import com.clokey.server.domain.search.application.SearchRepositoryService;
@@ -36,15 +37,19 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Base64;
-import java.util.Date;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.net.http.HttpRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -116,7 +121,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public ResponseEntity<AuthDTO.TokenResponse> authenticateKakaoUser(String kakaoAccessToken){
+    public ResponseEntity<AuthDTO.TokenResponse> authenticateKakaoUser(String kakaoAccessToken, String deviceToken) {
         // 카카오에서 사용자 정보 가져오기
         AuthDTO.KakaoUserResponse kakaoUser = getUserInfoFromKakao(kakaoAccessToken);
 
@@ -127,13 +132,29 @@ public class AuthServiceImpl implements AuthService {
         boolean isNewUser = false;
         if (optionalMember.isPresent()) {
             member = optionalMember.get();  // 기존 사용자
+            if (member.getKakaoId() == null||member.getKakaoId().isBlank()) {
+                if(member.getStatus()== MemberStatus.INACTIVE){
+                    member.updateStatus();
+                    member.updateInactiveDate(null);
+                    memberRepositoryService.saveMember(member);
+                }
+                // DB에 카카오 ID가 없으면 업데이트
+                member.updateKakaoId(kakaoUser.getId());
+                memberRepositoryService.saveMember(member);
+            }
+
+            member.updateDeviceToken(deviceToken);
+            memberRepositoryService.saveMember(member);
+
         } else {
             // DB에 사용자 정보가 없으면 회원가입
             member = Member.builder()
+                    .kakaoId(kakaoUser.getId())
                     .nickname(kakaoUser.getKakaoAccount().getProfile().getNickname())
                     .email(kakaoUser.getKakaoAccount().getEmail())
                     .registerStatus(RegisterStatus.NOT_AGREED)
                     .socialType(SocialType.KAKAO)
+                    .deviceToken(deviceToken)
                     .build();
             memberRepositoryService.saveMember(member);
             isNewUser = true; // 새로운 사용자
@@ -422,7 +443,8 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
-    private String createClientSecret() {
+    @Override
+    public String createClientSecret() {
         JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.ES256)
                 .keyID(APPLE_LOGIN_KEY)
                 .build();
@@ -484,6 +506,58 @@ public class AuthServiceImpl implements AuthService {
     }
 
     //5. 여기까지 프라이빗 키 가져오기
+
+    public String getRefreshToken(String clientSecret, String authCode) {
+        String refreshToken = "";
+
+        String uriStr = "https://appleid.apple.com/auth/token";
+
+        Map<String, String> params = new HashMap<>();
+        params.put("client_secret", clientSecret); // 생성한 clientSecret
+        params.put("code", authCode); // 애플 로그인 시 받은 authorizationCode
+        params.put("grant_type", "authorization_code");
+        params.put("client_id", APPLE_CLIENT_ID); // app bundle id
+
+        try {
+            HttpRequest getRequest = HttpRequest.newBuilder()
+                    .uri(new URI(uriStr))
+                    .POST(getParamsUrlEncoded(params))
+                    .headers("Content-Type", "application/x-www-form-urlencoded")
+                    .build();
+
+            HttpClient httpClient = HttpClient.newHttpClient();
+            HttpResponse<String> getResponse = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
+
+            // 응답을 JSON으로 파싱
+            JSONParser parser = new JSONParser();
+            JSONObject parseData = (JSONObject) parser.parse(getResponse.body());
+
+            // "refresh_token"이 존재하면 값 가져오기
+            if (parseData.containsKey("refresh_token")) {
+                refreshToken = parseData.get("refresh_token").toString();
+            } else {
+                System.out.println("refresh_token 키가 응답에 없음. 응답: " + getResponse.body());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (refreshToken == null || refreshToken.isBlank()) {
+            System.out.println("refreshToken 생성 실패");
+        }
+        System.out.println("refresh is this: " + refreshToken);
+        return refreshToken;
+    }
+
+
+    public HttpRequest.BodyPublisher getParamsUrlEncoded(Map<String, String> parameters) {
+        String urlEncoded = parameters.entrySet()
+                .stream()
+                .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
+                .collect(Collectors.joining("&"));
+        return HttpRequest.BodyPublishers.ofString(urlEncoded);
+    }
 
 }
 

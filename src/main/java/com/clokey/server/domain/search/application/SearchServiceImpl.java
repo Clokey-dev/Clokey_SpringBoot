@@ -3,7 +3,9 @@ package com.clokey.server.domain.search.application;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.Result;
+import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermsQueryField;
+import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.DeleteByQueryResponse;
 import co.elastic.clients.elasticsearch.core.DeleteResponse;
@@ -89,12 +91,24 @@ public class SearchServiceImpl implements SearchService {
                                             .query(keyword)
                                             .fuzziness("AUTO")
                                     ))
+                                    .should(ms -> ms.matchBoolPrefix(mq -> mq
+                                            .field("name")
+                                            .query(keyword)
+                                            .fuzziness("AUTO")
+                                    ))
+                                    .should(ms -> ms.matchPhrasePrefix(mq -> mq
+                                            .field("name")
+                                            .query(keyword)
+                                    ))
                                     .should(ms -> ms.match(mq -> mq
                                             .field("brand")
                                             .query(keyword)
                                             .fuzziness("AUTO")
                                     ))
-                                    .minimumShouldMatch("1") // OR 조건 적용
+                                    .should(ms -> ms.matchPhrasePrefix(mq -> mq
+                                            .field("brand")
+                                            .query(keyword)
+                                    ))
                             ));
                             return b;
                         }))
@@ -131,17 +145,28 @@ public class SearchServiceImpl implements SearchService {
                             // 비공개 기록 제외
                             b.mustNot(m -> m.term(t -> t.field("historyVisibility.keyword").value("PRIVATE")));
 
-                            // 검색시 사진이 없으면 제외; 기록이 공개인데, 옷이 비공개여서 띄워줄 사진이 없는 경우
-                            b.must(m -> m.exists(t -> t.field("imageUrl")));
-                            // 빈 값 또는 "null"이면 제외
-                            b.mustNot(m -> m.terms(t -> t.field("imageUrl.keyword")
-                                    .terms(TermsQueryField.of(f -> f.value(List.of(FieldValue.of(""), FieldValue.of("null")))))));
-
                             // 해시태그 및 카테고리 검색
-                            b.must(m -> m.multiMatch(t -> t
+                            b.should(m -> m.multiMatch(t -> t
                                     .query(keyword)
                                     .fields("hashtagNames", "categoryNames")
+                                    .operator(Operator.Or) // OR 조건 적용
                                     .fuzziness("AUTO")
+                            ));
+
+                            // 해시태그 검색
+                            b.should(m -> m.wildcard(t -> t
+                                    .field("hashtagNames.keyword")
+                                    .value("*" + keyword + "*") // 포함 검색
+                            ));
+
+                            // 카테고리 검색
+                            b.should(m -> m.matchBoolPrefix(t -> t
+                                    .field("categoryNames")
+                                    .query(keyword)
+                            ));
+                            b.should(m -> m.matchPhrasePrefix(t -> t
+                                    .field("categoryNames")
+                                    .query(keyword)
                             ));
                             return b;
                         }))
@@ -174,15 +199,21 @@ public class SearchServiceImpl implements SearchService {
                         .query(q -> q.bool(b -> b
                                 .should(m -> m.multiMatch(t -> t
                                         .query(keyword)
-                                        .fields("clokeyId", "nickname")
+                                        .fields("nickname", "clokeyId")
                                         .fuzziness("AUTO")
                                 ))
-                                .should(m -> m.matchBoolPrefix(t -> t
-                                        .field("clokeyId")
+                                .should(m -> m.multiMatch(t -> t
                                         .query(keyword)
+                                        .fields("nickname")
+                                        .type(TextQueryType.BoolPrefix)
+                                        .fuzziness("AUTO")
                                 ))
-                                .should(m -> m.matchBoolPrefix(t -> t
+                                .should(m -> m.wildcard(t -> t
                                         .field("nickname")
+                                        .value("*" + keyword + "*")
+                                ))
+                                .should(m -> m.matchPhrasePrefix(t -> t
+                                        .field("clokeyId")
                                         .query(keyword)
                                 ))
                         )),

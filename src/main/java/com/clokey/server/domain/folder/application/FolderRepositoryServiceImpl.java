@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class FolderRepositoryServiceImpl implements FolderRepositoryService{
@@ -44,5 +46,10 @@ public class FolderRepositoryServiceImpl implements FolderRepositoryService{
     @Transactional(readOnly = true)
     public Page<Folder> findAllByMemberId(Long memberId, Pageable page) {
         return folderRepository.findAllByMemberId(memberId, page);
+    }
+
+    @Override
+    public void deleteByFolderIds(List<Long> folderIds) {
+        folderRepository.deleteByFolderIds(folderIds);
     }
 }

@@ -7,6 +7,7 @@ import com.clokey.server.domain.history.exception.validator.HistoryLikedValidato
 import com.clokey.server.domain.member.application.FollowRepositoryService;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.enums.MemberStatus;
 import com.clokey.server.domain.model.entity.enums.RedirectType;
 import com.clokey.server.domain.model.entity.enums.ReadStatus;
 import com.clokey.server.domain.model.entity.enums.Season;
@@ -74,6 +75,12 @@ public class NotificationServiceImpl implements NotificationService {
         notification.readNotification();
     }
 
+    @Override
+    @Transactional
+    public void readAllNotification(Long memberId) {
+        notificationRepositoryService.readAllByMemberId(memberId);
+    }
+
     private void checkMyNotification(Long notificationId, Long memberId) {
         if (!notificationRepositoryService.findById(notificationId).getMember().getId().equals(memberId)) {
             throw new NotificationException(ErrorStatus.NOT_MY_NOTIFICATION);
@@ -89,10 +96,12 @@ public class NotificationServiceImpl implements NotificationService {
         Member historyWriter = historyRepositoryService.findById(historyId).getMember();
         Member likedMember = memberRepositoryService.findMemberById(memberId);
 
-        checkSendingNotificationToMySelf(historyWriter, likedMember);
+        if(memberId.equals(historyId)){
+            return null;
+        }
 
-        //로그아웃 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
-        if (historyWriter.getDeviceToken() != null && historyWriter.getRefreshToken() != null) {
+        //로그아웃이거나 비활성화 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
+        if (ableToSendNotification(historyWriter)) {
             String content = String.format(HISTORY_LIKED_NOTIFICATION_CONTENT, likedMember.getNickname());
             String likedMemberProfileUrl = likedMember.getProfileImageUrl();
 
@@ -131,12 +140,6 @@ public class NotificationServiceImpl implements NotificationService {
         return null;
     }
 
-    private void checkSendingNotificationToMySelf(Member sendTo, Member sending) {
-        if (sendTo.equals(sending)) {
-            throw new NotificationException(ErrorStatus.CANNOT_NOTIFY_MY_SELF);
-        }
-    }
-
     @Override
     @Transactional
     public NotificationResponseDTO.NewFollowerNotificationResult sendNewFollowerNotification(String followedMemberClokeyId, Long followingMemberId) {
@@ -146,8 +149,8 @@ public class NotificationServiceImpl implements NotificationService {
 
         checkFollowing(followingMemberId, followedMember.getId());
 
-        //로그아웃 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
-        if (followedMember.getDeviceToken() != null && followedMember.getRefreshToken() != null) {
+        //로그아웃이거나 비활성화 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
+        if (ableToSendNotification(followedMember)) {
             String content = String.format(NEW_FOLLOWER_NOTIFICATION_CONTENT, followingMember.getNickname());
             String followingMemberProfileUrl = followingMember.getProfileImageUrl();
 
@@ -199,16 +202,20 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     public NotificationResponseDTO.HistoryCommentNotificationResult sendHistoryCommentNotification(Long historyId, Long commentId, Long memberId) {
 
+
+
         checkMyComment(commentId, memberId);
         checkHistoryComment(commentId, historyId);
 
         Member historyWriter = historyRepositoryService.findById(historyId).getMember();
         Member commentWriter = memberRepositoryService.findMemberById(memberId);
-        checkSendingNotificationToMySelf(historyWriter, commentWriter);
+        if(historyWriter.equals(commentWriter)){
+            return null;
+        }
         Comment writtenComment = commentRepositoryService.findById(commentId);
 
-        //로그아웃 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
-        if (historyWriter.getDeviceToken() != null && historyWriter.getRefreshToken() != null) {
+        //로그아웃이거나 비활성화 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
+        if (ableToSendNotification(historyWriter)) {
             String content = String.format(HISTORY_COMMENT_NOTIFICATION_CONTENT, commentWriter.getNickname(), writtenComment.getContent());
             String commentWriterProfileUrl = commentWriter.getProfileImageUrl();
 
@@ -273,11 +280,13 @@ public class NotificationServiceImpl implements NotificationService {
         Member commentWriter = commentRepositoryService.findById(commentId).getMember();
         Comment writtenReply = commentRepositoryService.findById(replyId);
         Member replyWriter = writtenReply.getMember();
-        checkSendingNotificationToMySelf(commentWriter, replyWriter);
+        if(commentWriter.equals(replyWriter)){
+            return null;
+        }
 
 
-        //로그아웃 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
-        if (commentWriter.getDeviceToken() != null && commentWriter.getRefreshToken() != null) {
+        //로그아웃이거나 비활성화 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
+        if (ableToSendNotification(commentWriter)) {
             String content = String.format(COMMENT_REPLY_CONTENT, replyWriter.getNickname(), writtenReply.getContent());
             String replyWriterProfileUrl = replyWriter.getProfileImageUrl();
             Long historyId = commentRepositoryService.findById(commentId).getHistory().getId();
@@ -332,7 +341,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         Member member = memberRepositoryService.findMemberById(memberId);
 
-        if (member.getDeviceToken() != null || member.getRefreshToken() != null) {
+        if (ableToSendNotification(member)) {
             sendNotifications(ONE_YEAR_AGO_NOTIFICATION, ONE_YEAR_AGO_NOTIFICATION_IMAGE_URL, member.getDeviceToken());
         }
     }
@@ -342,7 +351,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         Member member = memberRepositoryService.findMemberById(memberId);
 
-        if (member.getDeviceToken() == null || member.getRefreshToken() == null) {
+        if (!ableToSendNotification(member)) {
             return;
         }
 
@@ -361,7 +370,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         Member member = memberRepositoryService.findMemberById(memberId);
 
-        if (member.getDeviceToken() == null || member.getRefreshToken() == null) {
+        if (!ableToSendNotification(member)) {
             return;
         }
 
@@ -399,5 +408,9 @@ public class NotificationServiceImpl implements NotificationService {
         } catch (FirebaseMessagingException e) {
             throw new NotificationException(ErrorStatus.NOTIFICATION_FIREBASE_ERROR);
         }
+    }
+
+    private boolean ableToSendNotification(Member member){
+        return member.getStatus() != MemberStatus.INACTIVE && member.getDeviceToken() != null && member.getRefreshToken() != null;
     }
 }

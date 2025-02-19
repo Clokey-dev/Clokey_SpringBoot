@@ -9,17 +9,20 @@ import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.dto.MemberDTO;
 import com.clokey.server.domain.member.exception.MemberException;
 import com.clokey.server.domain.model.entity.enums.RegisterStatus;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.domain.search.application.SearchRepositoryService;
 import com.clokey.server.domain.search.exception.SearchException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.infra.s3.S3ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -155,6 +158,28 @@ public class MemberServiceImpl implements  MemberService{
         if (!myClokeyId.equals(clokeyId) && memberRepositoryService.existsByClokeyId(clokeyId)) {
             throw new MemberException(ErrorStatus.DUPLICATE_CLOKEY_ID);
         }
+    }
+
+    @Override
+    public MemberDTO.GetFollowMemberResult getFollowPeople(Long memberId, String clokeyId, Integer page, Boolean isFollow) {
+        // clokeyId로 계정 공개 여부 가져오기
+        Member findMember = memberRepositoryService.findByClokeyId(clokeyId);
+
+        Pageable pageable = PageRequest.of(page-1, 10);
+        if(findMember.getVisibility()== Visibility.PUBLIC){
+            if(isFollow){
+                // 팔로잉 리스트 가져오기
+                List<Member> members = followRepositoryService.findFollowingByFollowedId(findMember.getId(), pageable);
+                List<Boolean> isFollowings = followRepositoryService.checkFollowingStatus(memberId, members);
+                return GetUserConverter.toGetFollowPeopleResultDTO(members, pageable, isFollowings);
+            }else{
+                // 팔로워 리스트 가져오기
+                List<Member> members = followRepositoryService.findFollowedByFollowingId(findMember.getId(), pageable);
+                List<Boolean> isFollowings = followRepositoryService.checkFollowingStatus(memberId, members);
+                return GetUserConverter.toGetFollowPeopleResultDTO(members, pageable, isFollowings);
+            }
+        }
+        return GetUserConverter.toGetFollowPeopleResultDTO(new ArrayList<>(), pageable, new ArrayList<>());
     }
 
 }
