@@ -36,7 +36,8 @@ public class SecurityConfig {
             "/refresh",
             "/ws/**",
             "/topic/**",
-            "/reissue-token"
+            "/reissue-token",
+            "/actuator/prometheus"
     };
 
     @Bean
