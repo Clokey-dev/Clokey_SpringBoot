@@ -13,4 +13,6 @@ public interface MemberService {
 
     MemberDTO.ProfileRP updateProfile(Long userId, MemberDTO.ProfileRQ request,
                                       MultipartFile profileImage, MultipartFile profileBackImage);
+
+    void clokeyIdUsingCheck(String clokeyId, Member currentUser);
 }

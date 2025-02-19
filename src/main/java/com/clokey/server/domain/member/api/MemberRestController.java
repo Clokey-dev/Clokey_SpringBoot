@@ -42,8 +42,11 @@ public class MemberRestController {
 
     @Operation(summary = "아이디 중복 조회 API", description = "사용자의 클로키 아이디가 이미 사용 중인지 조회하는 API입니다.")
     @GetMapping("users/{clokey_id}/check")
-    public BaseResponse<Object> checkID(
-            @IdExist @PathVariable("clokey_id") String clokeyId) { // 클로키 아이디를 PathVariable로 받음
+    public BaseResponse<Void> checkID(
+            @Parameter(name = "user", hidden = true) @AuthUser Member currentUser,
+            @PathVariable("clokey_id") String clokeyId) { // 클로키 아이디를 PathVariable로 받음
+
+        memberService.clokeyIdUsingCheck(clokeyId, currentUser);
 
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_ID_SUCCESS, null);
     }
@@ -77,7 +80,7 @@ public class MemberRestController {
 
     @Operation(summary = "팔로우 API", description = "다른 사용자를 팔로우/언팔로우하는 API입니다. 호출시마다 기존 상태와 반대로 변경됩니다.")
         @PostMapping("users/follow/{clokey_id}")
-    public BaseResponse<Object> follow(
+    public BaseResponse<Void> follow(
             @Parameter(name = "user", hidden = true) @AuthUser Member currentUser,
             @IdValid @PathVariable("clokey_id") String clokeyId) {
 

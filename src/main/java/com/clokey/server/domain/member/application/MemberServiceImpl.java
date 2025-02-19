@@ -109,8 +109,20 @@ public class MemberServiceImpl implements  MemberService{
         Member member = memberRepositoryService.findMemberById(userId);
 
         // ✅ S3 업로드 후 URL 저장
-        String profileImageUrl = (profileImage != null && !profileImage.isEmpty()) ? s3ImageService.upload(profileImage) : member.getProfileImageUrl();
-        String profileBackImageUrl = (profileBackImage != null && !profileBackImage.isEmpty()) ? s3ImageService.upload(profileBackImage) : member.getProfileBackImageUrl();
+        String profileImageUrl;
+        if (profileImage != null && !profileImage.isEmpty()) {
+            profileImageUrl = s3ImageService.upload(profileImage);
+        } else {
+            profileImageUrl = member.getProfileImageUrl();
+        }
+
+        String profileBackImageUrl;
+        if (profileBackImage != null && !profileBackImage.isEmpty()) {
+            profileBackImageUrl = s3ImageService.upload(profileBackImage);
+        } else {
+            profileBackImageUrl = member.getProfileBackImageUrl();
+        }
+
 
         member.profileUpdate(request, profileImageUrl, profileBackImageUrl);
 
@@ -132,4 +144,17 @@ public class MemberServiceImpl implements  MemberService{
         // 응답 생성
         return ProfileConverter.toProfileRPDTO(updatedMember);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void clokeyIdUsingCheck(String clokeyId, Member currentUser) {
+        // 현재 로그인한 사용자의 clokeyId 가져오기
+        String myClokeyId = currentUser.getClokeyId();
+
+        // 내 아이디가 아니라면 중복 체크 수행
+        if (!myClokeyId.equals(clokeyId) && memberRepositoryService.existsByClokeyId(clokeyId)) {
+            throw new MemberException(ErrorStatus.DUPLICATE_CLOKEY_ID);
+        }
+    }
+
 }
