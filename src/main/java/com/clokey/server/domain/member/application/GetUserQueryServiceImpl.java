@@ -25,12 +25,21 @@ public class GetUserQueryServiceImpl implements GetUserQueryService {
     @Override
     @Transactional(readOnly = true)
     public MemberDTO.GetUserRP getUser(String clokeyId, Member currentUser) { // 현재 사용자 추가
-        Member member = memberRepositoryService.findMemberByClokeyId(clokeyId);
+
+        Member member;
+        Boolean isFollowing;
+
+        if(clokeyId == null){
+            member = currentUser;
+            isFollowing = null;
+        } else {
+            member = memberRepositoryService.findMemberByClokeyId(clokeyId);
+            isFollowing = isFollowing(currentUser, member); // 팔로우 여부 체크 추가
+        }
 
         Long recordCount = countHistoryByMember(member);
         Long followerCount = countFollowersByMember(member);
         Long followingCount = countFollowingByMember(member);
-        Boolean isFollowing = isFollowing(currentUser, member); // 팔로우 여부 체크 추가
         List<String> topClothImages=getTop3ClothImages(member);
 
         return GetUserConverter.toGetUserResponseDTO(
