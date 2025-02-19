@@ -17,14 +17,8 @@ import java.util.Optional;
 
 public interface ClothRepository extends JpaRepository<Cloth, Long> {
 
-    boolean existsById(Long id);
-
-    Cloth save(Cloth cloth);
-
     @EntityGraph(attributePaths = {"image"})
     Optional<Cloth> findById(Long id);
-
-    List<Cloth> findAll();
 
     @Query("SELECT c FROM Cloth c " +
             "JOIN c.member m " +
@@ -78,8 +72,6 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
                                            @Param("nowTemp") Integer nowTemp,
                                            @Param("minTemp") Integer minTemp,
                                            @Param("maxTemp") Integer maxTemp);
-
-    void deleteById(Long id);
 
     @Modifying
     @Query("DELETE FROM Cloth c WHERE c.id IN :clothIds")
