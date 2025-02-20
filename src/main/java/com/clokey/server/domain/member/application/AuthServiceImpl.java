@@ -66,18 +66,12 @@ public class AuthServiceImpl implements AuthService {
     @Value("${jwt.refresh-expiration}") // refreshToken 만료 시간
     private long refreshExpirationTime;
 
-    @Autowired
-    private MemberRepositoryService memberRepositoryService;
+    private final MemberRepositoryService memberRepositoryService;
+
 
     @Override
     public String generateAccessToken(Long userId, String email) {
-        return Jwts.builder()
-                .setSubject(String.valueOf(userId))
-                .claim("email", email)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + accessExpirationTime))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
-                .compact();
+        return Jwts.builder().setSubject(String.valueOf(userId)).claim("email", email).setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + accessExpirationTime)).signWith(SignatureAlgorithm.HS256, secretKey).compact();
     }
 
     @Override
@@ -88,13 +82,7 @@ public class AuthServiceImpl implements AuthService {
         }
         String email = member.getEmail();
 
-        return Jwts.builder()
-                .setSubject(String.valueOf(userId))
-                .claim("email", email)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + refreshExpirationTime))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
-                .compact();
+        return Jwts.builder().setSubject(String.valueOf(userId)).claim("email", email).setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + refreshExpirationTime)).signWith(SignatureAlgorithm.HS256, secretKey).compact();
     }
 
 
@@ -111,10 +99,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String extractEmailFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
         return claims.get("email", String.class);
     }
 
@@ -148,14 +133,7 @@ public class AuthServiceImpl implements AuthService {
 
         } else {
             // DB에 사용자 정보가 없으면 회원가입
-            member = Member.builder()
-                    .kakaoId(kakaoUser.getId())
-                    .nickname(kakaoUser.getKakaoAccount().getProfile().getNickname())
-                    .email(kakaoUser.getKakaoAccount().getEmail())
-                    .registerStatus(RegisterStatus.NOT_AGREED)
-                    .socialType(SocialType.KAKAO)
-                    .deviceToken(deviceToken)
-                    .build();
+            member = Member.builder().kakaoId(kakaoUser.getId()).nickname(kakaoUser.getKakaoAccount().getProfile().getNickname()).email(kakaoUser.getKakaoAccount().getEmail()).registerStatus(RegisterStatus.NOT_AGREED).socialType(SocialType.KAKAO).deviceToken(deviceToken).build();
             memberRepositoryService.saveMember(member);
             isNewUser = true; // 새로운 사용자
         }
@@ -174,14 +152,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 토큰 반환
-        AuthDTO.TokenResponse tokenResponse = new AuthDTO.TokenResponse(
-                member.getId(),
-                member.getEmail(),
-                member.getNickname(),
-                member.getAccessToken(),
-                member.getRefreshToken(),
-                member.getRegisterStatus()
-        );
+        AuthDTO.TokenResponse tokenResponse = new AuthDTO.TokenResponse(member.getId(), member.getEmail(), member.getNickname(), member.getAccessToken(), member.getRefreshToken(), member.getRegisterStatus());
 
         // 새로운 사용자라면 201 Created 반환, 기존 사용자라면 200 OK 반환
         if (isNewUser) {
@@ -203,12 +174,7 @@ public class AuthServiceImpl implements AuthService {
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         try {
-            ResponseEntity<AuthDTO.KakaoUserResponse> response = restTemplate.exchange(
-                    "https://kapi.kakao.com/v2/user/me",
-                    HttpMethod.GET,
-                    entity,
-                    AuthDTO.KakaoUserResponse.class
-            );
+            ResponseEntity<AuthDTO.KakaoUserResponse> response = restTemplate.exchange("https://kapi.kakao.com/v2/user/me", HttpMethod.GET, entity, AuthDTO.KakaoUserResponse.class);
 
             return response.getBody();
         } catch (HttpClientErrorException e) {
@@ -255,14 +221,7 @@ public class AuthServiceImpl implements AuthService {
         memberRepositoryService.saveMember(member);
 
         // 새로 발급된 토큰들 반환
-        AuthDTO.TokenResponse tokenResponse = new AuthDTO.TokenResponse(
-                member.getId(),
-                member.getEmail(),
-                member.getNickname(),
-                newAccessToken,
-                newRefreshToken,
-                member.getRegisterStatus()
-        );
+        AuthDTO.TokenResponse tokenResponse = new AuthDTO.TokenResponse(member.getId(), member.getEmail(), member.getNickname(), newAccessToken, newRefreshToken, member.getRegisterStatus());
 
         return tokenResponse;
     }
@@ -282,10 +241,8 @@ public class AuthServiceImpl implements AuthService {
 
     // JWT에서 만료 시간을 추출하는 메소드
     private Date extractExpirationFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(secretKey)  // 비밀키로 서명된 토큰 파싱
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims = Jwts.parser().setSigningKey(secretKey)  // 비밀키로 서명된 토큰 파싱
+                .parseClaimsJws(token).getBody();
         return claims.getExpiration();  // 만료 시간을 반환
     }
 
@@ -317,10 +274,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     public String getAppleLogin() {
-        return APPLE_AUTH_URL + "/auth/authorize"
-                + "?client_id=" + APPLE_CLIENT_ID
-                + "&redirect_uri=" + APPLE_REDIRECT_URL
-                + "&response_type=code%20id_token&scope=name%20email&response_mode=form_post";
+        return APPLE_AUTH_URL + "/auth/authorize" + "?client_id=" + APPLE_CLIENT_ID + "&redirect_uri=" + APPLE_REDIRECT_URL + "&response_type=code%20id_token&scope=name%20email&response_mode=form_post";
     }
 
     //2. 여기까지 주소 가져옴
@@ -352,12 +306,7 @@ public class AuthServiceImpl implements AuthService {
             HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(params, headers);
 
             // Apple API 호출
-            ResponseEntity<String> response = restTemplate.exchange(
-                    APPLE_AUTH_URL + "/auth/token",
-                    HttpMethod.POST,
-                    httpEntity,
-                    String.class
-            );
+            ResponseEntity<String> response = restTemplate.exchange(APPLE_AUTH_URL + "/auth/token", HttpMethod.POST, httpEntity, String.class);
 
             // 응답 상태 코드 체크
             if (!response.getStatusCode().equals(HttpStatus.OK)) {
@@ -402,12 +351,7 @@ public class AuthServiceImpl implements AuthService {
 
 
         } else {
-            member = Member.builder()
-                    .email(email)
-                    .socialType(SocialType.APPLE)
-                    .registerStatus(RegisterStatus.NOT_AGREED)
-                    .deviceToken(deviceToken)
-                    .build();
+            member = Member.builder().email(email).socialType(SocialType.APPLE).registerStatus(RegisterStatus.NOT_AGREED).deviceToken(deviceToken).build();
             memberRepositoryService.saveMember(member);
         }
 
@@ -426,33 +370,19 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 응답 반환
-        return AuthDTO.TokenResponse.builder()
-                .id(member.getId())
-                .email(member.getEmail())
-                .nickname(member.getNickname())
-                .accessToken(member.getAccessToken())
-                .refreshToken(member.getRefreshToken())
-                .registerStatus(member.getRegisterStatus())
-                .build();
+        return AuthDTO.TokenResponse.builder().id(member.getId()).email(member.getEmail()).nickname(member.getNickname()).accessToken(member.getAccessToken()).refreshToken(member.getRefreshToken()).registerStatus(member.getRegisterStatus()).build();
 
     }
 
     @Override
     public String createClientSecret() {
-        JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.ES256)
-                .keyID(APPLE_LOGIN_KEY)
-                .build();
+        JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.ES256).keyID(APPLE_LOGIN_KEY).build();
 
         Date now = new Date();
 
         // ✅ claimsSet을 Builder로 생성
-        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .issuer(APPLE_TEAM_ID)
-                .issueTime(now)
-                .expirationTime(new Date(now.getTime() + 3600000)) // 1시간 후 만료
-                .audience(APPLE_AUTH_URL)
-                .subject(APPLE_CLIENT_ID)
-                .build();
+        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder().issuer(APPLE_TEAM_ID).issueTime(now).expirationTime(new Date(now.getTime() + 3600000)) // 1시간 후 만료
+                .audience(APPLE_AUTH_URL).subject(APPLE_CLIENT_ID).build();
 
         SignedJWT jwt = new SignedJWT(header, claimsSet);
 
@@ -488,9 +418,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // "-----BEGIN PRIVATE KEY-----" 과 "-----END PRIVATE KEY-----" 제거
-        String key = privateKeyString.replace("-----BEGIN PRIVATE KEY-----", "")
-                .replace("-----END PRIVATE KEY-----", "")
-                .replaceAll("[\\r\\n]", "");  // \r, \n을 명시적으로 제거
+        String key = privateKeyString.replace("-----BEGIN PRIVATE KEY-----", "").replace("-----END PRIVATE KEY-----", "").replaceAll("[\\r\\n]", "");  // \r, \n을 명시적으로 제거
 
         try {
             return Base64.getDecoder().decode(key);
@@ -513,11 +441,7 @@ public class AuthServiceImpl implements AuthService {
         params.put("client_id", APPLE_CLIENT_ID); // app bundle id
 
         try {
-            HttpRequest getRequest = HttpRequest.newBuilder()
-                    .uri(new URI(uriStr))
-                    .POST(getParamsUrlEncoded(params))
-                    .headers("Content-Type", "application/x-www-form-urlencoded")
-                    .build();
+            HttpRequest getRequest = HttpRequest.newBuilder().uri(new URI(uriStr)).POST(getParamsUrlEncoded(params)).headers("Content-Type", "application/x-www-form-urlencoded").build();
 
             HttpClient httpClient = HttpClient.newHttpClient();
             HttpResponse<String> getResponse = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
@@ -546,10 +470,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     public HttpRequest.BodyPublisher getParamsUrlEncoded(Map<String, String> parameters) {
-        String urlEncoded = parameters.entrySet()
-                .stream()
-                .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
-                .collect(Collectors.joining("&"));
+        String urlEncoded = parameters.entrySet().stream().map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8)).collect(Collectors.joining("&"));
         return HttpRequest.BodyPublishers.ofString(urlEncoded);
     }
 

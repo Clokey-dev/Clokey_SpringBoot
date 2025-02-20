@@ -18,8 +18,6 @@ import java.util.List;
 public class MemberTermRepositoryServiceImpl implements MemberTermRepositoryService {
 
     private final MemberTermRepository memberTermRepository;
-    private final MemberRepository memberRepository;
-
 
     @Override
     public void deleteByMemberId(Long memberId) {

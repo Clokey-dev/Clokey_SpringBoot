@@ -65,17 +65,13 @@ public class MemberServiceImpl implements MemberService {
 
         if (isFollow) {
             // 팔로우가 이미 존재하면 언팔로우 처리
-            Follow follow = followRepositoryService.findByFollowing_IdAndFollowed_Id(myUserId, yourUserId)
-                    .orElseThrow(() -> new MemberException(ErrorStatus.NO_SUCH_FOLLOWER));
+            Follow follow = followRepositoryService.findByFollowing_IdAndFollowed_Id(myUserId, yourUserId).orElseThrow(() -> new MemberException(ErrorStatus.NO_SUCH_FOLLOWER));
 
             // 팔로우 삭제 (언팔로우)
             followRepositoryService.delete(follow);
         } else {
             // 팔로우가 존재하지 않으면 팔로우 처리
-            Follow follow = Follow.builder()
-                    .following(memberRepositoryService.findMemberById(myUserId))
-                    .followed(memberRepositoryService.findMemberById(yourUserId))
-                    .build();
+            Follow follow = Follow.builder().following(memberRepositoryService.findMemberById(myUserId)).followed(memberRepositoryService.findMemberById(yourUserId)).build();
 
             // 팔로우 저장
             followRepositoryService.save(follow);
@@ -108,16 +104,13 @@ public class MemberServiceImpl implements MemberService {
         Long followerCount = followRepositoryService.countFollowersByMember(member);
         Long followingCount = followRepositoryService.countFollowingByMember(member);
 
-        return GetUserConverter.toGetUserResponseDTO(
-                member, recordCount, followerCount, followingCount, isFollowing, topCloths
-        );
+        return GetUserConverter.toGetUserResponseDTO(member, recordCount, followerCount, followingCount, isFollowing, topCloths);
     }
 
 
     @Override
     @Transactional
-    public MemberDTO.ProfileRP updateProfile(Long userId, MemberDTO.ProfileRQ request,
-                                             MultipartFile profileImage, MultipartFile profileBackImage) {
+    public MemberDTO.ProfileRP updateProfile(Long userId, MemberDTO.ProfileRQ request, MultipartFile profileImage, MultipartFile profileBackImage) {
         // 사용자 확인
         Member member = memberRepositoryService.findMemberById(userId);
 
@@ -197,17 +190,13 @@ public class MemberServiceImpl implements MemberService {
                 // 팔로잉 리스트 가져오기
                 List<Member> members = followRepositoryService.findFollowingByFollowedId(findMember.getId(), pageable);
                 List<Boolean> isFollowings = followRepositoryService.checkFollowingStatus(memberId, members);
-                List<Boolean> isMySelf = members.stream()
-                        .map(member -> member.getId().equals(memberId))
-                        .toList();
+                List<Boolean> isMySelf = members.stream().map(member -> member.getId().equals(memberId)).toList();
                 return GetUserConverter.toGetFollowPeopleResultDTO(members, pageable, isFollowings, isMySelf);
             } else {
                 // 팔로워 리스트 가져오기
                 List<Member> members = followRepositoryService.findFollowedByFollowingId(findMember.getId(), pageable);
                 List<Boolean> isFollowings = followRepositoryService.checkFollowedStatus(memberId, members);
-                List<Boolean> isMySelf = members.stream()
-                        .map(member -> member.getId().equals(memberId))
-                        .toList();
+                List<Boolean> isMySelf = members.stream().map(member -> member.getId().equals(memberId)).toList();
                 return GetUserConverter.toGetFollowPeopleResultDTO(members, pageable, isFollowings, isMySelf);
             }
         }

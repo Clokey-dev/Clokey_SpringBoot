@@ -141,11 +141,7 @@ public class UnlinkServiceImpl implements UnlinkService {
         params.put("client_id", APPLE_CLIENT_ID); // app bundle id
 
         try {
-            HttpRequest getRequest = HttpRequest.newBuilder()
-                    .uri(new URI(uriStr))
-                    .POST(authService.getParamsUrlEncoded(params))
-                    .headers("Content-Type", "application/x-www-form-urlencoded")
-                    .build();
+            HttpRequest getRequest = HttpRequest.newBuilder().uri(new URI(uriStr)).POST(authService.getParamsUrlEncoded(params)).headers("Content-Type", "application/x-www-form-urlencoded").build();
 
             HttpClient httpClient = HttpClient.newHttpClient();
             HttpResponse<String> response = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());

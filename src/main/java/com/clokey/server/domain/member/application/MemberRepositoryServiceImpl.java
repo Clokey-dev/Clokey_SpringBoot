@@ -48,8 +48,7 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     @Override
     @Transactional(readOnly = true) // 읽기 전용 트랜잭션
     public Member findMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
+        return memberRepository.findById(memberId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
     }
 
     @Override
@@ -67,8 +66,7 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     @Override
     @Transactional(readOnly = true) // 읽기 전용 트랜잭션
     public Member findMemberByClokeyId(String clokeyId) {
-        return memberRepository.findByClokeyId(clokeyId)
-                .orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
+        return memberRepository.findByClokeyId(clokeyId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
     }
 
     @Override

@@ -10,7 +10,7 @@ import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.code.status.SuccessStatus;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,12 +21,11 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
-    @Autowired
-    private UnlinkService logoutService;
+    private final AuthService authService;
+    private final UnlinkService logoutService;
 
 
     @PostMapping("/login")
@@ -57,12 +56,9 @@ public class AuthController {
             throw new MemberException(ErrorStatus.DUPLICATE_HASHTAGS);
         }
 
-        SuccessStatus successStatus = (responseEntity.getStatusCode() == HttpStatus.CREATED)
-                ? SuccessStatus.LOGIN_CREATED
-                : SuccessStatus.LOGIN_SUCCESS;
+        SuccessStatus successStatus = (responseEntity.getStatusCode() == HttpStatus.CREATED) ? SuccessStatus.LOGIN_CREATED : SuccessStatus.LOGIN_SUCCESS;
 
-        return ResponseEntity.status(responseEntity.getStatusCode())
-                .body(BaseResponse.onSuccess(successStatus, responseEntity.getBody()));
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(BaseResponse.onSuccess(successStatus, responseEntity.getBody()));
 
 
     }
@@ -80,8 +76,7 @@ public class AuthController {
 
     @Operation(summary = "회원탈퇴 API", description = "회원탈퇴하는 API입니다.")
     @DeleteMapping("/unlink")
-    public BaseResponse<Object> unlink(
-            @Parameter(name = "user", hidden = true) @AuthUser Member member) {
+    public BaseResponse<Object> unlink(@Parameter(name = "user", hidden = true) @AuthUser Member member) {
         System.out.println("memberId : " + member.getId());
         logoutService.unlink(member.getId());
         return BaseResponse.onSuccess(SuccessStatus.UNLINK_SUCCESS, null);
