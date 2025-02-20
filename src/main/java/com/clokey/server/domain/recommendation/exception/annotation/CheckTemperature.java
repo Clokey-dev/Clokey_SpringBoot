@@ -1,6 +1,5 @@
 package com.clokey.server.domain.recommendation.exception.annotation;
 
-import com.clokey.server.domain.recommendation.exception.validator.CheckSectionValidator;
 import com.clokey.server.domain.recommendation.exception.validator.CheckTemperatureValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

@@ -1,11 +1,6 @@
 package com.clokey.server.domain.recommendation.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.*;
-import org.checkerframework.checker.units.qual.C;
-
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
