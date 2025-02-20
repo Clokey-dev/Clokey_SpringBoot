@@ -27,7 +27,7 @@ public class AuthController {
     private final AuthService authService;
     private final UnlinkService logoutService;
 
-
+    @Operation(summary = "로그인 API", description = "로그인하는 API입니다.")
     @PostMapping("/login")
     public BaseResponse<AuthDTO.TokenResponse> login(@RequestBody AuthDTO.LoginRequest loginRequest) {
         // 로그인 타입 확인
@@ -75,7 +75,6 @@ public class AuthController {
     @Operation(summary = "회원탈퇴 API", description = "회원탈퇴하는 API입니다.")
     @DeleteMapping("/unlink")
     public BaseResponse<Object> unlink(@Parameter(name = "user", hidden = true) @AuthUser Member member) {
-        System.out.println("memberId : " + member.getId());
         logoutService.unlink(member.getId());
         return BaseResponse.onSuccess(SuccessStatus.UNLINK_SUCCESS, null);
     }

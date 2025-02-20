@@ -34,19 +34,19 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     private EntityManager entityManager;
 
     @Override
-    @Transactional(readOnly = true) // 읽기 전용 트랜잭션
+    @Transactional(readOnly = true)
     public boolean memberExist(Long memberId) {
         return memberRepository.existsById(memberId);
     }
 
     @Override
-    @Transactional(readOnly = true) // 읽기 전용 트랜잭션
+    @Transactional(readOnly = true)
     public Optional<Member> getMember(Long memberId) {
         return memberRepository.findById(memberId);
     }
 
     @Override
-    @Transactional(readOnly = true) // 읽기 전용 트랜잭션
+    @Transactional(readOnly = true)
     public Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
     }
@@ -58,13 +58,13 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     }
 
     @Override
-    @Transactional(readOnly = true) // 읽기 전용 트랜잭션
+    @Transactional(readOnly = true)
     public boolean idExist(String clokeyId) {
         return memberRepository.existsByClokeyId(clokeyId);
     }
 
     @Override
-    @Transactional(readOnly = true) // 읽기 전용 트랜잭션
+    @Transactional(readOnly = true)
     public Member findMemberByClokeyId(String clokeyId) {
         return memberRepository.findByClokeyId(clokeyId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
     }
