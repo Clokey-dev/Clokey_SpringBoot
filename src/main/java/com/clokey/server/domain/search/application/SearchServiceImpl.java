@@ -27,6 +27,8 @@ import com.clokey.server.domain.member.converter.MemberDocumentConverter;
 import com.clokey.server.domain.member.domain.document.MemberDocument;
 import com.clokey.server.domain.member.dto.MemberDTO;
 
+import static org.apache.naming.SelectorContext.prefix;
+
 @Service
 @RequiredArgsConstructor
 public class SearchServiceImpl implements SearchService {
@@ -125,20 +127,18 @@ public class SearchServiceImpl implements SearchService {
 
                             // 해시태그 및 카테고리 검색
                             b.must(m -> m.bool(bb -> bb
-                                    // 해시태그가 검색어와 완전히 일치하는 경우
-                                    .should(ms -> ms.term(mq -> mq
+                                    .must(ms -> ms.wildcard(mq -> mq
                                             .field("hashtagNames.keyword")
-                                            .value(keyword)
+                                            .value("#" + keyword + "*")
                                     ))
-                                    // 검색어로 시작하는 해시태그만 반환 (prefix 사용)
-                                    .should(ms -> ms.prefix(mq -> mq
-                                            .field("hashtagNames.keyword")
-                                            .value(keyword)
+                                    .should(ms -> ms.match(mq -> mq
+                                            .field("hashtagNames")
+                                            .query(keyword)
+                                            .fuzziness("AUTO")
                                     ))
-                                    // 검색어로 시작하는 해시태그만 반환 (wildcard 사용)
-                                    .should(ms -> ms.wildcard(mq -> mq
-                                            .field("hashtagNames.keyword")
-                                            .value(keyword + "*")
+                                    .should(ms -> ms.matchPhrasePrefix(mq -> mq
+                                            .field("hashtagNames")
+                                            .query(keyword)
                                     ))
                                     .should(ms -> ms.matchPhrasePrefix(mq -> mq
                                             .field("categoryNames")
