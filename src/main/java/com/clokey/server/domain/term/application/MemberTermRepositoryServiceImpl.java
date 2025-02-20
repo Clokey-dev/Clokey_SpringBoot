@@ -36,5 +36,10 @@ public class MemberTermRepositoryServiceImpl implements MemberTermRepositoryServ
         return memberTermRepository.save(memberTerm);
     }
 
+    @Override
+    public boolean existsByMemberIdAndTermId(Long memberId, Long termId) {
+        return memberTermRepository.existsByMemberIdAndTermId(memberId,termId);
+    }
+
 
 }
