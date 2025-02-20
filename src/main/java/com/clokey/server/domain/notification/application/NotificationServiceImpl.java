@@ -100,7 +100,6 @@ public class NotificationServiceImpl implements NotificationService {
             return null;
         }
 
-        //로그아웃이거나 비활성화 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
         if (ableToSendNotification(historyWriter)) {
             String content = String.format(HISTORY_LIKED_NOTIFICATION_CONTENT, likedMember.getNickname());
             String likedMemberProfileUrl = likedMember.getProfileImageUrl();
@@ -149,7 +148,6 @@ public class NotificationServiceImpl implements NotificationService {
 
         checkFollowing(followingMemberId, followedMember.getId());
 
-        //로그아웃이거나 비활성화 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
         if (ableToSendNotification(followedMember)) {
             String content = String.format(NEW_FOLLOWER_NOTIFICATION_CONTENT, followingMember.getNickname());
             String followingMemberProfileUrl = followingMember.getProfileImageUrl();
@@ -213,7 +211,6 @@ public class NotificationServiceImpl implements NotificationService {
         }
         Comment writtenComment = commentRepositoryService.findById(commentId);
 
-        //로그아웃이거나 비활성화 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
         if (ableToSendNotification(historyWriter)) {
             String content = String.format(HISTORY_COMMENT_NOTIFICATION_CONTENT, commentWriter.getNickname(), writtenComment.getContent());
             String commentWriterProfileUrl = commentWriter.getProfileImageUrl();
@@ -276,15 +273,14 @@ public class NotificationServiceImpl implements NotificationService {
         checkMyComment(replyId, memberId);
         checkParentComment(commentId, replyId);
 
-        Member commentWriter = commentRepositoryService.findById(commentId).getMember();
+        Comment writtenComment = commentRepositoryService.findById(commentId);
+        Member commentWriter = writtenComment.getMember();
         Comment writtenReply = commentRepositoryService.findById(replyId);
         Member replyWriter = writtenReply.getMember();
         if (commentWriter.equals(replyWriter)) {
             return null;
         }
 
-
-        //로그아웃이거나 비활성화 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
         if (ableToSendNotification(commentWriter)) {
             String content = String.format(COMMENT_REPLY_CONTENT, replyWriter.getNickname(), writtenReply.getContent());
             String replyWriterProfileUrl = replyWriter.getProfileImageUrl();
@@ -321,6 +317,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .content(content)
                     .memberProfileUrl(replyWriterProfileUrl)
                     .historyId(historyId)
+                    .isMyHistory(writtenComment.getHistory().getMember().equals(commentWriter))
                     .build();
         }
 
