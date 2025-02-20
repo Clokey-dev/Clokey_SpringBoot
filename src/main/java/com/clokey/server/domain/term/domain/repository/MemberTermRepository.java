@@ -15,4 +15,6 @@ public interface MemberTermRepository extends JpaRepository<MemberTerm, Long> {
     void deleteByMemberIdAndTermId(Long memberId, Long termId); // 특정 사용자의 특정 약관 동의 삭제
 
     MemberTerm save(MemberTerm memberTerm); // 사용자의 약관 동의 저장
+
+    boolean existsByMemberIdAndTermId(Long memberId, Long termId);
 }
