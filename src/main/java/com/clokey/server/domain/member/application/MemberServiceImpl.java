@@ -196,9 +196,11 @@ public class MemberServiceImpl implements MemberService {
             } else {
                 // 팔로워 리스트 가져오기
                 List<Member> members = followRepositoryService.findFollowedByFollowingId(findMember.getId(), pageable);
-                List<Boolean> isFollowings = followRepositoryService.checkFollowedStatus(memberId, members);
-                List<Boolean> isMySelf = members.stream().map(member -> member.getId().equals(memberId)).toList();
-                return GetUserConverter.toGetFollowPeopleResultDTO(members, pageable, isFollowings, isMySelf);
+                List<Boolean> isFollowings = followRepositoryService.checkFollowingStatus(memberId, members);
+                List<Boolean> isMySelf = members.stream()
+                        .map(member -> member.getId().equals(memberId))
+                        .toList();
+                return GetUserConverter.toGetFollowPeopleResultDTO(members, pageable, isFollowings,isMySelf);
             }
         }
         return GetUserConverter.toGetFollowPeopleResultDTO(new ArrayList<>(), pageable, new ArrayList<>(), new ArrayList<>());

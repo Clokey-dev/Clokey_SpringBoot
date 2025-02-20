@@ -19,9 +19,9 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     boolean existsByFollowing_IdAndFollowed_Id(Long followingId, Long followedId);
 
-    @Query("SELECT CASE WHEN EXISTS (SELECT 1 FROM Follow f WHERE f.following = m AND f.followed.id = :followedId) THEN true ELSE false END " +
-            "FROM Member m WHERE m IN :members")
-    List<Boolean> checkFollowingStatus(@Param("followedId") Long followedId, @Param("members") List<Member> members);
+    @Query("SELECT m, CASE WHEN EXISTS (SELECT 1 FROM Follow f WHERE f.following = m AND f.followed.id = :followedId) " +
+            "THEN true ELSE false END FROM Member m WHERE m IN :members")
+    List<Object[]> findFollowingStatus(@Param("followedId") Long followedId, @Param("members") List<Member> members);
 
     @Query("SELECT CASE WHEN EXISTS (SELECT 1 FROM Follow f WHERE f.followed = m AND f.following.id = :followingId) THEN true ELSE false END " +
             "FROM Member m WHERE m IN :members")
