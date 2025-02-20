@@ -117,6 +117,7 @@ public class ClothResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SmartSummaryClothPreviewListResult {
+        private String nickname;
         private SmartSummaryClothPreview frequentResult;
         private SmartSummaryClothPreview infrequentResult;
     }
