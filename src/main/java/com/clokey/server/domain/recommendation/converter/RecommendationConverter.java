@@ -1,5 +1,9 @@
 package com.clokey.server.domain.recommendation.converter;
 
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
 
@@ -8,22 +12,26 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.clokey.server.domain.cloth.domain.entity.Cloth;
-import com.clokey.server.domain.history.domain.entity.History;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
-
 public class RecommendationConverter {
+    public static RecommendationResponseDTO.DailyClothResult toDailyClothResult(Cloth cloth){
+        return RecommendationResponseDTO.DailyClothResult.builder()
+                .clothId(cloth.getId())
+                .imageUrl(cloth.getImage().getImageUrl())
+                .clothName(cloth.getName())
+                .build();
+    }
+
     public static RecommendationResponseDTO.RecommendCacheResult toRecommendCacheDTO(String imageUrl, Long memberId, String subtitle, String hashtag) {
-        return new RecommendationResponseDTO.RecommendCacheResult(
-                imageUrl,
-                memberId,
-                subtitle,
-                hashtag,
-                LocalDateTime.now()
-        );
+        return RecommendationResponseDTO.RecommendCacheResult.builder()
+                .imageUrl(imageUrl)
+                .memberId(memberId)
+                .subTitle(subtitle)
+                .hashtag(hashtag)
+                .date(LocalDateTime.now())
+                .build();
     }
 
     public static List<RecommendationResponseDTO.ClosetResult> toClosetDTO(Map<Pair<Member, LocalDate>, List<Cloth>> groupedClothes) {
@@ -84,7 +92,7 @@ public class RecommendationConverter {
                 .map(history -> {
                     Member historyOwner = history.getMember();
                     List<String> imageUrls = historyImageMap.getOrDefault(history, Collections.emptyList());
-                    String imageUrl = imageUrls.isEmpty() ? null : imageUrls.get(0); // 첫 번째 이미지 사용
+                    String imageUrl = imageUrls.isEmpty() ? null : imageUrls.get(0);
 
                     return new RecommendationResponseDTO.CalendarResult(
                             history.getHistoryDate(),
@@ -112,19 +120,6 @@ public class RecommendationConverter {
                     );
                 })
                 .limit(2)
-                .collect(Collectors.toList());
-    }
-
-    public static List<RecommendationResponseDTO.PeopleResult> toPeopleDTO(List<History> recommendedHistories, Map<Long, String> historyImageMap) {
-        return recommendedHistories.stream()
-                .distinct()
-                .limit(4)
-                .map(recommendedHistory -> new RecommendationResponseDTO.PeopleResult(
-                        recommendedHistory.getMember().getClokeyId(),
-                        recommendedHistory.getMember().getProfileImageUrl(),
-                        historyImageMap.get(recommendedHistory.getId()),
-                        recommendedHistory.getId()
-                ))
                 .collect(Collectors.toList());
     }
 
@@ -167,16 +162,14 @@ public class RecommendationConverter {
                 .isMine(isMine)
                 .build();
     }
-
-    public static List<RecommendationResponseDTO.RecommendResult> convertRecommendToResponseDTO(
+    public static List<RecommendationResponseDTO.RecommendResult> toRecommendResult(
             List<RecommendationResponseDTO.RecommendCacheResult> cachedRecommend, Map<Long, Member> memberMap) {
         return cachedRecommend.stream()
                 .map(recommendCache -> {
-                    Member member = memberMap.get(recommendCache.getMemberId());
-                    assert member != null;
+                    Member member = Optional.ofNullable(memberMap.get(recommendCache.getMemberId())).orElse(new Member());
                     return RecommendationResponseDTO.RecommendResult.builder()
                             .imageUrl(recommendCache.getImageUrl())
-                            .subTitle(member.getNickname()+recommendCache.getSubTitle())
+                            .subTitle(member.getNickname() + recommendCache.getSubTitle())
                             .hashtag(recommendCache.getHashtag())
                             .date(recommendCache.getDate())
                             .build();
@@ -184,14 +177,14 @@ public class RecommendationConverter {
                 .collect(Collectors.toList());
     }
 
-    public static List<RecommendationResponseDTO.ClosetResult> convertClosetToResponseDTO(
+    public static List<RecommendationResponseDTO.ClosetResult> toClosetResult(
             List<RecommendationResponseDTO.ClosetCacheResult> cachedClosets, Map<Long, Member> memberMap) {
         return cachedClosets.stream()
                 .map(closetCacheDTO -> {
-                    Member member = memberMap.get(closetCacheDTO.getMemberId());
+                    Member member = Optional.ofNullable(memberMap.get(closetCacheDTO.getMemberId())).orElse(new Member());
                     return RecommendationResponseDTO.ClosetResult.builder()
-                            .clokeyId(member != null ? member.getClokeyId() : "")
-                            .profileImage(member != null ? member.getProfileImageUrl() : "")
+                            .clokeyId(member.getClokeyId())
+                            .profileImage(member.getProfileImageUrl())
                             .clothesId(closetCacheDTO.getClothesId())
                             .images(closetCacheDTO.getImages())
                             .date(closetCacheDTO.getDate())
@@ -204,10 +197,10 @@ public class RecommendationConverter {
             List<RecommendationResponseDTO.CalendarCacheResult> cachedCalendars, Map<Long, Member> memberMap) {
         return cachedCalendars.stream()
                 .map(calendarCacheDTO -> {
-                    Member member = memberMap.get(calendarCacheDTO.getMemberId());
+                    Member member = Optional.ofNullable(memberMap.get(calendarCacheDTO.getMemberId())).orElse(new Member());
                     return RecommendationResponseDTO.CalendarResult.builder()
-                            .clokeyId(member != null ? member.getClokeyId() : "")
-                            .profileImage(member != null ? member.getProfileImageUrl() : "")
+                            .clokeyId(member.getClokeyId())
+                            .profileImage(member.getProfileImageUrl())
                             .date(calendarCacheDTO.getDate())
                             .historyId(calendarCacheDTO.getHistoryId())
                             .imageUrl(calendarCacheDTO.getImageUrl())
@@ -220,10 +213,10 @@ public class RecommendationConverter {
             List<RecommendationResponseDTO.PeopleCacheResult> cachedPeople, Map<Long, Member> memberMap) {
         return cachedPeople.stream()
                 .map(peopleCacheDTO -> {
-                    Member member = memberMap.get(peopleCacheDTO.getMemberId());
+                    Member member = Optional.ofNullable(memberMap.get(peopleCacheDTO.getMemberId())).orElse(new Member());
                     return RecommendationResponseDTO.PeopleResult.builder()
-                            .clokeyId(member != null ? member.getClokeyId() : "")
-                            .profileImage(member != null ? member.getProfileImageUrl() : "")
+                            .clokeyId(member.getClokeyId())
+                            .profileImage(member.getProfileImageUrl())
                             .imageUrl(peopleCacheDTO.getImageUrl())
                             .historyId(peopleCacheDTO.getHistoryId())
                             .build();

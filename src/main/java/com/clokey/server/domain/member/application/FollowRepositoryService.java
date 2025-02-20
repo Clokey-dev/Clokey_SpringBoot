@@ -38,4 +38,6 @@ public interface FollowRepositoryService {
     List<Member> findFollowedByFollowingId(Long followingId, Pageable pageable);
 
     List<Member> findFollowingByFollowedId(Long followedId, Pageable pageable);
+
+    List<Long> findTopFollowingMembers();
 }

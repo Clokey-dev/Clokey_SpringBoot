@@ -38,7 +38,7 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     @Query("SELECT f.following FROM Follow f WHERE f.followed.id = :followedId")
     List<Member> findFollowingByFollowedId(@Param("followedId") Long followedId);
 
-    @Query("SELECT COUNT(f) > 0 FROM Follow f WHERE f.following = :currentUser AND f.followed = :targetUser")
+    @Query("SELECT COUNT(f) > 0 FROM Follow f WHERE f.following = :targetUser AND f.followed = :currentUser")
     boolean isFollowing(@Param("currentUser") Member currentUser, @Param("targetUser") Member targetUser);
 
     @Query("SELECT COUNT(f) FROM Follow f WHERE f.following = :member")
@@ -52,4 +52,9 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     @Query("SELECT f.following FROM Follow f WHERE f.followed.id = :followedId")
     List<Member> findFollowingByFollowedId(@Param("followedId") Long followedId, Pageable pageable);
+
+    @Query("SELECT f.following.id FROM Follow f " +
+            "GROUP BY f.following.id " +
+            "ORDER BY COUNT(f.followed.id) DESC")
+    List<Long> findTopFollowingMembers(Pageable pageable);
 }

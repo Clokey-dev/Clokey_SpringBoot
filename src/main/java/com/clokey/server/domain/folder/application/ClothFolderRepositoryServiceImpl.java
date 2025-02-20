@@ -23,20 +23,16 @@ public class ClothFolderRepositoryServiceImpl implements ClothFolderRepositorySe
 
     private final ClothFolderRepository clothFolderRepository;
 
-    @Modifying
-    @Transactional
     public void deleteAllByClothId(@Param("clothId") Long clothId){
         clothFolderRepository.deleteAllByClothId(clothId);
     }
 
     @Override
-    @Transactional
     public void saveAll(List<ClothFolder> clothFolder) {
         clothFolderRepository.saveAll(clothFolder);
     }
 
     @Override
-    @Transactional
     public void deleteAllByClothIdInAndFolderId(List<Long> clothIds, Long folderId) {
         clothFolderRepository.deleteAllByClothIdInAndFolderId(clothIds, folderId);
     }

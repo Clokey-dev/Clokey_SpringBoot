@@ -1,11 +1,9 @@
 package com.clokey.server.domain.recommendation.dto;
 
+import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import lombok.*;
-
 
 public class RecommendationResponseDTO {
     @Builder

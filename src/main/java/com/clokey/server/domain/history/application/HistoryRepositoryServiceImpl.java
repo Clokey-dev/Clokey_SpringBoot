@@ -75,8 +75,8 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
     }
 
     @Override
-    public List<Boolean> existsByHistoryDateAndMemberIds(LocalDate historyDate, List<Long> memberIds) {
-        return historyRepository.existsByHistoryDateAndMemberIds(historyDate, memberIds);
+    public List<Boolean> existsByHistoryDateAndMemberIds(LocalDate historyDate, List<Long> memberId, Visibility visibility) {
+        return historyRepository.existsByHistoryDateAndMemberIds(historyDate, memberId ,visibility);
     }
 
     @Override
@@ -94,11 +94,6 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
     }
 
     @Override
-    public List<History> findTop10MembersByHashtagIdsOrderByLikes(List<Long> hashtagIds, Long currentMemberId) {
-        return historyRepository.findTop10MembersByHashtagIdsOrderByLikes(hashtagIds, currentMemberId, Pageable.ofSize(10));
-    }
-
-    @Override
     public List<History> findAll() {
         return historyRepository.findAll();
     }
@@ -108,5 +103,8 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
         return historyRepository.countHistoryByMember(member);
     }
 
-
+    @Override
+    public List<History> findHistoriesByMemberIds(List<Long> memberIds) {
+        return historyRepository.findHistoryByMemberIdIn(memberIds);
+    }
 }

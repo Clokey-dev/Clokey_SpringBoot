@@ -32,7 +32,7 @@ public interface HistoryRepositoryService {
 
     void deleteById(Long historyId);
 
-    List<Boolean> existsByHistoryDateAndMemberIds(LocalDate historyDate, List<Long> memberIds);
+    List<Boolean> existsByHistoryDateAndMemberIds(LocalDate historyDate, List<Long> memberIds, Visibility visibility);
 
     void deleteByHistoryIds(List<Long> historyIds);
 
@@ -40,11 +40,9 @@ public interface HistoryRepositoryService {
 
     List<History> findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> member, Visibility visibility);
 
-    List<History> findTop10MembersByHashtagIdsOrderByLikes(List<Long> hashtagIds, Long currentMemberId);
-
     List<History> findAll();
 
     Long countHistoryByMember(Member member);
 
-
+    List<History> findHistoriesByMemberIds(List<Long> memberIds);
 }

@@ -1,14 +1,13 @@
 package com.clokey.server.domain.recommendation.exception.annotation;
 
+import com.clokey.server.domain.recommendation.exception.validator.CheckTemperatureValidator;
 import java.lang.annotation.*;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-import com.clokey.server.domain.recommendation.exception.validator.CheckTemperatureValidator;
-
 @Documented
 @Constraint(validatedBy = CheckTemperatureValidator.class)
-@Target( { ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER })
+@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CheckTemperature {
 

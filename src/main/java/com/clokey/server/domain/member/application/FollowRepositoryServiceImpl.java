@@ -1,5 +1,10 @@
 package com.clokey.server.domain.member.application;
 
+import com.clokey.server.domain.member.domain.entity.Follow;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.member.domain.repository.FollowRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -96,5 +101,10 @@ public class FollowRepositoryServiceImpl implements FollowRepositoryService {
     @Override
     public List<Member> findFollowingByFollowedId(Long followedId, Pageable pageable) {
         return followRepository.findFollowingByFollowedId(followedId, pageable);
+    }
+
+    @Override
+    public List<Long> findTopFollowingMembers() {
+        return followRepository.findTopFollowingMembers(PageRequest.of(0, 4));
     }
 }

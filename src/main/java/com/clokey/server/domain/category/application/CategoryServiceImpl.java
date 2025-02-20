@@ -1,5 +1,13 @@
 package com.clokey.server.domain.category.application;
 
+import com.clokey.server.domain.category.converter.CategoryConverter;
+import com.clokey.server.domain.category.dto.CategoryResponseDTO;
+import com.clokey.server.domain.category.exception.CategoryException;
+import com.clokey.server.global.error.code.status.ErrorStatus;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -122,7 +130,6 @@ public class CategoryServiceImpl implements CategoryService {
         );
 
         try {
-            // JSON 변환
             String jsonBody = objectMapper.writeValueAsString(requestBody);
             HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
 
@@ -130,7 +137,6 @@ public class CategoryServiceImpl implements CategoryService {
             return extractMessageFromJSONResponse(response.getBody());
 
         } catch (Exception e) {
-            e.printStackTrace();
             return "Error connecting to OpenAI: " + e.getMessage();
         }
     }
@@ -144,18 +150,18 @@ public class CategoryServiceImpl implements CategoryService {
             List<Map<String, Object>> choices = (List<Map<String, Object>>) map.get("choices");
 
             if (choices == null || choices.isEmpty()) {
-                throw new RuntimeException("No choices in API response: " + response);
+                throw new CategoryException(ErrorStatus.NO_CHATGPT_RESPONSE);
             }
 
             Map<String, Object> messageMap = (Map<String, Object>) choices.get(0).get("message");
             if (messageMap == null || !messageMap.containsKey("content")) {
-                throw new RuntimeException("Invalid message format in API response: " + response);
+                throw new CategoryException(ErrorStatus.INVALID_RESPONSE);
             }
 
             return (String) messageMap.get("content");
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to parse response: " + e.getMessage(), e);
+            throw new CategoryException(ErrorStatus.FAILED_TO_PARSE_RESPONSE);
         }
     }
 
