@@ -131,7 +131,7 @@ public class HistoryConverter {
                     List<Comment> replyList = replies.get(i);
                     return HistoryResponseDTO.CommentResult.builder()
                             .commentId(comment.getId())
-                            .memberId(comment.getMember().getId())
+                            .clokeyId(comment.getMember().getClokeyId())
                             .nickName(comment.getMember().getNickname())
                             .userImageUrl(comment.getMember().getProfileImageUrl())
                             .content(comment.getContent())
@@ -145,7 +145,7 @@ public class HistoryConverter {
         return replies.stream()
                 .map(reply -> HistoryResponseDTO.ReplyResult.builder()
                         .commentId(reply.getId())
-                        .MemberId(reply.getMember().getId())
+                        .clokeyId(reply.getMember().getClokeyId())
                         .nickName(reply.getMember().getNickname())
                         .userImageUrl(reply.getMember().getProfileImageUrl())
                         .content(reply.getContent())
