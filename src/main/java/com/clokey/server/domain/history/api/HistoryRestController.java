@@ -140,7 +140,7 @@ public class HistoryRestController {
     @Parameters({
             @Parameter(name = "historyId", description = "나의 기록인지 확인하고자 하는 기록Id")
     })
-    public BaseResponse<HistoryResponseDTO.CheckMyHistoryResult> checkIfHistoryIsMine(@PathVariable @Valid @HistoryExist Long historyId,
+    public BaseResponse<HistoryResponseDTO.CheckMyHistoryResult> checkIfHistoryIsMine(@RequestParam @Valid @HistoryExist Long historyId,
                                                                                       @Parameter(name = "user", hidden = true) @AuthUser Member member) {
 
         HistoryResponseDTO.CheckMyHistoryResult result = historyService.checkIfHistoryIsMine(historyId, member.getId());
