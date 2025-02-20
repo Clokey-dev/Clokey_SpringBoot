@@ -21,6 +21,7 @@ import com.nimbusds.jwt.SignedJWT;
 import io.jsonwebtoken.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
@@ -53,6 +54,7 @@ import java.net.http.HttpRequest;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthServiceImpl implements AuthService {
 
     private final SearchRepositoryService searchRepositoryService;
@@ -454,7 +456,7 @@ public class AuthServiceImpl implements AuthService {
             if (parseData.containsKey("refresh_token")) {
                 refreshToken = parseData.get("refresh_token").toString();
             } else {
-                System.out.println("refresh_token 키가 응답에 없음. 응답: " + getResponse.body());
+                log.info("refresh_token 키가 응답에 없음. 응답: {}", getResponse.body());
             }
 
         } catch (Exception e) {
@@ -462,9 +464,9 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if (refreshToken == null || refreshToken.isBlank()) {
-            System.out.println("refreshToken 생성 실패");
+            log.info("refresh_token이 없음");
         }
-        System.out.println("refresh is this: " + refreshToken);
+        log.info("refreshToken: {}", refreshToken);
         return refreshToken;
     }
 
