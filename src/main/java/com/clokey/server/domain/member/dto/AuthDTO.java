@@ -1,13 +1,11 @@
 package com.clokey.server.domain.member.dto;
 
-import com.clokey.server.domain.model.entity.enums.RegisterStatus;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+
 import lombok.*;
 
-import javax.naming.AuthenticationException;
-import java.time.LocalDateTime;
-import java.util.List;
+import com.clokey.server.domain.model.entity.enums.RegisterStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Data
 public class AuthDTO {
@@ -65,4 +63,3 @@ public class AuthDTO {
 
 
 }
-

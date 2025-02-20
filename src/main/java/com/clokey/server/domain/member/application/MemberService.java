@@ -1,8 +1,9 @@
 package com.clokey.server.domain.member.application;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.dto.MemberDTO;
-import org.springframework.web.multipart.MultipartFile;
 
 public interface MemberService {
     void follow(String clokeyId, Member currentUser);

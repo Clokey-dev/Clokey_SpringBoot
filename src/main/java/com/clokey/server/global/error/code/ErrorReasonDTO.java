@@ -1,8 +1,9 @@
 package com.clokey.server.global.error.code;
 
+import org.springframework.http.HttpStatus;
+
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 
 @Getter
 @Builder

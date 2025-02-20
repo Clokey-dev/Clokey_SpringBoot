@@ -1,9 +1,11 @@
 package com.clokey.server.domain.history.domain.entity;
 
-import com.clokey.server.domain.model.entity.BaseEntity;
-import com.clokey.server.domain.member.domain.entity.Member;
 import jakarta.persistence.*;
+
 import lombok.*;
+
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.BaseEntity;
 
 @Entity
 @Getter
@@ -37,4 +39,3 @@ public class Comment extends BaseEntity {
         }
     }
 }
-

@@ -37,8 +37,6 @@ spotless {
 				'\\#org.junit'
 		)
 
-		googleJavaFormat('1.17.0').aosp()
-
 		formatAnnotations()
 		removeUnusedImports()
 		trimTrailingWhitespace()

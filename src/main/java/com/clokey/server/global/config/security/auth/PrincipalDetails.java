@@ -1,7 +1,5 @@
 package com.clokey.server.global.config.security.auth;
 
-import com.clokey.server.domain.member.domain.entity.Member;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +8,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.member.domain.entity.Member;
 
 @RequiredArgsConstructor
 public class PrincipalDetails implements UserDetails {

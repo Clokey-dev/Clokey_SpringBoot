@@ -1,11 +1,10 @@
 package com.clokey.server.domain.member.exception.annotation;
 
-import com.clokey.server.domain.history.exception.validator.HistoryExistValidator;
-import com.clokey.server.domain.member.exception.validator.MemberExistValidator;
+import java.lang.annotation.*;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-import java.lang.annotation.*;
+import com.clokey.server.domain.member.exception.validator.MemberExistValidator;
 
 @Documented
 @Constraint(validatedBy = MemberExistValidator.class)
@@ -19,4 +18,3 @@ public @interface MemberExist {
 
     Class<? extends Payload>[] payload() default {};
 }
-

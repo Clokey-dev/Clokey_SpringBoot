@@ -1,6 +1,5 @@
 package com.clokey.server.domain.recommendation.application;
 
-import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
 
 public interface RecommendationService {

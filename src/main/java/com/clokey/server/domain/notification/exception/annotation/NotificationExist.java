@@ -1,10 +1,10 @@
 package com.clokey.server.domain.notification.exception.annotation;
 
-import com.clokey.server.domain.notification.exception.validator.NotificationExistValidator;
+import java.lang.annotation.*;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-import java.lang.annotation.*;
+import com.clokey.server.domain.notification.exception.validator.NotificationExistValidator;
 
 @Documented
 @Constraint(validatedBy = NotificationExistValidator.class)

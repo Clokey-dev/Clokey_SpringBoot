@@ -1,18 +1,19 @@
 package com.clokey.server.domain.recommendation.application;
 
-import com.clokey.server.domain.model.entity.enums.NewsType;
-import com.clokey.server.domain.recommendation.domain.entity.Recommendation;
-import com.clokey.server.domain.recommendation.domain.repository.RecommendationRepository;
-import com.clokey.server.global.error.code.status.ErrorStatus;
-import com.clokey.server.global.error.exception.DatabaseException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+
+import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.model.entity.enums.NewsType;
+import com.clokey.server.domain.recommendation.domain.entity.Recommendation;
+import com.clokey.server.domain.recommendation.domain.repository.RecommendationRepository;
+import com.clokey.server.global.error.code.status.ErrorStatus;
+import com.clokey.server.global.error.exception.DatabaseException;
 
 @Service
 @RequiredArgsConstructor

@@ -1,13 +1,14 @@
 package com.clokey.server.domain.history.domain.entity;
 
-import com.clokey.server.domain.model.entity.BaseEntity;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.model.entity.enums.Visibility;
+import java.time.LocalDate;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
+
 import lombok.*;
 
-import java.time.LocalDate;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.BaseEntity;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 
 @Entity
 @Getter

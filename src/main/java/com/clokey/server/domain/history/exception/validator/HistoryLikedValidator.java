@@ -1,10 +1,12 @@
 package com.clokey.server.domain.history.exception.validator;
 
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.history.application.MemberLikeRepositoryService;
 import com.clokey.server.domain.history.exception.HistoryException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor

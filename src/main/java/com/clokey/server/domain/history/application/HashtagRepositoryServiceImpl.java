@@ -1,14 +1,16 @@
 package com.clokey.server.domain.history.application;
 
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import jakarta.transaction.Transactional;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.history.domain.entity.Hashtag;
 import com.clokey.server.domain.history.domain.repository.HashtagRepository;
 import com.clokey.server.domain.history.exception.HashtagException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Transactional
 @Service

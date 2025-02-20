@@ -1,9 +1,9 @@
 package com.clokey.server.domain.term.application;
 
+import java.util.List;
+
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.term.domain.entity.MemberTerm;
-
-import java.util.List;
 
 
 public interface MemberTermRepositoryService {

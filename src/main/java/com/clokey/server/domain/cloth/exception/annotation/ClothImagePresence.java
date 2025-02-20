@@ -1,11 +1,10 @@
 package com.clokey.server.domain.cloth.exception.annotation;
 
-import com.clokey.server.domain.cloth.exception.validator.ClothExistValidator;
-import com.clokey.server.domain.cloth.exception.validator.ClothImagePresenceValidator;
+import java.lang.annotation.*;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-import java.lang.annotation.*;
+import com.clokey.server.domain.cloth.exception.validator.ClothImagePresenceValidator;
 
 @Documented
 @Constraint(validatedBy = ClothImagePresenceValidator.class)

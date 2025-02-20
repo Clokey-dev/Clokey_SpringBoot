@@ -1,10 +1,5 @@
 package com.clokey.server.domain.recommendation.converter;
 
-import com.clokey.server.domain.cloth.domain.entity.Cloth;
-import com.clokey.server.domain.history.domain.entity.History;
-import com.clokey.server.domain.history.dto.HistoryResponseDTO;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
 
@@ -13,8 +8,12 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
+
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.recommendation.dto.RecommendationResponseDTO;
 
 public class RecommendationConverter {
     public static RecommendationResponseDTO.RecommendCacheResult toRecommendCacheDTO(String imageUrl, Long memberId, String subtitle, String hashtag) {

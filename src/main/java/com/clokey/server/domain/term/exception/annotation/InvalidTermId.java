@@ -1,11 +1,10 @@
 package com.clokey.server.domain.term.exception.annotation;
 
-import com.clokey.server.domain.term.exception.validator.EssentialTermAgreeValidator;
-import com.clokey.server.domain.term.exception.validator.InvalidTermIdValidator;
+import java.lang.annotation.*;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-import java.lang.annotation.*;
+import com.clokey.server.domain.term.exception.validator.InvalidTermIdValidator;
 
 @Documented
 @Constraint(validatedBy = InvalidTermIdValidator.class)
@@ -18,5 +17,3 @@ public @interface InvalidTermId {
 
     Class<? extends Payload>[] payload() default {};
 }
-
-

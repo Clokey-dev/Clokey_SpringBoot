@@ -1,29 +1,32 @@
 package com.clokey.server.domain.history.api;
 
-import com.clokey.server.domain.history.application.HistoryService;
-import com.clokey.server.domain.history.dto.HistoryRequestDTO;
-import com.clokey.server.domain.history.dto.HistoryResponseDTO;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.member.exception.annotation.AuthUser;
-import com.clokey.server.global.error.exception.annotation.CheckPage;
-import com.clokey.server.domain.history.exception.annotation.HistoryExist;
-import com.clokey.server.domain.history.exception.annotation.HistoryImageQuantityLimit;
-import com.clokey.server.domain.history.exception.annotation.MonthFormat;
-import com.clokey.server.domain.member.exception.annotation.NullableClokeyIdExist;
-import com.clokey.server.global.common.response.BaseResponse;
-import com.clokey.server.global.error.code.status.SuccessStatus;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+
+import jakarta.validation.Valid;
+
+import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.history.application.HistoryService;
+import com.clokey.server.domain.history.dto.HistoryRequestDTO;
+import com.clokey.server.domain.history.dto.HistoryResponseDTO;
+import com.clokey.server.domain.history.exception.annotation.HistoryExist;
+import com.clokey.server.domain.history.exception.annotation.HistoryImageQuantityLimit;
+import com.clokey.server.domain.history.exception.annotation.MonthFormat;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.member.exception.annotation.AuthUser;
+import com.clokey.server.domain.member.exception.annotation.NullableClokeyIdExist;
+import com.clokey.server.global.common.response.BaseResponse;
+import com.clokey.server.global.error.code.status.SuccessStatus;
+import com.clokey.server.global.error.exception.annotation.CheckPage;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequiredArgsConstructor
@@ -127,6 +130,22 @@ public class HistoryRestController {
                                                                              @RequestBody @Valid HistoryRequestDTO.CommentWrite request) {
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_CREATED, historyService.writeComment(historyId, request.getCommentId(), member.getId(), request.getContent()));
 
+    }
+
+    @PostMapping("/isMyHistory")
+    @Operation(summary = "나의 기록인지 확인할 수 있는 API")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "나의 기록인지 성공적으로 조회했습니다."),
+    })
+    @Parameters({
+            @Parameter(name = "historyId", description = "나의 기록인지 확인하고자 하는 기록Id")
+    })
+    public BaseResponse<HistoryResponseDTO.CheckMyHistoryResult> checkIfHistoryIsMine(@RequestParam @Valid @HistoryExist Long historyId,
+                                                                                      @Parameter(name = "user", hidden = true) @AuthUser Member member) {
+
+        HistoryResponseDTO.CheckMyHistoryResult result = historyService.checkIfHistoryIsMine(historyId, member.getId());
+
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_CHECK_SUCCESS, result);
     }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
