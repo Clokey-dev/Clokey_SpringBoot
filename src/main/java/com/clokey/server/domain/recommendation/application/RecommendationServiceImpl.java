@@ -117,19 +117,19 @@ public class RecommendationServiceImpl implements RecommendationService {
 
         if (cachedRecommends == null) {
             cachedRecommends = getRecommendList(member);
-            saveToRedis(cacheKeyRecommend, cachedRecommends, Duration.ofHours(24));
+            saveToRedis(cacheKeyRecommend, cachedRecommends, Duration.ofMinutes(1));
         }
         if (cachedClosets == null) {
             cachedClosets = getClosetList(followingMembers);
-            saveToRedis(cacheKeyCloset, cachedClosets, Duration.ofHours(3));
+            saveToRedis(cacheKeyCloset, cachedClosets, Duration.ofMinutes(1));
         }
         if (cachedCalendars == null) {
             cachedCalendars = getCalendarList(followingMembers);
-            saveToRedis(cacheKeyCalendar, cachedCalendars, Duration.ofHours(3));
+            saveToRedis(cacheKeyCalendar, cachedCalendars, Duration.ofMinutes(1));
         }
         if (cachedPeople == null) {
             cachedPeople = getPeopleList(member);
-            saveToRedis(cacheKeyPeople, cachedPeople, Duration.ofHours(24));
+            saveToRedis(cacheKeyPeople, cachedPeople, Duration.ofMinutes(1));
         }
 
         Set<Long> memberIds = new HashSet<>();
