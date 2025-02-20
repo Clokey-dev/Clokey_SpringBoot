@@ -128,8 +128,8 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     }
 
     @Override
-    public boolean existsByEmail(String email) {
-        return memberRepository.existsByEmail(email);
+    public boolean existsByEmailAndSocialType(String email, SocialType socialType) {
+        return memberRepository.existsByEmailAndSocialType(email, socialType);
     }
 
     @Override

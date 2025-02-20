@@ -113,7 +113,7 @@ public class AuthServiceImpl implements AuthService {
 
         String email = kakaoUser.getKakaoAccount().getEmail();
 
-        boolean MemberExist = memberRepositoryService.existsByEmail(email);
+        boolean MemberExist = memberRepositoryService.existsByEmailAndSocialType(email, SocialType.KAKAO);
 
         Member member;
         if (MemberExist) {
@@ -358,7 +358,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 회원 조회 또는 신규 등록
-        boolean MemberExist = memberRepositoryService.existsByEmail(email);
+        boolean MemberExist = memberRepositoryService.existsByEmailAndSocialType(email, SocialType.APPLE);
 
         Member member;
         if (MemberExist) {
