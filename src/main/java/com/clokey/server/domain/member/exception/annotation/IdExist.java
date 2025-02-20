@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 
 @Documented
 @Constraint(validatedBy = IdExistValidator.class)  // 유효성 검사 로직을 IdExistValidator 클래스에서 처리
-@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER }) // 메소드, 필드, 파라미터에서 사용 가능
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER}) // 메소드, 필드, 파라미터에서 사용 가능
 @Retention(RetentionPolicy.RUNTIME)
 public @interface IdExist {
 

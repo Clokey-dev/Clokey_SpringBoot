@@ -35,7 +35,7 @@ public interface MemberRepositoryService {
 
     Member findByClokeyId(String clokeyId);
 
-    Optional <Member> findMemberByEmail(String email);
+    Optional<Member> findMemberByEmail(String email);
 
     Member getMemberByEmail(String email);
 
@@ -43,19 +43,14 @@ public interface MemberRepositoryService {
 
     List<Member> findInactiveUsersBefore(LocalDate cutoffDate);
 
-    List<History> findHistoriesByMemberId(Long memberId);
     List<Long> findHistoryIdsByMemberId(Long memberId);
 
-    List<Cloth> findClothesByMemberId(Long memberId);
     List<Long> findClothIdsByMemberId(Long memberId);
 
-    List<Folder> findFoldersByMemberId(Long memberId);
     List<Long> findFolderIdsByMemberId(Long memberId);
 
-    List<Comment> findCommentsByMemberId(Long memberId);
     List<Long> findCommentIdsByMemberId(Long memberId);
 
-    List<ClokeyNotification> findNotificationsByMemberId(Long memberId);
     List<Long> findNotificationIdsByMemberId(Long memberId);
 
     void deleteMemberById(Long memberId);

@@ -82,8 +82,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String generateRefreshToken(Long userId) {
-        Member member= memberRepositoryService.findMemberById(userId);
-        if(member == null){
+        Member member = memberRepositoryService.findMemberById(userId);
+        if (member == null) {
             throw new MemberException(ErrorStatus.NO_SUCH_MEMBER);
         }
         String email = member.getEmail();
@@ -103,7 +103,8 @@ public class AuthServiceImpl implements AuthService {
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
-        } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+        } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException |
+                 IllegalArgumentException e) {
             return false;
         }
     }
@@ -116,7 +117,6 @@ public class AuthServiceImpl implements AuthService {
                 .getBody();
         return claims.get("email", String.class);
     }
-
 
 
     @Transactional
@@ -132,8 +132,8 @@ public class AuthServiceImpl implements AuthService {
         boolean isNewUser = false;
         if (optionalMember.isPresent()) {
             member = optionalMember.get();  // 기존 사용자
-            if (member.getKakaoId() == null||member.getKakaoId().isBlank()) {
-                if(member.getStatus()== MemberStatus.INACTIVE){
+            if (member.getKakaoId() == null || member.getKakaoId().isBlank()) {
+                if (member.getStatus() == MemberStatus.INACTIVE) {
                     member.updateStatus();
                     member.updateInactiveDate(null);
                     memberRepositoryService.saveMember(member);
@@ -192,7 +192,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
 
-
     // 카카오 사용자 정보 조회 메서드
     public AuthDTO.KakaoUserResponse getUserInfoFromKakao(String accessToken) {
         RestTemplate restTemplate = new RestTemplate();
@@ -212,16 +211,13 @@ public class AuthServiceImpl implements AuthService {
             );
 
             return response.getBody();
-        }
-
-        catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
                 throw new MemberException(ErrorStatus.INVALID_TOKEN);
             }
 
             throw new MemberException(ErrorStatus.LOGIN_FAILED);
         }
-
 
 
     }
@@ -294,9 +290,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
 
-
     // 애플
-
 
 
     @Value("${apple.team-id}")
@@ -403,8 +397,8 @@ public class AuthServiceImpl implements AuthService {
         if (MemberExist) {
             member = memberRepositoryService.getMemberByEmail(email);  // 기존 사용자
 
-                member.updateDeviceToken(deviceToken);
-                memberRepositoryService.saveMember(member);
+            member.updateDeviceToken(deviceToken);
+            memberRepositoryService.saveMember(member);
 
 
         } else {

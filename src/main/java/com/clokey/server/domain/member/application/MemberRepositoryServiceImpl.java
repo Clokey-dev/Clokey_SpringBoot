@@ -83,7 +83,7 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
 
     @Override
     public Member findByClokeyId(String clokeyId) {
-        return memberRepository.findByClokeyId(clokeyId).orElseThrow(()->new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
+        return memberRepository.findByClokeyId(clokeyId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
     }
 
     @Override
@@ -96,40 +96,18 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
         return memberRepository.findInactiveUsersBefore(cutoffDate);
     }
 
-    @Override
-    public List<History> findHistoriesByMemberId(Long memberId) {
-        return memberRepository.findHistoriesByMemberId(memberId);
-    }
 
     @Override
     public List<Long> findHistoryIdsByMemberId(Long memberId) {
         return memberRepository.findHistoryIdsByMemberId(memberId);
     }
 
-    @Override
-    public List<Cloth> findClothesByMemberId(Long memberId) {
-        return memberRepository.findClothsByMemberId(memberId);
-    }
-
-    @Override
-    public List<Folder> findFoldersByMemberId(Long memberId) {
-        return memberRepository.findFoldersByMemberId(memberId);
-    }
 
     @Override
     public void deleteMemberById(Long memberId) {
         memberRepository.deleteById(memberId);
     }
 
-    @Override
-    public List<Comment> findCommentsByMemberId(Long memberId) {
-        return memberRepository.findCommentsByMemberId(memberId);
-    }
-
-    @Override
-    public List<ClokeyNotification> findNotificationsByMemberId(Long memberId) {
-        return memberRepository.findNotificationsByMemberId(memberId);
-    }
 
     @Override
     public List<Long> findClothIdsByMemberId(Long memberId) {
@@ -152,7 +130,7 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     }
 
     @Override
-    public List<Member> findAll(){
+    public List<Member> findAll() {
         return memberRepository.findAll();
     }
 
@@ -163,12 +141,12 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     }
 
     @Override
-    public boolean existsByEmail(String email){
+    public boolean existsByEmail(String email) {
         return memberRepository.existsByEmail(email);
     }
 
     @Override
-    public Member getMemberByEmail(String email){
+    public Member getMemberByEmail(String email) {
         return memberRepository.getMemberByEmail(email);
     }
 

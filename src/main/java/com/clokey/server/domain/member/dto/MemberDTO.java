@@ -97,7 +97,7 @@ public class MemberDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class FollowRP{
+    public static class FollowRP {
         Boolean isFollow;
     }
 

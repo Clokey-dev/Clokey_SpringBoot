@@ -28,7 +28,7 @@ public class MemberRestController {
     @Operation(summary = "로그아웃 API", description = "사용자의 access token과 refresh token을 날려줍니다.")
     @PostMapping(value = "users/logout")
     public BaseResponse<Void> logout(
-            @Parameter(name = "user", hidden = true) @AuthUser Member member){
+            @Parameter(name = "user", hidden = true) @AuthUser Member member) {
 
         memberService.logout(member.getId());
 
@@ -53,7 +53,7 @@ public class MemberRestController {
     @GetMapping("users/{clokey_id}/check")
     public BaseResponse<Void> checkID(
             @Parameter(name = "user", hidden = true) @AuthUser Member currentUser,
-            @PathVariable ("clokey_id") @NotBlank String clokeyId) { // 클로키 아이디를 PathVariable로 받음
+            @PathVariable("clokey_id") @NotBlank String clokeyId) { // 클로키 아이디를 PathVariable로 받음
 
         memberService.clokeyIdUsingCheck(clokeyId, currentUser);
 
@@ -74,22 +74,20 @@ public class MemberRestController {
     }
 
 
-
     @Operation(summary = "팔로우 조회 API", description = "내가 다른 사용자를 팔로우하고있는지 확인하는 API입니다.")
     @PostMapping("users/follow/check/{clokey_id}")
     public BaseResponse<MemberDTO.FollowRP> followCheck(
             @Parameter(name = "user", hidden = true) @AuthUser Member currentUser,
-            @IdValid @NotBlank @PathVariable("clokey_id") String clokeyId){
+            @IdValid @NotBlank @PathVariable("clokey_id") String clokeyId) {
 
-        MemberDTO.FollowRP response= memberService.followCheck(clokeyId, currentUser);
+        MemberDTO.FollowRP response = memberService.followCheck(clokeyId, currentUser);
 
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_SUCCESS, response);
     }
 
 
-
     @Operation(summary = "팔로우 API", description = "다른 사용자를 팔로우/언팔로우하는 API입니다. 호출시마다 기존 상태와 반대로 변경됩니다.")
-        @PostMapping("users/follow/{clokey_id}")
+    @PostMapping("users/follow/{clokey_id}")
     public BaseResponse<Void> follow(
             @Parameter(name = "user", hidden = true) @AuthUser Member currentUser,
             @IdValid @NotBlank @PathVariable("clokey_id") String clokeyId) {

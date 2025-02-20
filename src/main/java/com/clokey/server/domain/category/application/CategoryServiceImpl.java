@@ -14,11 +14,12 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class CategoryServiceImpl implements CategoryService{
+public class CategoryServiceImpl implements CategoryService {
 
     private final ObjectMapper objectMapper;
 
@@ -136,7 +137,8 @@ public class CategoryServiceImpl implements CategoryService{
     private String extractMessageFromJSONResponse(String response) {
         try {
             System.out.println("ChatGPT API Response: " + response);
-            Map<String, Object> map = objectMapper.readValue(response, new TypeReference<>() {});
+            Map<String, Object> map = objectMapper.readValue(response, new TypeReference<>() {
+            });
             List<Map<String, Object>> choices = (List<Map<String, Object>>) map.get("choices");
 
             if (choices == null || choices.isEmpty()) {
@@ -156,15 +158,14 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
 
-
-
     private CategoryResponseDTO.CategoryRecommendResult parseResponse(String response) {
         try {
             // JSON 파싱을 위한 ObjectMapper
             ObjectMapper objectMapper = new ObjectMapper();
 
             // JSON 응답을 리스트로 변환
-            List<Map<String, Object>> parsedList = objectMapper.readValue(response, new TypeReference<List<Map<String, Object>>>() {});
+            List<Map<String, Object>> parsedList = objectMapper.readValue(response, new TypeReference<List<Map<String, Object>>>() {
+            });
 
             for (Map<String, Object> item : parsedList) {
                 // "큰 카테고리", "작은 카테고리", "카테고리 아이디" 추출
@@ -180,5 +181,21 @@ public class CategoryServiceImpl implements CategoryService{
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse response: " + e.getMessage(), e);
         }
+    }
+
+    private final CategoryRepositoryService categoryRepositoryService;
+    private final CategoryConverter categoryConverter;
+
+    @Override
+    public boolean categoryExist(Long categoryId) {
+        return categoryRepositoryService.existsById(categoryId);
+    }
+
+    @Override
+    public List<CategoryResponseDTO.CategoryRP> getAllCategories() {
+        return categoryRepositoryService.findAll()
+                .stream()
+                .map(categoryConverter::convertToDTO)
+                .collect(Collectors.toList());
     }
 }

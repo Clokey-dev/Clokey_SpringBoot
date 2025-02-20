@@ -34,12 +34,12 @@ public class AuthDTO {
     }
 
     @Data
-    public static class LoginRequest{
+    public static class LoginRequest {
         @NotBlank(message = "로그인 타입은 필수 입력 값입니다.")
         private String type; // 로그인 타입 (ex: "kakao", "apple")
-        private String accessToken=null;
-        private String authorizationCode=null;
-        private String deviceToken=null;
+        private String accessToken = null;
+        private String authorizationCode = null;
+        private String deviceToken = null;
     }
 
 
@@ -64,6 +64,5 @@ public class AuthDTO {
     }
 
 
-    
 }
 

@@ -10,6 +10,7 @@ import com.clokey.server.domain.term.exception.TermException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service

@@ -23,19 +23,17 @@ public class IdValidValidator implements ConstraintValidator<IdValid, String> {
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
 
-        if(s == null) {
+        if (s == null) {
             constraintValidatorContext.disableDefaultConstraintViolation();
             constraintValidatorContext.buildConstraintViolationWithTemplate(ErrorStatus.ESSENTIAL_INPUT_REQUIRED.toString()).addConstraintViolation();
             return false;
         }
 
-        boolean exists=memberRepositoryService.idExist(s);
+        boolean exists = memberRepositoryService.idExist(s);
 
-        if(exists){
+        if (exists) {
             return true;
-        }
-
-        else{
+        } else {
             constraintValidatorContext.disableDefaultConstraintViolation();
             constraintValidatorContext.buildConstraintViolationWithTemplate(ErrorStatus.CLOKEY_ID_INVALID.toString()).addConstraintViolation();
             return false;

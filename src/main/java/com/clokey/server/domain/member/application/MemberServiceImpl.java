@@ -28,7 +28,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class MemberServiceImpl implements  MemberService{
+public class MemberServiceImpl implements MemberService {
 
     private final MemberRepositoryService memberRepositoryService;
     private final FollowRepositoryService followRepositoryService;
@@ -56,7 +56,7 @@ public class MemberServiceImpl implements  MemberService{
         Long yourUserId = currentUser.getId();
         Long myUserId = memberRepositoryService.findMemberByClokeyId(clokeyId).getId();
 
-        if(myUserId.equals(yourUserId)){
+        if (myUserId.equals(yourUserId)) {
             throw new MemberException(ErrorStatus.CANNOT_FOLLOW_MYSELF);
         }
 
@@ -83,7 +83,6 @@ public class MemberServiceImpl implements  MemberService{
     }
 
 
-
     @Override
     @Transactional(readOnly = true)
     public MemberDTO.GetUserRP getUser(String clokeyId, Member currentUser) {
@@ -91,17 +90,17 @@ public class MemberServiceImpl implements  MemberService{
         Boolean isFollowing;
         List<Cloth> topCloths;
 
-        if(clokeyId == null){
+        if (clokeyId == null) {
             member = currentUser;
             isFollowing = null;
             topCloths = clothRepositoryService.getTop3Cloths(member);
         } else {
             member = memberRepositoryService.findMemberByClokeyId(clokeyId);
             isFollowing = followRepositoryService.isFollowing(currentUser, member);
-            if(member.getVisibility().equals(Visibility.PUBLIC)){
+            if (member.getVisibility().equals(Visibility.PUBLIC)) {
                 topCloths = clothRepositoryService.getTop3PublicCloths(member);
-            } else{
-                topCloths = List.of(null,null,null);
+            } else {
+                topCloths = List.of(null, null, null);
             }
         }
 
@@ -113,7 +112,6 @@ public class MemberServiceImpl implements  MemberService{
                 member, recordCount, followerCount, followingCount, isFollowing, topCloths
         );
     }
-
 
 
     @Override
@@ -193,24 +191,24 @@ public class MemberServiceImpl implements  MemberService{
         // clokeyId로 계정 공개 여부 가져오기
         Member findMember = memberRepositoryService.findByClokeyId(clokeyId);
 
-        Pageable pageable = PageRequest.of(page-1, 10);
-        if(findMember.getVisibility()== Visibility.PUBLIC){
-            if(isFollow){
+        Pageable pageable = PageRequest.of(page - 1, 10);
+        if (findMember.getVisibility() == Visibility.PUBLIC) {
+            if (isFollow) {
                 // 팔로잉 리스트 가져오기
                 List<Member> members = followRepositoryService.findFollowingByFollowedId(findMember.getId(), pageable);
                 List<Boolean> isFollowings = followRepositoryService.checkFollowingStatus(memberId, members);
                 List<Boolean> isMySelf = members.stream()
                         .map(member -> member.getId().equals(memberId))
                         .toList();
-                return GetUserConverter.toGetFollowPeopleResultDTO(members, pageable, isFollowings,isMySelf);
-            }else{
+                return GetUserConverter.toGetFollowPeopleResultDTO(members, pageable, isFollowings, isMySelf);
+            } else {
                 // 팔로워 리스트 가져오기
                 List<Member> members = followRepositoryService.findFollowedByFollowingId(findMember.getId(), pageable);
                 List<Boolean> isFollowings = followRepositoryService.checkFollowedStatus(memberId, members);
                 List<Boolean> isMySelf = members.stream()
                         .map(member -> member.getId().equals(memberId))
                         .toList();
-                return GetUserConverter.toGetFollowPeopleResultDTO(members, pageable, isFollowings,isMySelf);
+                return GetUserConverter.toGetFollowPeopleResultDTO(members, pageable, isFollowings, isMySelf);
             }
         }
         return GetUserConverter.toGetFollowPeopleResultDTO(new ArrayList<>(), pageable, new ArrayList<>(), new ArrayList<>());

@@ -57,7 +57,7 @@ public class TermCommandServiceImpl implements TermCommandService {
                     .build());
         }
 
-        if(member.getRegisterStatus()==RegisterStatus.NOT_AGREED) {
+        if (member.getRegisterStatus() == RegisterStatus.NOT_AGREED) {
             // 약관 동의가 완료되었으므로 회원의 등록 상태를 업데이트
             member.updateRegisterStatus(RegisterStatus.AGREED_PROFILE_NOT_SET);
 
@@ -160,11 +160,6 @@ public class TermCommandServiceImpl implements TermCommandService {
                 .terms(termResponses)  // OptionalTermDTO 리스트 반환
                 .build();
     }
-
-
-
-
-
 
 
 }

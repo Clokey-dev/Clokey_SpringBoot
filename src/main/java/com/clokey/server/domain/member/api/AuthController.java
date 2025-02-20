@@ -40,30 +40,29 @@ public class AuthController {
 
         ResponseEntity<AuthDTO.TokenResponse> responseEntity;
 
-            //카카오 로그인
-            if (loginType.equalsIgnoreCase("kakao") && loginRequest.getAccessToken() != null) {
-                responseEntity = authService.authenticateKakaoUser(loginRequest.getAccessToken(), loginRequest.getDeviceToken());
-            }
-            //애플 로그인
-            else if (loginType.equalsIgnoreCase("apple") && loginRequest.getAuthorizationCode() != null) {
-                // Apple 로그인 처리
-                AuthDTO.TokenResponse tokenResponse = authService.appleLogin(loginRequest.getAuthorizationCode(), loginRequest.getDeviceToken());
-                responseEntity = ResponseEntity.status(HttpStatus.OK).body(tokenResponse);
-            }
-            //로그인 타입이 잘못된 경우
-            else if(!loginType.equalsIgnoreCase("kakao") && !loginType.equalsIgnoreCase("apple")) {
-                throw new MemberException(ErrorStatus.INVALID_LOGIN_TYPE);
-            }
-            else{
-                throw new MemberException(ErrorStatus.DUPLICATE_HASHTAGS);
-            }
+        //카카오 로그인
+        if (loginType.equalsIgnoreCase("kakao") && loginRequest.getAccessToken() != null) {
+            responseEntity = authService.authenticateKakaoUser(loginRequest.getAccessToken(), loginRequest.getDeviceToken());
+        }
+        //애플 로그인
+        else if (loginType.equalsIgnoreCase("apple") && loginRequest.getAuthorizationCode() != null) {
+            // Apple 로그인 처리
+            AuthDTO.TokenResponse tokenResponse = authService.appleLogin(loginRequest.getAuthorizationCode(), loginRequest.getDeviceToken());
+            responseEntity = ResponseEntity.status(HttpStatus.OK).body(tokenResponse);
+        }
+        //로그인 타입이 잘못된 경우
+        else if (!loginType.equalsIgnoreCase("kakao") && !loginType.equalsIgnoreCase("apple")) {
+            throw new MemberException(ErrorStatus.INVALID_LOGIN_TYPE);
+        } else {
+            throw new MemberException(ErrorStatus.DUPLICATE_HASHTAGS);
+        }
 
-            SuccessStatus successStatus = (responseEntity.getStatusCode() == HttpStatus.CREATED)
-                    ? SuccessStatus.LOGIN_CREATED
-                    : SuccessStatus.LOGIN_SUCCESS;
+        SuccessStatus successStatus = (responseEntity.getStatusCode() == HttpStatus.CREATED)
+                ? SuccessStatus.LOGIN_CREATED
+                : SuccessStatus.LOGIN_SUCCESS;
 
-            return ResponseEntity.status(responseEntity.getStatusCode())
-                    .body(BaseResponse.onSuccess(successStatus, responseEntity.getBody()));
+        return ResponseEntity.status(responseEntity.getStatusCode())
+                .body(BaseResponse.onSuccess(successStatus, responseEntity.getBody()));
 
 
     }
@@ -83,7 +82,7 @@ public class AuthController {
     @DeleteMapping("/unlink")
     public BaseResponse<Object> unlink(
             @Parameter(name = "user", hidden = true) @AuthUser Member member) {
-        System.out.println("memberId : "+member.getId());
+        System.out.println("memberId : " + member.getId());
         logoutService.unlink(member.getId());
         return BaseResponse.onSuccess(SuccessStatus.UNLINK_SUCCESS, null);
     }

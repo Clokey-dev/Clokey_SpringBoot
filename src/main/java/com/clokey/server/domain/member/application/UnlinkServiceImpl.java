@@ -61,7 +61,6 @@ public class UnlinkServiceImpl implements UnlinkService {
     private final AuthService authService;
 
 
-
     @Value("${kakao.admin-key}")
     private String KAKAO_ADMIN_KEY;
 
