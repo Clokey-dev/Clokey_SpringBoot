@@ -8,7 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.beans.Transient;
 import java.util.List;
 
 import java.util.Optional;
@@ -31,6 +33,7 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     List<Member> findFollowedByFollowingId(@Param("followingId") Long followingId);
 
     @Modifying
+    @Transactional
     @Query("DELETE FROM Follow f WHERE f.following.id = :memberId OR f.followed.id = :memberId")
     void deleteByMemberId(@Param("memberId") Long memberId);
 
