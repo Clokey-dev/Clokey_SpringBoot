@@ -338,7 +338,7 @@ public class AuthServiceImpl implements AuthService {
             }
 
             accessToken = String.valueOf(jsonObj.get("access_token"));
-            refreshToken = getAppleRefreshToken(clientSecret, code);
+            refreshToken = jsonObj.containsKey("refresh_token") ? String.valueOf(jsonObj.get("refresh_token")) : "";
 
             // JWT 토큰 파싱
             SignedJWT signedJWT = SignedJWT.parse(String.valueOf(jsonObj.get("id_token")));
