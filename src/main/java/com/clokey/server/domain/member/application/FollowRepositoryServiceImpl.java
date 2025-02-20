@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class FollowRepositoryServiceImpl implements FollowRepositoryService{
+public class FollowRepositoryServiceImpl implements FollowRepositoryService {
 
     private final FollowRepository followRepository;
 
@@ -34,7 +34,7 @@ public class FollowRepositoryServiceImpl implements FollowRepositoryService{
 
     @Override
     public List<Boolean> checkFollowedStatus(Long followingId, List<Member> members) {
-        return followRepository.checkFollowedStatus(followingId ,members);
+        return followRepository.checkFollowedStatus(followingId, members);
     }
 
     @Override
@@ -46,8 +46,9 @@ public class FollowRepositoryServiceImpl implements FollowRepositoryService{
     public void deleteByMemberId(Long memberId) {
         followRepository.deleteByMemberId(memberId);
     }
+
     public boolean existsByFollowing_IdAndFollowed_Id(Long followingId, Long followedId) {
-        return followRepository.existsByFollowing_IdAndFollowed_Id(followingId,followedId);
+        return followRepository.existsByFollowing_IdAndFollowed_Id(followingId, followedId);
     }
 
     @Override
@@ -56,32 +57,32 @@ public class FollowRepositoryServiceImpl implements FollowRepositoryService{
     }
 
     @Override
-    public Optional<Follow> findByFollowing_IdAndFollowed_Id(Long followingId, Long followedId){
-        return followRepository.findByFollowing_IdAndFollowed_Id(followingId,followedId);
+    public Optional<Follow> findByFollowing_IdAndFollowed_Id(Long followingId, Long followedId) {
+        return followRepository.findByFollowing_IdAndFollowed_Id(followingId, followedId);
     }
 
     @Override
-    public void delete(Follow follow){
+    public void delete(Follow follow) {
         followRepository.delete(follow);
     }
 
     @Override
-    public void save(Follow follow){
+    public void save(Follow follow) {
         followRepository.save(follow);
     }
 
     @Override
-    public boolean isFollowing(Member currentUser, Member targetUser){
-        return followRepository.isFollowing(currentUser,targetUser);
+    public boolean isFollowing(Member currentUser, Member targetUser) {
+        return followRepository.isFollowing(currentUser, targetUser);
     }
 
     @Override
-    public Long countFollowersByMember(Member member){
+    public Long countFollowersByMember(Member member) {
         return followRepository.countFollowersByMember(member);
     }
 
     @Override
-    public Long countFollowingByMember(Member member){
+    public Long countFollowingByMember(Member member) {
         return followRepository.countFollowingByMember(member);
     }
 

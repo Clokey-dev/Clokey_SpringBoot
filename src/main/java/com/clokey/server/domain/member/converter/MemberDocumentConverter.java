@@ -11,19 +11,19 @@ import java.util.stream.Collectors;
 
 public class MemberDocumentConverter {
 
-    public static <T> List<MemberDTO.ProfilePreview> toProfilePreviewList(Page<? extends T> page){
+    public static <T> List<MemberDTO.ProfilePreview> toProfilePreviewList(Page<? extends T> page) {
         return Optional.ofNullable(page.getContent()).orElse(Collections.emptyList())
                 .stream()
                 .map(item -> {
-                    MemberDocument doc = (MemberDocument) item;
-                    return MemberDTO.ProfilePreview.builder()
-                            .nickname(doc.getNickname())
-                            .clokeyId(doc.getClokeyId())
-                            .profileImage(doc.getProfileUrl())
-                            .build();
-                }
-            )
-            .collect(Collectors.toList());
+                            MemberDocument doc = (MemberDocument) item;
+                            return MemberDTO.ProfilePreview.builder()
+                                    .nickname(doc.getNickname())
+                                    .clokeyId(doc.getClokeyId())
+                                    .profileImage(doc.getProfileUrl())
+                                    .build();
+                        }
+                )
+                .collect(Collectors.toList());
     }
 
     public static MemberDTO.ProfilePreviewListRP toProfilePreviewListRP(Page<?> page,

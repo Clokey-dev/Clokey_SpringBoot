@@ -40,7 +40,7 @@ public class Member extends BaseEntity {
     @Column(length = 30)
     private String nickname;
 
-    @Column(unique=true)
+    @Column(unique = true)
     private String clokeyId;
 
     @Column(length = 100) //한줄 소개
@@ -55,7 +55,7 @@ public class Member extends BaseEntity {
     private String profileBackImageUrl;
 
     @Enumerated(EnumType.STRING) //활성화여부
-    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'" , nullable = false)
+    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'", nullable = false)
     private MemberStatus status;
 
     @Enumerated(EnumType.STRING) //성별
@@ -65,7 +65,7 @@ public class Member extends BaseEntity {
     private LocalDate inactiveDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'PUBLIC'",nullable = false) // 공개 범위
+    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'PUBLIC'", nullable = false) // 공개 범위
     private Visibility visibility;
 
     @Column(nullable = true, unique = true)
@@ -82,8 +82,6 @@ public class Member extends BaseEntity {
 
     @Column(unique = true)
     private String kakaoId;
-
-
 
 
     //필요한 양방향 매핑을 제외하고 삭제해주세요.
@@ -109,7 +107,7 @@ public class Member extends BaseEntity {
         this.visibility = request.getVisibility();
     }
 
-    public void deleteAccessRefreshToken(){
+    public void deleteAccessRefreshToken() {
         this.refreshToken = null;
         this.accessToken = null;
     }
@@ -135,10 +133,10 @@ public class Member extends BaseEntity {
         this.deviceToken = deviceToken;
     }
 
-    public void updateStatus(){
-        if(this.status == MemberStatus.ACTIVE){
+    public void updateStatus() {
+        if (this.status == MemberStatus.ACTIVE) {
             this.status = MemberStatus.INACTIVE;
-        }else{
+        } else {
             this.status = MemberStatus.ACTIVE;
         }
     }

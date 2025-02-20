@@ -34,49 +34,33 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     private EntityManager entityManager;
 
     @Override
-    @Transactional(readOnly = true) // 읽기 전용 트랜잭션
     public boolean memberExist(Long memberId) {
         return memberRepository.existsById(memberId);
     }
 
     @Override
-    @Transactional(readOnly = true) // 읽기 전용 트랜잭션
     public Optional<Member> getMember(Long memberId) {
         return memberRepository.findById(memberId);
     }
 
     @Override
-    @Transactional(readOnly = true) // 읽기 전용 트랜잭션
     public Member findMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
+        return memberRepository.findById(memberId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
     }
 
     @Override
-    @Transactional // 쓰기 트랜잭션
     public Member saveMember(Member member) {
         return memberRepository.save(member);
     }
 
     @Override
-    @Transactional(readOnly = true) // 읽기 전용 트랜잭션
     public boolean idExist(String clokeyId) {
-        String jpql = "SELECT COUNT(m) > 0 FROM Member m WHERE m.clokeyId = :clokeyId";
-        TypedQuery<Boolean> query = entityManager.createQuery(jpql, Boolean.class);
-        query.setParameter("clokeyId", clokeyId);
-        return query.getSingleResult();
+        return memberRepository.existsByClokeyId(clokeyId);
     }
 
     @Override
-    @Transactional(readOnly = true) // 읽기 전용 트랜잭션
     public Member findMemberByClokeyId(String clokeyId) {
-        String jpql = "SELECT m FROM Member m WHERE m.clokeyId = :clokeyId";
-        TypedQuery<Member> query = entityManager.createQuery(jpql, Member.class);
-        query.setParameter("clokeyId", clokeyId);
-
-        return query.getResultStream()
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("클로키 아이디에 해당하는 사용자가 없습니다."));
+        return memberRepository.findByClokeyId(clokeyId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
     }
 
     @Override
@@ -91,7 +75,7 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
 
     @Override
     public Member findByClokeyId(String clokeyId) {
-        return memberRepository.findByClokeyId(clokeyId).orElseThrow(()->new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
+        return memberRepository.findByClokeyId(clokeyId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
     }
 
     @Override
@@ -104,40 +88,18 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
         return memberRepository.findInactiveUsersBefore(cutoffDate);
     }
 
-    @Override
-    public List<History> findHistoriesByMemberId(Long memberId) {
-        return memberRepository.findHistoriesByMemberId(memberId);
-    }
 
     @Override
     public List<Long> findHistoryIdsByMemberId(Long memberId) {
         return memberRepository.findHistoryIdsByMemberId(memberId);
     }
 
-    @Override
-    public List<Cloth> findClothesByMemberId(Long memberId) {
-        return memberRepository.findClothsByMemberId(memberId);
-    }
-
-    @Override
-    public List<Folder> findFoldersByMemberId(Long memberId) {
-        return memberRepository.findFoldersByMemberId(memberId);
-    }
 
     @Override
     public void deleteMemberById(Long memberId) {
         memberRepository.deleteById(memberId);
     }
 
-    @Override
-    public List<Comment> findCommentsByMemberId(Long memberId) {
-        return memberRepository.findCommentsByMemberId(memberId);
-    }
-
-    @Override
-    public List<ClokeyNotification> findNotificationsByMemberId(Long memberId) {
-        return memberRepository.findNotificationsByMemberId(memberId);
-    }
 
     @Override
     public List<Long> findClothIdsByMemberId(Long memberId) {
@@ -160,7 +122,7 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     }
 
     @Override
-    public List<Member> findAll(){
+    public List<Member> findAll() {
         return memberRepository.findAll();
     }
 
@@ -171,12 +133,12 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     }
 
     @Override
-    public boolean existsByEmail(String email){
+    public boolean existsByEmail(String email) {
         return memberRepository.existsByEmail(email);
     }
 
     @Override
-    public Member getMemberByEmail(String email){
+    public Member getMemberByEmail(String email) {
         return memberRepository.getMemberByEmail(email);
     }
 

@@ -28,7 +28,7 @@ public class TermRestController {
     @Operation(summary = "약관 동의 API", description = "약관동의하는 API입니다.")
     @PostMapping("/users/terms")
     public BaseResponse<TermResponseDTO> termAgree(
-            @Parameter(name = "user",hidden = true) @AuthUser Member member,
+            @Parameter(name = "user", hidden = true) @AuthUser Member member,
             @EssentialTermAgree @RequestBody TermRequestDTO.Join request) {
 
         // MemberTerm 생성
@@ -51,7 +51,7 @@ public class TermRestController {
     @Operation(summary = "선택약관 동의 여부 조회 API", description = "선택약관 동의 여부를 조회하는 API입니다.")
     @GetMapping("/users/terms/optional")
     public BaseResponse<TermResponseDTO.UserAgreementDTO> getAgreedTerms(
-            @Parameter(name = "user",hidden = true) @AuthUser Member member) {
+            @Parameter(name = "user", hidden = true) @AuthUser Member member) {
         // 선택약관 동의 여부 조회
         TermResponseDTO.UserAgreementDTO response = termCommandService.getOptionalTerms(member.getId());
 
@@ -62,7 +62,7 @@ public class TermRestController {
     @Operation(summary = "선택약관 동의 수정 API", description = "선택약관 동의 여부를 바꾸는 API입니다.")
     @PostMapping("/users/terms/optional")
     public BaseResponse<TermResponseDTO.UserAgreementDTO> optionalTermAgree(
-            @Parameter(name = "user",hidden = true) @AuthUser Member member,
+            @Parameter(name = "user", hidden = true) @AuthUser Member member,
             @RequestBody @InvalidTermId TermRequestDTO.Join request) {
 
         // MemberTerm 생성

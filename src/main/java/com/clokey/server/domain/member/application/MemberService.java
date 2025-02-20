@@ -11,8 +11,7 @@ public interface MemberService {
 
     MemberDTO.GetUserRP getUser(String clokeyId, Member currentUser); // 로그인한 사용자 정보 추가
 
-    MemberDTO.ProfileRP updateProfile(Long userId, MemberDTO.ProfileRQ request,
-                                      MultipartFile profileImage, MultipartFile profileBackImage);
+    MemberDTO.ProfileRP updateProfile(Long userId, MemberDTO.ProfileRQ request, MultipartFile profileImage, MultipartFile profileBackImage);
 
     void logout(Long userId);
 

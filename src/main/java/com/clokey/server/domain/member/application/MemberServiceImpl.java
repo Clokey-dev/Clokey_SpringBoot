@@ -28,7 +28,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class MemberServiceImpl implements  MemberService{
+public class MemberServiceImpl implements MemberService {
 
     private final MemberRepositoryService memberRepositoryService;
     private final FollowRepositoryService followRepositoryService;
@@ -39,11 +39,11 @@ public class MemberServiceImpl implements  MemberService{
     private final SearchRepositoryService searchRepositoryService;
 
     @Override
+    @Transactional(readOnly = true)
     public MemberDTO.FollowRP followCheck(String clokeyId, Member currentUser) {
         Long yourUserId = currentUser.getId();
         Long myUserId = memberRepositoryService.findMemberByClokeyId(clokeyId).getId();
 
-        FollowRepositoryServiceImpl followRepository;
         boolean isFollow = followRepositoryService.existsByFollowing_IdAndFollowed_Id(myUserId, yourUserId);
 
         return new MemberDTO.FollowRP(isFollow);
@@ -56,7 +56,7 @@ public class MemberServiceImpl implements  MemberService{
         Long yourUserId = currentUser.getId();
         Long myUserId = memberRepositoryService.findMemberByClokeyId(clokeyId).getId();
 
-        if(myUserId.equals(yourUserId)){
+        if (myUserId.equals(yourUserId)) {
             throw new MemberException(ErrorStatus.CANNOT_FOLLOW_MYSELF);
         }
 
@@ -65,23 +65,18 @@ public class MemberServiceImpl implements  MemberService{
 
         if (isFollow) {
             // 팔로우가 이미 존재하면 언팔로우 처리
-            Follow follow = followRepositoryService.findByFollowing_IdAndFollowed_Id(myUserId, yourUserId)
-                    .orElseThrow(() -> new MemberException(ErrorStatus.NO_SUCH_FOLLOWER));
+            Follow follow = followRepositoryService.findByFollowing_IdAndFollowed_Id(myUserId, yourUserId).orElseThrow(() -> new MemberException(ErrorStatus.NO_SUCH_FOLLOWER));
 
             // 팔로우 삭제 (언팔로우)
             followRepositoryService.delete(follow);
         } else {
             // 팔로우가 존재하지 않으면 팔로우 처리
-            Follow follow = Follow.builder()
-                    .following(memberRepositoryService.findMemberById(myUserId))
-                    .followed(memberRepositoryService.findMemberById(yourUserId))
-                    .build();
+            Follow follow = Follow.builder().following(memberRepositoryService.findMemberById(myUserId)).followed(memberRepositoryService.findMemberById(yourUserId)).build();
 
             // 팔로우 저장
             followRepositoryService.save(follow);
         }
     }
-
 
 
     @Override
@@ -91,17 +86,17 @@ public class MemberServiceImpl implements  MemberService{
         Boolean isFollowing;
         List<Cloth> topCloths;
 
-        if(clokeyId == null){
+        if (clokeyId == null) {
             member = currentUser;
             isFollowing = null;
             topCloths = clothRepositoryService.getTop3Cloths(member);
         } else {
             member = memberRepositoryService.findMemberByClokeyId(clokeyId);
             isFollowing = followRepositoryService.isFollowing(currentUser, member);
-            if(member.getVisibility().equals(Visibility.PUBLIC)){
+            if (member.getVisibility().equals(Visibility.PUBLIC)) {
                 topCloths = clothRepositoryService.getTop3PublicCloths(member);
-            } else{
-                topCloths = List.of(null,null,null);
+            } else {
+                topCloths = List.of(null, null, null);
             }
         }
 
@@ -109,17 +104,13 @@ public class MemberServiceImpl implements  MemberService{
         Long followerCount = followRepositoryService.countFollowersByMember(member);
         Long followingCount = followRepositoryService.countFollowingByMember(member);
 
-        return GetUserConverter.toGetUserResponseDTO(
-                member, recordCount, followerCount, followingCount, isFollowing, topCloths
-        );
+        return GetUserConverter.toGetUserResponseDTO(member, recordCount, followerCount, followingCount, isFollowing, topCloths);
     }
-
 
 
     @Override
     @Transactional
-    public MemberDTO.ProfileRP updateProfile(Long userId, MemberDTO.ProfileRQ request,
-                                             MultipartFile profileImage, MultipartFile profileBackImage) {
+    public MemberDTO.ProfileRP updateProfile(Long userId, MemberDTO.ProfileRQ request, MultipartFile profileImage, MultipartFile profileBackImage) {
         // 사용자 확인
         Member member = memberRepositoryService.findMemberById(userId);
 
@@ -189,21 +180,20 @@ public class MemberServiceImpl implements  MemberService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MemberDTO.GetFollowMemberResult getFollowPeople(Long memberId, String clokeyId, Integer page, Boolean isFollow) {
         // clokeyId로 계정 공개 여부 가져오기
         Member findMember = memberRepositoryService.findByClokeyId(clokeyId);
 
-        Pageable pageable = PageRequest.of(page-1, 10);
-        if(findMember.getVisibility()== Visibility.PUBLIC){
-            if(isFollow){
+        Pageable pageable = PageRequest.of(page - 1, 10);
+        if (findMember.getVisibility() == Visibility.PUBLIC) {
+            if (isFollow) {
                 // 팔로잉 리스트 가져오기
                 List<Member> members = followRepositoryService.findFollowingByFollowedId(findMember.getId(), pageable);
                 List<Boolean> isFollowings = followRepositoryService.checkFollowingStatus(memberId, members);
-                List<Boolean> isMySelf = members.stream()
-                        .map(member -> member.getId().equals(memberId))
-                        .toList();
-                return GetUserConverter.toGetFollowPeopleResultDTO(members, pageable, isFollowings,isMySelf);
-            }else{
+                List<Boolean> isMySelf = members.stream().map(member -> member.getId().equals(memberId)).toList();
+                return GetUserConverter.toGetFollowPeopleResultDTO(members, pageable, isFollowings, isMySelf);
+            } else {
                 // 팔로워 리스트 가져오기
                 List<Member> members = followRepositoryService.findFollowedByFollowingId(findMember.getId(), pageable);
                 List<Boolean> isFollowings = followRepositoryService.checkFollowingStatus(memberId, members);
