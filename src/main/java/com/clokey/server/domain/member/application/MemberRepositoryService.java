@@ -33,7 +33,7 @@ public interface MemberRepositoryService {
 
     Member getMemberByEmailAndSocialType(String email, SocialType socialType);
 
-    boolean existsByEmail(String email);
+    boolean existsByEmailAndSocialType(String email, SocialType socialType);
 
     List<Member> findInactiveUsersBefore(LocalDate cutoffDate);
 
