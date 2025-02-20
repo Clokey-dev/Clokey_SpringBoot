@@ -132,6 +132,12 @@ public class AuthServiceImpl implements AuthService {
             member.updateDeviceToken(deviceToken);
             memberRepositoryService.saveMember(member);
 
+            if(member.getSocialType()!=SocialType.KAKAO){
+                // DB에 사용자 정보가 없으면 회원가입
+                member = Member.builder().kakaoId(kakaoUser.getId()).nickname(kakaoUser.getKakaoAccount().getProfile().getNickname()).email(kakaoUser.getKakaoAccount().getEmail()).registerStatus(RegisterStatus.NOT_AGREED).socialType(SocialType.KAKAO).deviceToken(deviceToken).build();
+                memberRepositoryService.saveMember(member);
+            }
+
         } else {
             // DB에 사용자 정보가 없으면 회원가입
             member = Member.builder().kakaoId(kakaoUser.getId()).nickname(kakaoUser.getKakaoAccount().getProfile().getNickname()).email(kakaoUser.getKakaoAccount().getEmail()).registerStatus(RegisterStatus.NOT_AGREED).socialType(SocialType.KAKAO).deviceToken(deviceToken).build();
@@ -372,6 +378,11 @@ public class AuthServiceImpl implements AuthService {
             member.updateDeviceToken(deviceToken);
             memberRepositoryService.saveMember(member);
 
+
+            if(member.getSocialType()!=SocialType.APPLE){
+                member = Member.builder().email(email).socialType(SocialType.APPLE).registerStatus(RegisterStatus.NOT_AGREED).deviceToken(deviceToken).build();
+                memberRepositoryService.saveMember(member);
+            }
 
         } else {
             member = Member.builder().email(email).socialType(SocialType.APPLE).registerStatus(RegisterStatus.NOT_AGREED).deviceToken(deviceToken).build();
