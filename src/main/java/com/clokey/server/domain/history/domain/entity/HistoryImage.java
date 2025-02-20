@@ -1,8 +1,10 @@
 package com.clokey.server.domain.history.domain.entity;
 
-import com.clokey.server.domain.model.entity.BaseEntity;
 import jakarta.persistence.*;
+
 import lombok.*;
+
+import com.clokey.server.domain.model.entity.BaseEntity;
 
 @Entity
 @Getter
@@ -15,7 +17,7 @@ public class HistoryImage extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false , unique = true)
+    @Column(nullable = false, unique = true)
     private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)

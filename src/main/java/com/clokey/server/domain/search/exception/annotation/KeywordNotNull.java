@@ -1,10 +1,10 @@
 package com.clokey.server.domain.search.exception.annotation;
 
-import com.clokey.server.domain.search.exception.validator.KeywordNotNullValidator;
+import java.lang.annotation.*;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-import java.lang.annotation.*;
+import com.clokey.server.domain.search.exception.validator.KeywordNotNullValidator;
 
 @Documented
 @Constraint(validatedBy = KeywordNotNullValidator.class)

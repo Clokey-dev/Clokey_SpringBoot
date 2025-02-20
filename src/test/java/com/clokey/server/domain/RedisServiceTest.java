@@ -1,17 +1,20 @@
 package com.clokey.server.domain;
 
-import com.clokey.server.global.infra.redis.RedisService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
-import static org.junit.jupiter.api.Assertions.*;
+import com.clokey.server.global.infra.redis.RedisService;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class RedisServiceTest {

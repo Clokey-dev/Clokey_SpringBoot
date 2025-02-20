@@ -1,15 +1,16 @@
 package com.clokey.server.domain.cloth.application;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
+
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.ClothSort;
 import com.clokey.server.domain.model.entity.enums.Season;
 import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
 import com.clokey.server.domain.model.entity.enums.Visibility;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface ClothRepositoryService {
 
@@ -49,6 +50,10 @@ public interface ClothRepositoryService {
             List<Member> members, Visibility visibility);
 
     String findMostWornCategory(Long memberId);
-    
+
     List<Cloth> findBySuitableClothFilters(Long memberId, Integer nowTemp, Integer minTemp, Integer maxTemp);
+
+    List<Cloth> getTop3Cloths(Member member);
+
+    List<Cloth> getTop3PublicCloths(Member member);
 }

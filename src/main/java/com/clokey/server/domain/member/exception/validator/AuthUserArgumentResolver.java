@@ -1,9 +1,5 @@
 package com.clokey.server.domain.member.exception.validator;
 
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.member.exception.MemberException;
-import com.clokey.server.global.config.security.auth.PrincipalDetails;
-import com.clokey.server.global.error.code.status.ErrorStatus;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,8 +9,12 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-
 import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.member.exception.MemberException;
+import com.clokey.server.global.config.security.auth.PrincipalDetails;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 
 @Component
 @RequiredArgsConstructor
@@ -45,4 +45,3 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
         throw new MemberException(ErrorStatus.NO_SUCH_MEMBER);
     }
 }
-

@@ -1,13 +1,15 @@
 package com.clokey.server.domain.folder.exception.validator;
 
-import com.clokey.server.domain.folder.application.FolderRepositoryService;
-import com.clokey.server.domain.folder.exception.annotation.FolderExist;
-import com.clokey.server.domain.folder.domain.repository.FolderRepository;
-import com.clokey.server.global.error.code.status.ErrorStatus;
+import org.springframework.stereotype.Component;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+
+import com.clokey.server.domain.folder.application.FolderRepositoryService;
+import com.clokey.server.domain.folder.exception.annotation.FolderExist;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 
 @Component
 @RequiredArgsConstructor

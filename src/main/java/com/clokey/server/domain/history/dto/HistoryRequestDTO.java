@@ -1,15 +1,16 @@
 package com.clokey.server.domain.history.dto;
 
-import com.clokey.server.domain.history.exception.annotation.*;
-import com.clokey.server.domain.model.entity.enums.Visibility;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 import jakarta.validation.constraints.NotBlank;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import com.clokey.server.domain.history.exception.annotation.*;
+import com.clokey.server.domain.model.entity.enums.Visibility;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class HistoryRequestDTO {
 

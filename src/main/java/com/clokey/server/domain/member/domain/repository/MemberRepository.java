@@ -1,11 +1,5 @@
 package com.clokey.server.domain.member.domain.repository;
 
-import com.clokey.server.domain.cloth.domain.entity.Cloth;
-import com.clokey.server.domain.folder.domain.entity.Folder;
-import com.clokey.server.domain.history.domain.entity.Comment;
-import com.clokey.server.domain.history.domain.entity.History;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +7,14 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.folder.domain.entity.Folder;
+import com.clokey.server.domain.history.domain.entity.Comment;
+import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
 
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
@@ -32,7 +34,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT h.id FROM History h WHERE h.member.id = :memberId")
     List<Long> findHistoryIdsByMemberId(@Param("memberId") Long memberId);
 
-
     @Query("SELECT c FROM Cloth c WHERE c.member.id = :memberId")
     List<Cloth> findClothsByMemberId(@Param("memberId") Long memberId);
 
@@ -47,7 +48,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT n FROM ClokeyNotification n WHERE n.member.id = :memberId")
     List<ClokeyNotification> findNotificationsByMemberId(@Param("memberId") Long memberId);
 
-
     @Query("SELECT c.id FROM Cloth c WHERE c.member.id = :memberId")
     List<Long> findClothIdsByMemberId(@Param("memberId") Long memberId);
 
@@ -61,4 +61,14 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Long> findNotificationIdsByMemberId(@Param("memberId") Long memberId);
 
     List<Member> findAll();
+
+    List<Member> findByIdIn(Set<Long> memberIds);
+
+    boolean existsByEmail(String email);
+
+    Member getMemberByEmail(String email);
+
+    Optional<Member> findMemberByEmail(String email);
+
+
 }

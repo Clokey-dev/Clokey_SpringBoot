@@ -1,8 +1,8 @@
 package com.clokey.server.domain.category.application;
 
-import com.clokey.server.domain.category.domain.entity.Category;
-
 import java.util.List;
+
+import com.clokey.server.domain.category.domain.entity.Category;
 
 public interface CategoryRepositoryService {
 

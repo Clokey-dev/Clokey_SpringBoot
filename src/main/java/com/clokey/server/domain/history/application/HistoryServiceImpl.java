@@ -1,24 +1,5 @@
 package com.clokey.server.domain.history.application;
 
-import com.clokey.server.domain.cloth.application.ClothRepositoryService;
-import com.clokey.server.domain.cloth.domain.entity.Cloth;
-import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
-import com.clokey.server.domain.history.domain.entity.*;
-import com.clokey.server.domain.history.dto.HistoryRequestDTO;
-import com.clokey.server.domain.history.exception.HistoryException;
-import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
-import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
-import com.clokey.server.domain.member.application.FollowRepositoryService;
-import com.clokey.server.domain.member.application.MemberRepositoryService;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.history.converter.HistoryConverter;
-import com.clokey.server.domain.history.dto.HistoryResponseDTO;
-import com.clokey.server.domain.model.entity.enums.Visibility;
-import com.clokey.server.domain.search.application.SearchRepositoryService;
-import com.clokey.server.domain.search.exception.SearchException;
-import com.clokey.server.global.error.code.status.ErrorStatus;
-import com.clokey.server.global.error.exception.GeneralException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -31,6 +12,27 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.cloth.application.ClothRepositoryService;
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
+import com.clokey.server.domain.history.converter.HistoryConverter;
+import com.clokey.server.domain.history.domain.entity.*;
+import com.clokey.server.domain.history.dto.HistoryRequestDTO;
+import com.clokey.server.domain.history.dto.HistoryResponseDTO;
+import com.clokey.server.domain.history.exception.HistoryException;
+import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
+import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
+import com.clokey.server.domain.member.application.FollowRepositoryService;
+import com.clokey.server.domain.member.application.MemberRepositoryService;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.enums.Visibility;
+import com.clokey.server.domain.search.application.SearchRepositoryService;
+import com.clokey.server.domain.search.exception.SearchException;
+import com.clokey.server.global.error.code.status.ErrorStatus;
+import com.clokey.server.global.error.exception.GeneralException;
 
 @Service
 @RequiredArgsConstructor
@@ -100,14 +102,14 @@ public class HistoryServiceImpl implements HistoryService {
         return HistoryConverter.toCommentWriteResult(savedComment);
     }
 
-    private void validateParentCommentHistory(Long historyId,Long parentCommentId) {
-        if(parentCommentId == null) {
+    private void validateParentCommentHistory(Long historyId, Long parentCommentId) {
+        if (parentCommentId == null) {
             return;
         }
 
         Long parentHistoryId = commentRepositoryService.findById(parentCommentId).getHistory().getId();
 
-        if(!parentHistoryId.equals(historyId)) {
+        if (!parentHistoryId.equals(historyId)) {
             throw new GeneralException(ErrorStatus.PARENT_COMMENT_HISTORY_ERROR);
         }
     }
@@ -127,9 +129,9 @@ public class HistoryServiceImpl implements HistoryService {
         Long commentCount = commentRepositoryService.countByHistoryId(historyId);
         List<Cloth> cloths = historyClothRepositoryService.findAllClothByHistoryId(historyId);
 
-        if(memberId.equals(history.getMember().getId())){
+        if (memberId.equals(history.getMember().getId())) {
             return HistoryConverter.toDayViewResult(history, imageUrl, hashtags, likeCount, isLiked, cloths, commentCount);
-        }else{
+        } else {
             cloths = cloths.stream()
                     .filter(cloth -> cloth.getVisibility() == Visibility.PUBLIC)
                     .collect(Collectors.toList());
@@ -140,7 +142,7 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     @Transactional(readOnly = true)
     public HistoryResponseDTO.HistoryCommentResult getComments(Long historyId, int page) {
-        Page<Comment> comments = commentRepositoryService.findByHistoryIdAndCommentIsNull(historyId, PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdAt")));
+        Page<Comment> comments = commentRepositoryService.findByHistoryIdAndCommentIsNull(historyId, PageRequest.of(page, 20, Sort.by(Sort.Direction.DESC, "createdAt")));
         List<List<Comment>> repliesForEachComment = comments.stream()
                 .map(comment -> commentRepositoryService.findByCommentId(comment.getId()).stream()
                         .sorted(Comparator.comparing(Comment::getCreatedAt).reversed()) // 최신 순 정렬
@@ -155,32 +157,30 @@ public class HistoryServiceImpl implements HistoryService {
     public HistoryResponseDTO.MonthViewResult getMonthlyHistories(Long myMemberId, String clokeyId, String month) {
 
         //Clokey ID를 제공하지 않았다면 자기 자신의 기록 확인으로 전부 반환.
-        if(clokeyId == null){
-            List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(myMemberId,month);
+        if (clokeyId == null) {
+            List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(myMemberId, month);
 
 
             List<String> firstImageUrlsOfHistory = histories.stream()
                     .map(history -> {
-                                Optional<String> firstImageUrl = historyImageRepositoryService.findByHistoryId(history.getId()).stream()
-                                        .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
-                                        .map(HistoryImage::getImageUrl)
-                                        .findFirst();
+                        Optional<String> firstImageUrl = historyImageRepositoryService.findByHistoryId(history.getId()).stream()
+                                .sorted(Comparator.comparing(HistoryImage::getCreatedAt))
+                                .map(HistoryImage::getImageUrl)
+                                .findFirst();
 
-                       //이미지가 없다면 null을 반환하지만 버그 데이터 입니다..
                         return firstImageUrl.orElse(null);
                     })
                     .collect(Collectors.toList());
             String nickName = memberRepositoryService.findMemberById(myMemberId).getNickname();
-            return HistoryConverter.toMonthViewResult(myMemberId,nickName, histories, firstImageUrlsOfHistory);
+            return HistoryConverter.toMonthViewResult(myMemberId, nickName, histories, firstImageUrlsOfHistory);
         }
 
         Member member = memberRepositoryService.findMemberByClokeyId(clokeyId);
         Long memberId = member.getId();
 
-        //나의 기록이 아닌 경우 대상 멤버에게 접근 권한이 있는지 확인합니다.
-        historyAccessibleValidator.validateMemberAccessOfMember(memberId,myMemberId);
+        historyAccessibleValidator.validateMemberAccessOfMember(memberId, myMemberId);
 
-        List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(memberId,month);
+        List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(memberId, month);
         List<String> firstImageUrlsOfHistory = histories.stream()
                 .map(history -> {
                     Optional<String> firstImageUrl = historyImageRepositoryService.findByHistoryId(history.getId()).stream()
@@ -188,39 +188,35 @@ public class HistoryServiceImpl implements HistoryService {
                             .map(HistoryImage::getImageUrl)
                             .findFirst();
 
-                    //이미지가 없다면 null을 반환하지만 버그 데이터 입니다..
                     return firstImageUrl.orElse(null);
                 })
                 .collect(Collectors.toList());
 
-        //비공개 게시물을 가려줍니다.
         for (int i = 0; i < histories.size(); i++) {
             History history = histories.get(i);
 
-            if (history.getVisibility().equals(Visibility.PRIVATE)){
+            if (history.getVisibility().equals(Visibility.PRIVATE)) {
                 firstImageUrlsOfHistory.set(i, "비공개입니다");
             }
 
         }
-        return HistoryConverter.toMonthViewResult(memberId,member.getNickname(),histories,firstImageUrlsOfHistory);
+        return HistoryConverter.toMonthViewResult(memberId, member.getNickname(), histories, firstImageUrlsOfHistory);
     }
 
     @Override
     @Transactional
     public HistoryResponseDTO.HistoryCreateResult createHistory(HistoryRequestDTO.HistoryCreate historyCreateRequest, Long memberId, List<MultipartFile> imageFiles) {
 
-
         //모든 옷이 나의 옷이 맞는지 검증합니다.
         clothAccessibleValidator.validateClothOfMember(historyCreateRequest.getClothes(), memberId);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        boolean historyExist = historyRepositoryService.checkHistoryExistOfDate(LocalDate.parse(historyCreateRequest.getDate(), formatter),memberId);
+        boolean historyExist = historyRepositoryService.checkHistoryExistOfDate(LocalDate.parse(historyCreateRequest.getDate(), formatter), memberId);
 
-        if(historyExist){
-            return updateHistory(historyCreateRequest,memberId,historyRepositoryService.getHistoryOfDate(LocalDate.parse(historyCreateRequest.getDate()),memberId).getId(),imageFiles);
-        }else {
+        if (historyExist) {
+            return updateHistory(historyCreateRequest, memberId, historyRepositoryService.getHistoryOfDate(LocalDate.parse(historyCreateRequest.getDate()), memberId).getId(), imageFiles);
+        } else {
 
-            // History 엔티티 생성 후 요청 정보 반환해서 저장
             History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));
             historyImageRepositoryService.save(imageFiles, history);
 
@@ -273,7 +269,6 @@ public class HistoryServiceImpl implements HistoryService {
 
     private HistoryResponseDTO.HistoryCreateResult updateHistory(HistoryRequestDTO.HistoryCreate historyUpdate, Long memberId, Long historyId, List<MultipartFile> images) {
 
-        //나의 기록이 맞는지 검증합니다.
         historyAccessibleValidator.validateMyHistory(historyId, memberId);
 
         historyImageRepositoryService.deleteAllByHistoryId(historyId);
@@ -308,15 +303,15 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     @Transactional
     public void deleteComment(Long commentId, Long memberId) {
-        validateMyComment(commentId,memberId);
+        validateMyComment(commentId, memberId);
         commentRepositoryService.deleteChildren(commentId);
         commentRepositoryService.deleteById(commentId);
     }
 
     @Override
     @Transactional
-    public void updateComment(HistoryRequestDTO.UpdateComment updateCommentRequest,Long commentId, Long memberId) {
-        validateMyComment(commentId,memberId);
+    public void updateComment(HistoryRequestDTO.UpdateComment updateCommentRequest, Long commentId, Long memberId) {
+        validateMyComment(commentId, memberId);
         Comment commentToUpdate = commentRepositoryService.findById(commentId);
         commentToUpdate.updateContent(updateCommentRequest.getContent());
     }
@@ -324,13 +319,12 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     @Transactional
     public void deleteHistory(Long historyId, Long memberId) {
-        historyAccessibleValidator.validateMyHistory(historyId,memberId);
+        historyAccessibleValidator.validateMyHistory(historyId, memberId);
 
-        //댓글 지우기
         commentRepositoryService.deleteAllComments(historyId);
 
         //기록_옷 지우기
-        List<Cloth> cloths =historyClothRepositoryService.findAllClothByHistoryId(historyId);
+        List<Cloth> cloths = historyClothRepositoryService.findAllClothByHistoryId(historyId);
         cloths.forEach(Cloth::decreaseWearNum);
         historyClothRepositoryService.deleteAllByHistoryId(historyId);
 
@@ -355,20 +349,34 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
+    public HistoryResponseDTO.CheckMyHistoryResult checkIfHistoryIsMine(Long historyId, Long memberId) {
+
+        History history = historyRepositoryService.findById(historyId);
+
+        return HistoryResponseDTO.CheckMyHistoryResult.builder()
+                .isMyHistory(history.getMember().getId().equals(memberId))
+                .build();
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public HistoryResponseDTO.LikedUserResults getLikedUser(Long memberId, Long historyId) {
 
-        historyAccessibleValidator.validateHistoryAccessOfMember(historyId,memberId);
+        historyAccessibleValidator.validateHistoryAccessOfMember(historyId, memberId);
 
         List<Member> likedMembers = memberLikeRepositoryService.findMembersByHistory(historyId);
-        List<Boolean> followStatus = followRepositoryService.checkFollowingStatus(memberId,likedMembers);
+        List<Boolean> followStatus = followRepositoryService.checkFollowingStatus(memberId, likedMembers);
+        List<Boolean> isMySelf = likedMembers.stream()
+                .map(Member::getId)
+                .map(likedMemberId -> likedMemberId.equals(memberId))
+                .toList();
 
-        return HistoryConverter.toLikedUserResult(likedMembers,followStatus);
+        return HistoryConverter.toLikedUserResult(likedMembers, followStatus,isMySelf);
     }
 
     private void validateMyComment(Long commentId, Long memberId) {
         Comment comment = commentRepositoryService.findById(commentId);
-        if(!comment.getMember().getId().equals(memberId)){
+        if (!comment.getMember().getId().equals(memberId)) {
             throw new HistoryException(ErrorStatus.NOT_MY_COMMENT);
         }
     }
@@ -377,9 +385,9 @@ public class HistoryServiceImpl implements HistoryService {
 
         //updateClothes에만 존재하는 것은 추가 대상
         List<Cloth> clothesToAdd = clothRepositoryService.findAllById(
-                 updatedClothes.stream()
-                .filter(clothId -> !savedClothes.contains(clothId))
-                .toList());
+                updatedClothes.stream()
+                        .filter(clothId -> !savedClothes.contains(clothId))
+                        .toList());
 
         //반대는 삭제 대상
         List<Cloth> clothesToDelete = clothRepositoryService.findAllById(savedClothes.stream()
@@ -392,7 +400,7 @@ public class HistoryServiceImpl implements HistoryService {
 
     private void updateHistoryHashtags(List<String> updatedHashtags, List<String> savedHashtags, History history) {
 
-        //존재하지 않는 해시태그는 만들어줍니다.
+        //존재하지 않는 해시태그는 만들어준다.
         updatedHashtags.forEach(hashtagName -> {
             if (!hashtagRepositoryService.existByName(hashtagName)) {
                 Hashtag newHashtag = Hashtag.builder()
@@ -403,12 +411,10 @@ public class HistoryServiceImpl implements HistoryService {
         });
 
 
-        //updateHashtag에만 존재하는 것은 매핑 테이블에
         List<Hashtag> hashtagToAdd = hashtagRepositoryService.findHashtagsByNames(updatedHashtags.stream()
                 .filter(hashtagNames -> !savedHashtags.contains(hashtagNames))
                 .toList());
 
-        //반대는 삭제 대상
         List<Hashtag> hashtagToDelete = hashtagRepositoryService.findHashtagsByNames(savedHashtags.stream()
                 .filter(hashtagNames -> !updatedHashtags.contains(hashtagNames))
                 .toList());
@@ -416,8 +422,6 @@ public class HistoryServiceImpl implements HistoryService {
         hashtagToAdd.forEach(hashtag -> hashtagHistoryRepositoryService.addHashtagHistory(hashtag, history));
         hashtagToDelete.forEach(hashtag -> hashtagHistoryRepositoryService.deleteHashtagHistory(hashtag, history));
     }
-
-
 
 
 }

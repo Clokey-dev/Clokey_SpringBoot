@@ -1,15 +1,15 @@
 package com.clokey.server.domain.member.dto;
 
-import com.clokey.server.domain.member.exception.annotation.EssentialFieldNotNull;
-import com.clokey.server.domain.member.exception.annotation.IdValid;
-import com.clokey.server.domain.model.entity.enums.Visibility;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.clokey.server.domain.member.exception.annotation.EssentialFieldNotNull;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 
 public class MemberDTO {
 
@@ -27,10 +27,17 @@ public class MemberDTO {
         String bio;
         String profileBackImageUrl;
         String visibility;
-        String clothImage1;
-        String clothImage2;
-        String clothImage3;
+        List<GetUserClothResult> clothResults;
         Boolean isFollowing;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetUserClothResult {
+        Long clothId;
+        String clothImage;
     }
 
     @Getter
@@ -85,23 +92,12 @@ public class MemberDTO {
         private Boolean isLast;
     }
 
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class FollowRQ{
-        @IdValid
-        String myClokeyId;
-        @IdValid
-        String yourClokeyId;
-    }
-
 
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class FollowRP{
+    public static class FollowRP {
         Boolean isFollow;
     }
 
@@ -126,5 +122,6 @@ public class MemberDTO {
         String clokeyId;
         String profileImage;
         Boolean isFollowed;
+        Boolean isMe;
     }
 }

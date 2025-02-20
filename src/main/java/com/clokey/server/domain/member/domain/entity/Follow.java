@@ -1,6 +1,7 @@
 package com.clokey.server.domain.member.domain.entity;
 
 import jakarta.persistence.*;
+
 import lombok.*;
 
 @Entity
@@ -24,4 +25,3 @@ public class Follow {
     private Member followed;  // 팔로우 하는 사람
 
 }
-

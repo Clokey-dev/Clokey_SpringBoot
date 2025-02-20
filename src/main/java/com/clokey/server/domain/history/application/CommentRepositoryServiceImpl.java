@@ -1,31 +1,29 @@
 package com.clokey.server.domain.history.application;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import jakarta.transaction.Transactional;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.history.domain.entity.Comment;
 import com.clokey.server.domain.history.domain.repository.CommentRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
-import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class CommentRepositoryServiceImpl implements CommentRepositoryService{
+public class CommentRepositoryServiceImpl implements CommentRepositoryService {
 
     private final CommentRepository commentRepository;
 
     @Override
     public Page<Comment> findByHistoryIdAndCommentIsNull(Long historyId, PageRequest pageRequest) {
-        return commentRepository.findByHistoryIdAndCommentIsNull(historyId,pageRequest);
+        return commentRepository.findByHistoryIdAndCommentIsNull(historyId, pageRequest);
     }
 
     @Override
@@ -35,7 +33,7 @@ public class CommentRepositoryServiceImpl implements CommentRepositoryService{
 
     @Override
     public Comment findById(Long commentId) {
-        return commentRepository.findById(commentId).orElseThrow(()-> new DatabaseException(ErrorStatus.NO_SUCH_COMMENT));
+        return commentRepository.findById(commentId).orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_COMMENT));
     }
 
     @Override
@@ -66,14 +64,14 @@ public class CommentRepositoryServiceImpl implements CommentRepositoryService{
 
     @Override
     public boolean existsByIdAndMemberId(Long id, Long memberId) {
-        return commentRepository.existsByIdAndMemberId(id,memberId);
+        return commentRepository.existsByIdAndMemberId(id, memberId);
     }
 
     @Override
     public boolean existsByIdAndHistoryId(Long id, Long historyId) {
         return commentRepository.existsByIdAndHistoryId(id, historyId);
     }
-    
+
     @Override
     public Long countByHistoryId(Long historyId) {
         return commentRepository.countByHistoryId(historyId);
@@ -87,7 +85,7 @@ public class CommentRepositoryServiceImpl implements CommentRepositoryService{
     @Override
     public void deleteChildrenByHistoryIds(List<Long> historyIds) {
 
-        List<Long>commentIds=commentRepository.selectCommentsByHistoryIds(historyIds);
+        List<Long> commentIds = commentRepository.selectCommentsByHistoryIds(historyIds);
 
         commentRepository.deleteChildrenByHistoryIds(commentIds);
     }

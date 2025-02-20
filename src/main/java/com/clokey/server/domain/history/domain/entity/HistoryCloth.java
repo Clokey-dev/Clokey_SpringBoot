@@ -1,9 +1,11 @@
 package com.clokey.server.domain.history.domain.entity;
 
-import com.clokey.server.domain.model.entity.BaseEntity;
-import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import jakarta.persistence.*;
+
 import lombok.*;
+
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.model.entity.BaseEntity;
 
 @Entity
 @Getter
@@ -17,7 +19,7 @@ public class HistoryCloth extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "history_id",nullable = false)
+    @JoinColumn(name = "history_id", nullable = false)
     private History history;
 
     @ManyToOne(fetch = FetchType.LAZY)

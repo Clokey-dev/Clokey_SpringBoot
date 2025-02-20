@@ -2,23 +2,34 @@ package com.clokey.server.domain.category.application;
 
 import com.clokey.server.domain.category.converter.CategoryConverter;
 import com.clokey.server.domain.category.dto.CategoryResponseDTO;
+import com.clokey.server.domain.category.exception.CategoryException;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.clokey.server.domain.category.converter.CategoryConverter;
+import com.clokey.server.domain.category.dto.CategoryResponseDTO;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class CategoryServiceImpl implements CategoryService{
+public class CategoryServiceImpl implements CategoryService {
 
     private final ObjectMapper objectMapper;
 
@@ -119,7 +130,6 @@ public class CategoryServiceImpl implements CategoryService{
         );
 
         try {
-            // JSON 변환
             String jsonBody = objectMapper.writeValueAsString(requestBody);
             HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
 
@@ -127,7 +137,6 @@ public class CategoryServiceImpl implements CategoryService{
             return extractMessageFromJSONResponse(response.getBody());
 
         } catch (Exception e) {
-            e.printStackTrace();
             return "Error connecting to OpenAI: " + e.getMessage();
         }
     }
@@ -136,26 +145,25 @@ public class CategoryServiceImpl implements CategoryService{
     private String extractMessageFromJSONResponse(String response) {
         try {
             System.out.println("ChatGPT API Response: " + response);
-            Map<String, Object> map = objectMapper.readValue(response, new TypeReference<>() {});
+            Map<String, Object> map = objectMapper.readValue(response, new TypeReference<>() {
+            });
             List<Map<String, Object>> choices = (List<Map<String, Object>>) map.get("choices");
 
             if (choices == null || choices.isEmpty()) {
-                throw new RuntimeException("No choices in API response: " + response);
+                throw new CategoryException(ErrorStatus.NO_CHATGPT_RESPONSE);
             }
 
             Map<String, Object> messageMap = (Map<String, Object>) choices.get(0).get("message");
             if (messageMap == null || !messageMap.containsKey("content")) {
-                throw new RuntimeException("Invalid message format in API response: " + response);
+                throw new CategoryException(ErrorStatus.INVALID_RESPONSE);
             }
 
             return (String) messageMap.get("content");
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to parse response: " + e.getMessage(), e);
+            throw new CategoryException(ErrorStatus.FAILED_TO_PARSE_RESPONSE);
         }
     }
-
-
 
 
     private CategoryResponseDTO.CategoryRecommendResult parseResponse(String response) {
@@ -164,7 +172,8 @@ public class CategoryServiceImpl implements CategoryService{
             ObjectMapper objectMapper = new ObjectMapper();
 
             // JSON 응답을 리스트로 변환
-            List<Map<String, Object>> parsedList = objectMapper.readValue(response, new TypeReference<List<Map<String, Object>>>() {});
+            List<Map<String, Object>> parsedList = objectMapper.readValue(response, new TypeReference<List<Map<String, Object>>>() {
+            });
 
             for (Map<String, Object> item : parsedList) {
                 // "큰 카테고리", "작은 카테고리", "카테고리 아이디" 추출
@@ -180,5 +189,17 @@ public class CategoryServiceImpl implements CategoryService{
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse response: " + e.getMessage(), e);
         }
+    }
+
+    private final CategoryRepositoryService categoryRepositoryService;
+    private final CategoryConverter categoryConverter;
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CategoryResponseDTO.CategoryRP> getAllCategories() {
+        return categoryRepositoryService.findAll()
+                .stream()
+                .map(categoryConverter::convertToDTO)
+                .collect(Collectors.toList());
     }
 }

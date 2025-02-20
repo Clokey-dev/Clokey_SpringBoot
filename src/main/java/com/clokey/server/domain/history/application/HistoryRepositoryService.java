@@ -1,14 +1,14 @@
 package com.clokey.server.domain.history.application;
 
-import com.clokey.server.domain.history.domain.entity.History;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.model.entity.enums.Visibility;
-import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 
 public interface HistoryRepositoryService {
 
@@ -32,8 +32,7 @@ public interface HistoryRepositoryService {
 
     void deleteById(Long historyId);
 
-    List<Boolean> existsByHistoryDateAndMemberIds(LocalDate historyDate, List<Long> memberIds);
-
+    List<Boolean> existsByHistoryDateAndMemberIds(LocalDate historyDate, List<Long> memberIds, Visibility visibility);
 
     void deleteByHistoryIds(List<Long> historyIds);
 
@@ -41,8 +40,9 @@ public interface HistoryRepositoryService {
 
     List<History> findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> member, Visibility visibility);
 
-    List<History> findTop10MembersByHashtagIdsOrderByLikes(List<Long> hashtagIds, Long currentMemberId);
-
     List<History> findAll();
 
+    Long countHistoryByMember(Member member);
+
+    List<History> findHistoriesByMemberIds(List<Long> memberIds);
 }

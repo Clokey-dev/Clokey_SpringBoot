@@ -1,11 +1,14 @@
 package com.clokey.server.domain.history.exception.validator;
 
-import com.clokey.server.domain.history.exception.annotation.HistoryDateFormat;
-import com.clokey.server.global.error.code.status.ErrorStatus;
+import org.springframework.stereotype.Component;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+
+import com.clokey.server.domain.history.exception.annotation.HistoryDateFormat;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +26,7 @@ public class HistoryDateFormatValidator implements ConstraintValidator<HistoryDa
     public boolean isValid(String value, ConstraintValidatorContext context) {
 
         //null이나 빈값이 아니며 YYYY-MM 형태를 만족해야 한다.
-        boolean isValid = value!=null && !value.isEmpty() && value.matches(DATE_PATTERN);
+        boolean isValid = value != null && !value.isEmpty() && value.matches(DATE_PATTERN);
 
         if (!isValid) {
             context.disableDefaultConstraintViolation();
@@ -33,4 +36,3 @@ public class HistoryDateFormatValidator implements ConstraintValidator<HistoryDa
         return isValid;
     }
 }
-

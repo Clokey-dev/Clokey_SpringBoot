@@ -1,16 +1,12 @@
 package com.clokey.server.domain.recommendation.domain.entity;
 
+import jakarta.persistence.*;
+
+import lombok.*;
+
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.BaseEntity;
 import com.clokey.server.domain.model.entity.enums.NewsType;
-import com.clokey.server.domain.model.entity.enums.Visibility;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import lombok.*;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Getter
@@ -50,4 +46,3 @@ public class Recommendation extends BaseEntity {
     private Member member;
 
 }
-

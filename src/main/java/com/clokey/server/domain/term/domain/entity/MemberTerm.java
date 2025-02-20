@@ -1,9 +1,11 @@
 package com.clokey.server.domain.term.domain.entity;
 
-import com.clokey.server.domain.model.entity.BaseEntity;
-import com.clokey.server.domain.member.domain.entity.Member;
 import jakarta.persistence.*;
+
 import lombok.*;
+
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.BaseEntity;
 
 @Entity
 @Getter
@@ -17,10 +19,10 @@ public class MemberTerm extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id",nullable = false)
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "term_id",nullable = false)
+    @JoinColumn(name = "term_id", nullable = false)
     private Term term;
 }

@@ -9,4 +9,3 @@ public class NotificationException extends GeneralException {
         super(code);
     }
 }
-

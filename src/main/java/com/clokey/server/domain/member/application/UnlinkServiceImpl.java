@@ -1,5 +1,24 @@
 package com.clokey.server.domain.member.application;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.clokey.server.domain.cloth.application.ClothImageRepositoryService;
 import com.clokey.server.domain.cloth.application.ClothRepositoryService;
 import com.clokey.server.domain.folder.application.ClothFolderRepositoryService;
@@ -16,23 +35,6 @@ import com.clokey.server.domain.search.application.SearchRepositoryService;
 import com.clokey.server.domain.search.exception.SearchException;
 import com.clokey.server.domain.term.application.MemberTermRepositoryService;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpResponse;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.net.http.HttpRequest;
 
 
 @Slf4j
@@ -40,7 +42,6 @@ import java.net.http.HttpRequest;
 @Service
 public class UnlinkServiceImpl implements UnlinkService {
 
-    private final AppleAuthService appleAuthService;
     private final MemberTermRepositoryService memberTermRepositoryService;
 
     private final FollowRepositoryService followRepositoryService;
@@ -59,6 +60,7 @@ public class UnlinkServiceImpl implements UnlinkService {
     private final CommentRepository commentRepository;
     private final NotificationRepositoryService notificationRepositoryService;
     private final SearchRepositoryService searchRepositoryService;
+    private final AuthService authService;
 
 
     @Value("${kakao.admin-key}")
@@ -81,8 +83,8 @@ public class UnlinkServiceImpl implements UnlinkService {
                 kakaoUnlink(kakaoId);
             }
         } else if (member != null && SocialType.APPLE == member.getSocialType()) {
-            System.out.println("🍏 애플 연동 해제 실행됨");
-            String clientSecret = appleAuthService.createClientSecret();  // ✅ 새로 생성
+            log.info("🍏 애플 연동 해제 실행됨");
+            String clientSecret = authService.createClientSecret();  // ✅ 새로 생성
             String refreshToken = member.getAppleRefreshToken();
             if (clientSecret != null && refreshToken != null) {
                 appleUnlink(clientSecret, refreshToken);
@@ -98,7 +100,6 @@ public class UnlinkServiceImpl implements UnlinkService {
         member.updateStatus();
         member.updateInactiveDate(LocalDate.now());
         memberRepositoryService.saveMember(member);
-
     }
 
 
@@ -119,14 +120,11 @@ public class UnlinkServiceImpl implements UnlinkService {
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 log.info("✅ 카카오 연동 해제 성공: {}", response.getBody());
-                System.out.println("✅ 해제 성공: " + response.getBody());
             } else {
                 log.warn("⚠️ 카카오 연동 해제 실패: HTTP {}", response.getStatusCode());
-                System.out.println("⚠️ 해제 실패: " + response.getStatusCode());
             }
         } catch (NumberFormatException e) {
             log.error("카카오 연동 해제 실패: kakaoId 변환 오류", e);
-            System.out.println("해제 실패");
         }
     }
 
@@ -140,18 +138,14 @@ public class UnlinkServiceImpl implements UnlinkService {
         params.put("client_id", APPLE_CLIENT_ID); // app bundle id
 
         try {
-            HttpRequest getRequest = HttpRequest.newBuilder()
-                    .uri(new URI(uriStr))
-                    .POST(appleAuthService.getParamsUrlEncoded(params))
-                    .headers("Content-Type", "application/x-www-form-urlencoded")
-                    .build();
+            HttpRequest getRequest = HttpRequest.newBuilder().uri(new URI(uriStr)).POST(authService.getParamsUrlEncoded(params)).headers("Content-Type", "application/x-www-form-urlencoded").build();
 
             HttpClient httpClient = HttpClient.newHttpClient();
             HttpResponse<String> response = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
 
             // 응답 상태 코드와 본문 출력
-            System.out.println("응답 상태 코드: " + response.statusCode());
-            System.out.println("응답 본문: " + response.body());
+            log.info("🍏 응답 상태 코드: {}", response.statusCode());
+            log.info("🍏 애플 연동 해제 결과: {}", response.body());
 
         } catch (Exception e) {
             e.printStackTrace();

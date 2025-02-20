@@ -1,11 +1,11 @@
 package com.clokey.server.domain.cloth.application;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.clokey.server.domain.cloth.dto.ClothRequestDTO;
 import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
 import com.clokey.server.domain.model.entity.enums.ClothSort;
 import com.clokey.server.domain.model.entity.enums.Season;
-import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
-import org.springframework.web.multipart.MultipartFile;
 
 public interface ClothService {
 

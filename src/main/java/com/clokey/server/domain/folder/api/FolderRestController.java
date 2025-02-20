@@ -1,5 +1,12 @@
 package com.clokey.server.domain.folder.api;
 
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.folder.application.FolderService;
 import com.clokey.server.domain.folder.converter.FolderConverter;
 import com.clokey.server.domain.folder.dto.FolderRequestDTO;
@@ -13,10 +20,6 @@ import com.clokey.server.global.error.exception.annotation.CheckPage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 
 @Validated
 @RestController

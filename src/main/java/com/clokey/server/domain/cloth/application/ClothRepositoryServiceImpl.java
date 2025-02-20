@@ -1,5 +1,16 @@
 package com.clokey.server.domain.cloth.application;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.cloth.domain.repository.ClothRepository;
 import com.clokey.server.domain.member.domain.entity.Member;
@@ -9,14 +20,6 @@ import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -81,7 +84,7 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
 
     @Override
     public List<Cloth> findTop6ByMemberInAndVisibilityOrderByCreatedAtDesc(List<Member> members, Visibility visibility) {
-        return clothRepository.findTop6ByMemberInAndVisibilityOrderByCreatedAtDesc(members, visibility);
+        return clothRepository.findTop6ByMemberInAndVisibilityAndCreatedAtBetweenOrderByCreatedAtDesc(members, visibility, LocalDateTime.now().minusWeeks(2), LocalDateTime.now());
     }
 
     @Override
@@ -104,4 +107,23 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
     public void deleteByClothIds(List<Long> clothIds) {
         clothRepository.deleteByClothIds(clothIds);
     }
+
+    @Override
+    public List<Cloth> getTop3Cloths(Member member){
+        List<Cloth> cloths = clothRepository.getTop3Cloths(member);
+        while (cloths.size() < 3) {
+            cloths.add(null);
+        }
+        return cloths;
+    }
+
+    @Override
+    public List<Cloth> getTop3PublicCloths(Member member) {
+        List<Cloth> cloths = clothRepository.getTop3PublicCloths(member);
+        while (cloths.size() < 3) {
+            cloths.add(null);
+        }
+        return cloths;
+    }
+
 }

@@ -1,18 +1,5 @@
 package com.clokey.server.domain.term.application;
 
-import com.clokey.server.domain.member.application.MemberRepositoryService;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.model.entity.enums.RegisterStatus;
-import com.clokey.server.domain.term.converter.TermConverter;
-import com.clokey.server.domain.term.domain.entity.Term;
-import com.clokey.server.domain.term.domain.entity.MemberTerm;
-import com.clokey.server.domain.term.domain.repository.MemberTermRepository;
-import com.clokey.server.domain.term.domain.repository.TermRepository;
-import com.clokey.server.domain.term.dto.TermRequestDTO;
-import com.clokey.server.domain.term.dto.TermResponseDTO;
-import com.clokey.server.domain.term.exception.TermException;
-import com.clokey.server.global.error.code.status.ErrorStatus;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +8,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.member.application.MemberRepositoryService;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.enums.RegisterStatus;
+import com.clokey.server.domain.term.converter.TermConverter;
+import com.clokey.server.domain.term.domain.entity.MemberTerm;
+import com.clokey.server.domain.term.domain.entity.Term;
+import com.clokey.server.domain.term.dto.TermRequestDTO;
+import com.clokey.server.domain.term.dto.TermResponseDTO;
+
 @Service
 @RequiredArgsConstructor
 public class TermCommandServiceImpl implements TermCommandService {
@@ -28,6 +26,9 @@ public class TermCommandServiceImpl implements TermCommandService {
     private final MemberRepositoryService memberRepositoryService;
     private final TermRepositoryService termRepositoryService;
     private final MemberTermRepositoryService memberTermRepositoryService;
+
+    private static final String APP_VERSION = "1.0.0";
+
 
     @Override
     @Transactional
@@ -57,7 +58,7 @@ public class TermCommandServiceImpl implements TermCommandService {
                     .build());
         }
 
-        if(member.getRegisterStatus()==RegisterStatus.NOT_AGREED) {
+        if (member.getRegisterStatus() == RegisterStatus.NOT_AGREED) {
             // 약관 동의가 완료되었으므로 회원의 등록 상태를 업데이트
             member.updateRegisterStatus(RegisterStatus.AGREED_PROFILE_NOT_SET);
 
@@ -156,15 +157,10 @@ public class TermCommandServiceImpl implements TermCommandService {
         return TermResponseDTO.UserAgreementDTO.builder()
                 .socialType(member.getSocialType().toString())  // 소셜 타입 추가
                 .email(member.getEmail()) // 이메일 추가
-                .appVersion("1.0.0") // 앱 버전 추가
+                .appVersion(APP_VERSION) // 앱 버전 추가
                 .terms(termResponses)  // OptionalTermDTO 리스트 반환
                 .build();
     }
-
-
-
-
-
 
 
 }

@@ -1,8 +1,5 @@
 package com.clokey.server.domain.history.domain.repository;
 
-import com.clokey.server.domain.history.domain.entity.History;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.model.entity.enums.Visibility;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,10 +7,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 
 public interface HistoryRepository extends JpaRepository<History, Long> {
 
@@ -37,9 +37,13 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
             "FROM Member m " +
             "LEFT JOIN History h ON m.id = h.member.id AND h.historyDate = :historyDate " +
             "WHERE m.id IN :memberIds " +
+            "AND m.visibility = :visibility " +
             "GROUP BY m.id " +
             "ORDER BY m.id")
-    List<Boolean> existsByHistoryDateAndMemberIds(@Param("historyDate") LocalDate historyDate, @Param("memberIds") List<Long> memberIds);
+    List<Boolean> existsByHistoryDateAndMemberIds(
+            @Param("historyDate") LocalDate historyDate,
+            @Param("memberIds") List<Long> memberIds,
+            @Param("visibility") Visibility visibility);
 
 
     Optional<History> findByHistoryDateAndMember_Id(LocalDate historyDate, Long memberId);
@@ -50,8 +54,8 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
 
     Page<History> findByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> member, Visibility visibility, Pageable pageable);
 
-    List<History> findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> member, Visibility visibility);
-
+    List<History> findTop6ByMemberInAndVisibilityAndHistoryDateAfterOrderByHistoryDateDesc(
+            List<Member> members, Visibility visibility, LocalDate startDate);
 
     @Query("SELECT DISTINCT h FROM History h " +
             "JOIN HashtagHistory hh ON hh.history.id = h.id " +
@@ -66,4 +70,13 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
             Pageable pageable);
 
     List<History> findAll();
+
+    @Query("SELECT COUNT(h) FROM History h WHERE h.member = :member")
+    Long countHistoryByMember(@Param("member") Member member);
+
+    @Query("SELECT h FROM History h " +
+            "WHERE h.member.id IN :memberIds " +
+            "AND h.createdAt = (SELECT MAX(h2.createdAt) FROM History h2 WHERE h2.member.id = h.member.id)")
+    List<History> findHistoryByMemberIdIn(@Param("memberIds") List<Long> memberIds);
+
 }

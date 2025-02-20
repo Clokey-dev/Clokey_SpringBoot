@@ -1,18 +1,20 @@
 package com.clokey.server.domain.history.application;
 
-import com.clokey.server.domain.history.domain.entity.MemberLike;
-import com.clokey.server.domain.history.domain.repository.MemberLikeRepository;
-import com.clokey.server.domain.member.domain.entity.Member;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import jakarta.transaction.Transactional;
+
+import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.history.domain.entity.MemberLike;
+import com.clokey.server.domain.history.domain.repository.MemberLikeRepository;
+import com.clokey.server.domain.member.domain.entity.Member;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class MemberLikeRepositoryServiceImpl implements MemberLikeRepositoryService{
+public class MemberLikeRepositoryServiceImpl implements MemberLikeRepositoryService {
 
     private final MemberLikeRepository memberLikeRepository;
 
@@ -23,12 +25,12 @@ public class MemberLikeRepositoryServiceImpl implements MemberLikeRepositoryServ
 
     @Override
     public boolean existsByMember_IdAndHistory_Id(Long memberId, Long historyId) {
-        return memberLikeRepository.existsByMember_IdAndHistory_Id(memberId,historyId);
+        return memberLikeRepository.existsByMember_IdAndHistory_Id(memberId, historyId);
     }
 
     @Override
     public void deleteByMember_IdAndHistory_Id(Long memberId, Long historyId) {
-        memberLikeRepository.deleteByMember_IdAndHistory_Id(memberId,historyId);
+        memberLikeRepository.deleteByMember_IdAndHistory_Id(memberId, historyId);
     }
 
     @Override

@@ -1,10 +1,10 @@
 package com.clokey.server.domain.search.application;
 
+import java.io.IOException;
+
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.member.domain.entity.Member;
-
-import java.io.IOException;
 
 public interface SearchRepositoryService {
 

@@ -1,5 +1,12 @@
 package com.clokey.server.domain.term.api;
 
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.domain.term.application.TermCommandService;
@@ -11,12 +18,6 @@ import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Validated
 @RestController
@@ -28,7 +29,7 @@ public class TermRestController {
     @Operation(summary = "약관 동의 API", description = "약관동의하는 API입니다.")
     @PostMapping("/users/terms")
     public BaseResponse<TermResponseDTO> termAgree(
-            @Parameter(name = "user",hidden = true) @AuthUser Member member,
+            @Parameter(name = "user", hidden = true) @AuthUser Member member,
             @EssentialTermAgree @RequestBody TermRequestDTO.Join request) {
 
         // MemberTerm 생성
@@ -51,7 +52,7 @@ public class TermRestController {
     @Operation(summary = "선택약관 동의 여부 조회 API", description = "선택약관 동의 여부를 조회하는 API입니다.")
     @GetMapping("/users/terms/optional")
     public BaseResponse<TermResponseDTO.UserAgreementDTO> getAgreedTerms(
-            @Parameter(name = "user",hidden = true) @AuthUser Member member) {
+            @Parameter(name = "user", hidden = true) @AuthUser Member member) {
         // 선택약관 동의 여부 조회
         TermResponseDTO.UserAgreementDTO response = termCommandService.getOptionalTerms(member.getId());
 
@@ -62,7 +63,7 @@ public class TermRestController {
     @Operation(summary = "선택약관 동의 수정 API", description = "선택약관 동의 여부를 바꾸는 API입니다.")
     @PostMapping("/users/terms/optional")
     public BaseResponse<TermResponseDTO.UserAgreementDTO> optionalTermAgree(
-            @Parameter(name = "user",hidden = true) @AuthUser Member member,
+            @Parameter(name = "user", hidden = true) @AuthUser Member member,
             @RequestBody @InvalidTermId TermRequestDTO.Join request) {
 
         // MemberTerm 생성
@@ -72,4 +73,3 @@ public class TermRestController {
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_EDITED, response);
     }
 }
-

@@ -1,9 +1,10 @@
 package com.clokey.server.domain.member.exception.validator;
 
-import com.clokey.server.domain.member.exception.annotation.EssentialFieldNotNull;
-import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
+import com.clokey.server.domain.member.exception.annotation.EssentialFieldNotNull;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 
 public class EssentialFieldNotNullValidator implements ConstraintValidator<EssentialFieldNotNull, String> {
     @Override
