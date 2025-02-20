@@ -1,24 +1,5 @@
 package com.clokey.server.domain.history.application;
 
-import com.clokey.server.domain.cloth.application.ClothRepositoryService;
-import com.clokey.server.domain.cloth.domain.entity.Cloth;
-import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
-import com.clokey.server.domain.history.domain.entity.*;
-import com.clokey.server.domain.history.dto.HistoryRequestDTO;
-import com.clokey.server.domain.history.exception.HistoryException;
-import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
-import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
-import com.clokey.server.domain.member.application.FollowRepositoryService;
-import com.clokey.server.domain.member.application.MemberRepositoryService;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.history.converter.HistoryConverter;
-import com.clokey.server.domain.history.dto.HistoryResponseDTO;
-import com.clokey.server.domain.model.entity.enums.Visibility;
-import com.clokey.server.domain.search.application.SearchRepositoryService;
-import com.clokey.server.domain.search.exception.SearchException;
-import com.clokey.server.global.error.code.status.ErrorStatus;
-import com.clokey.server.global.error.exception.GeneralException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -31,6 +12,27 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.cloth.application.ClothRepositoryService;
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.cloth.exception.validator.ClothAccessibleValidator;
+import com.clokey.server.domain.history.converter.HistoryConverter;
+import com.clokey.server.domain.history.domain.entity.*;
+import com.clokey.server.domain.history.dto.HistoryRequestDTO;
+import com.clokey.server.domain.history.dto.HistoryResponseDTO;
+import com.clokey.server.domain.history.exception.HistoryException;
+import com.clokey.server.domain.history.exception.validator.HistoryAccessibleValidator;
+import com.clokey.server.domain.history.exception.validator.HistoryLikedValidator;
+import com.clokey.server.domain.member.application.FollowRepositoryService;
+import com.clokey.server.domain.member.application.MemberRepositoryService;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.enums.Visibility;
+import com.clokey.server.domain.search.application.SearchRepositoryService;
+import com.clokey.server.domain.search.exception.SearchException;
+import com.clokey.server.global.error.code.status.ErrorStatus;
+import com.clokey.server.global.error.exception.GeneralException;
 
 @Service
 @RequiredArgsConstructor

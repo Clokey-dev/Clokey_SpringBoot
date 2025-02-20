@@ -1,22 +1,23 @@
 package com.clokey.server.domain.cloth.domain.entity;
 
-import com.clokey.server.domain.cloth.exception.ClothException;
-import com.clokey.server.domain.model.entity.BaseEntity;
-import com.clokey.server.domain.category.domain.entity.Category;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.model.entity.enums.Season;
-import com.clokey.server.domain.model.entity.enums.ThicknessLevel;
-
-import com.clokey.server.global.error.code.status.ErrorStatus;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import lombok.*;
-import com.clokey.server.domain.model.entity.enums.Visibility;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+
+import lombok.*;
+
+import com.clokey.server.domain.category.domain.entity.Category;
+import com.clokey.server.domain.cloth.exception.ClothException;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.BaseEntity;
+import com.clokey.server.domain.model.entity.enums.Season;
+import com.clokey.server.domain.model.entity.enums.ThicknessLevel;
+import com.clokey.server.domain.model.entity.enums.Visibility;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 
 @Entity
 @Getter

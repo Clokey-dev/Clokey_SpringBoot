@@ -1,15 +1,17 @@
 package com.clokey.server.domain.notification.application;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.model.entity.enums.ReadStatus;
 import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
 import com.clokey.server.domain.notification.domain.repository.NotificationRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

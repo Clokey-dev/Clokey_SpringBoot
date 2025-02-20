@@ -1,10 +1,10 @@
 package com.clokey.server.global.error.exception.annotation;
 
-import com.clokey.server.global.error.exception.validator.CheckPageSizeValidator;
+import java.lang.annotation.*;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-import java.lang.annotation.*;
+import com.clokey.server.global.error.exception.validator.CheckPageSizeValidator;
 
 @Documented
 @Constraint(validatedBy = CheckPageSizeValidator.class)

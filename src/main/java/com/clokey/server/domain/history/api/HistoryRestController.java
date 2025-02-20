@@ -1,29 +1,31 @@
 package com.clokey.server.domain.history.api;
 
-import com.clokey.server.domain.history.application.HistoryService;
-import com.clokey.server.domain.history.dto.HistoryRequestDTO;
-import com.clokey.server.domain.history.dto.HistoryResponseDTO;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.member.exception.annotation.AuthUser;
-import com.clokey.server.global.error.exception.annotation.CheckPage;
-import com.clokey.server.domain.history.exception.annotation.HistoryExist;
-import com.clokey.server.domain.history.exception.annotation.HistoryImageQuantityLimit;
-import com.clokey.server.domain.history.exception.annotation.MonthFormat;
-import com.clokey.server.domain.member.exception.annotation.NullableClokeyIdExist;
-import com.clokey.server.global.common.response.BaseResponse;
-import com.clokey.server.global.error.code.status.SuccessStatus;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import jakarta.validation.Valid;
+
+import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.history.application.HistoryService;
+import com.clokey.server.domain.history.dto.HistoryRequestDTO;
+import com.clokey.server.domain.history.dto.HistoryResponseDTO;
+import com.clokey.server.domain.history.exception.annotation.HistoryExist;
+import com.clokey.server.domain.history.exception.annotation.HistoryImageQuantityLimit;
+import com.clokey.server.domain.history.exception.annotation.MonthFormat;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.member.exception.annotation.AuthUser;
+import com.clokey.server.domain.member.exception.annotation.NullableClokeyIdExist;
+import com.clokey.server.global.common.response.BaseResponse;
+import com.clokey.server.global.error.code.status.SuccessStatus;
+import com.clokey.server.global.error.exception.annotation.CheckPage;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequiredArgsConstructor

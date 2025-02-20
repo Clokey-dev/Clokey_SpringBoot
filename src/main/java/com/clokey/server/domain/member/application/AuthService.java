@@ -1,11 +1,11 @@
 package com.clokey.server.domain.member.application;
 
-import com.clokey.server.domain.member.dto.AuthDTO;
-import com.clokey.server.global.common.response.BaseResponse;
-import org.springframework.http.ResponseEntity;
 
 import java.net.http.HttpRequest;
 import java.util.Map;
+
+import com.clokey.server.domain.member.dto.AuthDTO;
+import com.clokey.server.global.common.response.BaseResponse;
 
 public interface AuthService {
 

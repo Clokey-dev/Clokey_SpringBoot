@@ -1,12 +1,12 @@
 package com.clokey.server.domain.term.dto;
 
-import io.swagger.v3.oas.annotations.info.Info;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
 
 @Getter
 @NoArgsConstructor

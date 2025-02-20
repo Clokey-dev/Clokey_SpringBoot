@@ -1,12 +1,15 @@
 package com.clokey.server.domain.notification.exception.validator;
 
+import org.springframework.stereotype.Component;
+
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.notification.application.NotificationRepositoryService;
 import com.clokey.server.domain.notification.exception.annotation.NotificationExist;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor

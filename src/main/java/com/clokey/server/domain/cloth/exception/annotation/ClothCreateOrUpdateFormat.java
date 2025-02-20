@@ -1,10 +1,10 @@
 package com.clokey.server.domain.cloth.exception.annotation;
 
-import com.clokey.server.domain.cloth.exception.validator.ClothCreateOrUpdateFormatValidator;
+import java.lang.annotation.*;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-import java.lang.annotation.*;
+import com.clokey.server.domain.cloth.exception.validator.ClothCreateOrUpdateFormatValidator;
 
 @Documented
 @Constraint(validatedBy = ClothCreateOrUpdateFormatValidator.class)

@@ -1,9 +1,5 @@
 package com.clokey.server.domain.member.application;
 
-import com.clokey.server.domain.member.domain.entity.Follow;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.member.domain.repository.FollowRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +7,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.member.domain.entity.Follow;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.member.domain.repository.FollowRepository;
 
 @Service
 @RequiredArgsConstructor

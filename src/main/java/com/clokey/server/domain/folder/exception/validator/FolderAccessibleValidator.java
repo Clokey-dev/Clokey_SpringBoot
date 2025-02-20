@@ -1,11 +1,13 @@
 package com.clokey.server.domain.folder.exception.validator;
 
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.folder.application.FolderRepositoryService;
 import com.clokey.server.domain.folder.domain.entity.Folder;
 import com.clokey.server.domain.folder.exception.FolderException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor

@@ -1,24 +1,24 @@
 package com.clokey.server.domain.member.domain.entity;
 
-import com.clokey.server.domain.cloth.domain.entity.Cloth;
-import com.clokey.server.domain.history.domain.entity.History;
-import com.clokey.server.domain.member.dto.MemberDTO;
-import com.clokey.server.domain.model.entity.BaseEntity;
-import com.clokey.server.domain.model.entity.enums.RegisterStatus;
-import com.clokey.server.domain.model.entity.enums.Visibility;
-import com.clokey.server.domain.term.domain.entity.MemberTerm;
-import com.clokey.server.domain.model.entity.enums.MemberStatus;
-import com.clokey.server.domain.model.entity.enums.SocialType;
-import com.clokey.server.domain.history.domain.entity.MemberLike;
-
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import jakarta.persistence.*;
+
+import lombok.*;
+
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.history.domain.entity.MemberLike;
+import com.clokey.server.domain.member.dto.MemberDTO;
+import com.clokey.server.domain.model.entity.BaseEntity;
+import com.clokey.server.domain.model.entity.enums.MemberStatus;
+import com.clokey.server.domain.model.entity.enums.RegisterStatus;
+import com.clokey.server.domain.model.entity.enums.SocialType;
+import com.clokey.server.domain.model.entity.enums.Visibility;
+import com.clokey.server.domain.term.domain.entity.MemberTerm;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Getter

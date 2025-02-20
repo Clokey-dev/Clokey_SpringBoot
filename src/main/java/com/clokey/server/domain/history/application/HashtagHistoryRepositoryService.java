@@ -1,10 +1,10 @@
 package com.clokey.server.domain.history.application;
 
+import java.util.List;
+
 import com.clokey.server.domain.history.domain.entity.Hashtag;
 import com.clokey.server.domain.history.domain.entity.HashtagHistory;
 import com.clokey.server.domain.history.domain.entity.History;
-
-import java.util.List;
 
 public interface HashtagHistoryRepositoryService {
 

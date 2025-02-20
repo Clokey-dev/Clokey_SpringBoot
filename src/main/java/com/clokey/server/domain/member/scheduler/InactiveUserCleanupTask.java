@@ -1,15 +1,17 @@
 package com.clokey.server.domain.member.scheduler;
 
-import com.clokey.server.domain.member.application.UnlinkServiceImpl;
-import com.clokey.server.domain.member.application.MemberRepositoryService;
-import com.clokey.server.domain.member.domain.entity.Member;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.clokey.server.domain.member.application.MemberRepositoryService;
+import com.clokey.server.domain.member.application.UnlinkServiceImpl;
+import com.clokey.server.domain.member.domain.entity.Member;
 
 @Component
 @RequiredArgsConstructor
@@ -31,4 +33,3 @@ public class InactiveUserCleanupTask {
         log.info("비활성 회원 데이터 삭제 작업 완료: {}명 삭제", inactiveUsers.size());
     }
 }
-

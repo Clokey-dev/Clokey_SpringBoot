@@ -1,14 +1,13 @@
 package com.clokey.server.global.common.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import com.clokey.server.global.error.code.BaseCode;
 import com.clokey.server.global.error.code.BaseErrorCode;
-import com.clokey.server.global.error.code.status.ErrorStatus;
-import com.clokey.server.global.error.code.status.SuccessStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 @Getter
 @AllArgsConstructor

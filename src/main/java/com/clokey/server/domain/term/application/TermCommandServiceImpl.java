@@ -1,18 +1,5 @@
 package com.clokey.server.domain.term.application;
 
-import com.clokey.server.domain.member.application.MemberRepositoryService;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.model.entity.enums.RegisterStatus;
-import com.clokey.server.domain.term.converter.TermConverter;
-import com.clokey.server.domain.term.domain.entity.Term;
-import com.clokey.server.domain.term.domain.entity.MemberTerm;
-import com.clokey.server.domain.term.domain.repository.MemberTermRepository;
-import com.clokey.server.domain.term.domain.repository.TermRepository;
-import com.clokey.server.domain.term.dto.TermRequestDTO;
-import com.clokey.server.domain.term.dto.TermResponseDTO;
-import com.clokey.server.domain.term.exception.TermException;
-import com.clokey.server.global.error.code.status.ErrorStatus;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.member.application.MemberRepositoryService;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.enums.RegisterStatus;
+import com.clokey.server.domain.term.converter.TermConverter;
+import com.clokey.server.domain.term.domain.entity.MemberTerm;
+import com.clokey.server.domain.term.domain.entity.Term;
+import com.clokey.server.domain.term.dto.TermRequestDTO;
+import com.clokey.server.domain.term.dto.TermResponseDTO;
 
 @Service
 @RequiredArgsConstructor

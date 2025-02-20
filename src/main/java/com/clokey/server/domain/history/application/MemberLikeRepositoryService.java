@@ -1,9 +1,9 @@
 package com.clokey.server.domain.history.application;
 
+import java.util.List;
+
 import com.clokey.server.domain.history.domain.entity.MemberLike;
 import com.clokey.server.domain.member.domain.entity.Member;
-
-import java.util.List;
 
 public interface MemberLikeRepositoryService {
 

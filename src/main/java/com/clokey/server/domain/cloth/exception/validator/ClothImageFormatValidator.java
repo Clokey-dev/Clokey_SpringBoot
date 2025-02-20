@@ -1,10 +1,12 @@
 package com.clokey.server.domain.cloth.exception.validator;
 
-import com.clokey.server.domain.cloth.exception.annotation.ClothImageFormat;
-import com.clokey.server.global.error.code.status.ErrorStatus;
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import org.springframework.web.multipart.MultipartFile;
+
+import com.clokey.server.domain.cloth.exception.annotation.ClothImageFormat;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 
 public class ClothImageFormatValidator implements ConstraintValidator<ClothImageFormat, MultipartFile> {
 

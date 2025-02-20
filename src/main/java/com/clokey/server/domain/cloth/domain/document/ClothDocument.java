@@ -1,10 +1,12 @@
 package com.clokey.server.domain.cloth.domain.document;
 
-import jakarta.persistence.Id;
-import lombok.*;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Mapping;
 import org.springframework.data.elasticsearch.annotations.Setting;
+
+import jakarta.persistence.Id;
+
+import lombok.*;
 
 @Builder
 @Getter

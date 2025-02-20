@@ -1,10 +1,12 @@
 package com.clokey.server.global.config;
 
-import com.clokey.server.global.converter.StringToEnumConverter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
 import java.util.List;
+
+import com.clokey.server.global.converter.StringToEnumConverter;
 
 @Configuration
 public class EnumConverterConfig implements WebMvcConfigurer {
@@ -27,4 +29,3 @@ public class EnumConverterConfig implements WebMvcConfigurer {
         return new StringToEnumConverter<>((Class<T>) enumClass);
     }
 }
-

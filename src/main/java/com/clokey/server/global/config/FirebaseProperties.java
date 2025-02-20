@@ -1,9 +1,10 @@
 package com.clokey.server.global.config;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -21,4 +22,3 @@ public class FirebaseProperties {
     private String authProviderX509CertUrl;
     private String clientX509CertUrl;
 }
-

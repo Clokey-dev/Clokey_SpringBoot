@@ -1,11 +1,12 @@
 package com.clokey.server.global.error.code.status;
 
-import com.clokey.server.global.error.code.BaseCode;
-import com.clokey.server.global.error.code.ReasonDTO;
+import org.springframework.http.HttpStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.http.HttpOutputMessage;
-import org.springframework.http.HttpStatus;
+
+import com.clokey.server.global.error.code.BaseCode;
+import com.clokey.server.global.error.code.ReasonDTO;
 
 @Getter
 @AllArgsConstructor

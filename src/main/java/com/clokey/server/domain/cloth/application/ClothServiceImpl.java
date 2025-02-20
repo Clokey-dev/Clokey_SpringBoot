@@ -1,13 +1,27 @@
 package com.clokey.server.domain.cloth.application;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.category.domain.entity.Category;
 import com.clokey.server.domain.category.exception.CategoryException;
 import com.clokey.server.domain.cloth.converter.ClothConverter;
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.cloth.domain.entity.ClothImage;
 import com.clokey.server.domain.cloth.dto.ClothRequestDTO;
 import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
-import com.clokey.server.domain.cloth.domain.entity.ClothImage;
 import com.clokey.server.domain.folder.application.ClothFolderRepositoryService;
-import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.history.application.HistoryClothRepositoryService;
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
 import com.clokey.server.domain.history.domain.entity.History;
@@ -17,19 +31,7 @@ import com.clokey.server.domain.model.entity.enums.SummaryFrequency;
 import com.clokey.server.domain.search.application.SearchRepositoryService;
 import com.clokey.server.domain.search.exception.SearchException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import org.springframework.transaction.annotation.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import com.clokey.server.global.infra.s3.S3ImageService;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

@@ -1,14 +1,6 @@
 package com.clokey.server.domain.history.application;
 
 
-import com.clokey.server.domain.history.domain.entity.History;
-import com.clokey.server.domain.history.domain.entity.HistoryImage;
-import com.clokey.server.domain.history.domain.repository.HistoryImageRepository;
-import com.clokey.server.global.error.code.status.ErrorStatus;
-import com.clokey.server.global.error.exception.DatabaseException;
-import com.clokey.server.global.infra.s3.S3ImageService;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +8,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import jakarta.transaction.Transactional;
+
+import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.history.domain.entity.HistoryImage;
+import com.clokey.server.domain.history.domain.repository.HistoryImageRepository;
+import com.clokey.server.global.error.code.status.ErrorStatus;
+import com.clokey.server.global.error.exception.DatabaseException;
+import com.clokey.server.global.infra.s3.S3ImageService;
 
 @Transactional
 @Service

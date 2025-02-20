@@ -1,11 +1,13 @@
 package com.clokey.server.domain.notification.domain.entity;
 
+import jakarta.persistence.*;
+
+import lombok.*;
+
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.BaseEntity;
-import com.clokey.server.domain.model.entity.enums.RedirectType;
 import com.clokey.server.domain.model.entity.enums.ReadStatus;
-import jakarta.persistence.*;
-import lombok.*;
+import com.clokey.server.domain.model.entity.enums.RedirectType;
 
 @Entity
 @Getter

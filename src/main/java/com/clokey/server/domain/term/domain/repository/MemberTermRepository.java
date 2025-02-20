@@ -1,10 +1,11 @@
 package com.clokey.server.domain.term.domain.repository;
 
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.term.domain.entity.MemberTerm;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.term.domain.entity.MemberTerm;
 
 public interface MemberTermRepository extends JpaRepository<MemberTerm, Long> {
     void deleteByMemberId(Long memberId);
@@ -15,4 +16,3 @@ public interface MemberTermRepository extends JpaRepository<MemberTerm, Long> {
 
     MemberTerm save(MemberTerm memberTerm); // 사용자의 약관 동의 저장
 }
-

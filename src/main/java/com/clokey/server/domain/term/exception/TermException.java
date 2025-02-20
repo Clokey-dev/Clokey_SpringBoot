@@ -8,5 +8,3 @@ public class TermException extends GeneralException {
         super(code);
     }
 }
-
-

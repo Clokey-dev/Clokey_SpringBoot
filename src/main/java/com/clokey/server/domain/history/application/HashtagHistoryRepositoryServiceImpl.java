@@ -1,15 +1,17 @@
 package com.clokey.server.domain.history.application;
 
-import com.clokey.server.domain.history.domain.entity.Hashtag;
-import com.clokey.server.domain.history.domain.entity.HashtagHistory;
-import com.clokey.server.domain.history.domain.entity.History;
-import com.clokey.server.domain.history.domain.repository.HashtagHistoryRepository;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import jakarta.transaction.Transactional;
+
+import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.history.domain.entity.Hashtag;
+import com.clokey.server.domain.history.domain.entity.HashtagHistory;
+import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.history.domain.repository.HashtagHistoryRepository;
 
 @Transactional
 @Service

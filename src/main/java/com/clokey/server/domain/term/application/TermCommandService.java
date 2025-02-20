@@ -1,9 +1,9 @@
 package com.clokey.server.domain.term.application;
 
+import java.util.List;
+
 import com.clokey.server.domain.term.dto.TermRequestDTO;
 import com.clokey.server.domain.term.dto.TermResponseDTO;
-
-import java.util.List;
 
 public interface TermCommandService {
     TermResponseDTO joinTerm(Long userId, TermRequestDTO.Join request);
@@ -14,4 +14,3 @@ public interface TermCommandService {
 
     TermResponseDTO.UserAgreementDTO optionalTermAgree(Long userId, TermRequestDTO.Join request);  // 선택약관 동의 메서드 추가
 }
-

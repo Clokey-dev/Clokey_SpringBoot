@@ -1,12 +1,15 @@
 package com.clokey.server.domain.cloth.exception.validator;
 
-import com.clokey.server.domain.cloth.exception.annotation.ClothImagePresence;
-import com.clokey.server.global.error.code.status.ErrorStatus;
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+
+import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.cloth.exception.annotation.ClothImagePresence;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 
 @Component
 @RequiredArgsConstructor
@@ -27,4 +30,3 @@ public class ClothImagePresenceValidator implements ConstraintValidator<ClothIma
 
     }
 }
-
