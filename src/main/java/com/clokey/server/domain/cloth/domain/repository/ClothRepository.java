@@ -12,6 +12,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,8 +60,8 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
     Page<Cloth> findByMemberInAndVisibilityOrderByCreatedAtDesc(
             List<Member> members, Visibility visibility, Pageable pageable);
 
-    List<Cloth> findTop6ByMemberInAndVisibilityOrderByCreatedAtDesc(
-            List<Member> members, Visibility visibility);
+    List<Cloth> findTop6ByMemberInAndVisibilityAndCreatedAtBetweenOrderByCreatedAtDesc(
+            Collection<Member> member, Visibility visibility, LocalDateTime createdAt, LocalDateTime createdAt2);
 
     @Query("SELECT c.category.name FROM Cloth c WHERE c.member.id = :memberId " +
             "GROUP BY c.category ORDER BY COUNT(c.id) DESC LIMIT 1")
@@ -76,4 +79,23 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
     @Modifying
     @Query("DELETE FROM Cloth c WHERE c.id IN :clothIds")
     void deleteByClothIds(@Param("clothIds") List<Long> clothIds);
+
+    @Query("""
+        SELECT c
+        FROM Cloth c
+        WHERE c.member = :member
+        ORDER BY c.wearNum DESC
+        LIMIT 3
+    """)
+    List<Cloth> getTop3Cloths(@Param("member") Member member);
+
+    @Query("""
+    SELECT c
+    FROM Cloth c
+    WHERE c.member = :member
+      AND c.visibility = 'PUBLIC'
+    ORDER BY c.wearNum DESC
+    LIMIT 3
+""")
+    List<Cloth> getTop3PublicCloths(@Param("member") Member member);
 }

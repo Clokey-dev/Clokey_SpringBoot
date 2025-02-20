@@ -20,6 +20,6 @@ public class HashtagHistory extends BaseEntity {
     private Hashtag hashtag;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "history_id",nullable = false)
+    @JoinColumn(name = "history_id", nullable = false)
     private History history;
 }

@@ -96,9 +96,10 @@ public class NotificationServiceImpl implements NotificationService {
         Member historyWriter = historyRepositoryService.findById(historyId).getMember();
         Member likedMember = memberRepositoryService.findMemberById(memberId);
 
-        checkSendingNotificationToMySelf(historyWriter, likedMember);
+        if (historyWriter.equals(likedMember)) {
+            return null;
+        }
 
-        //로그아웃이거나 비활성화 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
         if (ableToSendNotification(historyWriter)) {
             String content = String.format(HISTORY_LIKED_NOTIFICATION_CONTENT, likedMember.getNickname());
             String likedMemberProfileUrl = likedMember.getProfileImageUrl();
@@ -138,12 +139,6 @@ public class NotificationServiceImpl implements NotificationService {
         return null;
     }
 
-    private void checkSendingNotificationToMySelf(Member sendTo, Member sending) {
-        if (sendTo.equals(sending)) {
-            throw new NotificationException(ErrorStatus.CANNOT_NOTIFY_MY_SELF);
-        }
-    }
-
     @Override
     @Transactional
     public NotificationResponseDTO.NewFollowerNotificationResult sendNewFollowerNotification(String followedMemberClokeyId, Long followingMemberId) {
@@ -153,7 +148,6 @@ public class NotificationServiceImpl implements NotificationService {
 
         checkFollowing(followingMemberId, followedMember.getId());
 
-        //로그아웃이거나 비활성화 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
         if (ableToSendNotification(followedMember)) {
             String content = String.format(NEW_FOLLOWER_NOTIFICATION_CONTENT, followingMember.getNickname());
             String followingMemberProfileUrl = followingMember.getProfileImageUrl();
@@ -206,15 +200,17 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     public NotificationResponseDTO.HistoryCommentNotificationResult sendHistoryCommentNotification(Long historyId, Long commentId, Long memberId) {
 
+
         checkMyComment(commentId, memberId);
         checkHistoryComment(commentId, historyId);
 
         Member historyWriter = historyRepositoryService.findById(historyId).getMember();
         Member commentWriter = memberRepositoryService.findMemberById(memberId);
-        checkSendingNotificationToMySelf(historyWriter, commentWriter);
+        if (historyWriter.equals(commentWriter)) {
+            return null;
+        }
         Comment writtenComment = commentRepositoryService.findById(commentId);
 
-        //로그아웃이거나 비활성화 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
         if (ableToSendNotification(historyWriter)) {
             String content = String.format(HISTORY_COMMENT_NOTIFICATION_CONTENT, commentWriter.getNickname(), writtenComment.getContent());
             String commentWriterProfileUrl = commentWriter.getProfileImageUrl();
@@ -277,13 +273,14 @@ public class NotificationServiceImpl implements NotificationService {
         checkMyComment(replyId, memberId);
         checkParentComment(commentId, replyId);
 
-        Member commentWriter = commentRepositoryService.findById(commentId).getMember();
+        Comment writtenComment = commentRepositoryService.findById(commentId);
+        Member commentWriter = writtenComment.getMember();
         Comment writtenReply = commentRepositoryService.findById(replyId);
         Member replyWriter = writtenReply.getMember();
-        checkSendingNotificationToMySelf(commentWriter, replyWriter);
+        if (commentWriter.equals(replyWriter)) {
+            return null;
+        }
 
-
-        //로그아웃이거나 비활성화 상태가 아니고 약관동의를 한 경우에만 알림이 전송됩니다.
         if (ableToSendNotification(commentWriter)) {
             String content = String.format(COMMENT_REPLY_CONTENT, replyWriter.getNickname(), writtenReply.getContent());
             String replyWriterProfileUrl = replyWriter.getProfileImageUrl();
@@ -320,6 +317,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .content(content)
                     .memberProfileUrl(replyWriterProfileUrl)
                     .historyId(historyId)
+                    .isMyHistory(writtenComment.getHistory().getMember().equals(commentWriter))
                     .build();
         }
 
@@ -386,7 +384,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationResponseDTO.GetNotificationResult getNotifications(Long memberId, Integer page) {
         // memberId로 알림을 조회해서 반환
-        Pageable pageable = PageRequest.of(page - 1, 10);
+        Pageable pageable = PageRequest.of(page - 1, 30);
         List<ClokeyNotification> notificationList = notificationRepositoryService.findNotificationsByMemberId(memberId, pageable);
         return NotificationConverter.toNotificationResult(notificationList, pageable);
     }
@@ -408,7 +406,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    private boolean ableToSendNotification(Member member){
+    private boolean ableToSendNotification(Member member) {
         return member.getStatus() != MemberStatus.INACTIVE && member.getDeviceToken() != null && member.getRefreshToken() != null;
     }
 }

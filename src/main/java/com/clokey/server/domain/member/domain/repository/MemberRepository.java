@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
@@ -32,7 +33,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT h.id FROM History h WHERE h.member.id = :memberId")
     List<Long> findHistoryIdsByMemberId(@Param("memberId") Long memberId);
 
-
     @Query("SELECT c FROM Cloth c WHERE c.member.id = :memberId")
     List<Cloth> findClothsByMemberId(@Param("memberId") Long memberId);
 
@@ -47,7 +47,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT n FROM ClokeyNotification n WHERE n.member.id = :memberId")
     List<ClokeyNotification> findNotificationsByMemberId(@Param("memberId") Long memberId);
 
-
     @Query("SELECT c.id FROM Cloth c WHERE c.member.id = :memberId")
     List<Long> findClothIdsByMemberId(@Param("memberId") Long memberId);
 
@@ -61,4 +60,14 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Long> findNotificationIdsByMemberId(@Param("memberId") Long memberId);
 
     List<Member> findAll();
+
+    List<Member> findByIdIn(Set<Long> memberIds);
+
+    boolean existsByEmail(String email);
+
+    Member getMemberByEmail(String email);
+
+    Optional<Member> findMemberByEmail(String email);
+
+
 }

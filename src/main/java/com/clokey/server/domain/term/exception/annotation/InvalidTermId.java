@@ -9,12 +9,14 @@ import java.lang.annotation.*;
 
 @Documented
 @Constraint(validatedBy = InvalidTermIdValidator.class)
-@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER ,ElementType.TYPE}) // 메소드, 필드, 파라미터에서 사용 가능
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface InvalidTermId {
-    String message() default "잘못된 약관 ID입니다.";  // 기본 에러 메시지
+    String message() default "잘못된 약관 ID입니다.";
 
-    Class<?>[] groups() default {};  // 그룹
+    Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default {};  // 페이로드
+    Class<? extends Payload>[] payload() default {};
 }
+
+

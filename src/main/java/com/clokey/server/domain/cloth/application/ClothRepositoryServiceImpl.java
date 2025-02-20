@@ -16,6 +16,8 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -81,7 +83,7 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
 
     @Override
     public List<Cloth> findTop6ByMemberInAndVisibilityOrderByCreatedAtDesc(List<Member> members, Visibility visibility) {
-        return clothRepository.findTop6ByMemberInAndVisibilityOrderByCreatedAtDesc(members, visibility);
+        return clothRepository.findTop6ByMemberInAndVisibilityAndCreatedAtBetweenOrderByCreatedAtDesc(members, visibility, LocalDateTime.now().minusWeeks(2), LocalDateTime.now());
     }
 
     @Override
@@ -104,4 +106,23 @@ public class ClothRepositoryServiceImpl implements ClothRepositoryService{
     public void deleteByClothIds(List<Long> clothIds) {
         clothRepository.deleteByClothIds(clothIds);
     }
+
+    @Override
+    public List<Cloth> getTop3Cloths(Member member){
+        List<Cloth> cloths = clothRepository.getTop3Cloths(member);
+        while (cloths.size() < 3) {
+            cloths.add(null);
+        }
+        return cloths;
+    }
+
+    @Override
+    public List<Cloth> getTop3PublicCloths(Member member) {
+        List<Cloth> cloths = clothRepository.getTop3PublicCloths(member);
+        while (cloths.size() < 3) {
+            cloths.add(null);
+        }
+        return cloths;
+    }
+
 }

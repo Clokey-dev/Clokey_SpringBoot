@@ -2,7 +2,6 @@ package com.clokey.server.domain.history.exception.validator;
 
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
 import com.clokey.server.domain.history.exception.annotation.HistoryExist;
-import com.clokey.server.domain.history.domain.repository.HistoryRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

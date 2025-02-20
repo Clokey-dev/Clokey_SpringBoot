@@ -11,7 +11,7 @@ import java.util.List;
 @Transactional
 @Service
 @RequiredArgsConstructor
-public class CategoryRepositoryServiceImpl implements CategoryRepositoryService{
+public class CategoryRepositoryServiceImpl implements CategoryRepositoryService {
 
     private final CategoryRepository categoryRepository;
 
