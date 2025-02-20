@@ -107,7 +107,6 @@ public class FolderServiceImpl implements FolderService {
         return FolderConverter.toFoldersDTO(folders, folderImageMap);
     }
 
-
     private List<Cloth> validateClothesExistAndAccessible(List<Long> clothIds, Long memberId) {
         clothIds.forEach(clothId -> {
             if (!clothRepositoryService.existsById(clothId)) {
