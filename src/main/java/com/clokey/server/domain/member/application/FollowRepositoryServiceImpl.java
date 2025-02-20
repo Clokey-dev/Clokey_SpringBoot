@@ -13,6 +13,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.member.domain.entity.Follow;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.member.domain.repository.FollowRepository;
+
 @Service
 @RequiredArgsConstructor
 public class FollowRepositoryServiceImpl implements FollowRepositoryService {

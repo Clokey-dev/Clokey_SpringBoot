@@ -1,5 +1,16 @@
 package com.clokey.server.domain.notification.application;
 
+import com.clokey.server.domain.term.application.MemberTermRepositoryService;
+import com.clokey.server.domain.term.domain.repository.MemberTermRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.history.application.CommentRepositoryService;
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
 import com.clokey.server.domain.history.domain.entity.Comment;
@@ -8,8 +19,8 @@ import com.clokey.server.domain.member.application.FollowRepositoryService;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.MemberStatus;
-import com.clokey.server.domain.model.entity.enums.RedirectType;
 import com.clokey.server.domain.model.entity.enums.ReadStatus;
+import com.clokey.server.domain.model.entity.enums.RedirectType;
 import com.clokey.server.domain.model.entity.enums.Season;
 import com.clokey.server.domain.notification.converter.NotificationConverter;
 import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
@@ -20,13 +31,6 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +43,9 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepositoryService notificationRepositoryService;
     private final FollowRepositoryService followRepositoryService;
     private final CommentRepositoryService commentRepositoryService;
+    private final MemberTermRepositoryService memberTermRepositoryService;
+
+    private static final Long NOTIFICATION_MEMBER_TERM_NUM = 5L;
 
     private static final String HISTORY_LIKED_NOTIFICATION_CONTENT = "%s님이 회원님의 기록을 좋아합니다.";
     private static final String NEW_FOLLOWER_NOTIFICATION_CONTENT = "%s님이 회원님의 옷장을 팔로우하기 시작했습니다.";
@@ -407,6 +414,6 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private boolean ableToSendNotification(Member member) {
-        return member.getStatus() != MemberStatus.INACTIVE && member.getDeviceToken() != null && member.getRefreshToken() != null;
+        return member.getStatus() != MemberStatus.INACTIVE && memberTermRepositoryService.existsByMemberIdAndTermId(member.getId(),NOTIFICATION_MEMBER_TERM_NUM) && member.getRefreshToken() != null;
     }
 }

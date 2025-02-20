@@ -1,6 +1,13 @@
 package com.clokey.server.domain.notification.api;
 
 
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.history.exception.annotation.CommentExist;
 import com.clokey.server.domain.history.exception.annotation.HistoryExist;
 import com.clokey.server.domain.member.domain.entity.Member;
@@ -17,10 +24,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor

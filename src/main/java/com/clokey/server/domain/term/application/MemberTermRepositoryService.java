@@ -1,9 +1,9 @@
 package com.clokey.server.domain.term.application;
 
+import java.util.List;
+
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.term.domain.entity.MemberTerm;
-
-import java.util.List;
 
 
 public interface MemberTermRepositoryService {
@@ -14,5 +14,7 @@ public interface MemberTermRepositoryService {
 
     void deleteByMemberIdAndTermId(Long memberId, Long termId); // 특정 사용자의 특정 약관 동의 삭제
 
-    MemberTerm save(MemberTerm memberTerm); // 사용자의 약관 동의 저장
+    MemberTerm save(MemberTerm memberTerm); //// 사용자의 약관 동의 저장
+
+    boolean existsByMemberIdAndTermId(Long memberId, Long termId);
 }

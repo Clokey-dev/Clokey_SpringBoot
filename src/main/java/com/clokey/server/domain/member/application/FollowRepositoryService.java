@@ -1,12 +1,13 @@
 package com.clokey.server.domain.member.application;
 
 
-import com.clokey.server.domain.member.domain.entity.Follow;
-import com.clokey.server.domain.member.domain.entity.Member;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+
+import com.clokey.server.domain.member.domain.entity.Follow;
+import com.clokey.server.domain.member.domain.entity.Member;
 
 public interface FollowRepositoryService {
 

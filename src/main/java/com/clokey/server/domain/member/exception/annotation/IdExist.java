@@ -1,10 +1,10 @@
 package com.clokey.server.domain.member.exception.annotation;
 
-import com.clokey.server.domain.member.exception.validator.IdExistValidator;
+import java.lang.annotation.*;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-import java.lang.annotation.*;
+import com.clokey.server.domain.member.exception.validator.IdExistValidator;
 
 @Documented
 @Constraint(validatedBy = IdExistValidator.class)

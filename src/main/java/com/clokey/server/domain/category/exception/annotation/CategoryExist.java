@@ -1,10 +1,10 @@
 package com.clokey.server.domain.category.exception.annotation;
 
-import com.clokey.server.domain.category.exception.validator.CategoryExistValidator;
+import java.lang.annotation.*;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-import java.lang.annotation.*;
+import com.clokey.server.domain.category.exception.validator.CategoryExistValidator;
 
 @Documented
 @Constraint(validatedBy = CategoryExistValidator.class)

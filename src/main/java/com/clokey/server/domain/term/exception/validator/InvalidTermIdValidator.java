@@ -1,16 +1,16 @@
 package com.clokey.server.domain.term.exception.validator;
 
-import com.clokey.server.domain.term.application.TermRepositoryService;
-import com.clokey.server.domain.term.dto.TermRequestDTO;
-import com.clokey.server.domain.term.exception.annotation.EssentialTermAgree;
-import com.clokey.server.domain.term.exception.annotation.InvalidTermId;
-import com.clokey.server.global.error.code.status.ErrorStatus;
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+
+import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.term.application.TermRepositoryService;
+import com.clokey.server.domain.term.dto.TermRequestDTO;
+import com.clokey.server.domain.term.exception.annotation.InvalidTermId;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 
 @Component
 @RequiredArgsConstructor

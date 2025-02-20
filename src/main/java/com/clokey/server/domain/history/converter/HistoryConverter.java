@@ -1,13 +1,5 @@
 package com.clokey.server.domain.history.converter;
 
-import com.clokey.server.domain.cloth.domain.entity.Cloth;
-import com.clokey.server.domain.history.domain.document.HistoryDocument;
-import com.clokey.server.domain.history.dto.HistoryRequestDTO;
-import com.clokey.server.domain.history.dto.HistoryResponseDTO;
-import com.clokey.server.domain.history.domain.entity.Comment;
-import com.clokey.server.domain.history.domain.entity.History;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.model.entity.enums.Visibility;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
@@ -18,6 +10,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.history.domain.document.HistoryDocument;
+import com.clokey.server.domain.history.domain.entity.Comment;
+import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.history.dto.HistoryRequestDTO;
+import com.clokey.server.domain.history.dto.HistoryResponseDTO;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 
 public class HistoryConverter {
 
@@ -130,7 +131,7 @@ public class HistoryConverter {
                     List<Comment> replyList = replies.get(i);
                     return HistoryResponseDTO.CommentResult.builder()
                             .commentId(comment.getId())
-                            .memberId(comment.getMember().getId())
+                            .clokeyId(comment.getMember().getClokeyId())
                             .nickName(comment.getMember().getNickname())
                             .userImageUrl(comment.getMember().getProfileImageUrl())
                             .content(comment.getContent())
@@ -144,7 +145,7 @@ public class HistoryConverter {
         return replies.stream()
                 .map(reply -> HistoryResponseDTO.ReplyResult.builder()
                         .commentId(reply.getId())
-                        .MemberId(reply.getMember().getId())
+                        .clokeyId(reply.getMember().getClokeyId())
                         .nickName(reply.getMember().getNickname())
                         .userImageUrl(reply.getMember().getProfileImageUrl())
                         .content(reply.getContent())
@@ -195,4 +196,3 @@ public class HistoryConverter {
                 .build();
     }
 }
-

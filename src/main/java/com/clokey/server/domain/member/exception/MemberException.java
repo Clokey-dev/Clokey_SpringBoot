@@ -9,5 +9,3 @@ public class MemberException extends GeneralException {
         super(code);
     }
 }
-
-

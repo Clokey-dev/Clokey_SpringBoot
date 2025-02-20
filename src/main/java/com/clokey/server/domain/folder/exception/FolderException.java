@@ -8,4 +8,3 @@ public class FolderException extends GeneralException {
         super(code);
     }
 }
-

@@ -1,8 +1,5 @@
 package com.clokey.server.domain.history.domain.repository;
 
-import com.clokey.server.domain.history.domain.entity.History;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.model.entity.enums.Visibility;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,10 +7,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 
 public interface HistoryRepository extends JpaRepository<History, Long> {
 

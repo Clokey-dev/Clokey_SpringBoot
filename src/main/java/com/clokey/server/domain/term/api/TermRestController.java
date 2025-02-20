@@ -1,5 +1,12 @@
 package com.clokey.server.domain.term.api;
 
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.domain.term.application.TermCommandService;
@@ -11,12 +18,6 @@ import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Validated
 @RestController
@@ -72,4 +73,3 @@ public class TermRestController {
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_ACTION_EDITED, response);
     }
 }
-

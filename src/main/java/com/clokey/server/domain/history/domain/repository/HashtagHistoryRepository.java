@@ -1,9 +1,5 @@
 package com.clokey.server.domain.history.domain.repository;
 
-import com.clokey.server.domain.history.domain.entity.Hashtag;
-import com.clokey.server.domain.history.domain.entity.HashtagHistory;
-import com.clokey.server.domain.history.domain.entity.History;
-import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -12,6 +8,11 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import jakarta.transaction.Transactional;
+
+import com.clokey.server.domain.history.domain.entity.Hashtag;
+import com.clokey.server.domain.history.domain.entity.HashtagHistory;
+import com.clokey.server.domain.history.domain.entity.History;
 
 public interface HashtagHistoryRepository extends JpaRepository<HashtagHistory, Long> {
 

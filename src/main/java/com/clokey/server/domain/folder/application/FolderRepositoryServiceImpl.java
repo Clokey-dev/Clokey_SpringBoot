@@ -1,15 +1,18 @@
 package com.clokey.server.domain.folder.application;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.folder.domain.entity.Folder;
 import com.clokey.server.domain.folder.domain.repository.FolderRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.exception.DatabaseException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

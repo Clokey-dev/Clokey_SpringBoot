@@ -1,34 +1,5 @@
 package com.clokey.server.domain.member.application;
 
-import com.clokey.server.domain.member.dto.AuthDTO;
-import com.clokey.server.domain.member.exception.MemberException;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.model.entity.enums.MemberStatus;
-import com.clokey.server.domain.model.entity.enums.RegisterStatus;
-import com.clokey.server.domain.model.entity.enums.SocialType;
-import com.clokey.server.domain.search.application.SearchRepositoryService;
-import com.clokey.server.domain.search.exception.SearchException;
-import com.clokey.server.global.common.response.BaseResponse;
-import com.clokey.server.global.error.code.status.ErrorStatus;
-import com.clokey.server.global.error.code.status.SuccessStatus;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.JWSSigner;
-import com.nimbusds.jose.crypto.ECDSASigner;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
-import io.jsonwebtoken.*;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -36,13 +7,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.server.ResponseStatusException;
 
-import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
@@ -52,7 +22,33 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.net.http.HttpRequest;
+import jakarta.transaction.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.member.dto.AuthDTO;
+import com.clokey.server.domain.member.exception.MemberException;
+import com.clokey.server.domain.model.entity.enums.MemberStatus;
+import com.clokey.server.domain.model.entity.enums.RegisterStatus;
+import com.clokey.server.domain.model.entity.enums.SocialType;
+import com.clokey.server.domain.search.application.SearchRepositoryService;
+import com.clokey.server.domain.search.exception.SearchException;
+import com.clokey.server.global.common.response.BaseResponse;
+import com.clokey.server.global.error.code.status.ErrorStatus;
+import com.clokey.server.global.error.code.status.SuccessStatus;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.JWSSigner;
+import com.nimbusds.jose.crypto.ECDSASigner;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+import io.jsonwebtoken.*;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 @Service
 @RequiredArgsConstructor
@@ -517,5 +513,3 @@ public class AuthServiceImpl implements AuthService {
     }
 
 }
-
-

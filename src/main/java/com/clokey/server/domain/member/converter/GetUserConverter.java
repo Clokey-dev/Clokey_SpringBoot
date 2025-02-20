@@ -1,13 +1,14 @@
 package com.clokey.server.domain.member.converter;
 
-import com.clokey.server.domain.cloth.domain.entity.Cloth;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.member.dto.MemberDTO;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.member.dto.MemberDTO;
 
 
 public class GetUserConverter {
@@ -74,6 +75,3 @@ public class GetUserConverter {
                 .build();
     }
 }
-
-
-

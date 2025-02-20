@@ -1,10 +1,10 @@
 package com.clokey.server.domain.history.application;
 
+import java.util.List;
+
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.history.domain.entity.HistoryCloth;
-
-import java.util.List;
 
 public interface HistoryClothRepositoryService {
 

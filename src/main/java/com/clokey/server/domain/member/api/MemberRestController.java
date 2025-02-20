@@ -1,22 +1,25 @@
 package com.clokey.server.domain.member.api;
 
-import com.clokey.server.domain.member.application.MemberService;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.member.dto.MemberDTO;
-import com.clokey.server.domain.member.exception.annotation.AuthUser;
-import com.clokey.server.domain.member.exception.annotation.IdValid;
-import com.clokey.server.domain.member.exception.annotation.*;
-import com.clokey.server.global.common.response.BaseResponse;
-import com.clokey.server.global.error.code.status.SuccessStatus;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+
+import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.member.application.MemberService;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.member.dto.MemberDTO;
+import com.clokey.server.domain.member.exception.annotation.*;
+import com.clokey.server.domain.member.exception.annotation.AuthUser;
+import com.clokey.server.domain.member.exception.annotation.IdValid;
+import com.clokey.server.global.common.response.BaseResponse;
+import com.clokey.server.global.error.code.status.SuccessStatus;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 
 @Validated
 @RestController
@@ -93,4 +96,3 @@ public class MemberRestController {
         return BaseResponse.onSuccess(SuccessStatus.MEMBER_SUCCESS, response);
     }
 }
-

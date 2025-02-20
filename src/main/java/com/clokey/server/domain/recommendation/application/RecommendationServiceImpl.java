@@ -1,5 +1,22 @@
 package com.clokey.server.domain.recommendation.application;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.util.Pair;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Duration;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.cloth.application.ClothRepositoryService;
 import com.clokey.server.domain.cloth.domain.entity.Cloth;
 import com.clokey.server.domain.history.application.HashtagHistoryRepositoryService;
@@ -20,20 +37,6 @@ import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.util.Pair;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Duration;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 @Service

@@ -1,10 +1,10 @@
 package com.clokey.server.domain.folder.exception.annotation;
 
-import com.clokey.server.domain.folder.exception.validator.FolderExistValidator;
+import java.lang.annotation.*;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-import java.lang.annotation.*;
+import com.clokey.server.domain.folder.exception.validator.FolderExistValidator;
 
 @Documented
 @Constraint(validatedBy = FolderExistValidator.class)

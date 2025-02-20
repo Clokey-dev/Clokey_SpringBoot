@@ -1,18 +1,20 @@
 package com.clokey.server.domain.cloth.domain.document;
 
-import jakarta.persistence.Id;
-import lombok.*;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Mapping;
 import org.springframework.data.elasticsearch.annotations.Setting;
+
+import jakarta.persistence.Id;
+
+import lombok.*;
 
 @Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(indexName = "cloth")
-@Mapping(mappingPath = "static/elastic-mapping.json")
-@Setting(settingPath = "static/elastic-setting.json")
+@Mapping(mappingPath = "static/elastic-mapping-cloth.json")
+@Setting(settingPath = "static/elastic-setting-cloth.json")
 public class ClothDocument {
 
     @Id

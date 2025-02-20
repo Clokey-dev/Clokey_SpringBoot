@@ -1,8 +1,15 @@
 package com.clokey.server.domain.member.api;
 
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.member.application.AuthService;
 import com.clokey.server.domain.member.application.UnlinkService;
-import com.clokey.server.domain.member.application.UnlinkServiceImpl;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.dto.AuthDTO;
 import com.clokey.server.domain.member.exception.MemberException;
@@ -10,15 +17,8 @@ import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.ErrorStatus;
 import com.clokey.server.global.error.code.status.SuccessStatus;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -78,6 +78,3 @@ public class AuthController {
 
 
 }
-
-
-

@@ -1,15 +1,15 @@
 package com.clokey.server.domain.member.dto;
 
-import com.clokey.server.domain.member.exception.annotation.EssentialFieldNotNull;
-import com.clokey.server.domain.member.exception.annotation.IdValid;
-import com.clokey.server.domain.model.entity.enums.Visibility;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.clokey.server.domain.member.exception.annotation.EssentialFieldNotNull;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 
 public class MemberDTO {
 

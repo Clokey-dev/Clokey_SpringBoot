@@ -1,13 +1,13 @@
 package com.clokey.server.domain.member.exception.annotation;
 
-import com.clokey.server.domain.member.exception.validator.EssentialFieldNotNullValidator;
-import jakarta.validation.Constraint;
-import jakarta.validation.Payload;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
+
+import com.clokey.server.domain.member.exception.validator.EssentialFieldNotNullValidator;
 
 
 @Constraint(validatedBy = EssentialFieldNotNullValidator.class)

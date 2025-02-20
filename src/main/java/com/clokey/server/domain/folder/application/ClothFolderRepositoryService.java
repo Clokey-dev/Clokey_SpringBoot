@@ -1,15 +1,13 @@
 package com.clokey.server.domain.folder.application;
 
-import com.clokey.server.domain.cloth.domain.entity.Cloth;
-import com.clokey.server.domain.folder.domain.entity.ClothFolder;
-import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Map;
+
+import com.clokey.server.domain.folder.domain.entity.ClothFolder;
 
 public interface ClothFolderRepositoryService {
 

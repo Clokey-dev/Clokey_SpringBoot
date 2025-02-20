@@ -1,7 +1,18 @@
 package com.clokey.server.domain.search.application;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import lombok.RequiredArgsConstructor;
+
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
@@ -15,16 +26,8 @@ import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.converter.MemberDocumentConverter;
 import com.clokey.server.domain.member.domain.document.MemberDocument;
 import com.clokey.server.domain.member.dto.MemberDTO;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
+import static org.apache.naming.SelectorContext.prefix;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +62,7 @@ public class SearchServiceImpl implements SearchService {
 
                             // 내 계정이 아니면 비공개(visibility: PRIVATE) 옷 제외
                             if (!isOwner) {
-                                b.mustNot(m -> m.term(t -> t.field("visibility.keyword").value("PRIVATE")));
+                                b.mustNot(m -> m.match(t -> t.field("visibility").query("PRIVATE")));
                             }
 
                             // 이름 또는 브랜드에서 부분 검색 (OR 조건 적용)
@@ -117,41 +120,44 @@ public class SearchServiceImpl implements SearchService {
         SearchResponse<HistoryDocument> response = elasticsearchClient.search(s -> s
                         .index(HISTORY_INDEX_NAME)
                         .query(q -> q.bool(b -> {
-                            // 비공개 계정의 기록 제외
-                            b.mustNot(m -> m.term(t -> t.field("memberVisibility.keyword").value("PRIVATE")));
 
-                            // 비공개 기록 제외
-                            b.mustNot(m -> m.term(t -> t.field("historyVisibility.keyword").value("PRIVATE")));
+                            // PUBLIC 데이터만 검색 (match 사용)
+                            b.must(m -> m.match(t -> t.field("memberVisibility").query("PUBLIC")));
+                            b.must(m -> m.match(t -> t.field("historyVisibility").query("PUBLIC")));
 
                             // 해시태그 및 카테고리 검색
-                            b.should(m -> m.multiMatch(t -> t
-                                    .query(keyword)
-                                    .fields("hashtagNames", "categoryNames")
-                                    .operator(Operator.Or) // OR 조건 적용
-                                    .fuzziness("AUTO")
+                            b.must(m -> m.bool(bb -> bb
+                                    .must(ms -> ms.wildcard(mq -> mq
+                                            .field("hashtagNames.keyword")
+                                            .value("#" + keyword + "*")
+                                    ))
+                                    .should(ms -> ms.match(mq -> mq
+                                            .field("hashtagNames")
+                                            .query(keyword)
+                                            .fuzziness("AUTO")
+                                    ))
+                                    .should(ms -> ms.matchPhrasePrefix(mq -> mq
+                                            .field("hashtagNames")
+                                            .query(keyword)
+                                    ))
+                                    .should(ms -> ms.matchPhrasePrefix(mq -> mq
+                                            .field("categoryNames")
+                                            .query(keyword)
+                                    ))
+                                    .should(ms -> ms.matchBoolPrefix(mq -> mq
+                                            .field("categoryNames")
+                                            .query(keyword)
+                                    ))
                             ));
 
-                            // 해시태그 검색
-                            b.should(m -> m.wildcard(t -> t
-                                    .field("hashtagNames.keyword")
-                                    .value("*" + keyword + "*") // 포함 검색
-                            ));
 
-                            // 카테고리 검색
-                            b.should(m -> m.matchBoolPrefix(t -> t
-                                    .field("categoryNames")
-                                    .query(keyword)
-                            ));
-                            b.should(m -> m.matchPhrasePrefix(t -> t
-                                    .field("categoryNames")
-                                    .query(keyword)
-                            ));
                             return b;
                         }))
                         .from((int) pageable.getOffset())
                         .size(pageable.getPageSize()),
                 HistoryDocument.class
         );
+
 
         List<HistoryDocument> results = response.hits().hits().stream()
                 .map(Hit::source)
@@ -175,21 +181,22 @@ public class SearchServiceImpl implements SearchService {
         SearchResponse<MemberDocument> response = elasticsearchClient.search(s -> s
                         .index(MEMBER_INDEX_NAME)
                         .query(q -> q.bool(b -> b
-                                .should(m -> m.multiMatch(t -> t
+                                // 닉네임이 정확히 일치하는 경우 (term 대신 match 사용)
+                                .should(m -> m.matchPhrase(t -> t
+                                        .field("nickname")
                                         .query(keyword)
-                                        .fields("nickname", "clokeyId")
-                                        .fuzziness("AUTO")
                                 ))
-                                .should(m -> m.multiMatch(t -> t
+                                // 닉네임이 검색어로 시작하는 경우 (prefix 검색)
+                                .should(m -> m.matchPhrasePrefix(t -> t
+                                        .field("nickname")
                                         .query(keyword)
-                                        .fields("nickname")
-                                        .type(TextQueryType.BoolPrefix)
-                                        .fuzziness("AUTO")
                                 ))
+                                // 닉네임이 검색어를 포함하는 경우 (wildcard 사용)
                                 .should(m -> m.wildcard(t -> t
                                         .field("nickname")
-                                        .value("*" + keyword + "*")
+                                        .value("*" + keyword + "*") // 검색어가 포함된 경우
                                 ))
+                                // 클로키 아이디 검색 (matchPhrasePrefix 사용)
                                 .should(m -> m.matchPhrasePrefix(t -> t
                                         .field("clokeyId")
                                         .query(keyword)
@@ -197,6 +204,8 @@ public class SearchServiceImpl implements SearchService {
                         )),
                 MemberDocument.class
         );
+
+
 
         List<MemberDocument> results = response.hits().hits().stream()
                 .map(Hit::source)

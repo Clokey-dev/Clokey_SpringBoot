@@ -1,12 +1,14 @@
 package com.clokey.server.global.error.exception.validator;
 
-import com.clokey.server.global.error.code.status.ErrorStatus;
-import com.clokey.server.global.error.exception.annotation.CheckPage;
-import com.clokey.server.global.error.exception.annotation.CheckPageSize;
+import org.springframework.stereotype.Component;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+
+import com.clokey.server.global.error.code.status.ErrorStatus;
+import com.clokey.server.global.error.exception.annotation.CheckPageSize;
 
 @Component
 @RequiredArgsConstructor

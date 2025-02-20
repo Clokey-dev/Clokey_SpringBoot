@@ -1,20 +1,13 @@
 package com.clokey.server.domain.member.application;
 
-import com.clokey.server.domain.cloth.domain.entity.Cloth;
-import com.clokey.server.domain.folder.domain.entity.Folder;
-import com.clokey.server.domain.history.domain.entity.Comment;
-import com.clokey.server.domain.history.domain.entity.History;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
+import com.clokey.server.domain.member.domain.entity.Member;
 
 public interface MemberRepositoryService {
     boolean memberExist(Long memberId);
