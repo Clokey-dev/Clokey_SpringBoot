@@ -13,21 +13,17 @@ import java.util.List;
 import java.util.Map;
 
 public interface ClothFolderRepository extends JpaRepository<ClothFolder, Long> {
-    @Transactional
-    @Modifying
-    void deleteAllByClothId(@Param("clothId") Long clothId);
 
-    @Transactional
+    void deleteAllByClothId(Long clothId);
+
     void deleteAllByClothIdInAndFolderId(List<Long> clothId, Long folderId);
 
     Page<ClothFolder> findAllByFolderId(Long folderId, Pageable page);
 
     @Query("SELECT cf.folder.id, c.image.imageUrl FROM ClothFolder cf JOIN cf.cloth c WHERE cf.folder.id IN :folderIds GROUP BY cf.folder.id")
     List<Object[]> findClothImageUrlsFromFolderIds(@Param("folderIds") List<Long> folderIds);
-    
-    @Transactional
-    @Modifying
-    void deleteAllByFolderId(@Param("folderId") Long folderId);
+
+    void deleteAllByFolderId(Long folderId);
 
     @Transactional
     @Modifying

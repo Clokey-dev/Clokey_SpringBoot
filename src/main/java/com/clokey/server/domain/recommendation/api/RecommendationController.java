@@ -1,6 +1,5 @@
 package com.clokey.server.domain.recommendation.api;
 
-import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.exception.annotation.AuthUser;
 import com.clokey.server.domain.recommendation.application.RecommendationService;
