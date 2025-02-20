@@ -136,6 +136,7 @@ public class ClothConverter {
     }
 
     public static ClothResponseDTO.SmartSummaryClothPreviewListResult toSummaryClothPreviewListResult(
+            String nickname,
             Category frequentCategory,
             Category infrequentCategory,
             Long frequentUsage,
@@ -144,6 +145,7 @@ public class ClothConverter {
             List<ClothResponseDTO.ClothPreview> infrequentClothPreviews
     ) {
         return ClothResponseDTO.SmartSummaryClothPreviewListResult.builder()
+                .nickname(nickname)
                 .frequentResult(
                         ClothResponseDTO.SmartSummaryClothPreview.builder()
                                 .baseCategoryName(frequentCategory.getParent().getName())

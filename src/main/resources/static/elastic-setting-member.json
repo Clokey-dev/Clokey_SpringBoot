@@ -11,6 +11,10 @@
       "filter": {
         "nori_readingform_filter": {
           "type": "nori_readingform"
+        },
+        "korean_to_latin": {
+          "type": "icu_transform",
+          "id": "Hangul-Latin"
         }
       },
       "analyzer": {
@@ -29,7 +33,8 @@
           ],
           "filter": [
             "lowercase",
-            "nori_readingform_filter"
+            "nori_readingform_filter",
+            "korean_to_latin"
           ]
         }
       }

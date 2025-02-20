@@ -13,8 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(indexName = "history")
-@Mapping(mappingPath = "static/elastic-mapping.json")
-@Setting(settingPath = "static/elastic-setting.json")
+@Mapping(mappingPath = "static/elastic-mapping-history.json")
+@Setting(settingPath = "static/elastic-setting-history.json")
 public class HistoryDocument {
 
     @Id

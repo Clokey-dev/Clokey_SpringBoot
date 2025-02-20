@@ -75,6 +75,7 @@ public interface ClothRepository extends JpaRepository<Cloth, Long> {
                                            @Param("nowTemp") Integer nowTemp,
                                            @Param("minTemp") Integer minTemp,
                                            @Param("maxTemp") Integer maxTemp);
+
     @Modifying
     @Query("DELETE FROM Cloth c WHERE c.id IN :clothIds")
     void deleteByClothIds(@Param("clothIds") List<Long> clothIds);
