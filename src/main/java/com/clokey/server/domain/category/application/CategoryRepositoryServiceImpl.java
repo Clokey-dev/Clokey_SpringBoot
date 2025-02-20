@@ -3,12 +3,13 @@ package com.clokey.server.domain.category.application;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import jakarta.transaction.Transactional;
+
 
 import lombok.RequiredArgsConstructor;
 
 import com.clokey.server.domain.category.domain.entity.Category;
 import com.clokey.server.domain.category.domain.repostiory.CategoryRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Service
