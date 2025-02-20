@@ -272,11 +272,18 @@ public class RecommendationServiceImpl implements RecommendationService {
 
         List<History> recommendedMemberHistories = historyRepositoryService.findHistoriesByMemberIds(topFollowingMemberIds);
 
+        if (recommendedMemberHistories.isEmpty()) {
+            return List.of();
+        }
+
         Map<Long, History> historyMap = recommendedMemberHistories.stream()
-                .collect(Collectors.toMap(h -> h.getMember().getId(), h -> h));
+                .collect(Collectors.toMap(
+                        h -> h.getMember().getId(),
+                        h -> h,
+                        (h1, h2) -> h1.getCreatedAt().isAfter(h2.getCreatedAt()) ? h1 : h2
+                ));
 
-
-        List<History> filteredHistories = recommendedMemberHistories.stream()
+        List<History> filteredHistories = topFollowingMemberIds.stream()
                 .map(historyMap::get)
                 .filter(Objects::nonNull)
                 .filter(history -> history.getMember().getVisibility() == Visibility.PUBLIC &&
@@ -296,6 +303,7 @@ public class RecommendationServiceImpl implements RecommendationService {
 
         return RecommendationConverter.toPeopleCacheDTO(filteredHistories, historyImageMap);
     }
+
 
     private List<Member> getFollowingMembers(Long memberId) {
         List<Member> followingMembers = followRepositoryService.findFollowingByFollowedId(memberId);
