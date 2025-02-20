@@ -39,11 +39,9 @@ public interface HistoryRepositoryService {
 
     List<History> findTop6ByMemberInAndVisibilityOrderByHistoryDateDesc(List<Member> member, Visibility visibility);
 
-    List<History> findTop10MembersByHashtagIdsOrderByLikes(List<Long> hashtagIds, Long currentMemberId);
-
     List<History> findAll();
 
     Long countHistoryByMember(Member member);
 
-
+    List<History> findHistoriesByMemberIds(List<Long> memberIds);
 }

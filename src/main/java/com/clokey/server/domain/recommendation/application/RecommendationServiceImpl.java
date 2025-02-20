@@ -128,7 +128,7 @@ public class RecommendationServiceImpl implements RecommendationService {
             saveToRedis(cacheKeyCalendar, cachedCalendars, Duration.ofMinutes(1));
         }
         if (cachedPeople == null) {
-            cachedPeople = getPeopleList(member);
+            cachedPeople = getPeopleList();
             saveToRedis(cacheKeyPeople, cachedPeople, Duration.ofMinutes(1));
         }
 
@@ -263,19 +263,24 @@ public class RecommendationServiceImpl implements RecommendationService {
         return new PageImpl<>(calendarList, PageRequest.of(page - 1, 6), calendarList.size());
     }
 
-    // Hot 계정 조회
-    private List<RecommendationResponseDTO.PeopleCacheResult> getPeopleList(Member member) {
-        List<Long> hashtagIds = hashtagHistoryRepositoryService.findHashtagIdsByMemberIdOrderByHistoryDateDesc(member.getId());
+    private List<RecommendationResponseDTO.PeopleCacheResult> getPeopleList() {
+        List<Long> topFollowingMemberIds = followRepositoryService.findTopFollowingMembers();
 
-        if (hashtagIds.isEmpty()) {
+        if (topFollowingMemberIds.isEmpty()) {
             return List.of();
         }
 
-        List<History> recommendedMemberHistories = historyRepositoryService.findTop10MembersByHashtagIdsOrderByLikes(hashtagIds, member.getId());
+        List<History> recommendedMemberHistories = historyRepositoryService.findHistoriesByMemberIds(topFollowingMemberIds);
+
+        Map<Long, History> historyMap = recommendedMemberHistories.stream()
+                .collect(Collectors.toMap(h -> h.getMember().getId(), h -> h));
+
 
         List<History> filteredHistories = recommendedMemberHistories.stream()
-                .filter(history -> history.getMember().getVisibility().equals(Visibility.PUBLIC))
-                .filter(history -> history.getVisibility().equals(Visibility.PUBLIC))
+                .map(historyMap::get)
+                .filter(Objects::nonNull)
+                .filter(history -> history.getMember().getVisibility() == Visibility.PUBLIC &&
+                        history.getVisibility() == Visibility.PUBLIC)
                 .limit(4)
                 .toList();
 

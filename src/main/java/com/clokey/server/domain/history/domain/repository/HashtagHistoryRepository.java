@@ -40,10 +40,9 @@ public interface HashtagHistoryRepository extends JpaRepository<HashtagHistory, 
     @Query("SELECT hh.hashtag.id FROM HashtagHistory hh " +
             "JOIN hh.history h " +
             "WHERE h.member.id = :memberId " +
-            "ORDER BY h.historyDate DESC " +
+            "ORDER BY h.member.clokeyId DESC " +
             "LIMIT 10")
     List<Long> findHashtagIdsByMemberIdOrderByHistoryDateDesc(@Param("memberId") Long memberId);
-
 
     @Query("SELECT hh.hashtag.name FROM HashtagHistory hh " +
             "JOIN hh.history h WHERE h.member.id = :memberId " +
