@@ -11,8 +11,8 @@ import org.springframework.data.elasticsearch.annotations.Setting;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(indexName = "cloth")
-@Mapping(mappingPath = "static/elastic-mapping.json")
-@Setting(settingPath = "static/elastic-setting.json")
+@Mapping(mappingPath = "static/elastic-mapping-cloth.json")
+@Setting(settingPath = "static/elastic-setting-cloth.json")
 public class ClothDocument {
 
     @Id
