@@ -131,7 +131,7 @@ public class RecommendationServiceImpl implements RecommendationService {
             saveToRedis(cacheKeyCalendar, cachedCalendars, Duration.ofMinutes(1));
         }
         if (cachedPeople == null) {
-            cachedPeople = getPeopleList();
+            cachedPeople = getPeopleList(member);
             saveToRedis(cacheKeyPeople, cachedPeople, Duration.ofMinutes(1));
         }
 
@@ -266,7 +266,7 @@ public class RecommendationServiceImpl implements RecommendationService {
         return new PageImpl<>(calendarList, PageRequest.of(page - 1, 6), calendarList.size());
     }
 
-    private List<RecommendationResponseDTO.PeopleCacheResult> getPeopleList() {
+    private List<RecommendationResponseDTO.PeopleCacheResult> getPeopleList(Member member) {
         List<Long> topFollowingMemberIds = followRepositoryService.findTopFollowingMembers();
 
         if (topFollowingMemberIds.isEmpty()) {
@@ -290,7 +290,7 @@ public class RecommendationServiceImpl implements RecommendationService {
                 .map(historyMap::get)
                 .filter(Objects::nonNull)
                 .filter(history -> history.getMember().getVisibility() == Visibility.PUBLIC &&
-                        history.getVisibility() == Visibility.PUBLIC)
+                        history.getVisibility() == Visibility.PUBLIC && history.getMember() != member)
                 .limit(4)
                 .toList();
 

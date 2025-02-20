@@ -105,6 +105,6 @@ public class FollowRepositoryServiceImpl implements FollowRepositoryService {
 
     @Override
     public List<Long> findTopFollowingMembers() {
-        return followRepository.findTopFollowingMembers(PageRequest.of(0, 4));
+        return followRepository.findTopFollowingMembers(PageRequest.of(0, 5));
     }
 }
