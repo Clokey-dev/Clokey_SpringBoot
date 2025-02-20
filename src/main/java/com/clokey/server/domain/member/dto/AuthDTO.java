@@ -2,6 +2,7 @@ package com.clokey.server.domain.member.dto;
 
 import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import javax.naming.AuthenticationException;
@@ -34,6 +35,7 @@ public class AuthDTO {
 
     @Data
     public static class LoginRequest{
+        @NotBlank(message = "로그인 타입은 필수 입력 값입니다.")
         private String type; // 로그인 타입 (ex: "kakao", "apple")
         private String accessToken=null;
         private String authorizationCode=null;
@@ -57,6 +59,7 @@ public class AuthDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class RefreshTokenRequest {
+        @NotBlank(message = "리프레시 토큰은 필수 입력 값입니다.")
         private String refreshToken;
     }
 

@@ -11,6 +11,7 @@ import com.clokey.server.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -52,7 +53,7 @@ public class MemberRestController {
     @GetMapping("users/{clokey_id}/check")
     public BaseResponse<Void> checkID(
             @Parameter(name = "user", hidden = true) @AuthUser Member currentUser,
-            @PathVariable("clokey_id") String clokeyId) { // 클로키 아이디를 PathVariable로 받음
+            @PathVariable ("clokey_id") @NotBlank String clokeyId) { // 클로키 아이디를 PathVariable로 받음
 
         memberService.clokeyIdUsingCheck(clokeyId, currentUser);
 
@@ -78,7 +79,7 @@ public class MemberRestController {
     @PostMapping("users/follow/check/{clokey_id}")
     public BaseResponse<MemberDTO.FollowRP> followCheck(
             @Parameter(name = "user", hidden = true) @AuthUser Member currentUser,
-            @IdValid @PathVariable("clokey_id") String clokeyId){
+            @IdValid @NotBlank @PathVariable("clokey_id") String clokeyId){
 
         MemberDTO.FollowRP response= memberService.followCheck(clokeyId, currentUser);
 
@@ -91,7 +92,7 @@ public class MemberRestController {
         @PostMapping("users/follow/{clokey_id}")
     public BaseResponse<Void> follow(
             @Parameter(name = "user", hidden = true) @AuthUser Member currentUser,
-            @IdValid @PathVariable("clokey_id") String clokeyId) {
+            @IdValid @NotBlank @PathVariable("clokey_id") String clokeyId) {
 
         memberService.follow(clokeyId, currentUser);
 

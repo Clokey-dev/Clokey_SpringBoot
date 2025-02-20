@@ -61,22 +61,14 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     @Override
     @Transactional(readOnly = true) // 읽기 전용 트랜잭션
     public boolean idExist(String clokeyId) {
-        String jpql = "SELECT COUNT(m) > 0 FROM Member m WHERE m.clokeyId = :clokeyId";
-        TypedQuery<Boolean> query = entityManager.createQuery(jpql, Boolean.class);
-        query.setParameter("clokeyId", clokeyId);
-        return query.getSingleResult();
+        return memberRepository.existsByClokeyId(clokeyId);
     }
 
     @Override
     @Transactional(readOnly = true) // 읽기 전용 트랜잭션
     public Member findMemberByClokeyId(String clokeyId) {
-        String jpql = "SELECT m FROM Member m WHERE m.clokeyId = :clokeyId";
-        TypedQuery<Member> query = entityManager.createQuery(jpql, Member.class);
-        query.setParameter("clokeyId", clokeyId);
-
-        return query.getResultStream()
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("클로키 아이디에 해당하는 사용자가 없습니다."));
+        return memberRepository.findByClokeyId(clokeyId)
+                .orElseThrow(() -> new DatabaseException(ErrorStatus.NO_SUCH_MEMBER));
     }
 
     @Override
