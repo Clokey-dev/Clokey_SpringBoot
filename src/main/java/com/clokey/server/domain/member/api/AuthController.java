@@ -29,7 +29,7 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<BaseResponse<AuthDTO.TokenResponse>> login(@RequestBody AuthDTO.LoginRequest loginRequest) {
+    public BaseResponse<AuthDTO.TokenResponse> login(@RequestBody AuthDTO.LoginRequest loginRequest) {
         // 로그인 타입 확인
         String loginType = loginRequest.getType();
 
@@ -58,9 +58,7 @@ public class AuthController {
 
         SuccessStatus successStatus = (responseEntity.getStatusCode() == HttpStatus.CREATED) ? SuccessStatus.LOGIN_CREATED : SuccessStatus.LOGIN_SUCCESS;
 
-        return ResponseEntity.status(responseEntity.getStatusCode()).body(BaseResponse.onSuccess(successStatus, responseEntity.getBody()));
-
-
+        return BaseResponse.onSuccess(successStatus, responseEntity.getBody());
     }
 
 
