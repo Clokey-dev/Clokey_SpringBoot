@@ -27,5 +27,7 @@ public interface HistoryService {
 
     void deleteHistory(Long historyId, Long memberId);
 
+    HistoryResponseDTO.CheckMyHistoryResult checkIfHistoryIsMine(Long historyId, Long memberId);
+
     HistoryResponseDTO.LikedUserResults getLikedUser(Long memberId, Long historyId);
 }

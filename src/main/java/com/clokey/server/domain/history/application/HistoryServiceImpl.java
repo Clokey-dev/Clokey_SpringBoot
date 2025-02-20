@@ -349,6 +349,16 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
+    public HistoryResponseDTO.CheckMyHistoryResult checkIfHistoryIsMine(Long historyId, Long memberId) {
+
+        History history = historyRepositoryService.findById(historyId);
+
+        return HistoryResponseDTO.CheckMyHistoryResult.builder()
+                .isMyHistory(history.getMember().getId().equals(memberId))
+                .build();
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public HistoryResponseDTO.LikedUserResults getLikedUser(Long memberId, Long historyId) {
 

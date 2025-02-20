@@ -27,6 +27,14 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class CheckMyHistoryResult {
+        Boolean isMyHistory;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class HistoryPreviewListResult {
         private List<HistoryPreview> historyPreviews;
         private int totalPage;

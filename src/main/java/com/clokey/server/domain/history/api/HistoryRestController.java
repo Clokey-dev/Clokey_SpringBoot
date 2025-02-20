@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+
 import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
@@ -129,6 +130,22 @@ public class HistoryRestController {
                                                                              @RequestBody @Valid HistoryRequestDTO.CommentWrite request) {
         return BaseResponse.onSuccess(SuccessStatus.HISTORY_COMMENT_CREATED, historyService.writeComment(historyId, request.getCommentId(), member.getId(), request.getContent()));
 
+    }
+
+    @PostMapping("/isMyHistory")
+    @Operation(summary = "나의 기록인지 확인할 수 있는 API")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "HISTORY_200", description = "나의 기록인지 성공적으로 조회했습니다."),
+    })
+    @Parameters({
+            @Parameter(name = "historyId", description = "나의 기록인지 확인하고자 하는 기록Id")
+    })
+    public BaseResponse<HistoryResponseDTO.CheckMyHistoryResult> checkIfHistoryIsMine(@PathVariable @Valid @HistoryExist Long historyId,
+                                                                                      @Parameter(name = "user", hidden = true) @AuthUser Member member) {
+
+        HistoryResponseDTO.CheckMyHistoryResult result = historyService.checkIfHistoryIsMine(historyId, member.getId());
+
+        return BaseResponse.onSuccess(SuccessStatus.HISTORY_CHECK_SUCCESS, result);
     }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
