@@ -74,7 +74,7 @@ public class Member extends BaseEntity {
     @Column(nullable = true, unique = true)
     private String accessToken;
 
-    @Column(nullable = true, unique = true)
+    @Column(nullable = true, unique = false)
     private String deviceToken;
 
     @Column(nullable = true, unique = true)
