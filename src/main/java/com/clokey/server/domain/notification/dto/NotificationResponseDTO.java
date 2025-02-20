@@ -83,5 +83,6 @@ public class NotificationResponseDTO {
         String content;
         String memberProfileUrl;
         Long historyId;
+        Boolean isMyHistory;
     }
 }

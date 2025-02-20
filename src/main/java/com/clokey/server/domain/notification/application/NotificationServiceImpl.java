@@ -273,7 +273,8 @@ public class NotificationServiceImpl implements NotificationService {
         checkMyComment(replyId, memberId);
         checkParentComment(commentId, replyId);
 
-        Member commentWriter = commentRepositoryService.findById(commentId).getMember();
+        Comment writtenComment = commentRepositoryService.findById(commentId);
+        Member commentWriter = writtenComment.getMember();
         Comment writtenReply = commentRepositoryService.findById(replyId);
         Member replyWriter = writtenReply.getMember();
         if (commentWriter.equals(replyWriter)) {
@@ -316,6 +317,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .content(content)
                     .memberProfileUrl(replyWriterProfileUrl)
                     .historyId(historyId)
+                    .isMyHistory(writtenComment.getHistory().getMember().equals(commentWriter))
                     .build();
         }
 
