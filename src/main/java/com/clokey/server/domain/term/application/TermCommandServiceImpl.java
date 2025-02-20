@@ -29,6 +29,9 @@ public class TermCommandServiceImpl implements TermCommandService {
     private final TermRepositoryService termRepositoryService;
     private final MemberTermRepositoryService memberTermRepositoryService;
 
+    private static final String APP_VERSION = "1.0.0";
+
+
     @Override
     @Transactional
     public TermResponseDTO joinTerm(Long userId, TermRequestDTO.Join request) {
@@ -57,7 +60,7 @@ public class TermCommandServiceImpl implements TermCommandService {
                     .build());
         }
 
-        if(member.getRegisterStatus()==RegisterStatus.NOT_AGREED) {
+        if (member.getRegisterStatus() == RegisterStatus.NOT_AGREED) {
             // 약관 동의가 완료되었으므로 회원의 등록 상태를 업데이트
             member.updateRegisterStatus(RegisterStatus.AGREED_PROFILE_NOT_SET);
 
@@ -156,15 +159,10 @@ public class TermCommandServiceImpl implements TermCommandService {
         return TermResponseDTO.UserAgreementDTO.builder()
                 .socialType(member.getSocialType().toString())  // 소셜 타입 추가
                 .email(member.getEmail()) // 이메일 추가
-                .appVersion("1.0.0") // 앱 버전 추가
+                .appVersion(APP_VERSION) // 앱 버전 추가
                 .terms(termResponses)  // OptionalTermDTO 리스트 반환
                 .build();
     }
-
-
-
-
-
 
 
 }

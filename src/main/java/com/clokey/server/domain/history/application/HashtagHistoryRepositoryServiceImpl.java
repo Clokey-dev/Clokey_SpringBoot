@@ -29,7 +29,7 @@ public class HashtagHistoryRepositoryServiceImpl implements HashtagHistoryReposi
     }
 
     public void addHashtagHistory(Hashtag hashtag, History history) {
-        // HashtagHistory 엔티티 생성 및 저장
+
         HashtagHistory hashtagHistory = HashtagHistory.builder()
                 .hashtag(hashtag)
                 .history(history)

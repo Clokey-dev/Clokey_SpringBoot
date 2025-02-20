@@ -31,13 +31,13 @@ public class GetUserConverter {
 
     public static List<MemberDTO.GetUserClothResult> toGetUserClothResultDTO(List<Cloth> cloths) {
         return cloths.stream()
-                .map(cloth ->{
-                    if(cloth!=null){
+                .map(cloth -> {
+                    if (cloth != null) {
                         return MemberDTO.GetUserClothResult.builder()
                                 .clothId(cloth.getId())
                                 .clothImage(cloth.getImage().getImageUrl())
                                 .build();
-                    } else{
+                    } else {
                         return MemberDTO.GetUserClothResult.builder()
                                 .clothId(null)
                                 .clothImage(null)
@@ -51,7 +51,7 @@ public class GetUserConverter {
     public static MemberDTO.GetFollowMemberResult toGetFollowPeopleResultDTO(
             List<Member> members, Pageable pageable, List<Boolean> isFollowings, List<Boolean> isMySelf) {
 
-        List<MemberDTO.FollowMemberResult> memberResults =  IntStream.range(0, members.size())
+        List<MemberDTO.FollowMemberResult> memberResults = IntStream.range(0, members.size())
                 .mapToObj(i -> convertToProfilePreviewResult(members.get(i), isFollowings.get(i), isMySelf.get(i)))
                 .collect(Collectors.toList());
 

@@ -20,30 +20,3 @@ public @interface EssentialFieldNotNull {
 
     Class<? extends Payload>[] payload() default {};
 }
-
-
-/*
-package com.clokey.server.global.validation;
-
-import jakarta.validation.Constraint;
-import jakarta.validation.Payload;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-@Constraint(validatedBy = NotBlankWithCodeValidator.class)
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface NotBlankWithCode {
-    String message() default "필수 입력 항목입니다."; // 기본 메시지
-
-    String errorCode() default "COMMON400"; // 디폴트 에러 코드
-
-    Class<?>[] groups() default {};
-
-    Class<? extends Payload>[] payload() default {};
-}
-
- */
