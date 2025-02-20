@@ -75,7 +75,6 @@ public class UnlinkServiceImpl implements UnlinkService {
 
         checkActiveMember(member);
 
-
         if (member != null && SocialType.KAKAO == member.getSocialType()) {
             String kakaoId = member.getKakaoId();
             if (kakaoId != null) {
@@ -99,7 +98,6 @@ public class UnlinkServiceImpl implements UnlinkService {
         member.updateStatus();
         member.updateInactiveDate(LocalDate.now());
         memberRepositoryService.saveMember(member);
-
     }
 
 

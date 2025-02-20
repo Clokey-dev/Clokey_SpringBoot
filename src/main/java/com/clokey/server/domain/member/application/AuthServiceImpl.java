@@ -77,6 +77,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public String generateRefreshToken(Long userId) {
         Member member = memberRepositoryService.findMemberById(userId);
         if (member == null) {
@@ -282,6 +283,8 @@ public class AuthServiceImpl implements AuthService {
     //2. 여기까지 주소 가져옴
 
 
+    @Transactional
+    @Override
     public AuthDTO.TokenResponse appleLogin(String code, String deviceToken) {
         // code가 null인 경우 처리
         if (code == null || code.isBlank()) {

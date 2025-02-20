@@ -39,11 +39,11 @@ public class MemberServiceImpl implements MemberService {
     private final SearchRepositoryService searchRepositoryService;
 
     @Override
+    @Transactional(readOnly = true)
     public MemberDTO.FollowRP followCheck(String clokeyId, Member currentUser) {
         Long yourUserId = currentUser.getId();
         Long myUserId = memberRepositoryService.findMemberByClokeyId(clokeyId).getId();
 
-        FollowRepositoryServiceImpl followRepository;
         boolean isFollow = followRepositoryService.existsByFollowing_IdAndFollowed_Id(myUserId, yourUserId);
 
         return new MemberDTO.FollowRP(isFollow);
@@ -180,6 +180,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MemberDTO.GetFollowMemberResult getFollowPeople(Long memberId, String clokeyId, Integer page, Boolean isFollow) {
         // clokeyId로 계정 공개 여부 가져오기
         Member findMember = memberRepositoryService.findByClokeyId(clokeyId);
