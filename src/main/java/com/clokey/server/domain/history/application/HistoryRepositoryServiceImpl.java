@@ -73,8 +73,8 @@ public class HistoryRepositoryServiceImpl implements HistoryRepositoryService {
     }
 
     @Override
-    public List<Boolean> existsByHistoryDateAndMemberIds(LocalDate historyDate, List<Long> memberIds) {
-        return historyRepository.existsByHistoryDateAndMemberIds(historyDate, memberIds);
+    public List<Boolean> existsByHistoryDateAndMemberIds(LocalDate historyDate, List<Long> memberId, Visibility visibility) {
+        return historyRepository.existsByHistoryDateAndMemberIds(historyDate, memberId ,visibility);
     }
 
     @Override

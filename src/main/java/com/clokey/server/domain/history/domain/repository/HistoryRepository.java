@@ -37,9 +37,13 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
             "FROM Member m " +
             "LEFT JOIN History h ON m.id = h.member.id AND h.historyDate = :historyDate " +
             "WHERE m.id IN :memberIds " +
+            "AND m.visibility = :visibility " +
             "GROUP BY m.id " +
             "ORDER BY m.id")
-    List<Boolean> existsByHistoryDateAndMemberIds(@Param("historyDate") LocalDate historyDate, @Param("memberIds") List<Long> memberIds);
+    List<Boolean> existsByHistoryDateAndMemberIds(
+            @Param("historyDate") LocalDate historyDate,
+            @Param("memberIds") List<Long> memberIds,
+            @Param("visibility") Visibility visibility);
 
 
     Optional<History> findByHistoryDateAndMember_Id(LocalDate historyDate, Long memberId);
