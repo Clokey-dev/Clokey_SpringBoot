@@ -1,5 +1,6 @@
 package com.clokey.server.domain.member.domain.repository;
 
+import com.clokey.server.domain.model.entity.enums.SocialType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -66,7 +67,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     boolean existsByEmail(String email);
 
-    Member getMemberByEmail(String email);
+    Member getMemberByEmailAndSocialType(String email, SocialType socialType);
 
     Optional<Member> findMemberByEmail(String email);
 

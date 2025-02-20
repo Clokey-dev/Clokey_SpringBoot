@@ -117,7 +117,7 @@ public class AuthServiceImpl implements AuthService {
 
         Member member;
         if (MemberExist) {
-            member = memberRepositoryService.getMemberByEmail(email);    // 기존 사용자
+            member = memberRepositoryService.getMemberByEmailAndSocialType(email, SocialType.KAKAO);    // 기존 사용자
             if (member.getKakaoId() == null || member.getKakaoId().isBlank()) {
                 if (member.getStatus() == MemberStatus.INACTIVE) {
                     member.updateStatus();
@@ -362,7 +362,7 @@ public class AuthServiceImpl implements AuthService {
 
         Member member;
         if (MemberExist) {
-            member = memberRepositoryService.getMemberByEmail(email);// 기존 사용자
+            member = memberRepositoryService.getMemberByEmailAndSocialType(email, SocialType.APPLE);// 기존 사용자
 
             if(member.getStatus()==MemberStatus.INACTIVE){
                 member.updateStatus();
