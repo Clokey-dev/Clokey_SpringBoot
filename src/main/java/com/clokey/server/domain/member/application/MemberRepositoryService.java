@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.enums.SocialType;
 
 public interface MemberRepositoryService {
     boolean memberExist(Long memberId);
@@ -30,7 +31,7 @@ public interface MemberRepositoryService {
 
     Optional<Member> findMemberByEmail(String email);
 
-    Member getMemberByEmail(String email);
+    Member getMemberByEmailAndSocialType(String email, SocialType socialType);
 
     boolean existsByEmail(String email);
 

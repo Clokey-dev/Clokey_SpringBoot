@@ -1,5 +1,6 @@
 package com.clokey.server.domain.member.application;
 
+import com.clokey.server.domain.model.entity.enums.SocialType;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -132,8 +133,8 @@ public class MemberRepositoryServiceImpl implements MemberRepositoryService {
     }
 
     @Override
-    public Member getMemberByEmail(String email) {
-        return memberRepository.getMemberByEmail(email);
+    public Member getMemberByEmailAndSocialType(String email, SocialType socialType) {
+        return memberRepository.getMemberByEmailAndSocialType(email, socialType);
     }
 
 }
