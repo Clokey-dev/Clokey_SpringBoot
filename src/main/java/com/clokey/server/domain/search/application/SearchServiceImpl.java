@@ -1,7 +1,6 @@
 package com.clokey.server.domain.search.application;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import com.clokey.server.domain.cloth.converter.ClothConverter;
@@ -22,7 +21,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static org.apache.naming.SelectorContext.prefix;
@@ -40,6 +41,8 @@ public class SearchServiceImpl implements SearchService {
     private static final String CLOTH_INDEX_NAME = "cloth";
 
     private static final String HISTORY_INDEX_NAME = "history";
+
+    private static final Pattern CHOSEONG_PATTERN = Pattern.compile("^[ㄱ-ㅎ]$");
 
     /****************************************Search Method****************************************/
 
@@ -117,42 +120,46 @@ public class SearchServiceImpl implements SearchService {
 
         SearchResponse<HistoryDocument> response = elasticsearchClient.search(s -> s
                         .index(HISTORY_INDEX_NAME)
-                        .query(q -> q.bool(b -> {
-
-                            // PUBLIC 데이터만 검색 (match 사용)
-                            b.must(m -> m.match(t -> t.field("memberVisibility").query("PUBLIC")));
-                            b.must(m -> m.match(t -> t.field("historyVisibility").query("PUBLIC")));
-
-                            // 해시태그 및 카테고리 검색
-                            b.must(m -> m.bool(bb -> bb
-                                    .must(ms -> ms.wildcard(mq -> mq
-                                            .field("hashtagNames.keyword")
-                                            .value("#" + keyword + "*")
-                                    ))
-                                    .should(ms -> ms.match(mq -> mq
-                                            .field("hashtagNames")
-                                            .query(keyword)
-                                            .fuzziness("AUTO")
-                                    ))
-                                    .should(ms -> ms.matchPhrasePrefix(mq -> mq
-                                            .field("hashtagNames")
-                                            .query(keyword)
-                                    ))
-                                    .should(ms -> ms.matchPhrasePrefix(mq -> mq
-                                            .field("categoryNames")
-                                            .query(keyword)
-                                    ))
-                                    .should(ms -> ms.matchBoolPrefix(mq -> mq
-                                            .field("categoryNames")
-                                            .query(keyword)
-                                    ))
-                            ));
-
-
-                            return b;
-                        }))
-                        .from((int) pageable.getOffset())
-                        .size(pageable.getPageSize()),
+                        .query(q -> q.bool(b -> b
+                                .must(m -> m.match(t -> t
+                                        .field("memberVisibility")
+                                        .query("PUBLIC")
+                                ))
+                                .must(m -> m.match(t -> t
+                                        .field("historyVisibility")
+                                        .query("PUBLIC")
+                                ))
+                                .should(m -> m.bool(bb -> bb
+                                        .must(ms -> ms.wildcard(mq -> mq
+                                                .field("hashtagNames.keyword")
+                                                .value("#" + keyword + "*")
+                                        ))
+                                        .should(ms -> ms.match(mq -> mq
+                                                .field("hashtagNames")
+                                                .query(keyword)
+                                                .fuzziness("AUTO")
+                                        ))
+                                        .should(ms -> ms.matchPhrasePrefix(mq -> mq
+                                                .field("hashtagNames")
+                                                .query(keyword)
+                                        ))
+                                ))
+                                .should(m -> m.bool(bb -> bb
+                                        .must(ms -> ms.wildcard(mq -> mq
+                                                .field("categoryNames.keyword")
+                                                .value("*" + keyword + "*")
+                                        ))
+                                        .should(ms -> ms.matchPhrasePrefix(mq -> mq
+                                                .field("categoryNames")
+                                                .query(keyword)
+                                        ))
+                                        .should(ms -> ms.matchBoolPrefix(mq -> mq
+                                                .field("categoryNames")
+                                                .query(keyword)
+                                        ))
+                                ))
+                                .minimumShouldMatch("1") // 최소 하나는 일치하도록 설정
+                        )),
                 HistoryDocument.class
         );
 
@@ -176,45 +183,53 @@ public class SearchServiceImpl implements SearchService {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        SearchResponse<MemberDocument> response = elasticsearchClient.search(s -> s
-                        .index(MEMBER_INDEX_NAME)
-                        .query(q -> q.bool(b -> b
-                                // 닉네임이 정확히 일치하는 경우 (term 대신 match 사용)
-                                .should(m -> m.matchPhrase(t -> t
-                                        .field("nickname")
-                                        .query(keyword)
-                                ))
-                                // 닉네임이 검색어로 시작하는 경우 (prefix 검색)
-                                .should(m -> m.matchPhrasePrefix(t -> t
-                                        .field("nickname")
-                                        .query(keyword)
-                                ))
-                                // 닉네임이 검색어를 포함하는 경우 (wildcard 사용)
-                                .should(m -> m.wildcard(t -> t
-                                        .field("nickname")
-                                        .value("*" + keyword + "*") // 검색어가 포함된 경우
-                                ))
-                                // 클로키 아이디 검색 (matchPhrasePrefix 사용)
-                                .should(m -> m.matchPhrasePrefix(t -> t
-                                        .field("clokeyId")
-                                        .query(keyword)
-                                ))
-                        )),
-                MemberDocument.class
-        );
+        if (CHOSEONG_PATTERN.matcher(keyword).find()) {
+            return MemberDTO.ProfilePreviewListRP.builder()
+                    .profilePreviews(Collections.emptyList()) // 빈 리스트 반환
+                    .totalPage(0) // 결과가 없으므로 0 페이지
+                    .totalElements(0) // 결과 개수 0
+                    .isFirst(true) // 첫 페이지 여부
+                    .isLast(true) // 마지막 페이지 여부
+                    .build();
+        }
+        else {
+            SearchResponse<MemberDocument> response = elasticsearchClient.search(s -> s
+                            .index(MEMBER_INDEX_NAME)
+                            .query(q -> q.bool(b -> b
+                                    .should(m -> m.bool(bb -> bb
+                                            .should(ms -> ms.matchPhrase(t -> t
+                                                    .field("nickname")
+                                                    .query(keyword)
+                                            ))
+                                            .should(ms -> ms.matchPhrasePrefix(t -> t
+                                                    .field("nickname")
+                                                    .query(keyword)
+                                            ))
+                                            .should(ms -> ms.matchBoolPrefix(t -> t
+                                                    .field("nickname")
+                                                    .query(keyword)
+                                            ))
+                                    ))
+                                    .should(m -> m.bool(bb -> bb
+                                            .must(ms -> ms.matchPhrasePrefix(t -> t
+                                                    .field("clokeyId")
+                                                    .query(keyword)
+                                            ))
+                                    ))
+                                    .minimumShouldMatch("1")
+                            )),
+                    MemberDocument.class
+            );
 
+            List<MemberDocument> results = response.hits().hits().stream()
+                    .map(Hit::source)
+                    .collect(Collectors.toList());
 
+            Page<MemberDocument> memberDocuments = new PageImpl<>(results, pageable, response.hits().total().value());
 
-        List<MemberDocument> results = response.hits().hits().stream()
-                .map(Hit::source)
-                .collect(Collectors.toList());
+            List<MemberDTO.ProfilePreview> memberPreviews = MemberDocumentConverter.toProfilePreviewList(memberDocuments);
 
-        Page<MemberDocument> memberDocuments = new PageImpl<>(results, pageable, response.hits().total().value());
-
-        // Member Document -> ProfilePreview DTO 변환
-        List<MemberDTO.ProfilePreview> memberPreviews = MemberDocumentConverter.toProfilePreviewList(memberDocuments);
-
-        // 페이징 정보를 담아 DTO 반환
-        return MemberDocumentConverter.toProfilePreviewListRP(memberDocuments, memberPreviews);
+            return MemberDocumentConverter.toProfilePreviewListRP(memberDocuments, memberPreviews);
+        }
     }
 }
