@@ -166,7 +166,6 @@ public class HistoryServiceImpl implements HistoryService {
                                 .map(HistoryImage::getImageUrl)
                                 .findFirst();
 
-                        //이미지가 없다면 null을 반환하지만 버그 데이터 입니다..
                         return firstImageUrl.orElse(null);
                     })
                     .collect(Collectors.toList());
@@ -177,7 +176,6 @@ public class HistoryServiceImpl implements HistoryService {
         Member member = memberRepositoryService.findMemberByClokeyId(clokeyId);
         Long memberId = member.getId();
 
-        //나의 기록이 아닌 경우 대상 멤버에게 접근 권한이 있는지 확인합니다.
         historyAccessibleValidator.validateMemberAccessOfMember(memberId, myMemberId);
 
         List<History> histories = historyRepositoryService.findHistoriesByMemberAndYearMonth(memberId, month);
@@ -188,12 +186,10 @@ public class HistoryServiceImpl implements HistoryService {
                             .map(HistoryImage::getImageUrl)
                             .findFirst();
 
-                    //이미지가 없다면 null을 반환하지만 버그 데이터 입니다..
                     return firstImageUrl.orElse(null);
                 })
                 .collect(Collectors.toList());
 
-        //비공개 게시물을 가려줍니다.
         for (int i = 0; i < histories.size(); i++) {
             History history = histories.get(i);
 
@@ -209,7 +205,6 @@ public class HistoryServiceImpl implements HistoryService {
     @Transactional
     public HistoryResponseDTO.HistoryCreateResult createHistory(HistoryRequestDTO.HistoryCreate historyCreateRequest, Long memberId, List<MultipartFile> imageFiles) {
 
-
         //모든 옷이 나의 옷이 맞는지 검증합니다.
         clothAccessibleValidator.validateClothOfMember(historyCreateRequest.getClothes(), memberId);
 
@@ -220,7 +215,6 @@ public class HistoryServiceImpl implements HistoryService {
             return updateHistory(historyCreateRequest, memberId, historyRepositoryService.getHistoryOfDate(LocalDate.parse(historyCreateRequest.getDate()), memberId).getId(), imageFiles);
         } else {
 
-            // History 엔티티 생성 후 요청 정보 반환해서 저장
             History history = historyRepositoryService.save(HistoryConverter.toHistory(historyCreateRequest, memberRepositoryService.findMemberById(memberId)));
             historyImageRepositoryService.save(imageFiles, history);
 
@@ -273,7 +267,6 @@ public class HistoryServiceImpl implements HistoryService {
 
     private HistoryResponseDTO.HistoryCreateResult updateHistory(HistoryRequestDTO.HistoryCreate historyUpdate, Long memberId, Long historyId, List<MultipartFile> images) {
 
-        //나의 기록이 맞는지 검증합니다.
         historyAccessibleValidator.validateMyHistory(historyId, memberId);
 
         historyImageRepositoryService.deleteAllByHistoryId(historyId);
@@ -326,7 +319,6 @@ public class HistoryServiceImpl implements HistoryService {
     public void deleteHistory(Long historyId, Long memberId) {
         historyAccessibleValidator.validateMyHistory(historyId, memberId);
 
-        //댓글 지우기
         commentRepositoryService.deleteAllComments(historyId);
 
         //기록_옷 지우기
@@ -396,7 +388,7 @@ public class HistoryServiceImpl implements HistoryService {
 
     private void updateHistoryHashtags(List<String> updatedHashtags, List<String> savedHashtags, History history) {
 
-        //존재하지 않는 해시태그는 만들어줍니다.
+        //존재하지 않는 해시태그는 만들어준다.
         updatedHashtags.forEach(hashtagName -> {
             if (!hashtagRepositoryService.existByName(hashtagName)) {
                 Hashtag newHashtag = Hashtag.builder()
@@ -407,12 +399,10 @@ public class HistoryServiceImpl implements HistoryService {
         });
 
 
-        //updateHashtag에만 존재하는 것은 매핑 테이블에
         List<Hashtag> hashtagToAdd = hashtagRepositoryService.findHashtagsByNames(updatedHashtags.stream()
                 .filter(hashtagNames -> !savedHashtags.contains(hashtagNames))
                 .toList());
 
-        //반대는 삭제 대상
         List<Hashtag> hashtagToDelete = hashtagRepositoryService.findHashtagsByNames(savedHashtags.stream()
                 .filter(hashtagNames -> !updatedHashtags.contains(hashtagNames))
                 .toList());
