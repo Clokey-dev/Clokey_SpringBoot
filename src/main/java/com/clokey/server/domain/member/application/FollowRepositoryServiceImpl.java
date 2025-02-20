@@ -4,11 +4,12 @@ import com.clokey.server.domain.member.domain.entity.Follow;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.domain.repository.FollowRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -19,7 +20,16 @@ public class FollowRepositoryServiceImpl implements FollowRepositoryService {
 
     @Override
     public List<Boolean> checkFollowingStatus(Long followedId, List<Member> members) {
-        return followRepository.checkFollowingStatus(followedId, members);
+        List<Object[]> results = followRepository.findFollowingStatus(followedId, members);
+
+        Map<Member, Boolean> statusMap = new LinkedHashMap<>();
+        for (Object[] result : results) {
+            statusMap.put((Member) result[0], (Boolean) result[1]);
+        }
+
+        return members.stream()
+                .map(member -> statusMap.getOrDefault(member, false))
+                .toList();
     }
 
     @Override
