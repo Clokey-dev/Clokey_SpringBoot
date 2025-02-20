@@ -37,28 +37,25 @@ public class AuthController {
             throw new MemberException(ErrorStatus.MISSING_LOGIN_TYPE);
         }
 
-        ResponseEntity<AuthDTO.TokenResponse> responseEntity;
+        BaseResponse<AuthDTO.TokenResponse> response;
 
         //카카오 로그인
         if (loginType.equalsIgnoreCase("kakao") && loginRequest.getAccessToken() != null) {
-            responseEntity = authService.authenticateKakaoUser(loginRequest.getAccessToken(), loginRequest.getDeviceToken());
+            response = authService.authenticateKakaoUser(loginRequest.getAccessToken(), loginRequest.getDeviceToken());
         }
         //애플 로그인
         else if (loginType.equalsIgnoreCase("apple") && loginRequest.getAuthorizationCode() != null) {
             // Apple 로그인 처리
-            AuthDTO.TokenResponse tokenResponse = authService.appleLogin(loginRequest.getAuthorizationCode(), loginRequest.getDeviceToken());
-            responseEntity = ResponseEntity.status(HttpStatus.OK).body(tokenResponse);
+            response= authService.appleLogin(loginRequest.getAuthorizationCode(), loginRequest.getDeviceToken());
         }
         //로그인 타입이 잘못된 경우
         else if (!loginType.equalsIgnoreCase("kakao") && !loginType.equalsIgnoreCase("apple")) {
             throw new MemberException(ErrorStatus.INVALID_LOGIN_TYPE);
         } else {
-            throw new MemberException(ErrorStatus.DUPLICATE_HASHTAGS);
+            throw new MemberException(ErrorStatus.LOGIN_FAILED);
         }
 
-        SuccessStatus successStatus = (responseEntity.getStatusCode() == HttpStatus.CREATED) ? SuccessStatus.LOGIN_CREATED : SuccessStatus.LOGIN_SUCCESS;
-
-        return BaseResponse.onSuccess(successStatus, responseEntity.getBody());
+        return response;
     }
 
 
@@ -74,7 +71,7 @@ public class AuthController {
 
     @Operation(summary = "회원탈퇴 API", description = "회원탈퇴하는 API입니다.")
     @DeleteMapping("/unlink")
-    public BaseResponse<Object> unlink(@Parameter(name = "user", hidden = true) @AuthUser Member member) {
+    public BaseResponse<Void> unlink(@Parameter(name = "user", hidden = true) @AuthUser Member member) {
         logoutService.unlink(member.getId());
         return BaseResponse.onSuccess(SuccessStatus.UNLINK_SUCCESS, null);
     }

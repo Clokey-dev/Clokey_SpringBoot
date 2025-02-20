@@ -189,11 +189,6 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryConverter categoryConverter;
 
     @Override
-    public boolean categoryExist(Long categoryId) {
-        return categoryRepositoryService.existsById(categoryId);
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public List<CategoryResponseDTO.CategoryRP> getAllCategories() {
         return categoryRepositoryService.findAll()

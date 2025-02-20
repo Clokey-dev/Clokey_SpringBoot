@@ -8,7 +8,9 @@ import com.clokey.server.domain.model.entity.enums.RegisterStatus;
 import com.clokey.server.domain.model.entity.enums.SocialType;
 import com.clokey.server.domain.search.application.SearchRepositoryService;
 import com.clokey.server.domain.search.exception.SearchException;
+import com.clokey.server.global.common.response.BaseResponse;
 import com.clokey.server.global.error.code.status.ErrorStatus;
+import com.clokey.server.global.error.code.status.SuccessStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
@@ -109,17 +111,17 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public ResponseEntity<AuthDTO.TokenResponse> authenticateKakaoUser(String kakaoAccessToken, String deviceToken) {
+    public BaseResponse<AuthDTO.TokenResponse> authenticateKakaoUser(String kakaoAccessToken, String deviceToken) {
         // 카카오에서 사용자 정보 가져오기
         AuthDTO.KakaoUserResponse kakaoUser = getUserInfoFromKakao(kakaoAccessToken);
 
-        // DB에서 해당 이메일을 가진 사용자 찾기
-        Optional<Member> optionalMember = memberRepositoryService.findMemberByEmail(kakaoUser.getKakaoAccount().getEmail());
+        String email = kakaoUser.getKakaoAccount().getEmail();
+
+        boolean MemberExist = memberRepositoryService.existsByEmail(email);
 
         Member member;
-        boolean isNewUser = false;
-        if (optionalMember.isPresent()) {
-            member = optionalMember.get();  // 기존 사용자
+        if (MemberExist) {
+            member = memberRepositoryService.getMemberByEmail(email);    // 기존 사용자
             if (member.getKakaoId() == null || member.getKakaoId().isBlank()) {
                 if (member.getStatus() == MemberStatus.INACTIVE) {
                     member.updateStatus();
@@ -138,7 +140,6 @@ public class AuthServiceImpl implements AuthService {
             // DB에 사용자 정보가 없으면 회원가입
             member = Member.builder().kakaoId(kakaoUser.getId()).nickname(kakaoUser.getKakaoAccount().getProfile().getNickname()).email(kakaoUser.getKakaoAccount().getEmail()).registerStatus(RegisterStatus.NOT_AGREED).socialType(SocialType.KAKAO).deviceToken(deviceToken).build();
             memberRepositoryService.saveMember(member);
-            isNewUser = true; // 새로운 사용자
         }
 
         String accessToken = generateAccessToken(member.getId(), member.getEmail());
@@ -155,18 +156,26 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 토큰 반환
-        AuthDTO.TokenResponse tokenResponse = new AuthDTO.TokenResponse(member.getId(), member.getEmail(), member.getNickname(), member.getAccessToken(), member.getRefreshToken(), member.getRegisterStatus());
+        AuthDTO.TokenResponse tokenResponse=AuthDTO.TokenResponse.builder()
+                .id(member.getId())
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .accessToken(member.getAccessToken())
+                .refreshToken(member.getRefreshToken())
+                .registerStatus(member.getRegisterStatus())
+                .build();
 
         // 새로운 사용자라면 201 Created 반환, 기존 사용자라면 200 OK 반환
-        if (isNewUser) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(tokenResponse); // 201
+        if (!MemberExist) {
+            return BaseResponse.onSuccess(SuccessStatus.LOGIN_CREATED, tokenResponse); // 201 Created
         } else {
-            return ResponseEntity.ok(tokenResponse); // 200
+            return BaseResponse.onSuccess(SuccessStatus.LOGIN_SUCCESS, tokenResponse); // 200 OK
         }
     }
 
 
     // 카카오 사용자 정보 조회 메서드
+    @Override
     public AuthDTO.KakaoUserResponse getUserInfoFromKakao(String accessToken) {
         RestTemplate restTemplate = new RestTemplate();
 
@@ -285,7 +294,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public AuthDTO.TokenResponse appleLogin(String code, String deviceToken) {
+    public BaseResponse<AuthDTO.TokenResponse> appleLogin(String code, String deviceToken) {
         // code가 null인 경우 처리
         if (code == null || code.isBlank()) {
             throw new MemberException(ErrorStatus.INVALID_CODE);
@@ -295,6 +304,7 @@ public class AuthServiceImpl implements AuthService {
         String userId = "";
         String email = "";
         String accessToken = "";
+        String refreshToken = "";
 
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -328,6 +338,7 @@ public class AuthServiceImpl implements AuthService {
             }
 
             accessToken = String.valueOf(jsonObj.get("access_token"));
+            refreshToken = getAppleRefreshToken(clientSecret, code);
 
             // JWT 토큰 파싱
             SignedJWT signedJWT = SignedJWT.parse(String.valueOf(jsonObj.get("id_token")));
@@ -349,7 +360,18 @@ public class AuthServiceImpl implements AuthService {
 
         Member member;
         if (MemberExist) {
-            member = memberRepositoryService.getMemberByEmail(email);  // 기존 사용자
+            member = memberRepositoryService.getMemberByEmail(email);// 기존 사용자
+
+            if(member.getStatus()==MemberStatus.INACTIVE){
+                member.updateStatus();
+                member.updateInactiveDate(null);
+                memberRepositoryService.saveMember(member);
+            }
+
+            if (member.getAppleRefreshToken() == null || member.getAppleRefreshToken().isBlank()) {
+                member.updateAppleRefreshToken(refreshToken);
+                memberRepositoryService.saveMember(member);
+            }
 
             member.updateDeviceToken(deviceToken);
             memberRepositoryService.saveMember(member);
@@ -375,7 +397,21 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 응답 반환
-        return AuthDTO.TokenResponse.builder().id(member.getId()).email(member.getEmail()).nickname(member.getNickname()).accessToken(member.getAccessToken()).refreshToken(member.getRefreshToken()).registerStatus(member.getRegisterStatus()).build();
+         AuthDTO.TokenResponse tokenResponse=AuthDTO.TokenResponse.builder()
+                .id(member.getId())
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .accessToken(member.getAccessToken())
+                .refreshToken(member.getRefreshToken())
+                .registerStatus(member.getRegisterStatus())
+                .build();
+
+        // 새로운 사용자라면 201 Created 반환, 기존 사용자라면 200 OK 반환
+        if (!MemberExist) {
+            return BaseResponse.onSuccess(SuccessStatus.LOGIN_CREATED, tokenResponse); // 201 Created
+        } else {
+            return BaseResponse.onSuccess(SuccessStatus.LOGIN_SUCCESS, tokenResponse); // 200 OK
+        }
 
     }
 
@@ -434,7 +470,7 @@ public class AuthServiceImpl implements AuthService {
 
     //5. 여기까지 프라이빗 키 가져오기
 
-    public String getRefreshToken(String clientSecret, String authCode) {
+    public String getAppleRefreshToken(String clientSecret, String authCode) {
         String refreshToken = "";
 
         String uriStr = "https://appleid.apple.com/auth/token";
@@ -474,6 +510,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
 
+    @Override
     public HttpRequest.BodyPublisher getParamsUrlEncoded(Map<String, String> parameters) {
         String urlEncoded = parameters.entrySet().stream().map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8)).collect(Collectors.joining("&"));
         return HttpRequest.BodyPublishers.ofString(urlEncoded);
