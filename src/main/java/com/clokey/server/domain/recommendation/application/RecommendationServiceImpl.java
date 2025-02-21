@@ -204,7 +204,7 @@ public class RecommendationServiceImpl implements RecommendationService {
 
         String frequentCategory = clothRepositoryService.findMostWornCategory(member.getId());
         recommendList.add(RecommendationConverter.toRecommendCacheDTO(
-                getHistoryImageUrlByHashtagName(frequentCategory),
+                getHistoryImageUrlByHashtagNameAtLast(frequentCategory),
                 member.getId(),
                 "님이 자주 착용한 카테고리",
                 frequentCategory
@@ -323,6 +323,25 @@ public class RecommendationServiceImpl implements RecommendationService {
 
     private String getHistoryImageUrlByHashtagName(String hashtagName) {
         List<HashtagHistory> histories = hashtagHistoryRepositoryService.findTop5HistoriesByHashtagNameOrderByDateDesc(hashtagName);
+
+        if (histories == null || histories.isEmpty()) {
+            return null;
+        }
+
+        for (HashtagHistory history : histories) {
+            if (history.getHistory() != null && history.getHistory().getVisibility() == Visibility.PUBLIC) {
+                List<HistoryImage> images = historyImageRepositoryService.findByHistoryId(history.getHistory().getId());
+                if (!images.isEmpty()) {
+                    return images.get(0).getImageUrl();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private String getHistoryImageUrlByHashtagNameAtLast(String hashtagName) {
+        List<HashtagHistory> histories = hashtagHistoryRepositoryService.findTop5HistoriesByHashtagNameOrderByDateDesc("#"+hashtagName);
 
         if (histories == null || histories.isEmpty()) {
             return null;
