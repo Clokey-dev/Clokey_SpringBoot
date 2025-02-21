@@ -1,5 +1,14 @@
 package com.clokey.server.domain.history.dto;
 
+
+import com.clokey.server.domain.history.converter.HashtagDeserializer;
+import com.clokey.server.domain.history.converter.HashtagSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -55,6 +64,8 @@ public class HistoryResponseDTO {
         String clokeyId;
         String contents;
         List<String> imageUrl;
+        @JsonSerialize(using = HashtagSerializer.class)
+        @JsonDeserialize(using = HashtagDeserializer.class)
         List<String> hashtags;
         boolean visibility;
         int likeCount;
