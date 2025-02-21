@@ -1,18 +1,15 @@
 package com.clokey.server.domain.history.exception.validator;
 
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.history.application.HistoryRepositoryService;
 import com.clokey.server.domain.history.domain.entity.History;
 import com.clokey.server.domain.history.exception.HistoryException;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.model.entity.enums.Visibility;
-import com.clokey.server.domain.history.domain.repository.HistoryRepository;
-import com.clokey.server.domain.member.domain.repository.MemberRepository;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import com.clokey.server.global.error.exception.GeneralException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -41,20 +38,20 @@ public class HistoryAccessibleValidator {
                 .getVisibility()
                 .equals(Visibility.PRIVATE);
 
-        if(!selfQuery && isPrivate) {
+        if (!selfQuery && isPrivate) {
             throw new HistoryException(ErrorStatus.NO_PERMISSION_TO_ACCESS_HISTORY);
         }
 
     }
 
-    public void validateMyHistory(Long historyId, Long MemberId){
+    public void validateMyHistory(Long historyId, Long MemberId) {
 
         boolean isValid = historyRepositoryService.findById(historyId)
                 .getMember()
                 .getId()
                 .equals(MemberId);
 
-        if(!isValid) {
+        if (!isValid) {
             throw new HistoryException(ErrorStatus.NOT_MY_HISTORY);
         }
     }

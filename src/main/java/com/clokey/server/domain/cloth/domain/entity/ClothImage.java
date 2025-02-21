@@ -1,8 +1,10 @@
 package com.clokey.server.domain.cloth.domain.entity;
 
-import com.clokey.server.domain.model.entity.BaseEntity;
 import jakarta.persistence.*;
+
 import lombok.*;
+
+import com.clokey.server.domain.model.entity.BaseEntity;
 
 @Entity
 @Getter

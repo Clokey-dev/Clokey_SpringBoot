@@ -1,14 +1,15 @@
 package com.clokey.server.domain.notification.domain.repository;
 
-import com.clokey.server.domain.model.entity.enums.ReadStatus;
-import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
-import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+
+import com.clokey.server.domain.model.entity.enums.ReadStatus;
+import com.clokey.server.domain.notification.domain.entity.ClokeyNotification;
+import io.lettuce.core.dynamic.annotation.Param;
 
 public interface NotificationRepository extends JpaRepository<ClokeyNotification, Long> {
 

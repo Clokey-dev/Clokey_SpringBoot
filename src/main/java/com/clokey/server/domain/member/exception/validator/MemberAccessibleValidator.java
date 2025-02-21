@@ -1,12 +1,14 @@
 package com.clokey.server.domain.member.exception.validator;
 
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.cloth.exception.ClothException;
 import com.clokey.server.domain.member.application.MemberRepositoryService;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.model.entity.enums.Visibility;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor

@@ -1,14 +1,6 @@
 package com.clokey.server.domain.recommendation.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.checkerframework.checker.units.qual.C;
-
-import java.io.Serializable;
+import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,10 +29,10 @@ public class RecommendationResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DailyNewsResult {
-        private List<Recommend> recommend;
-        private List<Closet> closet;
-        private List<Calendar> calendar;
-        private List<People> people;
+        private List<RecommendResult> recommend;
+        private List<ClosetResult> closet;
+        private List<CalendarResult> calendar;
+        private List<PeopleResult> people;
     }
 
     @Builder
@@ -59,7 +51,7 @@ public class RecommendationResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Recommend {
+    public static class RecommendResult {
         private String imageUrl;
         private String subTitle;
         private String hashtag;
@@ -70,7 +62,19 @@ public class RecommendationResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Closet {
+    public static class RecommendCacheResult {
+        private String imageUrl;
+        private Long memberId;
+        private String subTitle;
+        private String hashtag;
+        private LocalDateTime date;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ClosetResult {
         private String clokeyId;
         private String profileImage;
         private List<Long> clothesId;
@@ -82,7 +86,18 @@ public class RecommendationResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Calendar {
+    public static class ClosetCacheResult {
+        private Long memberId;
+        private List<Long> clothesId;
+        private List<String> images;
+        private LocalDate date;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CalendarResult {
         private LocalDate date;
         private String clokeyId;
         private String profileImage;
@@ -94,9 +109,30 @@ public class RecommendationResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class People {
+    public static class CalendarCacheResult {
+        private Long memberId;
+        private LocalDate date;
+        private Long historyId;
+        private String imageUrl;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PeopleResult {
         private String clokeyId;
         private String profileImage;
+        private String imageUrl;
+        private Long historyId;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PeopleCacheResult {
+        private Long memberId;
         private String imageUrl;
         private Long historyId;
     }

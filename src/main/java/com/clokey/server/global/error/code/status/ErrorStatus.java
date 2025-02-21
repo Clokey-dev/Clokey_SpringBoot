@@ -1,10 +1,12 @@
 package com.clokey.server.global.error.code.status;
 
-import com.clokey.server.global.error.code.BaseErrorCode;
-import com.clokey.server.global.error.code.ErrorReasonDTO;
+import org.springframework.http.HttpStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
+
+import com.clokey.server.global.error.code.BaseErrorCode;
+import com.clokey.server.global.error.code.ErrorReasonDTO;
 
 @Getter
 @AllArgsConstructor
@@ -29,6 +31,7 @@ public enum ErrorStatus implements BaseErrorCode {
     CANNOT_FOLLOW_MYSELF(HttpStatus.BAD_REQUEST,"MEMBER_4007", "팔로우 아이디와 팔로잉 아이디가 같을 수 없습니다."),
     NO_PERMISSION_TO_ACCESS_USER(HttpStatus.BAD_REQUEST,"MEMBER_4008", "유저에 대한 접근 권한이 없습니다."),
     INVALID_TERM_ID(HttpStatus.BAD_REQUEST,"MEMBER_4009","잘못된 약관 ID입니다."),
+    NO_SUCH_FOLLOWER(HttpStatus.NOT_FOUND,"MEMBER_4010","존재하지 않는 팔로워 ID입니다."),
 
     //옷 에러
     NO_SUCH_CLOTH(HttpStatus.NOT_FOUND,"CLOTH_4041","존재하지 않는 옷 ID입니다."),
@@ -94,6 +97,8 @@ public enum ErrorStatus implements BaseErrorCode {
     //추천 에러
     NO_TEMP_PARAMETER(HttpStatus.BAD_REQUEST,"RECOMMEND_4001","온도값은 필수입니다."),
     NO_SUCH_RECOMMEND(HttpStatus.NOT_FOUND,"RECOMMEND_4041","추천 정보가 존재하지 않습니다."),
+    NO_CHATGPT_RESPONSE(HttpStatus.NOT_FOUND,"RECOMMEND_4042","response가 존재하지 않습니다."),
+    FAILED_TO_PARSE_RESPONSE(HttpStatus.BAD_REQUEST,"RECOMMEND_4002","추천 정보가 존재하지 않습니다."),
 
     //S3 관련
     S3_OBJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "S3_001", "S3 오브젝트를 찾을 수 없습니다."),

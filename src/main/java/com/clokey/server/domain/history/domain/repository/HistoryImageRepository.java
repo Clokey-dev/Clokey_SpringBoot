@@ -1,6 +1,5 @@
 package com.clokey.server.domain.history.domain.repository;
 
-import com.clokey.server.domain.history.domain.entity.HistoryImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -8,9 +7,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface HistoryImageRepository extends JpaRepository<HistoryImage, Long> {
+import com.clokey.server.domain.history.domain.entity.HistoryImage;
 
-    boolean existsByHistory_Id(Long historyId);
+public interface HistoryImageRepository extends JpaRepository<HistoryImage, Long> {
 
     List<HistoryImage> findByHistory_Id(Long historyId);
 

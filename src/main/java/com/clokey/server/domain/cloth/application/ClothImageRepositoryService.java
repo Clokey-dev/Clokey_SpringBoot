@@ -1,8 +1,8 @@
 package com.clokey.server.domain.cloth.application;
 
-import com.clokey.server.domain.cloth.domain.entity.ClothImage;
-
 import java.util.List;
+
+import com.clokey.server.domain.cloth.domain.entity.ClothImage;
 
 public interface ClothImageRepositoryService {
 

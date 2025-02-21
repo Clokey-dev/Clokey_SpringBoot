@@ -1,13 +1,10 @@
 package com.clokey.server.domain.search.application;
 
-import com.clokey.server.domain.cloth.domain.entity.Cloth;
-import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
-import com.clokey.server.domain.history.domain.entity.History;
-import com.clokey.server.domain.history.dto.HistoryResponseDTO;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.member.dto.MemberDTO;
-
 import java.io.IOException;
+
+import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
+import com.clokey.server.domain.history.dto.HistoryResponseDTO;
+import com.clokey.server.domain.member.dto.MemberDTO;
 
 public interface SearchService {
 

@@ -1,12 +1,13 @@
 package com.clokey.server.domain.term.application;
 
-import com.clokey.server.domain.term.domain.entity.Term;
-import com.clokey.server.domain.term.domain.repository.TermRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+
+import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.term.domain.entity.Term;
+import com.clokey.server.domain.term.domain.repository.TermRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -33,4 +34,3 @@ public class TermRepositoryServiceImpl implements TermRepositoryService {
         return termRepository.existsById(id);
     }
 }
-

@@ -1,10 +1,10 @@
 package com.clokey.server.domain.recommendation.exception.annotation;
 
-import com.clokey.server.domain.recommendation.exception.validator.CheckSectionValidator;
+import java.lang.annotation.*;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-import java.lang.annotation.*;
+import com.clokey.server.domain.recommendation.exception.validator.CheckSectionValidator;
 
 @Documented
 @Constraint(validatedBy = CheckSectionValidator.class)

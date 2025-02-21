@@ -1,5 +1,6 @@
 package com.clokey.server.domain.history.dto;
 
+
 import com.clokey.server.domain.history.converter.HashtagDeserializer;
 import com.clokey.server.domain.history.converter.HashtagSerializer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -7,13 +8,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import java.time.LocalDate;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 public class HistoryResponseDTO {
 
@@ -21,9 +27,17 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class HistoryPreview{
+    public static class HistoryPreview {
         Long id;
         String imageUrl;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CheckMyHistoryResult {
+        Boolean isMyHistory;
     }
 
     @Builder
@@ -124,10 +138,10 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    @JsonPropertyOrder({"commentId", "memberId","nickName","userImageUrl", "content", "replyResults"})
-    public static class CommentResult{
+    @JsonPropertyOrder({"commentId", "clokeyId", "nickName", "userImageUrl", "content", "replyResults"})
+    public static class CommentResult {
         Long commentId;
-        Long memberId;
+        String clokeyId;
         String nickName;
         String userImageUrl;
         String content;
@@ -138,18 +152,19 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ReplyResult{
+    public static class ReplyResult {
         Long commentId;
-        Long MemberId;
+        String clokeyId;
         String nickName;
         String userImageUrl;
         String content;
     }
+
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class LikeResult{
+    public static class LikeResult {
         Long historyId;
         boolean isLiked;
         int likeCount;
@@ -159,7 +174,7 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class LikedUserResults{
+    public static class LikedUserResults {
         List<LikedUserResult> likedUsers;
     }
 
@@ -167,19 +182,20 @@ public class HistoryResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class LikedUserResult{
+    public static class LikedUserResult {
         Long memberId;
         String clokeyId;
         String imageUrl;
         String nickname;
         boolean followStatus;
+        boolean isMe;
     }
 
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CommentWriteResult{
+    public static class CommentWriteResult {
         Long commentId;
     }
 
@@ -191,8 +207,3 @@ public class HistoryResponseDTO {
         Long historyId;
     }
 }
-
-
-
-
-

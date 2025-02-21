@@ -1,12 +1,12 @@
 package com.clokey.server.domain.history.exception.validator;
 
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.history.application.MemberLikeRepositoryService;
-import com.clokey.server.domain.history.domain.repository.MemberLikeRepository;
 import com.clokey.server.domain.history.exception.HistoryException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import com.clokey.server.global.error.exception.GeneralException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
@@ -16,7 +16,7 @@ public class HistoryLikedValidator {
 
     public void validateIsLiked(Long historyId, Long memberId, boolean isLiked) {
 
-        boolean isValid = memberLikeRepositoryService.existsByMember_IdAndHistory_Id(memberId,historyId) == isLiked;
+        boolean isValid = memberLikeRepositoryService.existsByMember_IdAndHistory_Id(memberId, historyId) == isLiked;
 
         if (!isValid) {
             throw new HistoryException(ErrorStatus.IS_LIKED_INVALID);

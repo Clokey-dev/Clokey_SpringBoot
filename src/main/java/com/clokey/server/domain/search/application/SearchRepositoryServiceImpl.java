@@ -1,5 +1,14 @@
 package com.clokey.server.domain.search.application;
 
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import lombok.RequiredArgsConstructor;
+
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.Result;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
@@ -22,13 +31,6 @@ import com.clokey.server.domain.member.domain.document.MemberDocument;
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.search.exception.SearchException;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

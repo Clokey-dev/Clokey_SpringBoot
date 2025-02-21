@@ -1,15 +1,12 @@
 package com.clokey.server.domain.history.application;
 
+import java.util.List;
+
 import com.clokey.server.domain.history.domain.entity.Hashtag;
 import com.clokey.server.domain.history.domain.entity.HashtagHistory;
 import com.clokey.server.domain.history.domain.entity.History;
 
-import java.util.List;
-import java.util.Optional;
-
 public interface HashtagHistoryRepositoryService {
-
-    boolean existsByHistory_Id(Long historyId);
 
     List<HashtagHistory> findByHistory_Id(Long historyId);
 

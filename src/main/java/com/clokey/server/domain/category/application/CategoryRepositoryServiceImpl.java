@@ -1,17 +1,19 @@
 package com.clokey.server.domain.category.application;
 
-import com.clokey.server.domain.category.domain.entity.Category;
-import com.clokey.server.domain.category.domain.repostiory.CategoryRepository;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
+
+import com.clokey.server.domain.category.domain.entity.Category;
+import com.clokey.server.domain.category.domain.repostiory.CategoryRepository;
 
 @Transactional
 @Service
 @RequiredArgsConstructor
-public class CategoryRepositoryServiceImpl implements CategoryRepositoryService{
+public class CategoryRepositoryServiceImpl implements CategoryRepositoryService {
 
     private final CategoryRepository categoryRepository;
 

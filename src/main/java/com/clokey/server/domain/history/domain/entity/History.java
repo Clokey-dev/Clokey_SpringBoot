@@ -1,13 +1,14 @@
 package com.clokey.server.domain.history.domain.entity;
 
-import com.clokey.server.domain.model.entity.BaseEntity;
-import com.clokey.server.domain.member.domain.entity.Member;
-import com.clokey.server.domain.model.entity.enums.Visibility;
+import java.time.LocalDate;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
+
 import lombok.*;
 
-import java.time.LocalDate;
+import com.clokey.server.domain.member.domain.entity.Member;
+import com.clokey.server.domain.model.entity.BaseEntity;
+import com.clokey.server.domain.model.entity.enums.Visibility;
 
 @Entity
 @Getter
@@ -28,7 +29,7 @@ public class History extends BaseEntity {
     private int likes;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'PUBLIC'",nullable = false) // 공개 범위
+    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'PUBLIC'", nullable = false) // 공개 범위
     private Visibility visibility;
 
     @Column(length = 200)
@@ -38,11 +39,11 @@ public class History extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    public void updateHistory(String content, Visibility visibility){
-        if (content != null){
+    public void updateHistory(String content, Visibility visibility) {
+        if (content != null) {
             this.content = content;
         }
-        if (visibility != null){
+        if (visibility != null) {
             this.visibility = visibility;
         }
     }

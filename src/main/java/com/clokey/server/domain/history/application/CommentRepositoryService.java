@@ -1,13 +1,11 @@
 package com.clokey.server.domain.history.application;
 
-import com.clokey.server.domain.history.domain.entity.Comment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+
+import com.clokey.server.domain.history.domain.entity.Comment;
 
 public interface CommentRepositoryService {
 
@@ -26,7 +24,6 @@ public interface CommentRepositoryService {
     void deleteById(Long commentId);
 
     void deleteAllComments(Long HistoryId);
-
 
     boolean existsByIdAndMemberId(Long id, Long memberId);
 

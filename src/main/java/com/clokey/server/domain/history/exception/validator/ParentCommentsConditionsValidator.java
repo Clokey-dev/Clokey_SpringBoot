@@ -1,15 +1,16 @@
 package com.clokey.server.domain.history.exception.validator;
 
-import com.clokey.server.domain.history.application.CommentRepositoryService;
-import com.clokey.server.domain.history.exception.annotation.ParentCommentConditions;
-import com.clokey.server.domain.history.domain.entity.Comment;
-import com.clokey.server.domain.history.domain.repository.CommentRepository;
-import com.clokey.server.global.error.code.status.ErrorStatus;
-import com.clokey.server.global.error.exception.DatabaseException;
+import org.springframework.stereotype.Component;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+
+import com.clokey.server.domain.history.application.CommentRepositoryService;
+import com.clokey.server.domain.history.domain.entity.Comment;
+import com.clokey.server.domain.history.exception.annotation.ParentCommentConditions;
+import com.clokey.server.global.error.code.status.ErrorStatus;
 
 @Component
 @RequiredArgsConstructor
@@ -26,7 +27,7 @@ public class ParentCommentsConditionsValidator implements ConstraintValidator<Pa
     public boolean isValid(Long commentId, ConstraintValidatorContext context) {
 
         //null인 경우 검증 통과
-        if(commentId == null) {
+        if (commentId == null) {
             return true;
         }
 

@@ -1,13 +1,15 @@
 package com.clokey.server.domain.cloth.application;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.cloth.domain.entity.ClothImage;
 import com.clokey.server.domain.cloth.domain.repository.ClothImageRepository;
 import com.clokey.server.global.infra.s3.S3ImageService;
-import org.springframework.transaction.annotation.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Transactional
 @Service

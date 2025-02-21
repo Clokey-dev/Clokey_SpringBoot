@@ -1,15 +1,16 @@
 package com.clokey.server.domain.history.domain.repository;
 
-import com.clokey.server.domain.cloth.domain.entity.Cloth;
-import com.clokey.server.domain.history.domain.entity.History;
-import com.clokey.server.domain.history.domain.entity.HistoryCloth;
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import jakarta.transaction.Transactional;
+
+import com.clokey.server.domain.cloth.domain.entity.Cloth;
+import com.clokey.server.domain.history.domain.entity.History;
+import com.clokey.server.domain.history.domain.entity.HistoryCloth;
 
 public interface HistoryClothRepository extends JpaRepository<HistoryCloth, Long> {
 

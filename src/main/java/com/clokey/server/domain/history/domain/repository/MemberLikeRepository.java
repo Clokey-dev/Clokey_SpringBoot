@@ -1,14 +1,14 @@
 package com.clokey.server.domain.history.domain.repository;
 
-import com.clokey.server.domain.history.domain.entity.History;
-import com.clokey.server.domain.history.domain.entity.MemberLike;
-import com.clokey.server.domain.member.domain.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+
+import com.clokey.server.domain.history.domain.entity.MemberLike;
+import com.clokey.server.domain.member.domain.entity.Member;
 
 public interface MemberLikeRepository extends JpaRepository<MemberLike, Long> {
 

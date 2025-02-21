@@ -1,12 +1,15 @@
 package com.clokey.server.domain.category.exception.validator;
 
+import org.springframework.stereotype.Component;
+
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.category.application.CategoryRepositoryService;
 import com.clokey.server.domain.category.exception.annotation.CategoryExist;
 import com.clokey.server.global.error.code.status.ErrorStatus;
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
@@ -29,5 +32,3 @@ public class CategoryExistValidator implements ConstraintValidator<CategoryExist
         return isValid;
     }
 }
-
-

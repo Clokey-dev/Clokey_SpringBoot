@@ -1,5 +1,12 @@
 package com.clokey.server.domain.search.api;
 
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.cloth.dto.ClothResponseDTO;
 import com.clokey.server.domain.history.dto.HistoryResponseDTO;
 import com.clokey.server.domain.member.domain.entity.Member;
@@ -19,11 +26,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor

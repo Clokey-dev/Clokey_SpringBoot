@@ -1,6 +1,13 @@
 package com.clokey.server.domain.notification.api;
 
 
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
+
+import lombok.RequiredArgsConstructor;
+
 import com.clokey.server.domain.history.exception.annotation.CommentExist;
 import com.clokey.server.domain.history.exception.annotation.HistoryExist;
 import com.clokey.server.domain.member.domain.entity.Member;
@@ -17,10 +24,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,7 +38,7 @@ public class NotificationRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTIFICATION_200", description = "성공적으로 조회되었습니다."),
     })
-    public BaseResponse<NotificationResponseDTO.GetNotificationResult> getNotifications(@Parameter(name = "user",hidden = true) @AuthUser Member member,
+    public BaseResponse<NotificationResponseDTO.GetNotificationResult> getNotifications(@Parameter(name = "user", hidden = true) @AuthUser Member member,
                                                                                         @RequestParam(value = "page") @CheckPage @Valid Integer page) {
 
         NotificationResponseDTO.GetNotificationResult result = notificationService.getNotifications(member.getId(), page);
@@ -48,7 +51,7 @@ public class NotificationRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTIFICATION_200", description = "읽지 않은 알림 여부가 성공적으로 조회되었습니다."),
     })
-    public BaseResponse<NotificationResponseDTO.UnReadNotificationCheckResult> checkUnReadNotifications(@Parameter(name = "user",hidden = true) @AuthUser Member member) {
+    public BaseResponse<NotificationResponseDTO.UnReadNotificationCheckResult> checkUnReadNotifications(@Parameter(name = "user", hidden = true) @AuthUser Member member) {
 
         NotificationResponseDTO.UnReadNotificationCheckResult result = notificationService.checkUnReadNotifications(member.getId());
 
@@ -64,7 +67,7 @@ public class NotificationRestController {
             @Parameter(name = "notificationId", description = "읽음 처리를 하고자 하는 기록의 Id")
     })
     public BaseResponse<Void> readNotification(@PathVariable @Valid @NotificationExist Long notificationId,
-                                               @Parameter(name = "user",hidden = true) @AuthUser Member member) {
+                                               @Parameter(name = "user", hidden = true) @AuthUser Member member) {
 
         notificationService.readNotification(notificationId, member.getId());
 
@@ -76,7 +79,7 @@ public class NotificationRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTIFICATION_204", description = "알림이 성공적으로 읽음 처리되었습니다."),
     })
-    public BaseResponse<Void> readAllNotification(@Parameter(name = "user",hidden = true) @AuthUser Member member) {
+    public BaseResponse<Void> readAllNotification(@Parameter(name = "user", hidden = true) @AuthUser Member member) {
 
         notificationService.readAllNotification(member.getId());
 
@@ -92,9 +95,9 @@ public class NotificationRestController {
             @Parameter(name = "historyId", description = "좋아요가 눌러진 기록의 historyId, query parameter입니다.")
     })
     public BaseResponse<NotificationResponseDTO.HistoryLikeNotificationResult> likeHistoryNotification(@Parameter @Valid @HistoryExist Long historyId,
-                                                                                    @Parameter(name = "user",hidden = true) @AuthUser Member member) {
+                                                                                                       @Parameter(name = "user", hidden = true) @AuthUser Member member) {
 
-        NotificationResponseDTO.HistoryLikeNotificationResult result = notificationService.sendHistoryLikeNotification(member.getId(),historyId);
+        NotificationResponseDTO.HistoryLikeNotificationResult result = notificationService.sendHistoryLikeNotification(member.getId(), historyId);
 
         return BaseResponse.onSuccess(SuccessStatus.NOTIFICATION_HISTORY_LIKED_SUCCESS, result);
     }
@@ -108,9 +111,9 @@ public class NotificationRestController {
             @Parameter(name = "clokeyId", description = "팔로우 API에 들어갔던 팔로우 하고자 하는 대상의 memberId (상대에게 팔로우 했다고 쏴줘야함)")
     })
     public BaseResponse<NotificationResponseDTO.NewFollowerNotificationResult> newFollowerNotification(@Parameter @Valid @IdValid String clokeyId,
-                                                                                                       @Parameter(name = "user",hidden = true) @AuthUser Member member) {
+                                                                                                       @Parameter(name = "user", hidden = true) @AuthUser Member member) {
 
-        NotificationResponseDTO.NewFollowerNotificationResult result = notificationService.sendNewFollowerNotification(clokeyId,member.getId());
+        NotificationResponseDTO.NewFollowerNotificationResult result = notificationService.sendNewFollowerNotification(clokeyId, member.getId());
 
         return BaseResponse.onSuccess(SuccessStatus.NOTIFICATION_NEW_FOLLOWER_SUCCESS, result);
     }
@@ -126,9 +129,9 @@ public class NotificationRestController {
     })
     public BaseResponse<NotificationResponseDTO.HistoryCommentNotificationResult> historyCommentNotification(@Parameter @Valid @HistoryExist Long historyId,
                                                                                                              @Parameter @Valid @CommentExist Long commentId,
-                                                                                                             @Parameter(name = "user",hidden = true) @AuthUser Member member) {
+                                                                                                             @Parameter(name = "user", hidden = true) @AuthUser Member member) {
 
-        NotificationResponseDTO.HistoryCommentNotificationResult result = notificationService.sendHistoryCommentNotification(historyId,commentId, member.getId());
+        NotificationResponseDTO.HistoryCommentNotificationResult result = notificationService.sendHistoryCommentNotification(historyId, commentId, member.getId());
 
         return BaseResponse.onSuccess(SuccessStatus.NOTIFICATION_HISTORY_COMMENT_SUCCESS, result);
     }
@@ -143,10 +146,10 @@ public class NotificationRestController {
             @Parameter(name = "replyId", description = "작성된 답글의 Id")
     })
     public BaseResponse<NotificationResponseDTO.ReplyNotificationResult> replyNotification(@Parameter @Valid @CommentExist Long commentId,
-                                                                                                    @Parameter @Valid @CommentExist Long replyId,
-                                                                                                    @Parameter(name = "user",hidden = true) @AuthUser Member member) {
+                                                                                           @Parameter @Valid @CommentExist Long replyId,
+                                                                                           @Parameter(name = "user", hidden = true) @AuthUser Member member) {
 
-        NotificationResponseDTO.ReplyNotificationResult result = notificationService.sendReplyNotification(commentId,replyId, member.getId());
+        NotificationResponseDTO.ReplyNotificationResult result = notificationService.sendReplyNotification(commentId, replyId, member.getId());
 
         return BaseResponse.onSuccess(SuccessStatus.NOTIFICATION_REPLY_SUCCESS, result);
     }
@@ -156,7 +159,7 @@ public class NotificationRestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTIFICATION_204", description = "알림이 성공적으로 발송되었습니다."),
     })
-    public BaseResponse<Void> sendOneYearAgoNotification( @Parameter(name = "user",hidden = true) @AuthUser Member member) {
+    public BaseResponse<Void> sendOneYearAgoNotification(@Parameter(name = "user", hidden = true) @AuthUser Member member) {
 
         notificationService.sendOneYearAgoNotification(member.getId());
 
@@ -172,9 +175,9 @@ public class NotificationRestController {
             @Parameter(name = "temperatureDiff", description = "어제와의 온도차이를 정수로 입력해주세요")
     })
     public BaseResponse<Void> sendTodayTemperatureNotification(@Parameter @Valid Integer temperatureDiff,
-                                                               @Parameter(name = "user",hidden = true) @AuthUser Member member) {
+                                                               @Parameter(name = "user", hidden = true) @AuthUser Member member) {
 
-        notificationService.sendTodayTemperatureNotification(temperatureDiff,member.getId());
+        notificationService.sendTodayTemperatureNotification(temperatureDiff, member.getId());
 
         return BaseResponse.onSuccess(SuccessStatus.NOTIFICATION_SEND_SUCCESS, null);
     }
@@ -189,7 +192,7 @@ public class NotificationRestController {
             @Parameter(name = "season", description = "계절에 맞는 알림을 선택합니다.")
     })
     public BaseResponse<Void> sendSeasonsNotification(@Parameter @Valid Season season,
-                                                      @Parameter(name = "user",hidden = true) @AuthUser Member member) {
+                                                      @Parameter(name = "user", hidden = true) @AuthUser Member member) {
 
         notificationService.sendSeasonsNotification(season, member.getId());
 

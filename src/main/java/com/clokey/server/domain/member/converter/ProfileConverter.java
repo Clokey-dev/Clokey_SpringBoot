@@ -1,9 +1,9 @@
 package com.clokey.server.domain.member.converter;
 
+import java.time.LocalDateTime;
+
 import com.clokey.server.domain.member.domain.entity.Member;
 import com.clokey.server.domain.member.dto.MemberDTO;
-
-import java.time.LocalDateTime;
 
 
 public class ProfileConverter {
@@ -22,4 +22,3 @@ public class ProfileConverter {
                 .build();
     }
 }
-

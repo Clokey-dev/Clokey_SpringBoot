@@ -1,10 +1,8 @@
 package com.clokey.server.domain.history.application;
 
-import com.clokey.server.domain.history.domain.entity.Hashtag;
-import org.springframework.data.repository.query.Param;
-
 import java.util.List;
-import java.util.Optional;
+
+import com.clokey.server.domain.history.domain.entity.Hashtag;
 
 public interface HashtagRepositoryService {
 

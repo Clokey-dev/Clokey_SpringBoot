@@ -1,12 +1,13 @@
 package com.clokey.server.domain.folder.dto;
 
-import com.clokey.server.domain.folder.exception.annotation.FolderExist;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import lombok.Getter;
-
 import java.util.Collections;
 import java.util.List;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+
+import lombok.Getter;
+
+import com.clokey.server.domain.folder.exception.annotation.FolderExist;
 
 public class FolderRequestDTO {
     @Getter
