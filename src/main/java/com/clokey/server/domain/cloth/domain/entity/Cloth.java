@@ -63,7 +63,7 @@ public class Cloth extends BaseEntity {
     @Column(nullable = false)
     private Visibility visibility;
 
-    @Column(nullable = true)
+    @Column(nullable = true, length = 1000)
     private String clothUrl;
 
     @Column(nullable = true)
