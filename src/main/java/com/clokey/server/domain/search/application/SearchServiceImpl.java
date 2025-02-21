@@ -169,10 +169,11 @@ public class SearchServiceImpl implements SearchService {
                                         ))
                                 ))
                                 .minimumShouldMatch("1") // 최소 하나는 일치하도록 설정
-                        )),
+                        ))
+                        .from((int) pageable.getOffset()) // 페이지네이션 적용
+                        .size(pageable.getPageSize()),
                 HistoryDocument.class
         );
-
 
         List<HistoryDocument> results = response.hits().hits().stream()
                 .map(Hit::source)
@@ -227,7 +228,9 @@ public class SearchServiceImpl implements SearchService {
                                             ))
                                     ))
                                     .minimumShouldMatch("1")
-                            )),
+                            ))
+                            .from((int) pageable.getOffset()) // 페이지네이션 적용
+                            .size(pageable.getPageSize()),
                     MemberDocument.class
             );
 
