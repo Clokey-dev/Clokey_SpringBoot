@@ -356,7 +356,6 @@ public class RecommendationServiceImpl implements RecommendationService {
         }
 
         List<Long> followingMembers = followRepositoryService.findFollowedByFollowingId(memberId).stream()
-                .filter(followingMember -> followingMember.getVisibility() == Visibility.PUBLIC)
                 .map(Member::getId)
                 .toList();
 
