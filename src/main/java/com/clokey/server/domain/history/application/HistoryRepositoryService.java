@@ -32,7 +32,7 @@ public interface HistoryRepositoryService {
 
     void deleteById(Long historyId);
 
-    List<Boolean> existsByHistoryDateAndMemberIds(LocalDate historyDate, List<Long> memberIds, Visibility visibility);
+    List<Boolean> existsByHistoryDateAndMemberIds(LocalDate historyDate, List<Long> memberIds);
 
     void deleteByHistoryIds(List<Long> historyIds);
 

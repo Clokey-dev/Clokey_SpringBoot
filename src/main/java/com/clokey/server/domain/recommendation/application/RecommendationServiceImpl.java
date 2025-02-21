@@ -355,11 +355,11 @@ public class RecommendationServiceImpl implements RecommendationService {
             return RecommendationConverter.toLastYearHistoryResult(historyOneYearAgoId, historyUrls, member, true);
         }
 
-        List<Long> followingMembers = followRepositoryService.findFollowedByFollowingId(memberId).stream()
+        List<Long> followingMembers = followRepositoryService.findFollowingByFollowedId(memberId).stream()
                 .map(Member::getId)
                 .toList();
 
-        List<Boolean> membersHaveHistoryOneYearAgo = historyRepositoryService.existsByHistoryDateAndMemberIds(oneYearAgo, followingMembers, Visibility.PUBLIC);
+        List<Boolean> membersHaveHistoryOneYearAgo = historyRepositoryService.existsByHistoryDateAndMemberIds(oneYearAgo, followingMembers);
 
         Long memberPicked = getRandomMemberWithHistory(followingMembers, membersHaveHistoryOneYearAgo);
 
